@@ -39,6 +39,6 @@
 
 # debug information files
 *.dwo
-AsoREPO/.vs/
-AsoREPO/x64/
-AsoREPO/Log.txt
+THIEF/.vs/
+THIEF/x64/
+THIEF/Log.txt

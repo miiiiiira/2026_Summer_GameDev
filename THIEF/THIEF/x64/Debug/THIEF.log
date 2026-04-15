@@ -1,0 +1,265 @@
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1129,5): warning MSB8027: Fader.cpp という名前の複数のファイルでは、同じ場所に出力が生成されます。これにより、不適切なビルド結果が生じる可能性があります。関連するファイルは Src\Common\Fader\Fader.cpp, Src\Common\System\Fader.cpp です。
+  Application.cpp
+  AudioManager.cpp
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Application.cpp(30,2): error C2665: 'DxLib::SetWindowTextW': オーバーロードされた関数ですべての引数の型を変換できませんでした
+      C:\Dxlib\DxFunctionWin.h(75,14):
+      'int DxLib::SetWindowTextW(const TCHAR *)' の可能性があります
+          C:\Users\2416009\Project\2026Summer\THIEF\Src\Application.cpp(30,2):
+          'int DxLib::SetWindowTextW(const TCHAR *)': 引数 1 を 'const char [6]' から 'const TCHAR *' へ変換できません。
+              C:\Users\2416009\Project\2026Summer\THIEF\Src\Application.cpp(30,16):
+              指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたはかっこで囲まれた関数スタイル キャストが必要です。
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Application.cpp(30,2):
+      引数リスト '(const char [6])' を一致させようとしているとき
+  
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Audio\AudioManager.cpp(61,18): error C2664: 'int DxLib::LoadSoundMem(const TCHAR *,int,int)': 引数 1 を 'const _Elem *' から 'const TCHAR *' へ変換できません。
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Audio\AudioManager.cpp(61,18): error C2664:         with
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Audio\AudioManager.cpp(61,18): error C2664:         [
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Audio\AudioManager.cpp(61,18): error C2664:             _Elem=char
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Audio\AudioManager.cpp(61,18): error C2664:         ]
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Audio\AudioManager.cpp(61,41):
+      指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたはかっこで囲まれた関数スタイル キャストが必要です。
+      C:\Dxlib\DxLib.h(4845,14):
+      'DxLib::LoadSoundMem' の宣言を確認してください
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Audio\AudioManager.cpp(61,18):
+      引数リスト '(const _Elem *)' を一致させようとしているとき
+          with
+          [
+              _Elem=char
+          ]
+  
+  SoundTable.cpp
+  Camera.cpp
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Camera\Camera.cpp(82,2): error C2664: 'int DxLib::DrawFormatString(int,int,unsigned int,const TCHAR *,...)': 引数 4 を 'const char [34]' から 'const TCHAR *' へ変換できません。
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Camera\Camera.cpp(84,3):
+      指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたはかっこで囲まれた関数スタイル キャストが必要です。
+      C:\Dxlib\DxLib.h(3784,14):
+      'DxLib::DrawFormatString' の宣言を確認してください
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Camera\Camera.cpp(82,2):
+      引数リスト '(int, int, int, const char [34], float, float, float)' を一致させようとしているとき
+  
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Camera\Camera.cpp(87,2): error C2664: 'int DxLib::DrawFormatString(int,int,unsigned int,const TCHAR *,...)': 引数 4 を 'const char [34]' から 'const TCHAR *' へ変換できません。
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Camera\Camera.cpp(89,3):
+      指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたはかっこで囲まれた関数スタイル キャストが必要です。
+      C:\Dxlib\DxLib.h(3784,14):
+      'DxLib::DrawFormatString' の宣言を確認してください
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Camera\Camera.cpp(87,2):
+      引数リスト '(int, int, int, const char [34], float, float, float)' を一致させようとしているとき
+  
+  Collision.cpp
+  FpsControl.cpp
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Common\System\FpsControl.cpp(87,2): error C2664: 'int DxLib::DrawFormatString(int,int,unsigned int,const TCHAR *,...)': 引数 4 を 'const char [10]' から 'const TCHAR *' へ変換できません。
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Common\System\FpsControl.cpp(91,3):
+      指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたはかっこで囲まれた関数スタイル キャストが必要です。
+      C:\Dxlib\DxLib.h(3784,14):
+      'DxLib::DrawFormatString' の宣言を確認してください
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Common\System\FpsControl.cpp(87,2):
+      引数リスト '(int, int, int, const char [10], float)' を一致させようとしているとき
+  
+  MatrixUtility.cpp
+  Player.cpp
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Actor\Player\Player.cpp(23,13): error C2664: 'int DxLib::MV1LoadModel(const TCHAR *)': 引数 1 を 'const _Elem *' から 'const TCHAR *' へ変換できません。
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Actor\Player\Player.cpp(23,13): error C2664:         with
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Actor\Player\Player.cpp(23,13): error C2664:         [
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Actor\Player\Player.cpp(23,13): error C2664:             _Elem=char
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Actor\Player\Player.cpp(23,13): error C2664:         ]
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Actor\Player\Player.cpp(23,79):
+      指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたはかっこで囲まれた関数スタイル キャストが必要です。
+      C:\Dxlib\DxLib.h(5126,14):
+      'DxLib::MV1LoadModel' の宣言を確認してください
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Actor\Player\Player.cpp(23,13):
+      引数リスト '(const _Elem *)' を一致させようとしているとき
+          with
+          [
+              _Elem=char
+          ]
+  
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Actor\Player\Player.cpp(86,2): error C2664: 'int DxLib::DrawFormatString(int,int,unsigned int,const TCHAR *,...)': 引数 4 を 'const char [34]' から 'const TCHAR *' へ変換できません。
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Actor\Player\Player.cpp(88,3):
+      指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたはかっこで囲まれた関数スタイル キャストが必要です。
+      C:\Dxlib\DxLib.h(3784,14):
+      'DxLib::DrawFormatString' の宣言を確認してください
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Actor\Player\Player.cpp(86,2):
+      引数リスト '(int, int, int, const char [34], float, float, float)' を一致させようとしているとき
+  
+  Upgrade.cpp
+  Stage.cpp
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Actor\Stage\Stage.cpp(38,13): error C2664: 'int DxLib::MV1LoadModel(const TCHAR *)': 引数 1 を 'const _Elem *' から 'const TCHAR *' へ変換できません。
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Actor\Stage\Stage.cpp(38,13): error C2664:         with
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Actor\Stage\Stage.cpp(38,13): error C2664:         [
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Actor\Stage\Stage.cpp(38,13): error C2664:             _Elem=char
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Actor\Stage\Stage.cpp(38,13): error C2664:         ]
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Actor\Stage\Stage.cpp(38,77):
+      指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたはかっこで囲まれた関数スタイル キャストが必要です。
+      C:\Dxlib\DxLib.h(5126,14):
+      'DxLib::MV1LoadModel' の宣言を確認してください
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Actor\Stage\Stage.cpp(38,13):
+      引数リスト '(const _Elem *)' を一致させようとしているとき
+          with
+          [
+              _Elem=char
+          ]
+  
+  AnimationController.cpp
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Common\AnimationController.cpp(18,20): error C2664: 'int DxLib::MV1LoadModel(const TCHAR *)': 引数 1 を 'const _Elem *' から 'const TCHAR *' へ変換できません。
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Common\AnimationController.cpp(18,20): error C2664:         with
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Common\AnimationController.cpp(18,20): error C2664:         [
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Common\AnimationController.cpp(18,20): error C2664:             _Elem=char
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Common\AnimationController.cpp(18,20): error C2664:         ]
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Common\AnimationController.cpp(18,43):
+      指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたはかっこで囲まれた関数スタイル キャストが必要です。
+      C:\Dxlib\DxLib.h(5126,14):
+      'DxLib::MV1LoadModel' の宣言を確認してください
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Object\Common\AnimationController.cpp(18,20):
+      引数リスト '(const _Elem *)' を一致させようとしているとき
+          with
+          [
+              _Elem=char
+          ]
+  
+  GameClear.cpp
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\GameClear\GameClear.cpp(46,2): error C2664: 'int DxLib::DrawString(int,int,const TCHAR *,unsigned int,unsigned int)': 引数 3 を 'const char [10]' から 'const TCHAR *' へ変換できません。
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\GameClear\GameClear.cpp(46,19):
+      指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたはかっこで囲まれた関数スタイル キャストが必要です。
+      C:\Dxlib\DxLib.h(3780,14):
+      'DxLib::DrawString' の宣言を確認してください
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\GameClear\GameClear.cpp(46,2):
+      引数リスト '(int, int, const char [10], unsigned int)' を一致させようとしているとき
+  
+  GameOver.cpp
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\GameOver\GameOver.cpp(46,2): error C2664: 'int DxLib::DrawString(int,int,const TCHAR *,unsigned int,unsigned int)': 引数 3 を 'const char [9]' から 'const TCHAR *' へ変換できません。
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\GameOver\GameOver.cpp(46,19):
+      指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたはかっこで囲まれた関数スタイル キャストが必要です。
+      C:\Dxlib\DxLib.h(3780,14):
+      'DxLib::DrawString' の宣言を確認してください
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\GameOver\GameOver.cpp(46,2):
+      引数リスト '(int, int, const char [9], unsigned int)' を一致させようとしているとき
+  
+  Loading.cpp
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Loading\Loading.cpp(29,12): error C2664: 'int DxLib::LoadGraph(const TCHAR *,int)': 引数 1 を 'const char [23]' から 'const TCHAR *' へ変換できません。
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Loading\Loading.cpp(29,22):
+      指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたはかっこで囲まれた関数スタイル キャストが必要です。
+      C:\Dxlib\DxLib.h(2671,14):
+      'DxLib::LoadGraph' の宣言を確認してください
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Loading\Loading.cpp(29,12):
+      引数リスト '(const char [23])' を一致させようとしているとき
+  
+  MainMenu.cpp
+  Pause.cpp
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(35,12): error C2664: 'int DxLib::LoadGraph(const TCHAR *,int)': 引数 1 を 'const _Elem *' から 'const TCHAR *' へ変換できません。
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(35,12): error C2664:         with
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(35,12): error C2664:         [
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(35,12): error C2664:             _Elem=char
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(35,12): error C2664:         ]
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(35,67):
+      指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたはかっこで囲まれた関数スタイル キャストが必要です。
+      C:\Dxlib\DxLib.h(2671,14):
+      'DxLib::LoadGraph' の宣言を確認してください
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(35,12):
+      引数リスト '(const _Elem *)' を一致させようとしているとき
+          with
+          [
+              _Elem=char
+          ]
+  
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(36,17): error C2664: 'int DxLib::LoadGraph(const TCHAR *,int)': 引数 1 を 'const _Elem *' から 'const TCHAR *' へ変換できません。
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(36,17): error C2664:         with
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(36,17): error C2664:         [
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(36,17): error C2664:             _Elem=char
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(36,17): error C2664:         ]
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(36,75):
+      指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたはかっこで囲まれた関数スタイル キャストが必要です。
+      C:\Dxlib\DxLib.h(2671,14):
+      'DxLib::LoadGraph' の宣言を確認してください
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(36,17):
+      引数リスト '(const _Elem *)' を一致させようとしているとき
+          with
+          [
+              _Elem=char
+          ]
+  
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(37,16): error C2664: 'int DxLib::LoadGraph(const TCHAR *,int)': 引数 1 を 'const _Elem *' から 'const TCHAR *' へ変換できません。
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(37,16): error C2664:         with
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(37,16): error C2664:         [
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(37,16): error C2664:             _Elem=char
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(37,16): error C2664:         ]
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(37,72):
+      指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたはかっこで囲まれた関数スタイル キャストが必要です。
+      C:\Dxlib\DxLib.h(2671,14):
+      'DxLib::LoadGraph' の宣言を確認してください
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(37,16):
+      引数リスト '(const _Elem *)' を一致させようとしているとき
+          with
+          [
+              _Elem=char
+          ]
+  
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(38,17): error C2664: 'int DxLib::LoadGraph(const TCHAR *,int)': 引数 1 を 'const _Elem *' から 'const TCHAR *' へ変換できません。
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(38,17): error C2664:         with
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(38,17): error C2664:         [
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(38,17): error C2664:             _Elem=char
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(38,17): error C2664:         ]
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(38,75):
+      指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたはかっこで囲まれた関数スタイル キャストが必要です。
+      C:\Dxlib\DxLib.h(2671,14):
+      'DxLib::LoadGraph' の宣言を確認してください
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(38,17):
+      引数リスト '(const _Elem *)' を一致させようとしているとき
+          with
+          [
+              _Elem=char
+          ]
+  
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(39,13): error C2664: 'int DxLib::LoadGraph(const TCHAR *,int)': 引数 1 を 'const _Elem *' から 'const TCHAR *' へ変換できません。
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(39,13): error C2664:         with
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(39,13): error C2664:         [
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(39,13): error C2664:             _Elem=char
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(39,13): error C2664:         ]
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(39,67):
+      指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたはかっこで囲まれた関数スタイル キャストが必要です。
+      C:\Dxlib\DxLib.h(2671,14):
+      'DxLib::LoadGraph' の宣言を確認してください
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(39,13):
+      引数リスト '(const _Elem *)' を一致させようとしているとき
+          with
+          [
+              _Elem=char
+          ]
+  
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(40,14): error C2664: 'int DxLib::LoadGraph(const TCHAR *,int)': 引数 1 を 'const _Elem *' から 'const TCHAR *' へ変換できません。
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(40,14): error C2664:         with
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(40,14): error C2664:         [
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(40,14): error C2664:             _Elem=char
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(40,14): error C2664:         ]
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(40,69):
+      指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたはかっこで囲まれた関数スタイル キャストが必要です。
+      C:\Dxlib\DxLib.h(2671,14):
+      'DxLib::LoadGraph' の宣言を確認してください
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(40,14):
+      引数リスト '(const _Elem *)' を一致させようとしているとき
+          with
+          [
+              _Elem=char
+          ]
+  
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(93,46): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\Pause\Pause.cpp(93,27): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+  SceneBase.cpp
+  TitleScene.cpp
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\TitleScene\TitleScene.cpp(27,12): error C2664: 'int DxLib::LoadGraph(const TCHAR *,int)': 引数 1 を 'const char [21]' から 'const TCHAR *' へ変換できません。
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\TitleScene\TitleScene.cpp(27,22):
+      指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたはかっこで囲まれた関数スタイル キャストが必要です。
+      C:\Dxlib\DxLib.h(2671,14):
+      'DxLib::LoadGraph' の宣言を確認してください
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\TitleScene\TitleScene.cpp(27,12):
+      引数リスト '(const char [21])' を一致させようとしているとき
+  
+C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\TitleScene\TitleScene.cpp(28,18): error C2664: 'int DxLib::LoadGraph(const TCHAR *,int)': 引数 1 を 'const char [29]' から 'const TCHAR *' へ変換できません。
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\TitleScene\TitleScene.cpp(28,28):
+      指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたはかっこで囲まれた関数スタイル キャストが必要です。
+      C:\Dxlib\DxLib.h(2671,14):
+      'DxLib::LoadGraph' の宣言を確認してください
+      C:\Users\2416009\Project\2026Summer\THIEF\Src\Scene\TitleScene\TitleScene.cpp(28,18):
+      引数リスト '(const char [29])' を一致させようとしているとき
+  
+  SystemManager.cpp
+  コードを生成中...
