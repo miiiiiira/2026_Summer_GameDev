@@ -117,7 +117,16 @@ void Camera::SetBeforeDrawFollow(void)
 	targetPos_ = VAdd(followPos, targetLocalRotPos);
 
 	// 相対座標からワールド座標に直して、カメラ座標とする
-	pos_ = VAdd(followPos, FOLLOW_CAMERA_LOCAL_POS);
+	// しゃがみ状態であれば、カメラの位置を下げる
+	if(InputManager::GetInstance()->IsNew(KEY_INPUT_LSHIFT))
+	{
+		pos_ = VAdd(followPos, FOLLOW_CAMERA_LOCAL_POS_CROUCHING);
+	}
+	// しゃがみ状態でなければ、カメラの位置は立ち状態のまま
+	else
+	{
+		pos_ = VAdd(followPos, FOLLOW_CAMERA_LOCAL_POS_STANDING);
+	}
 
 	// カメラの上方向を計算
 	VECTOR up = VTransform(Math::DIR_U, mat);
