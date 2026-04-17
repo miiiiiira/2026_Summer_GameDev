@@ -24,14 +24,19 @@ namespace Collision
         return HitSpheres(closest, capRadius, sphPos, sphRadius);
     }
 
-    bool HitCircleBox(const VECTOR& sphPos, const VECTOR& boxPos, float sizeX, float sizeY)
+    bool HitCircleBox(const Vector2& boxPos, float sizeX, float sizeY)
     {
+        int mousePosX = 0;
+        int mousePosY = 0;
+        // マウスの位置を調べる
+        GetMousePoint(&mousePosX, &mousePosY);
+
         bool ret = false;
         
-        if(sphPos.x > boxPos.x &&
-           sphPos.x < boxPos.x + sizeX &&
-           sphPos.y > boxPos.y &&
-           sphPos.y < boxPos.y + sizeY)
+        if(mousePosX > boxPos.x &&
+           mousePosX < boxPos.x + sizeX &&
+           mousePosY > boxPos.y &&
+           mousePosY < boxPos.y + sizeY)
         {
             ret = true;
 		}

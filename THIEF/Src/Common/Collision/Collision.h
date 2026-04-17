@@ -1,5 +1,6 @@
 #pragma once
 #include <DxLib.h>
+#include "../Math/Vector2.h"
 
 namespace Collision
 {
@@ -12,6 +13,5 @@ namespace Collision
         const VECTOR& capA, const VECTOR& capB, float capRadius);
 
     bool HitCircleBox(
-        const VECTOR& sphPos,
-        const VECTOR& boxPos, float sizeX, float sizeY);
+        const Vector2& boxPos, float sizeX, float sizeY);
 }

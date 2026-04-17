@@ -26,8 +26,6 @@ Pause::~Pause(void)
 void Pause::Init(void)
 {
 	ChangeSelect(Menu::NONE);
-	GetMousePoint(&mousePosX_, &mousePosY_);
-	mousePos_ = { static_cast<float>(mousePosX_), static_cast<float>(mousePosY_) };
 }
 
 void Pause::Load(void)
@@ -48,9 +46,6 @@ void Pause::LoadEnd(void)
 void Pause::Update(void)
 {
 
-	GetMousePoint(&mousePosX_, &mousePosY_);
-	mousePos_ = { static_cast<float>(mousePosX_), static_cast<float>(mousePosY_) };
-
 	// Escape‰Ÿ‚³‚ê‚é‚ÆŽŸ‚ÌƒV[ƒ“‚Ö
 	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_ESCAPE))
 	{
@@ -58,24 +53,24 @@ void Pause::Update(void)
 		SceneManager::GetInstance()->PopScene();
 	}
 
-	if(Collision::HitCircleBox(mousePos_, { CONTINUE_POS_X, CONTINUE_POS_Y }, IMAGE_SIZE_X, IMAGE_SIZE_Y))
+	if (Collision::HitCircleBox({ CONTINUE_POS_X, CONTINUE_POS_Y }, IMAGE_SIZE_X, IMAGE_SIZE_Y))
 	{
 		ChangeSelect(Menu::CONTINUE);
 	}
-	else if (Collision::HitCircleBox(mousePos_, { OPTION_POS_X, OPTION_POS_Y }, IMAGE_SIZE_X, IMAGE_SIZE_Y))
+	else if (Collision::HitCircleBox({ OPTION_POS_X, OPTION_POS_Y }, IMAGE_SIZE_X, IMAGE_SIZE_Y))
 	{
 		ChangeSelect(Menu::OPTION);
 	}
-	else if (Collision::HitCircleBox(mousePos_, { MAINMENU_POS_X, MAINMENU_POS_Y }, IMAGE_SIZE_X, IMAGE_SIZE_Y))
+	else if (Collision::HitCircleBox({ MAINMENU_POS_X, MAINMENU_POS_Y }, IMAGE_SIZE_X, IMAGE_SIZE_Y))
 	{
 		ChangeSelect(Menu::MAINMENU);
 	}
-	else if (Collision::HitCircleBox(mousePos_, { QUIT_POS_X, QUIT_POS_Y }, IMAGE_SIZE_X, IMAGE_SIZE_Y))
+	else if (Collision::HitCircleBox({ QUIT_POS_X, QUIT_POS_Y }, IMAGE_SIZE_X, IMAGE_SIZE_Y))
 	{
 		ChangeSelect(Menu::QUIT);
 	}
 	else
-	{	
+	{
 		ChangeSelect(Menu::NONE);
 
 	}

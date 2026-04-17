@@ -67,9 +67,6 @@ private:
 	Menu currentMenu_;
 	Menu previousMenu_;
 	VECTOR currentMenuPos_;
-	VECTOR mousePos_;
-	int mousePosX_;
-	int mousePosY_;
 
 };
 
