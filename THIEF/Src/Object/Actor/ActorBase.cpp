@@ -78,8 +78,6 @@ void ActorBase::Update(void)
 	// モデルに座標を設定する
 	MV1SetPosition(modelId_, pos_);
 
-	// アニメーションの更新
-	animationController_->Update();
 }
 
 void ActorBase::Draw(void)

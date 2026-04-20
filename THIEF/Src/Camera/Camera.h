@@ -1,5 +1,6 @@
 #pragma once
 #include <DxLib.h>
+#include "../Object/Actor/Player/Player.h"
 
 class ActorBase;
 
@@ -9,7 +10,7 @@ class Camera
 public:
 
 	// カメラの初期座標
-	static constexpr VECTOR DERFAULT_POS = { 0.0f, 200.0f, -500.0f };
+	static constexpr VECTOR DERFAULT_POS = { 0.0f, 0.0f, 0.0f };
 
 	// カメラの初期角度
 	static constexpr VECTOR DERFAULT_ANGLES = { 
@@ -28,8 +29,8 @@ public:
 	static constexpr float VIEW_FAR = 5000.0f;
 	
 	// カメラのX回転上限度角
-	static constexpr float LIMIT_X_UP_RAD = 90.0f * (DX_PI_F / 180.0f);
-	static constexpr float LIMIT_X_DW_RAD = -90.0f * (DX_PI_F / 180.0f);
+	static constexpr float LIMIT_X_UP_RAD = -80.0f * (DX_PI_F / 180.0f);
+	static constexpr float LIMIT_X_DW_RAD = 50.0f * (DX_PI_F / 180.0f);
 
 	// 視点のしきい値(マウス)
 	static constexpr float THRESHOLD = 1.1f;
@@ -98,7 +99,7 @@ private:
 	
 	// 注視点
 	VECTOR targetPos_;
-	
+
 	// ２D状でのマウスの位置
 	int mousePosX_;
 	int mousePosY_;

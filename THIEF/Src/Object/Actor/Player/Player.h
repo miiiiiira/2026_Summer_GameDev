@@ -11,13 +11,11 @@ class Player : public ActorBase
 {
 
 public:
-
-	// アニメーション種別
-	enum class ANIM_TYPE
+	// プレイヤーの状態種類
+	enum class STATE
 	{
 		IDLE,
-		WALK,
-		MAX,
+		CROUCHING,
 	};
 
 	// コンストラクタ
@@ -38,6 +36,7 @@ public:
 	// プレイヤーの能力を上げる
 	void Upgrade(PLAYER_UPGRADE type, float upNum);
 
+	STATE GetNowState(void) { return state_; }
 private:
 
 	// リソースロード
@@ -62,4 +61,6 @@ private:
 	// プレイヤーのアップグレードの種類
 	PLAYER_UPGRADE upgradeType_;
 
+	// プレイヤーの状態の種類
+	STATE state_;
 };

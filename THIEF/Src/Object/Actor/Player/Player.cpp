@@ -19,8 +19,6 @@ Player::~Player(void)
 
 void Player::InitLoad(void)
 {
-	// モデルの読み込み
-	modelId_ = MV1LoadModel((Application::PATH_MODEL + "Player/Player.mv1").c_str());
 }
 
 void Player::InitTransform(void)
@@ -54,17 +52,6 @@ void Player::InitTransform(void)
 
 void Player::InitAnimation(void)
 {
-	// モデルアニメーション制御の初期化
-	animationController_ = new AnimationController(modelId_);
-
-	// アニメーションの追加
-	animationController_->Add(
-		static_cast<int>(ANIM_TYPE::IDLE), 0.5f, Application::PATH_MODEL + "Player/Idle.mv1");
-	animationController_->Add(
-		static_cast<int>(ANIM_TYPE::WALK), 0.5f, Application::PATH_MODEL + "Player/Walk.mv1");
-
-	// 初期アニメーションの再生
-	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE));
 }
 
 void Player::InitPost(void)
@@ -74,9 +61,6 @@ void Player::InitPost(void)
 void Player::Update(void)
 {
 	ActorBase::Update();
-
-	// アニメーションの更新
-	animationController_->Update();
 }
 
 void Player::Draw(void)
@@ -188,13 +172,5 @@ void Player::Move(void)
 
 		// 方向×スピードで移動量を作って、座標に足して移動
 		pos_ = VAdd(pos_, VScale(moveDir_, MOVE_POW));
-
-		// 歩くアニメーションの再生
-		animationController_->Play(static_cast<int>(ANIM_TYPE::WALK));
-	}
-	else
-	{
-		// 待機アニメーションの再生
-		animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE));
 	}
 }

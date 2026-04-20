@@ -192,22 +192,20 @@ void Camera::RotKeyboard(bool isLimit)
 	{ 
 		angle_.x += rotPow;
 
-		if (isLimit && angle_.x > LIMIT_X_UP_RAD)
+		if (isLimit && angle_.x > LIMIT_X_DW_RAD)
 		{
-			angle_.x = LIMIT_X_UP_RAD;
+			angle_.x = LIMIT_X_DW_RAD;
 		}
-
 	}
 
 	if (InputManager::GetInstance()->IsNew(KEY_INPUT_UP))	
 	{
 		angle_.x -= rotPow; 
 
-		if (isLimit && angle_.x < -LIMIT_X_DW_RAD)
+		if (isLimit && angle_.x < LIMIT_X_UP_RAD)
 		{
-			angle_.x = -LIMIT_X_DW_RAD;
+			angle_.x = LIMIT_X_UP_RAD;
 		}
-
 	}
 
 	// 視点操作(左右)
@@ -239,11 +237,11 @@ void Camera::RotGamePad(bool isLimit)
 	// 角度制限
 	if (!isLimit)return;
 
-	if (angle_.x < -LIMIT_X_DW_RAD)
+	if (angle_.x > LIMIT_X_DW_RAD)
 	{
-		angle_.x = -LIMIT_X_DW_RAD;
+		angle_.x = LIMIT_X_DW_RAD;
 	}
-	if (angle_.x > LIMIT_X_UP_RAD)
+	if (angle_.x < LIMIT_X_UP_RAD)
 	{
 		angle_.x = LIMIT_X_UP_RAD;
 	}
@@ -272,11 +270,11 @@ void Camera::RotMouse(bool isLimit)
 	angle_.x += deltaY * SystemManager::GetInstance().GetMouseSensitivity();
 
 	// ピッチ角の角度制限（真上や真下を向きすぎないようにする）
-	if (isLimit && angle_.x < LIMIT_X_DW_RAD)
+	if (isLimit && angle_.x > LIMIT_X_DW_RAD)
 	{
 		angle_.x = LIMIT_X_DW_RAD;
 	}
-	if (isLimit && angle_.x > LIMIT_X_UP_RAD)
+	if (isLimit && angle_.x < LIMIT_X_UP_RAD)
 	{
 		angle_.x = LIMIT_X_UP_RAD;
 	}
