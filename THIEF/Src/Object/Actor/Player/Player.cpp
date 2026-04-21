@@ -56,6 +56,14 @@ void Player::InitAnimation(void)
 
 void Player::InitPost(void)
 {
+	// 移動速度の初期化
+	moveSpeedMax_ = DEFAULT_SPEED;
+
+	// スタミナの初期化
+	stamina_ = staminaMax_ = DEFAULT_STAMINA;
+
+	// スタミナを回復させるまでの時間カウンタの初期化
+	staminaCounter_ = 0;
 }
 
 void Player::Update(void)
@@ -128,7 +136,7 @@ void Player::Move(void)
 	VECTOR cameraAngles = camera_->GetAngle();
 
 	// 移動量
-	const float MOVE_POW = 5.0f;
+	float moveSpeed = Run();
 	VECTOR dir = Math::VECTOR_ZERO;
 
 	// ゲームパッドが接続数で処理を分ける
@@ -153,11 +161,6 @@ void Player::Move(void)
 
 	if (!Math::EqualsVZero(dir))
 	{
-		// 入力値の補間
-		const float SMOOTH = 0.25f; // 小さいほど慣性が強い
-		dir.x = preInputDir_.x + (dir.x - preInputDir_.x) * SMOOTH;
-		dir.z = preInputDir_.z + (dir.z - preInputDir_.z) * SMOOTH;
-		preInputDir_ = dir;
 
 		// 正規化
 		dir = VNorm(dir);
@@ -171,6 +174,49 @@ void Player::Move(void)
 		moveDir_ = VTransform(dir, mat);
 
 		// 方向×スピードで移動量を作って、座標に足して移動
-		pos_ = VAdd(pos_, VScale(moveDir_, MOVE_POW));
+		pos_ = VAdd(pos_, VScale(moveDir_, moveSpeed));
 	}
+}
+
+float Player::Run(void)
+{
+	float moveSpeed;
+
+	if (InputManager::GetInstance()->IsNew(KEY_INPUT_LSHIFT)
+		&& stamina_ >= 0.1f)
+	{
+		moveSpeed = moveSpeedMax_ + DASH_SPEED;
+
+		// スタミナを減らす
+		stamina_ -= 0.1f;
+		if (stamina_ <= 0.0f)
+		{
+			// 0を超えないようにする
+			stamina_ = 0.0f;
+		}
+
+		staminaCounter_ = 0.0f;
+	}
+	else
+	{
+		moveSpeed = moveSpeedMax_;
+
+		staminaCounter_ ++;
+
+		// スタミナ回復を行うまでの制限時間を超えたら入る
+		if (staminaCounter_ / 60 >= RECOVERY_STAMINA_WAIT_TIME)
+		{
+			// スタミナ回復させる
+			stamina_ += RECOVERY_STAMINA;
+
+			if (stamina_ > staminaMax_)
+			{
+				// 最大スタミナを超えないようにする
+				stamina_ = staminaMax_;
+			}
+
+		}
+	}
+
+	return moveSpeed;
 }

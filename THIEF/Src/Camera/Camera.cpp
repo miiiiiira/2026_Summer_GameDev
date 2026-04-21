@@ -124,7 +124,7 @@ void Camera::SetBeforeDrawFollow(void)
 
 	// 相対座標からワールド座標に直して、カメラ座標とする
 	// しゃがみ状態であれば、カメラの位置を下げる
-	if(InputManager::GetInstance()->IsNew(KEY_INPUT_LSHIFT))
+	if(InputManager::GetInstance()->IsNew(KEY_INPUT_LCONTROL))
 	{
 		pos_ = VAdd(followPos, FOLLOW_CAMERA_LOCAL_POS_CROUCHING);
 	}

@@ -9,8 +9,23 @@ class Camera;
 
 class Player : public ActorBase
 {
-
 public:
+
+	// 通常時移動速度
+	static constexpr float DEFAULT_SPEED = 7.0f;
+
+	// ダッシュ時の移動速度
+	static constexpr float DASH_SPEED = 10.0f;
+
+	// スタミナ
+	static constexpr float DEFAULT_STAMINA = 10.0f;
+
+	// スタミナ回復量
+	static constexpr float RECOVERY_STAMINA = 0.1f;
+
+	// スタミナ回復を行うまでの時間
+	static constexpr float RECOVERY_STAMINA_WAIT_TIME = 1.0f;
+
 	// プレイヤーの状態種類
 	enum class STATE
 	{
@@ -63,4 +78,17 @@ private:
 
 	// プレイヤーの状態の種類
 	STATE state_;
+
+	// 移動速度
+	float moveSpeedMax_;
+
+	// スタミナ
+	float stamina_;
+	float staminaMax_;
+
+	// スタミナを回復させるまでの時間カウンタ
+	int staminaCounter_;
+
+	// ダッシュ処理
+	float Run(void);
 };
