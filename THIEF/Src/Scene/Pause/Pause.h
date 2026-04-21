@@ -3,6 +3,8 @@
 #include "../SceneBase.h"
 #include <DxLib.h>
 
+class Confirm;
+
 
 class Pause : public SceneBase
 {
@@ -63,6 +65,8 @@ private:
 
 private:
 
+	std::shared_ptr<Confirm> confirm_;
+
 	int handle_;			// PAUSEの文字画像
 	int continueImg_;		// CONTINUEの文字画像
 	int optionsImg_;		// OPTIONの文字画像
@@ -74,4 +78,3 @@ private:
 	VECTOR currentMenuPos_;	// 現在選択しているメニューの位置
 
 };
-

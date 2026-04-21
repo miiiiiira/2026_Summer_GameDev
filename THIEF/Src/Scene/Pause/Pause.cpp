@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "Pause.h"
 
 #include "../../Input/InputManager.h"
@@ -5,6 +7,7 @@
 #include "../SceneManager.h"
 #include "../../Common/Collision/Collision.h"
 #include "../../Application.h"
+#include "../Confirm/Confirm.h"
 
 Pause::Pause(void)
 {
@@ -14,6 +17,7 @@ Pause::Pause(void)
 	mainMenuImg_ = -1;
 	quitImg_ = -1;
 	frameImg_ = -1;
+	confirm_ = nullptr;
 }
 
 Pause::~Pause(void)
@@ -23,6 +27,8 @@ Pause::~Pause(void)
 void Pause::Init(void)
 {
 	ChangeSelect(Menu::NONE);
+
+	confirm_ = std::make_shared<Confirm>();
 }
 
 void Pause::Load(void)
@@ -100,12 +106,12 @@ void Pause::Update(void)
 void Pause::Draw(void)
 {
 	// 背景色を半透明で表示
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 230);
 	DrawBox(0, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	DrawGraph(PAUSE_POS_X, PAUSE_POS_Y, handle_, true);					// PAUSEの文字を表示
-	DrawGraph(currentMenuPos_.x, currentMenuPos_.y, frameImg_, true);	// フレーム画像を表示
+	DrawGraph(currentMenuPos_.x, currentMenuPos_.y, frameImg_, true);	// フレームの画像を表示
 	DrawGraph(CONTINUE_POS_X, CONTINUE_POS_Y, continueImg_, true);		// CONTINUEの文字を表示
 	DrawGraph(OPTION_POS_X, OPTION_POS_Y, optionsImg_, true);			// OPTIONの文字を表示
 	DrawGraph(MAINMENU_POS_X, MAINMENU_POS_Y, mainMenuImg_, true);		// MAIN MENUの文字を表示
@@ -127,16 +133,16 @@ void Pause::Release(void)
 
 void Pause::ChangeSelect(Menu menu)
 {
+	currentMenu_ = menu;
+
 	switch (menu)
 	{
 	case Menu::NONE:
 		currentMenuPos_ = { 0, -100 };
-		currentMenu_ = Menu::NONE;
 		break;
 
 	case Menu::CONTINUE:
 		currentMenuPos_ = { CONTINUE_POS_X, CONTINUE_POS_Y };
-		currentMenu_ = Menu::CONTINUE;
 		break;
 
 	case Menu::OPTION:
@@ -145,12 +151,10 @@ void Pause::ChangeSelect(Menu menu)
 
 	case Menu::MAINMENU:
 		currentMenuPos_ = { MAINMENU_POS_X, MAINMENU_POS_Y };
-		currentMenu_ = Menu::MAINMENU;
 		break;
 
 	case Menu::QUIT:
 		currentMenuPos_ = { QUIT_POS_X, QUIT_POS_Y };
-		currentMenu_ = Menu::QUIT;
 		break;
 	}
 }
@@ -170,10 +174,16 @@ void Pause::UpdateOption(void)
 
 void Pause::UpdateMainMenu(void)
 {
-
+	// 確認シーンへ
+	currentMenuPos_ = { 0, -100 };
+	confirm_->ChangeResult(Confirm::RESULT::MAIN_MENU);
+	SceneManager::GetInstance()->PushScene(confirm_);
 }
 
 void Pause::UpdateQuit(void)
 {
-	Application::GetInstance()->SetEnd(true);
+	// 確認シーンへ
+	currentMenuPos_ = { 0, -100 };
+	confirm_->ChangeResult(Confirm::RESULT::QUIT);
+	SceneManager::GetInstance()->PushScene(confirm_);
 }
