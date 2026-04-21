@@ -5,6 +5,7 @@
 #include "../../Input/InputManager.h"
 #include "../../Audio/AudioManager.h"
 #include "../SceneManager.h"
+#include "../../Application.h"
 #include "../GameScene/GameScene.h"
 
 TitleScene::TitleScene(void)
@@ -46,7 +47,7 @@ void TitleScene::Update(void)
 
 void TitleScene::Draw(void)
 {
-	DrawGraph(0, 0, handle_, true);
+	DrawRotaGraph(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2 - 100, 1.0, 0.0, handle_, true);
 	DrawRotaGraph(BUTTON_POS_X, BUTTON_POS_Y, 1.0, 0.0, buttonHandle_, true);
 }
 

@@ -3,6 +3,8 @@
 #include "../SceneBase.h"
 #include <DxLib.h>
 
+class Confirm;
+
 
 class Pause : public SceneBase
 {
@@ -55,18 +57,24 @@ private:
 
 	void ChangeSelect(Menu menu);
 
+	// メニュー選択時の処理
+	void UpdateContinue(void);
+	void UpdateOption(void);
+	void UpdateMainMenu(void);
+	void UpdateQuit(void);
+
 private:
 
-	int handle_;
-	int continueImg_;
-	int optionsImg_;
-	int mainMenuImg_;
-	int quitImg_;
-	int frameImg_;
+	std::shared_ptr<Confirm> confirm_;
 
-	Menu currentMenu_;
-	Menu previousMenu_;
-	VECTOR currentMenuPos_;
+	int handle_;			// PAUSEの文字画像
+	int continueImg_;		// CONTINUEの文字画像
+	int optionsImg_;		// OPTIONの文字画像
+	int mainMenuImg_;		// MAIN MENUの文字画像
+	int quitImg_;			// QUITの文字画像
+	int frameImg_;			// フレームの画像
+
+	Menu currentMenu_;		// 現在選択しているメニュー
+	VECTOR currentMenuPos_;	// 現在選択しているメニューの位置
 
 };
-
