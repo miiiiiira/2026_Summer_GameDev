@@ -58,6 +58,9 @@ public:
 	bool IsInitFail(void) const;	// 初期化成功／失敗の判定
 	bool IsReleaseFail(void) const;	// 解放成功／失敗の判定
 
+	// 終了フラグの設定
+	void SetEnd(bool isEnd);
+
 private:
 
 	// 初期化失敗
@@ -68,4 +71,7 @@ private:
 
 	// FPS
 	FpsControl* fps_;
+
+	// 終了フラグ
+	bool isEnd_;
 };

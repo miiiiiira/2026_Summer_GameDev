@@ -1,11 +1,8 @@
 #include "Pause.h"
 
-#include <DxLib.h>
-
 #include "../../Input/InputManager.h"
 #include "../../Audio/AudioManager.h"
 #include "../SceneManager.h"
-#include "../TitleScene/TitleScene.h"
 #include "../../Common/Collision/Collision.h"
 #include "../../Application.h"
 
@@ -53,6 +50,7 @@ void Pause::Update(void)
 		SceneManager::GetInstance()->PopScene();
 	}
 
+	// 衝突判定
 	if (Collision::HitCircleBox({ CONTINUE_POS_X, CONTINUE_POS_Y }, IMAGE_SIZE_X, IMAGE_SIZE_Y))
 	{
 		ChangeSelect(Menu::CONTINUE);
@@ -72,24 +70,46 @@ void Pause::Update(void)
 	else
 	{
 		ChangeSelect(Menu::NONE);
-
 	}
+
+	// マウスを左クリックしたら
+	if (InputManager::GetInstance()->IsClickMouseLeft())
+	{
+		switch (currentMenu_)
+		{
+		case Menu::CONTINUE:
+			UpdateContinue();
+			break;
+
+		case Menu::OPTION:
+			UpdateOption();
+			break;
+
+		case Menu::MAINMENU:
+			UpdateMainMenu();
+			break;
+
+		case Menu::QUIT:
+			UpdateQuit();
+			break;
+		}
+	}
+
 }
 
 void Pause::Draw(void)
 {
-
+	// 背景色を半透明で表示
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
-	//DrawBox(0, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, 0x696969, true);
 	DrawBox(0, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-	DrawGraph(PAUSE_POS_X, PAUSE_POS_Y, handle_, true);
-	DrawGraph(currentMenuPos_.x, currentMenuPos_.y, frameImg_, true);
-	DrawGraph(CONTINUE_POS_X, CONTINUE_POS_Y, continueImg_, true);
-	DrawGraph(OPTION_POS_X, OPTION_POS_Y, optionsImg_, true);
-	DrawGraph(MAINMENU_POS_X, MAINMENU_POS_Y, mainMenuImg_, true);
-	DrawGraph(QUIT_POS_X, QUIT_POS_Y, quitImg_, true);
+	DrawGraph(PAUSE_POS_X, PAUSE_POS_Y, handle_, true);					// PAUSEの文字を表示
+	DrawGraph(currentMenuPos_.x, currentMenuPos_.y, frameImg_, true);	// フレーム画像を表示
+	DrawGraph(CONTINUE_POS_X, CONTINUE_POS_Y, continueImg_, true);		// CONTINUEの文字を表示
+	DrawGraph(OPTION_POS_X, OPTION_POS_Y, optionsImg_, true);			// OPTIONの文字を表示
+	DrawGraph(MAINMENU_POS_X, MAINMENU_POS_Y, mainMenuImg_, true);		// MAIN MENUの文字を表示
+	DrawGraph(QUIT_POS_X, QUIT_POS_Y, quitImg_, true);					// QUITの文字を表示
 
 
 }
@@ -111,10 +131,12 @@ void Pause::ChangeSelect(Menu menu)
 	{
 	case Menu::NONE:
 		currentMenuPos_ = { 0, -100 };
+		currentMenu_ = Menu::NONE;
 		break;
 
 	case Menu::CONTINUE:
 		currentMenuPos_ = { CONTINUE_POS_X, CONTINUE_POS_Y };
+		currentMenu_ = Menu::CONTINUE;
 		break;
 
 	case Menu::OPTION:
@@ -123,10 +145,35 @@ void Pause::ChangeSelect(Menu menu)
 
 	case Menu::MAINMENU:
 		currentMenuPos_ = { MAINMENU_POS_X, MAINMENU_POS_Y };
+		currentMenu_ = Menu::MAINMENU;
 		break;
 
 	case Menu::QUIT:
 		currentMenuPos_ = { QUIT_POS_X, QUIT_POS_Y };
+		currentMenu_ = Menu::QUIT;
 		break;
 	}
+}
+
+void Pause::UpdateContinue(void)
+{
+	// マウスカーソルを画面中央に戻す
+	SetMousePoint(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2);
+	// ゲームシーンへ
+	SceneManager::GetInstance()->PopScene();
+}
+
+void Pause::UpdateOption(void)
+{
+
+}
+
+void Pause::UpdateMainMenu(void)
+{
+
+}
+
+void Pause::UpdateQuit(void)
+{
+	Application::GetInstance()->SetEnd(true);
 }

@@ -67,7 +67,7 @@ void Application::Init(void)
 void Application::Run(void)
 {
 	// ゲームループ
-	while (ProcessMessage() == 0)
+	while (ProcessMessage() == 0 && !isEnd_)
 	{
 		// フレームレート更新
 		// 1/60秒経過していないなら再ループさせる
@@ -118,4 +118,9 @@ bool Application::IsInitFail(void) const
 bool Application::IsReleaseFail(void) const
 {
 	return isReleaseFail_;
+}
+
+void Application::SetEnd(bool isEnd)
+{
+	isEnd_ = isEnd;
 }
