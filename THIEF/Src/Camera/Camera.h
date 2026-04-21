@@ -93,6 +93,8 @@ private:
 
 	// カメラの位置
 	VECTOR pos_;
+	// カメラの前フレームの位置
+	VECTOR prePos_;
 
 	// カメラの角度
 	VECTOR angle_;

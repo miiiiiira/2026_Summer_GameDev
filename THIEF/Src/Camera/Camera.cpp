@@ -1,3 +1,4 @@
+#include "../Common/Math/Math.h"
 #include "Camera.h"
 
 #include "../Common/Math/Math.h"
@@ -116,6 +117,9 @@ void Camera::SetBeforeDrawFollow(void)
 	VECTOR targetLocalRotPos = VTransform(FOLLOW_TARGET_LOCAL_POS, mat);
 	targetPos_ = VAdd(followPos, targetLocalRotPos);
 
+	// カメラの1フレーム前の座標を保存
+	prePos_ = pos_;
+
 	// 相対座標からワールド座標に直して、カメラ座標とする
 	// しゃがみ状態であれば、カメラの位置を下げる
 	if(InputManager::GetInstance()->IsNew(KEY_INPUT_LSHIFT))
@@ -127,6 +131,9 @@ void Camera::SetBeforeDrawFollow(void)
 	{
 		pos_ = VAdd(followPos, FOLLOW_CAMERA_LOCAL_POS_STANDING);
 	}
+
+	pos_ = Math::Lerp(prePos_, pos_, 0.1f);
+
 
 	// カメラの上方向を計算
 	VECTOR up = VTransform(Math::DIR_U, mat);
