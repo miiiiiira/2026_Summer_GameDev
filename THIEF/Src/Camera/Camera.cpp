@@ -26,6 +26,8 @@ void Camera::Init(void)
 	// カメラの初期位置
 	pos_ = DERFAULT_POS;
 
+	prePosY_ = 0.0f;
+
 	// カメラの初期角度
 	angle_ = DERFAULT_ANGLES;
 }
@@ -117,8 +119,8 @@ void Camera::SetBeforeDrawFollow(void)
 	VECTOR targetLocalRotPos = VTransform(FOLLOW_TARGET_LOCAL_POS, mat);
 	targetPos_ = VAdd(followPos, targetLocalRotPos);
 
-	// カメラの1フレーム前の座標を保存
-	prePos_ = pos_;
+	// カメラの1フレーム前のY軸座標を保存
+	prePosY_ = pos_.y;
 
 	// 相対座標からワールド座標に直して、カメラ座標とする
 	// しゃがみ状態であれば、カメラの位置を下げる
@@ -132,8 +134,8 @@ void Camera::SetBeforeDrawFollow(void)
 		pos_ = VAdd(followPos, FOLLOW_CAMERA_LOCAL_POS_STANDING);
 	}
 
-	pos_ = Math::Lerp(prePos_, pos_, 0.1f);
-
+	// 線形補間で滑らかにする
+	pos_.y = Math::Lerp(prePosY_, pos_.y, 0.1f);
 
 	// カメラの上方向を計算
 	VECTOR up = VTransform(Math::DIR_U, mat);
