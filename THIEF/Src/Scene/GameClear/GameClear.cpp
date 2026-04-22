@@ -1,7 +1,7 @@
 #include "GameClear.h"
 
 #include <DxLib.h>
-
+#include "../../Application.h"
 #include "../../Input/InputManager.h"
 #include "../../Audio/AudioManager.h"
 #include "../SceneManager.h"
@@ -9,6 +9,7 @@
 
 GameClear::GameClear(void)
 {
+	
 	handle_ = -1;
 }
 
@@ -18,10 +19,12 @@ GameClear::~GameClear(void)
 
 void GameClear::Init(void)
 {
+	handle_ = LoadGraph("Data/Image/GCI.png");
 }
 
 void GameClear::Load(void)
 {
+	
 }
 
 void GameClear::LoadEnd(void)
@@ -47,7 +50,9 @@ void GameClear::Draw(void)
 
 #endif // _DEBUG
 
-	DrawGraph(0, 0, handle_, true);
+	/*DrawGraph(0, 0, handle_, true);*/
+	DrawRotaGraph(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2 - 100, 1.0, 0.0, handle_, true);
+
 }
 
 void GameClear::Release(void)
