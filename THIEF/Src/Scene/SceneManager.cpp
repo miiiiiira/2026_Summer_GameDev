@@ -123,32 +123,20 @@ void SceneManager::Delete(void)
 	delete load_;
 }
 
-void SceneManager::ChangeScene(std::shared_ptr<SceneBase>scene, bool isAll)
+void SceneManager::ChangeScene(std::shared_ptr<SceneBase>scene)
 {
-	// 所持しているシーン全てを解放するか
-	if (isAll) 
-	{
-		for (auto& scene : scenes_)
-		{
-			scene->Release();
-		}
 
-		scenes_.clear();
+	// シーンが空か？
+	if (scenes_.empty())
+	{
+		//空なので新しく入れる
+		scenes_.push_back(scene);
 	}
 	else
 	{
-		// シーンが空か？
-		if (scenes_.empty())
-		{
-			//空なので新しく入れる
-			scenes_.push_back(scene);
-		}
-		else
-		{
-			//末尾のものを新しい物に入れ替える
-			scenes_.back()->Release();
-			scenes_.back() = scene;
-		}
+		//末尾のものを新しい物に入れ替える
+		scenes_.back()->Release();
+		scenes_.back() = scene;
 	}
 
 	// 読み込み(非同期)
@@ -183,5 +171,10 @@ void SceneManager::JumpScene(std::shared_ptr<SceneBase> scene)
 
 	// 新しく積む
 	scenes_.push_back(scene);
+
+	// 読み込み(非同期)
+	load_->StartAsyncLoad();
+	scenes_.back()->Load();
+	load_->EndAsyncLoad();
 }
 

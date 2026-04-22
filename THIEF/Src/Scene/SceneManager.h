@@ -45,7 +45,7 @@ public:
 	void Delete(void);	// リソースの破棄
 
 	// 状態遷移		遷移させたいシーン,全てのシーンを解放させるか
-	void ChangeScene(std::shared_ptr<SceneBase> scene, bool isAll = false);
+	void ChangeScene(std::shared_ptr<SceneBase> scene);
 
 	// シーンを新しく積む
 	void PushScene(std::shared_ptr<SceneBase> scene);

@@ -1,10 +1,22 @@
 #pragma once
 
 #include "../SceneBase.h"
+#include <DxLib.h>
+
+
+class Confirm;
 
 class MainMenu : public SceneBase
 {
 public:
+
+	enum class Menu
+	{
+		NONE,
+		PLAY,
+		OPTION,
+		QUIT,
+	};
 
 	MainMenu(void);				// コンストラクタ
 	~MainMenu(void) override;		// デストラクタ
@@ -18,6 +30,43 @@ public:
 
 private:
 
+	static constexpr int TITLE_POS_X = 50;
+	static constexpr int TITLE_POS_Y = 50;
+
+	// 画像サイズ
+	static constexpr int IMAGE_SIZE_X = 200;
+	static constexpr int IMAGE_SIZE_Y = 50;
+
+	// PLAY
+	static constexpr int PLAY_POS_X = 80;
+	static constexpr int PLAY_POS_Y = 250;
+
+	// OPTION
+	static constexpr int OPTION_POS_X = 80;
+	static constexpr int OPTION_POS_Y = 330;
+
+	// QUIT
+	static constexpr int QUIT_POS_X = 80;
+	static constexpr int QUIT_POS_Y = 550;
+
+	void ChangeSelect(Menu menu);
+
+	// メニュー選択時の処理
+	void UpdatePlay(void);
+	void UpdateOption(void);
+	void UpdateQuit(void);
+
+private:
+
+	std::shared_ptr<Confirm> confirm_;
+
 	int handle_;
+	int playImg_;
+	int optionsImg_;
+	int quitImg_;
+	int frameImg_;
+
+	Menu currentMenu_;		// 現在選択しているメニュー
+	VECTOR currentMenuPos_;	// 現在選択しているメニューの位置
 
 };

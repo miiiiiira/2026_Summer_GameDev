@@ -7,6 +7,7 @@
 #include "../SceneManager.h"
 #include "../../Application.h"
 #include "../GameScene/GameScene.h"
+#include "../MainMenu/MainMenu.h"
 
 TitleScene::TitleScene(void)
 {
@@ -45,7 +46,7 @@ void TitleScene::Update(void)
 	if(InputManager::GetInstance()->IsTrgUp(KEY_INPUT_SPACE))
 	{
 		// ゲームシーンへ
-		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameScene>());
+		SceneManager::GetInstance()->PushScene(std::make_shared<MainMenu>());
 	}
 
 	// ボタンのアルファ値を変化させる
