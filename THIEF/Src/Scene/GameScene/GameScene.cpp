@@ -146,10 +146,15 @@ void GameScene::Draw(void)
 
 void GameScene::Release(void)
 {
+
 	// ステージ解放
 	stage_->Release();
 	delete stage_;
 	
+	// カメラ解放
+	camera_->Release();
+	delete camera_;
+
 	// 全てのアクターを回す
 	for (auto actor : allActor_)
 	{
