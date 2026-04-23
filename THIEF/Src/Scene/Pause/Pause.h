@@ -19,6 +19,14 @@ public:
 		QUIT,
 	};
 
+	struct Item
+	{
+		Menu type;
+		int graphHandle;
+		int x, y;
+		int sizeX, sizeY;
+	};
+
 	Pause(void);				// コンストラクタ
 	~Pause(void) override;		// デストラクタ
 
@@ -68,13 +76,10 @@ private:
 	std::shared_ptr<Confirm> confirm_;
 
 	int handle_;			// PAUSEの文字画像
-	int continueImg_;		// CONTINUEの文字画像
-	int optionsImg_;		// OPTIONの文字画像
-	int mainMenuImg_;		// MAIN MENUの文字画像
-	int quitImg_;			// QUITの文字画像
 	int frameImg_;			// フレームの画像
 
-	Menu currentMenu_;		// 現在選択しているメニュー
-	VECTOR currentMenuPos_;	// 現在選択しているメニューの位置
+	std::vector<Item>  menuButtons_;	// メニューボタンの情報を格納する配列
+
+	Menu currentMenu_;		// 現在選択されているメニュー
 
 };

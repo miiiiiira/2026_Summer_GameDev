@@ -1,4 +1,5 @@
 #include <memory>
+#include <vector>
 
 #include "Pause.h"
 
@@ -12,10 +13,6 @@
 Pause::Pause(void)
 {
 	handle_ = -1;
-	continueImg_ = -1;
-	optionsImg_ = -1;
-	mainMenuImg_ = -1;
-	quitImg_ = -1;
 	frameImg_ = -1;
 	confirm_ = nullptr;
 }
@@ -33,12 +30,24 @@ void Pause::Init(void)
 
 void Pause::Load(void)
 {
-	handle_ = LoadGraph((Application::PATH_IMAGE + "pause.png").c_str());
-	continueImg_ = LoadGraph((Application::PATH_IMAGE + "continue.png").c_str());
-	optionsImg_ = LoadGraph((Application::PATH_IMAGE + "option.png").c_str());
-	mainMenuImg_ = LoadGraph((Application::PATH_IMAGE + "mainMenu.png").c_str());
-	quitImg_ = LoadGraph((Application::PATH_IMAGE + "quit.png").c_str());
-	frameImg_ = LoadGraph((Application::PATH_IMAGE + "frame.png").c_str());
+	handle_ = LoadGraph((Application::PATH_IMAGE + "pause.png").c_str());		// PAUSEの文字画像
+	frameImg_ = LoadGraph((Application::PATH_IMAGE + "frame.png").c_str());		// フレーム画像
+
+	menuButtons_.clear();
+
+	// CONTINUE画像
+	menuButtons_.push_back({ Menu::CONTINUE, LoadGraph((Application::PATH_IMAGE + "continue.png").c_str()),
+								CONTINUE_POS_X, CONTINUE_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
+	// OPTION画像
+	menuButtons_.push_back({ Menu::OPTION, LoadGraph((Application::PATH_IMAGE + "option.png").c_str()),
+								OPTION_POS_X, OPTION_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
+	// MAIN MENU画像
+	menuButtons_.push_back({ Menu::MAINMENU,  LoadGraph((Application::PATH_IMAGE + "mainMenu.png").c_str()),
+								MAINMENU_POS_X, MAINMENU_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
+	// QUIT画像
+	menuButtons_.push_back({ Menu::QUIT, LoadGraph((Application::PATH_IMAGE + "quit.png").c_str()),
+								QUIT_POS_X, QUIT_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
+
 }
 
 void Pause::LoadEnd(void)
@@ -56,51 +65,47 @@ void Pause::Update(void)
 		SceneManager::GetInstance()->PopScene();
 	}
 
+	Menu nextSelect = Menu::NONE;
+
 	// 衝突判定
-	if (Collision::HitCircleBox({ CONTINUE_POS_X, CONTINUE_POS_Y }, IMAGE_SIZE_X, IMAGE_SIZE_Y))
+	for (const auto& button : menuButtons_)
 	{
-		ChangeSelect(Menu::CONTINUE);
-	}
-	else if (Collision::HitCircleBox({ OPTION_POS_X, OPTION_POS_Y }, IMAGE_SIZE_X, IMAGE_SIZE_Y))
-	{
-		ChangeSelect(Menu::OPTION);
-	}
-	else if (Collision::HitCircleBox({ MAINMENU_POS_X, MAINMENU_POS_Y }, IMAGE_SIZE_X, IMAGE_SIZE_Y))
-	{
-		ChangeSelect(Menu::MAINMENU);
-	}
-	else if (Collision::HitCircleBox({ QUIT_POS_X, QUIT_POS_Y }, IMAGE_SIZE_X, IMAGE_SIZE_Y))
-	{
-		ChangeSelect(Menu::QUIT);
-	}
-	else
-	{
-		ChangeSelect(Menu::NONE);
-	}
-
-	// マウスを左クリックしたら
-	if (InputManager::GetInstance()->IsClickMouseLeft())
-	{
-		switch (currentMenu_)
+		if (Collision::HitCircleBox({ static_cast<float>(button.x), static_cast<float>(button.y) }, 
+										static_cast<float>(button.sizeX), static_cast<float>(button.sizeY)))
 		{
-		case Menu::CONTINUE:
-			UpdateContinue();
-			break;
-
-		case Menu::OPTION:
-			UpdateOption();
-			break;
-
-		case Menu::MAINMENU:
-			UpdateMainMenu();
-			break;
-
-		case Menu::QUIT:
-			UpdateQuit();
+			nextSelect = button.type;
 			break;
 		}
 	}
 
+	// 最後に一回だけ状態を更新する
+	ChangeSelect(nextSelect);
+
+	// マウスを左クリックされていなかったら、ここで終了
+	if (!InputManager::GetInstance()->IsClickMouseLeft()) return;
+
+	// 選択されているメニューがない場合も、ここで終了
+	if (currentMenu_ == Menu::NONE) return;
+
+	// クリックされていて、かつメニューが選ばれている場合
+	switch (currentMenu_)
+	{
+	case Menu::CONTINUE:
+		UpdateContinue();
+		break;
+
+	case Menu::OPTION:
+		UpdateOption();
+		break;
+
+	case Menu::MAINMENU:
+		UpdateMainMenu();
+		break;
+
+	case Menu::QUIT:
+		UpdateQuit();
+		break;
+	}
 }
 
 void Pause::Draw(void)
@@ -111,52 +116,37 @@ void Pause::Draw(void)
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	DrawGraph(PAUSE_POS_X, PAUSE_POS_Y, handle_, true);					// PAUSEの文字を表示
-	DrawGraph(currentMenuPos_.x, currentMenuPos_.y, frameImg_, true);	// フレームの画像を表示
-	DrawGraph(CONTINUE_POS_X, CONTINUE_POS_Y, continueImg_, true);		// CONTINUEの文字を表示
-	DrawGraph(OPTION_POS_X, OPTION_POS_Y, optionsImg_, true);			// OPTIONの文字を表示
-	DrawGraph(MAINMENU_POS_X, MAINMENU_POS_Y, mainMenuImg_, true);		// MAIN MENUの文字を表示
-	DrawGraph(QUIT_POS_X, QUIT_POS_Y, quitImg_, true);					// QUITの文字を表示
 
 
+	for (const auto& button : menuButtons_)
+	{
+		if (button.type == currentMenu_)
+		{
+			DrawGraph(button.x, button.y, frameImg_, true);				// フレームを表示
+		}
+
+		DrawGraph(button.x, button.y, button.graphHandle, true);		// メニューの文字を表示
+	}
 }
 
 void Pause::Release(void)
 {
-	DeleteGraph(handle_);
-	DeleteGraph(continueImg_);
-	DeleteGraph(optionsImg_);
-	DeleteGraph(mainMenuImg_);
-	DeleteGraph(quitImg_);
-	DeleteGraph(frameImg_);
+	for (const auto& button : menuButtons_)
+	{
+		DeleteGraph(button.graphHandle);
+	}
+	menuButtons_.clear();
 
+	DeleteGraph(frameImg_);
+	frameImg_ = -1;
+
+	DeleteGraph(handle_);
+	handle_ = -1;
 }
 
 void Pause::ChangeSelect(Menu menu)
 {
 	currentMenu_ = menu;
-
-	switch (menu)
-	{
-	case Menu::NONE:
-		currentMenuPos_ = { 0, -100 };
-		break;
-
-	case Menu::CONTINUE:
-		currentMenuPos_ = { CONTINUE_POS_X, CONTINUE_POS_Y };
-		break;
-
-	case Menu::OPTION:
-		currentMenuPos_ = { OPTION_POS_X, OPTION_POS_Y };
-		break;
-
-	case Menu::MAINMENU:
-		currentMenuPos_ = { MAINMENU_POS_X, MAINMENU_POS_Y };
-		break;
-
-	case Menu::QUIT:
-		currentMenuPos_ = { QUIT_POS_X, QUIT_POS_Y };
-		break;
-	}
 }
 
 void Pause::UpdateContinue(void)
@@ -175,7 +165,6 @@ void Pause::UpdateOption(void)
 void Pause::UpdateMainMenu(void)
 {
 	// 確認シーンへ
-	currentMenuPos_ = { 0, -100 };
 	confirm_->ChangeResult(Confirm::RESULT::MAIN_MENU);
 	SceneManager::GetInstance()->PushScene(confirm_);
 }
@@ -183,7 +172,6 @@ void Pause::UpdateMainMenu(void)
 void Pause::UpdateQuit(void)
 {
 	// 確認シーンへ
-	currentMenuPos_ = { 0, -100 };
 	confirm_->ChangeResult(Confirm::RESULT::QUIT);
 	SceneManager::GetInstance()->PushScene(confirm_);
 }
