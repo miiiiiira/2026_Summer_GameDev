@@ -165,13 +165,13 @@ void Pause::UpdateOption(void)
 void Pause::UpdateMainMenu(void)
 {
 	// 確認シーンへ
-	confirm_->ChangeResult(Confirm::RESULT::MAIN_MENU);
+	confirm_->ChangeType(Confirm::TYPE::MAIN_MENU);
 	SceneManager::GetInstance()->PushScene(confirm_);
 }
 
 void Pause::UpdateQuit(void)
 {
 	// 確認シーンへ
-	confirm_->ChangeResult(Confirm::RESULT::QUIT);
+	confirm_->ChangeType(Confirm::TYPE::QUIT);
 	SceneManager::GetInstance()->PushScene(confirm_);
 }

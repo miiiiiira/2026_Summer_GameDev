@@ -1,3 +1,5 @@
+#include <vector>
+
 #include "Confirm.h"
 
 #include "../../Input/InputManager.h"
@@ -11,8 +13,6 @@ Confirm::Confirm(void)
 	confirmImg_ = -1;
 	quitImg_ = -1;
 	mainMenuImg_ = -1;
-	yesImg_ = -1;
-	noImg_ = -1;
 	frameImg_ = -1;
 }
 
@@ -24,25 +24,30 @@ void Confirm::Init(void)
 {
 	ChangeSelect(SELECT::NONE);
 
-	switch (result_)
+	switch (confirmType_)
 	{
-	case RESULT::QUIT:
+	case TYPE::QUIT:
 		confirmImg_ = quitImg_;
 		break;
-	case RESULT::MAIN_MENU:
+	case TYPE::MAIN_MENU:
 		confirmImg_ = mainMenuImg_;
 		break;
 	}
-
 }
 
 void Confirm::Load(void)
 {
-	quitImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmQuit.png").c_str());
-	mainMenuImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmMainMenu.png").c_str());
-	yesImg_ = LoadGraph((Application::PATH_IMAGE + "Yes.png").c_str());
-	noImg_ = LoadGraph((Application::PATH_IMAGE + "No.png").c_str());
-	frameImg_ = LoadGraph((Application::PATH_IMAGE + "frame.png").c_str());
+	quitImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmQuit.png").c_str());			// QUITの時の確認画面
+	mainMenuImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmMainMenu.png").c_str());	// MAIN MENUの時の確認画面
+	frameImg_ = LoadGraph((Application::PATH_IMAGE + "frame.png").c_str());					// フレーム画像
+	// 配列をクリアにしてから、画像を追加
+	selectButtons_.clear();
+	// YES画像
+	selectButtons_.push_back({ SELECT::YES, LoadGraph((Application::PATH_IMAGE + "Yes.png").c_str()),
+								YES_POS_X, YES_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
+	// NO画像
+	selectButtons_.push_back({ SELECT::NO,  LoadGraph((Application::PATH_IMAGE + "No.png").c_str()),
+							NO_POS_X, NO_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
 }
 
 void Confirm::LoadEnd(void)
@@ -53,91 +58,89 @@ void Confirm::LoadEnd(void)
 void Confirm::Update(void)
 {
 	// 衝突判定
-	if (Collision::HitCircleBox({ YES_POS_X, YES_POS_Y }, IMAGE_SIZE_X, IMAGE_SIZE_Y))
-	{
-		ChangeSelect(SELECT::YES);
-	}
-	else if (Collision::HitCircleBox({ NO_POS_X, NO_POS_Y }, IMAGE_SIZE_X, IMAGE_SIZE_Y))
-	{
-		ChangeSelect(SELECT::NO);
-	}
-	else
-	{
-		ChangeSelect(SELECT::NONE);
-	}
+	SELECT nextSelect = SELECT::NONE;
 
-	// マウスを左クリックしたら
-	if (InputManager::GetInstance()->IsClickMouseLeft())
+	for (const auto& button : selectButtons_)
 	{
-		switch (currentSelect_)
+		if (Collision::HitCircleBox({ static_cast<float>(button.x), static_cast<float>(button.y) },
+			static_cast<float>(button.sizeX), static_cast<float>(button.sizeY)))
 		{
-		case Confirm::SELECT::YES:
-			UpdateYes();
-			break;
-		case Confirm::SELECT::NO:
-			UpdateNo();
-			break;
-		default:
+			nextSelect = button.type;
 			break;
 		}
+	}
+
+	ChangeSelect(nextSelect);
+
+	// マウスを左クリックされなかったら、処理しない
+	if (!InputManager::GetInstance()->IsClickMouseLeft()) return;
+	// どの選択肢も選ばれていない場合は処理しない
+	if (currentSelect_ == SELECT::NONE) return;
+
+	switch (currentSelect_)
+	{
+	case Confirm::SELECT::YES:
+		UpdateYes();
+		break;
+	case Confirm::SELECT::NO:
+		UpdateNo();
+		break;
 	}
 }
 
 void Confirm::Draw(void)
 {
 	DrawGraph(CONFIRM_POS_X, CONFIRM_POS_Y, confirmImg_, true);				// 確認の文字を表示
-	DrawExtendGraph(currentSelectPos_.x, currentSelectPos_.y,
-		currentSelectPos_.x + IMAGE_SIZE_X,
-		currentSelectPos_.y + IMAGE_SIZE_Y,
-		frameImg_, true);
-	DrawGraph(YES_POS_X, YES_POS_Y, yesImg_, true);							// YESの文字を表示
-	DrawGraph(NO_POS_X, NO_POS_Y, noImg_, true);							// NOの文字を表示
+
+	for (const auto& button : selectButtons_)
+	{
+		if (button.type == currentSelect_)
+		{
+			DrawExtendGraph(button.x, button.y,
+				button.x + button.sizeX,
+				button.y + button.sizeY,
+				frameImg_, true);
+		}
+		DrawGraph(button.x, button.y, button.graphHandle, true);
+	}
 }
 
 void Confirm::Release(void)
 {
+	for (const auto& button : selectButtons_)
+	{
+		DeleteGraph(button.graphHandle);
+	}
+	selectButtons_.clear();
+
+	DeleteGraph(frameImg_);
+	frameImg_ = -1;
+	DeleteGraph(mainMenuImg_);
+	mainMenuImg_ = -1;
+	DeleteGraph(quitImg_);
+	quitImg_ = -1;
 	confirmImg_ = -1;
 
-	DeleteGraph(quitImg_);
-	DeleteGraph(mainMenuImg_);
-	DeleteGraph(yesImg_);
-	DeleteGraph(noImg_);
-	DeleteGraph(frameImg_);
 }
 
-void Confirm::ChangeResult(RESULT result)
+void Confirm::ChangeType(TYPE type)
 {
-	result_ = result;
+	confirmType_ = type;
 }
 
 void Confirm::ChangeSelect(SELECT select)
 {
 	currentSelect_ = select;
-
-	switch (select)
-	{
-	case SELECT::NONE:
-		currentSelectPos_ = { 0, -100 };
-		break;
-	case SELECT::YES:
-		currentSelectPos_ = { YES_POS_X, YES_POS_Y };
-		break;
-	case SELECT::NO:
-		currentSelectPos_ = { NO_POS_X, NO_POS_Y };
-		break;
-	default:
-		break;
-	}
 }
 
 void Confirm::UpdateYes(void)
 {
-	switch (result_)
+	switch (confirmType_)
 	{
-	case RESULT::QUIT:
+	case TYPE::QUIT:
 		Application::GetInstance()->SetEnd(true);
 		break;
-	case RESULT::MAIN_MENU:
+	case TYPE::MAIN_MENU:
 		SceneManager::GetInstance()->JumpScene(std::make_shared<MainMenu>());
 		break;
 	default:
@@ -149,5 +152,4 @@ void Confirm::UpdateNo(void)
 {
 	// 確認シーンを閉じる（ポーズシーンへ）
 	SceneManager::GetInstance()->PopScene();
-
 }

@@ -9,7 +9,7 @@ class Confirm : public SceneBase
 {
 public:
 
-	enum class RESULT
+	enum class TYPE
 	{
 		NONE,
 		QUIT,
@@ -23,6 +23,14 @@ public:
 		NO,
 	};
 
+	struct Item
+	{
+		SELECT type;
+		int graphHandle;
+		int x, y;
+		int sizeX, sizeY;
+	};
+
 	Confirm(void);					// コンストラクタ
 	~Confirm(void) override;		// デストラクタ
 
@@ -33,7 +41,7 @@ public:
 	void Draw(void)		override;	// 描画
 	void Release(void)	override;	// 解放
 
-	void ChangeResult(RESULT result);
+	void ChangeType(TYPE type);
 
 private:
 
@@ -63,16 +71,15 @@ private:
 
 
 private:
-	SELECT currentSelect_;		// 現在の選択肢
-	VECTOR currentSelectPos_;	// 現在の選択肢の位置
+	std::vector<Item> selectButtons_;	// 選択肢のボタン
 
-	RESULT result_;				// 結果
+	SELECT currentSelect_;				// 現在の選択肢
 
-	int confirmImg_;			// 画像ハンドル
-	int quitImg_;				// QUIT画像ハンドル
-	int mainMenuImg_;			// MAIN MENU画像ハンドル
-	int yesImg_;				// YES画像ハンドル
-	int noImg_;					// NO画像ハンドル
-	int frameImg_;				// フレーム画像ハンドル
+	TYPE confirmType_;					// どの確認画面化
+
+	int confirmImg_;					// 画像ハンドル
+	int quitImg_;						// QUIT画像ハンドル
+	int mainMenuImg_;					// MAIN MENU画像ハンドル
+	int frameImg_;						// フレーム画像ハンドル
 };
 

@@ -139,6 +139,6 @@ void MainMenu::UpdateOption(void)
 
 void MainMenu::UpdateQuit(void)
 {
-	confirm_->ChangeResult(Confirm::RESULT::QUIT);
+	confirm_->ChangeType(Confirm::TYPE::QUIT);
 	SceneManager::GetInstance()->PushScene(confirm_);
 }
