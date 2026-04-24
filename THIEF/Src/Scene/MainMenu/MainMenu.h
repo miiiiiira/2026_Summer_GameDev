@@ -18,6 +18,14 @@ public:
 		QUIT,
 	};
 
+	struct Item
+	{
+		Menu type;
+		int graphHandle;
+		int x, y;
+		int sizeX, sizeY;
+	};
+
 	MainMenu(void);				// コンストラクタ
 	~MainMenu(void) override;		// デストラクタ
 
@@ -61,12 +69,9 @@ private:
 	std::shared_ptr<Confirm> confirm_;
 
 	int handle_;
-	int playImg_;
-	int optionsImg_;
-	int quitImg_;
-	int frameImg_;
+	int frameImg_;						// フレーム画像
+	std::vector<Item> menuButtons_;		// メニューボタンの情報を格納する配列
 
-	Menu currentMenu_;		// 現在選択しているメニュー
-	VECTOR currentMenuPos_;	// 現在選択しているメニューの位置
+	Menu currentMenu_;					// 現在選択しているメニュー
 
 };
