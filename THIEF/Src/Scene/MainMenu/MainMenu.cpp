@@ -30,9 +30,6 @@ void MainMenu::Init(void)
 
 void MainMenu::Load(void)
 {
-	// すでにハンドルに画像が入っているなら、一度開放する
-	if (handle_ != -1 || !menuButtons_.empty()) Release();
-
 	handle_ = LoadGraph((Application::PATH_IMAGE + "Title.png").c_str());
 	frameImg_ = LoadGraph((Application::PATH_IMAGE + "frame.png").c_str());
 
