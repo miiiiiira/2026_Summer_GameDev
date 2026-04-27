@@ -70,7 +70,7 @@ void Pause::Update(void)
 	// è’ìÀîªíË
 	for (const auto& button : menuButtons_)
 	{
-		if (Collision::HitCircleBox({ static_cast<float>(button.x), static_cast<float>(button.y) }, 
+		if (Collision::HitMouse2Box({ static_cast<float>(button.x), static_cast<float>(button.y) }, 
 										static_cast<float>(button.sizeX), static_cast<float>(button.sizeY)))
 		{
 			nextSelect = button.type;

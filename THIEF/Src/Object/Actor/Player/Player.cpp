@@ -56,8 +56,11 @@ void Player::InitAnimation(void)
 
 void Player::InitPost(void)
 {
-	// 移動速度の初期化
-	moveSpeedMax_ = DEFAULT_SPEED;
+	// プレイヤーの状態
+	state_ = STATE::IDLE;
+
+	// ダッシュ速度の初期化
+	runSpeedMax_ = DEFAULET_DASH_SPEED;
 
 	// スタミナの初期化
 	stamina_ = staminaMax_ = DEFAULT_STAMINA;
@@ -180,12 +183,13 @@ void Player::Move(void)
 
 float Player::Run(void)
 {
-	float moveSpeed;
 
+	// もし走るボタンを押された場合
 	if (InputManager::GetInstance()->IsNew(KEY_INPUT_LSHIFT)
 		&& stamina_ >= 0.1f)
 	{
-		moveSpeed = moveSpeedMax_ + DASH_SPEED;
+		// プレイヤーの状態を走り状態にする
+		state_ = STATE::RUN;
 
 		// スタミナを減らす
 		stamina_ -= 0.1f;
@@ -195,16 +199,23 @@ float Player::Run(void)
 			stamina_ = 0.0f;
 		}
 
+		// カウンターリセット
 		staminaCounter_ = 0.0f;
+
+		// プレイヤーの移動速度にダッシュ分の移動速度を加算
+		return DEFAULT_SPEED + runSpeedMax_;
 	}
 	else
 	{
-		moveSpeed = moveSpeedMax_;
+		// 走るボタンを押されなかった場合
+		// スタミナがMaxだったら処理を飛ばしデフォルトの移動速度を返す
+		if (stamina_ >= staminaMax_)return DEFAULT_SPEED;
 
-		staminaCounter_ ++;
+		// カウンターを進める
+		staminaCounter_++;
 
 		// スタミナ回復を行うまでの制限時間を超えたら入る
-		if (staminaCounter_ / 60 >= RECOVERY_STAMINA_WAIT_TIME)
+		if (staminaCounter_ >= RECOVERY_STAMINA_WAIT_TIME * 60)
 		{
 			// スタミナ回復させる
 			stamina_ += RECOVERY_STAMINA;
@@ -216,7 +227,9 @@ float Player::Run(void)
 			}
 
 		}
+
+		// 移動速度を返す
+		return DEFAULT_SPEED;
 	}
 
-	return moveSpeed;
 }

@@ -15,7 +15,7 @@ public:
 	static constexpr float DEFAULT_SPEED = 7.0f;
 
 	// ダッシュ時の移動速度
-	static constexpr float DASH_SPEED = 10.0f;
+	static constexpr float DEFAULET_DASH_SPEED = 10.0f;
 
 	// スタミナ
 	static constexpr float DEFAULT_STAMINA = 10.0f;
@@ -24,12 +24,13 @@ public:
 	static constexpr float RECOVERY_STAMINA = 0.1f;
 
 	// スタミナ回復を行うまでの時間
-	static constexpr float RECOVERY_STAMINA_WAIT_TIME = 1.0f;
+	static constexpr int RECOVERY_STAMINA_WAIT_TIME = 1;
 
 	// プレイヤーの状態種類
 	enum class STATE
 	{
 		IDLE,
+		RUN,
 		CROUCHING,
 	};
 
@@ -79,8 +80,8 @@ private:
 	// プレイヤーの状態の種類
 	STATE state_;
 
-	// 移動速度
-	float moveSpeedMax_;
+	// ダッシュ速度
+	float runSpeedMax_;
 
 	// スタミナ
 	float stamina_;
