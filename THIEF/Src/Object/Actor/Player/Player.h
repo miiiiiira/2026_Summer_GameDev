@@ -21,9 +21,9 @@ public:
 	static constexpr float DEFAULT_STAMINA = 10.0f;
 
 	// スタミナ回復量
-	static constexpr float RECOVERY_STAMINA = 0.1f;
+	static constexpr float RECOVERY_STAMINA = 0.05f;
 
-	// スタミナ回復を行うまでの時間
+	// スタミナ回復を行うまでの時間(秒数)
 	static constexpr int RECOVERY_STAMINA_WAIT_TIME = 1;
 
 	// プレイヤーの状態種類

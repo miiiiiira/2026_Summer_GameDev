@@ -85,6 +85,13 @@ void Player::Draw(void)
 		Math::Rad2Deg(angle_.y),
 		Math::Rad2Deg(angle_.z)
 	);
+
+	DrawFormatString(
+		0, 200, 0xFFC800,
+		"スタミナ : %.0f / %.0f",
+		stamina_,
+		staminaMax_
+	);
 }
 
 void Player::Release(void)
@@ -178,7 +185,11 @@ void Player::Move(void)
 
 		// 方向×スピードで移動量を作って、座標に足して移動
 		pos_ = VAdd(pos_, VScale(moveDir_, moveSpeed));
+
+		return;
 	}
+
+	//moveSpeed
 }
 
 float Player::Run(void)
@@ -200,7 +211,7 @@ float Player::Run(void)
 		}
 
 		// カウンターリセット
-		staminaCounter_ = 0.0f;
+		staminaCounter_ = 0;
 
 		// プレイヤーの移動速度にダッシュ分の移動速度を加算
 		return DEFAULT_SPEED + runSpeedMax_;
@@ -225,7 +236,6 @@ float Player::Run(void)
 				// 最大スタミナを超えないようにする
 				stamina_ = staminaMax_;
 			}
-
 		}
 
 		// 移動速度を返す
