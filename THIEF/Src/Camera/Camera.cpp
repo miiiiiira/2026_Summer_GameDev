@@ -7,6 +7,7 @@
 #include "../Application.h"
 
 #include "../Object/Actor/ActorBase.h"
+#include "../Object/Actor/Player/Player.h"
 
 Camera::Camera(void)
 {
@@ -115,16 +116,19 @@ void Camera::SetBeforeDrawFollow(void)
 
 	// 注視点の移動
 	VECTOR followPos = follow_->GetPos();
-	//VECTOR targetLocalRotPos = VTransform(FOLLOW_TARGET_LOCAL_POS, matY);
 	VECTOR targetLocalRotPos = VTransform(FOLLOW_TARGET_LOCAL_POS, mat);
 	targetPos_ = VAdd(followPos, targetLocalRotPos);
 
 	// カメラの1フレーム前のY軸座標を保存
 	prePosY_ = pos_.y;
 
+	// Player自身のメンバ変数を使用するためにダウンキャストを行い、参照ポインタを作成
+	Player* player = static_cast<Player*> (follow_);
+
 	// 相対座標からワールド座標に直して、カメラ座標とする
-	// しゃがみ状態であれば、カメラの位置を下げる
-	if(InputManager::GetInstance()->IsNew(KEY_INPUT_LCONTROL))
+	// しゃがみ状態かスライディング状態であれば、カメラの位置を下げる
+	if(player->GetNowState() == Player::STATE::CROUCHING 
+		|| player->GetNowState() == Player::STATE::SLIDING)
 	{
 		pos_ = VAdd(followPos, FOLLOW_CAMERA_LOCAL_POS_CROUCHING);
 	}

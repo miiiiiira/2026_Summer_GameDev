@@ -57,6 +57,7 @@ public:
 	// プレイヤーの能力を上げる
 	void Upgrade(PLAYER_UPGRADE type, float upNum);
 
+	// 今現在の状態を渡す
 	STATE GetNowState(void) { return state_; }
 private:
 
