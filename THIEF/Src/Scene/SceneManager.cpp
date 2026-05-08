@@ -36,6 +36,7 @@ void SceneManager::Init(void)
 
 	// 最初はタイトル画面から
 	ChangeScene(std::make_shared<TitleScene>());
+
 }
 
 void SceneManager::Init3D(void)
@@ -55,8 +56,12 @@ void SceneManager::Init3D(void)
 	// ライトの設定
 	SetUseLighting(true);
 
-	// 正面から斜め下に向かったライト
-	ChangeLightTypeDir({ 0.00f, -1.00f, 1.00f });
+	// Y軸のマイナス方向のディレクショナルライトに変更
+	ChangeLightTypeDir({ 0.00f, -1.00f, 0.00f });
+
+	// ディフューズカラー
+	SetLightDifColor(GetColorF(0.25f, 0.25f, 0.25f, 0.5f));
+
 }
 
 // 更新
@@ -121,6 +126,9 @@ void SceneManager::Delete(void)
 	// ロード画面の削除
 	load_->Release();
 	delete load_;
+
+	// ポイントライトのハンドルを解放
+	DeleteLightHandle(pointLightHandle_);
 }
 
 void SceneManager::ChangeScene(std::shared_ptr<SceneBase>scene)
@@ -176,5 +184,11 @@ void SceneManager::JumpScene(std::shared_ptr<SceneBase> scene)
 	load_->StartAsyncLoad();
 	scenes_.back()->Load();
 	load_->EndAsyncLoad();
+}
+
+const int& SceneManager::GetPointLightHandle(void)
+{
+	// ポイントライトのハンドルを渡す
+	return pointLightHandle_;
 }
 

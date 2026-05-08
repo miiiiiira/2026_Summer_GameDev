@@ -36,4 +36,7 @@ private:
 
 	// 衝突判定(壁)
 	void WallCollision(ActorBase* actor);
+
+	// ポイントライトのハンドル
+	int pointLightHandle_;
 };

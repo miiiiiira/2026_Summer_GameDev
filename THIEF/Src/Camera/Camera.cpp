@@ -27,9 +27,6 @@ void Camera::Init(void)
 	// カメラの初期位置
 	pos_ = DERFAULT_POS;
 
-	// カメラの前フレームの位置Y軸
-	prePosY_ = 0.0f;
-
 	// カメラの初期角度
 	angle_ = DERFAULT_ANGLES;
 }
@@ -118,7 +115,7 @@ void Camera::SetBeforeDrawFollow(void)
 	targetPos_ = VAdd(followPos, targetLocalRotPos);
 
 	// カメラY軸座標を保持しておく
-	prePosY_ = pos_.y;
+	float prePosY = pos_.y;
 
 	// Player自身のメンバ変数を使用するためにダウンキャストを行い、参照ポインタを作成
 	Player* player = static_cast<Player*> (follow_);
@@ -138,7 +135,7 @@ void Camera::SetBeforeDrawFollow(void)
 	}
 
 	// 線形補間で滑らかにする
-	pos_.y = Math::Lerp(prePosY_, pos_.y, COEFFICIENT);
+	pos_.y = Math::Lerp(prePosY, pos_.y, COEFFICIENT);
 
 	// 高さを合わせる
 	targetPos_.y = pos_.y;
