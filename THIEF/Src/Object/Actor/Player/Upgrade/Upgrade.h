@@ -10,11 +10,12 @@ namespace
 {
 	enum class PLAYER_UPGRADE
 	{
-		RESTOCK_POTION,
 		HP_UP,
-		SPEED_UP,
 		STAMINA_UP,
-		HEAL_HP,
+		SPEED_UP,
+		RANGE_UP,
+		JUMP_NUM_UP,
+
 		MAX,
 	};
 

@@ -116,30 +116,17 @@ void Player::Upgrade(PLAYER_UPGRADE type, float upNum)
 	// 種類によって変更する
 	switch (upgradeType_)
 	{
-	case PLAYER_UPGRADE::RESTOCK_POTION:
-
-		// ポーションの補充を行う
-
-		break;
-	case PLAYER_UPGRADE::SPEED_UP:
-
-		// スピードを上げる
-
+	case PLAYER_UPGRADE::HP_UP:
 		break;
 	case PLAYER_UPGRADE::STAMINA_UP:
-
-		// スタミナの最大値を上げる
-
 		break;
-	case PLAYER_UPGRADE::HP_UP:
-
-		// HPの最大値を上げる
-
+	case PLAYER_UPGRADE::SPEED_UP:
 		break;
-	case PLAYER_UPGRADE::HEAL_HP:
-
-		// HPを回復させる
-
+	case PLAYER_UPGRADE::RANGE_UP:
+		break;
+	case PLAYER_UPGRADE::JUMP_NUM_UP:
+		break;
+	case PLAYER_UPGRADE::MAX:
 		break;
 	default:
 		break;
