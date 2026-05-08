@@ -22,7 +22,8 @@ public:
 	static constexpr VECTOR FOLLOW_CAMERA_LOCAL_POS_CROUCHING = { 0.0f, 90.0f, 0.0f };
 
 	// 追従対象から注視点への相対座標
-	static constexpr VECTOR FOLLOW_TARGET_LOCAL_POS = { 0.0f, 0.0f, 300.0f };
+	static constexpr VECTOR FOLLOW_TARGET_LOCAL_POS_STANDING   = { 0.0f, 0.0f, 300.0f };
+	static constexpr VECTOR FOLLOW_TARGET_LOCAL_POS_CROUCHING  = { 0.0f, -88.0f, 300.0f };
 
 	// カメラのクリップ範囲
 	static constexpr float VIEW_NEAR = 20.0f;
@@ -101,6 +102,8 @@ private:
 	
 	// 注視点
 	VECTOR targetPos_;
+	// 注視点の前フレームの位置Y軸
+	float targetPrePosY_;
 
 	// ２D状でのマウスの位置
 	int mousePosX_;
