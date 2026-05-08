@@ -30,9 +30,6 @@ void Camera::Init(void)
 	// カメラの前フレームの位置Y軸
 	prePosY_ = 0.0f;
 
-	// 注視点の前フレームの位置Y軸
-	targetPrePosY_ = 0.0f;
-
 	// カメラの初期角度
 	angle_ = DERFAULT_ANGLES;
 }
@@ -110,21 +107,18 @@ void Camera::SetBeforeDrawFollow(void)
 	MATRIX mat = MGetIdent();
 	mat = MMult(mat, MGetRotX(angle_.x));
 	mat = MMult(mat, MGetRotY(angle_.y));
-	//mat = MMult(mat, MGetRotZ(angles_.z));
 
-	// カメラの回転行列(X抜き)を作成
+	// カメラの回転行列(Y軸のみ)を作成
 	MATRIX matY = MGetIdent();
-	//mat = MMult(mat, MGetRotX(angles_.x));
 	matY = MMult(matY, MGetRotY(angle_.y));
-	//mat = MMult(mat, MGetRotZ(angles_.z));
 
 	// 注視点の移動
 	VECTOR followPos = follow_->GetPos();
-	VECTOR targetLocalRotPos = VTransform(FOLLOW_TARGET_LOCAL_POS_CROUCHING, mat);
+	VECTOR targetLocalRotPos = VTransform(FOLLOW_TARGET_LOCAL_POS, mat);
+	targetPos_ = VAdd(followPos, targetLocalRotPos);
 
-	// カメラの1フレーム前のY軸座標を保存
+	// カメラY軸座標を保持しておく
 	prePosY_ = pos_.y;
-	targetPrePosY_ = targetPos_.y;
 
 	// Player自身のメンバ変数を使用するためにダウンキャストを行い、参照ポインタを作成
 	Player* player = static_cast<Player*> (follow_);
@@ -136,18 +130,18 @@ void Camera::SetBeforeDrawFollow(void)
 	{
 		// 相対座標をカメラの回転を反映
 		pos_ = VAdd(followPos, FOLLOW_CAMERA_LOCAL_POS_CROUCHING);
-		targetPos_ = VAdd(VAdd(followPos, { 0.0f,-88.0f,0.0f }), targetLocalRotPos);
 	}
 	// しゃがみ状態でなければ、カメラの位置は立ち状態のまま
 	else
 	{
 		pos_ = VAdd(followPos, FOLLOW_CAMERA_LOCAL_POS_STANDING);
-		targetPos_ = VAdd(followPos, targetLocalRotPos);
 	}
 
 	// 線形補間で滑らかにする
-	pos_.y = Math::Lerp(prePosY_, pos_.y, 0.1f);
-	targetPos_.y = Math::Lerp(targetPrePosY_, targetPos_.y, 0.1f);
+	pos_.y = Math::Lerp(prePosY_, pos_.y, COEFFICIENT);
+
+	// 高さを合わせる
+	targetPos_.y = pos_.y;
 
 	// カメラの上方向を計算
 	VECTOR up = VTransform(Math::DIR_U, mat);
