@@ -15,6 +15,7 @@
 #include "../../Object/Actor/Player/Player.h"
 
 #include "../../Object/Actor/Stage/Stage.h"
+#include "../../Object/Actor/Item/Goblet/Goblet.h"
 
 GameScene::GameScene(void)
 {
@@ -38,6 +39,9 @@ void GameScene::Init(void)
 		// 初期化
 		actor->Init();
 	}
+
+	// アイテム初期化
+	item_->Init();
 }
 
 void GameScene::Load(void)
@@ -64,6 +68,9 @@ void GameScene::Load(void)
 		actor->Load();
 	}
 
+	// 杯クラス(アイテム)
+	item_ = new Goblet();
+	item_->Load();
 }
 
 void GameScene::LoadEnd(void)
@@ -127,6 +134,9 @@ void GameScene::Update(void)
 		}
 	}
 
+	// アイテム更新
+	item_->Update();
+
 }
 
 void GameScene::Draw(void)
@@ -144,6 +154,8 @@ void GameScene::Draw(void)
 		actor->Draw();
 	}
 
+	// アイテム描画
+	item_->Draw();
 }
 
 void GameScene::Release(void)
@@ -168,6 +180,10 @@ void GameScene::Release(void)
 	// 配列をクリア
 	allActor_.clear();
 
+	// アイテム解放
+	item_->Release();
+	delete item_;
+	item_ = nullptr;
 }
 
 // ステージの床とプレイヤーの衝突

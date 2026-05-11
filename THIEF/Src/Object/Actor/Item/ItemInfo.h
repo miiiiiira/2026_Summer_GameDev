@@ -28,7 +28,7 @@ struct ItemInfo
 	// アイテムの種類
 	ITEM_TAG itemTag_;
 
-	// アイテムの金額
+	// 金額(アイテムのHP)
 	int money_;
 
 	// 重力
@@ -37,6 +37,6 @@ struct ItemInfo
 	// 重力をかけるか true / 重力をかける , false / 重力をかけない
 	bool isGravity_;
 
-	// 生存フラグ	true / 生存していない , false / 生存している
+	// 生存フラグ	true / 生存中にする , false / 生存している
 	bool isAlive_;
 };

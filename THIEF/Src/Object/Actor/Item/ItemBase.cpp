@@ -3,6 +3,7 @@
 ItemBase::ItemBase(void)
 {
 	info_.modelId_ = -1;
+	info_.gravity_ = 0.0f;
 }
 
 ItemBase::~ItemBase(void)

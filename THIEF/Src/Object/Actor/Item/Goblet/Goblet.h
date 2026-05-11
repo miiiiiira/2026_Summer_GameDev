@@ -13,7 +13,7 @@ public:
 	static constexpr VECTOR DEFAULT_ANGLE = { 0.0f,0.0f,0.0f };
 
 	// ç¿ïW
-	static constexpr VECTOR DEFAULT_POS = { 0.0f,0.0f,0.0f };
+	static constexpr VECTOR DEFAULT_POS = { 0.0f,10.0f,0.0f };
 
 	// ã‡äz
 	static constexpr int MONEY = 1000;

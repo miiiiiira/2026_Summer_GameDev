@@ -16,7 +16,7 @@ public:
 	static constexpr float DEFAULT_SPEED = 7.0f;
 
 	// ダッシュ時の移動速度
-	static constexpr float DEFAULET_DASH_SPEED = 10.0f;
+	static constexpr float DASH_SPEED = 10.0f;
 
 	// スライディング可能時間(秒数)
 	static constexpr int SLIDING_INPUT_BUFFER_TIME = 2 * 60;
@@ -29,6 +29,9 @@ public:
 
 	// スタミナ回復を行うまでの時間(秒数)
 	static constexpr int RECOVERY_STAMINA_WAIT_TIME = 1 * 60;
+
+	// プレイヤーの掴み距離
+	static constexpr float DEFAULT_RENGE = 50.0f;
 
 	// プレイヤーの状態種類
 	enum class STATE
@@ -92,9 +95,7 @@ private:
 
 	// 移動速度
 	float moveSpeed_;
-
-	// ダッシュ速度
-	float runSpeedMax_;
+	float baseMoveSpeed_;
 
 	// スライディング可能時間
 	int slidingInputBufferTime;
@@ -105,6 +106,10 @@ private:
 
 	// スタミナを回復させるまでの時間カウンタ
 	int staminaCounter_;
+
+	// 掴み距離
+	float range_;
+	float rangeMAX_;
 
 	// ダッシュ処理	(走るボタンを押されたら : デフォルト移動速度＋ダッシュ速度、
 	//					   押されなかったら : デフォルト移動速度)

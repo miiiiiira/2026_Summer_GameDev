@@ -68,10 +68,7 @@ void Player::InitPost(void)
 	state_ = STATE::IDLE;
 
 	// プレイヤーの移動速度の初期化
-	moveSpeed_ = 0.0f;
-
-	// ダッシュ速度の初期化
-	runSpeedMax_ = DEFAULET_DASH_SPEED;
+	moveSpeed_ = baseMoveSpeed_ = DEFAULT_SPEED;
 
 	// スライディング可能時間の初期化
 	slidingInputBufferTime = 0;
@@ -81,6 +78,9 @@ void Player::InitPost(void)
 
 	// スタミナを回復させるまでの時間カウンタの初期化
 	staminaCounter_ = 0;
+
+	// 掴み距離の初期化
+	range_ = rangeMAX_ = DEFAULT_RENGE;
 }
 
 void Player::Update(void)
@@ -128,10 +128,22 @@ void Player::Upgrade(PLAYER_UPGRADE type, float upNum)
 	case PLAYER_UPGRADE::HP_UP:
 		break;
 	case PLAYER_UPGRADE::STAMINA_UP:
+
+		// スタミナ最大値を上げる
+		staminaMax_ += upNum;
+
 		break;
 	case PLAYER_UPGRADE::SPEED_UP:
+
+		// 移動速度を上げる
+		baseMoveSpeed_ += upNum;
+
 		break;
 	case PLAYER_UPGRADE::RANGE_UP:
+
+		// 掴み距離を上げる
+		rangeMAX_ += upNum;
+
 		break;
 	case PLAYER_UPGRADE::JUMP_NUM_UP:
 		break;
@@ -256,7 +268,7 @@ void Player::Run(void)
 		staminaCounter_ = 0;
 
 		// プレイヤーのデフォルト移動速度にダッシュ分の移動速度を加算
-		moveSpeed_ =  DEFAULT_SPEED + runSpeedMax_;
+		moveSpeed_ = baseMoveSpeed_ + DASH_SPEED;
 
 		// スライディング可能時間(秒数)を設定
 		slidingInputBufferTime = SLIDING_INPUT_BUFFER_TIME;
@@ -268,7 +280,7 @@ void Player::Run(void)
 
 		// 走るボタンを押されなかった場合
 		// 移動速度はデフォルトに設定
-		moveSpeed_ = DEFAULT_SPEED;
+		moveSpeed_ = baseMoveSpeed_;
 
 	}
 
@@ -294,7 +306,9 @@ void Player::InputSliding(void)
 		// スライディング状態にする
 		state_ = STATE::SLIDING;
 		// プレイヤーのデフォルト移動速度にダッシュ分の移動速度を加算
-		moveSpeed_ = DEFAULT_SPEED + runSpeedMax_;
+		moveSpeed_ = baseMoveSpeed_ + DASH_SPEED;
+
+		// スライディング可能時間を初期化
 		slidingInputBufferTime = 0;
 	}
 }
