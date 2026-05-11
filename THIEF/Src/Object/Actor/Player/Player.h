@@ -115,6 +115,9 @@ private:
 	// スタミナ回復処理
 	void HealStamina(void);
 
+	// 掴み処理
+	void Grasp(void);
+
 	// デバッグ用の描画処理
 	void DebugDraw();
 };
