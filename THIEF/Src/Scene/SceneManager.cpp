@@ -1,7 +1,5 @@
 #include "SceneManager.h"
 
-#include <DxLib.h>
-
 #include "Loading/Loading.h"
 #include "TitleScene/TitleScene.h"
 #include "GameScene/GameScene.h"
@@ -60,7 +58,7 @@ void SceneManager::Init3D(void)
 	ChangeLightTypeDir({ 0.00f, -1.00f, 0.00f });
 
 	// ディフューズカラー
-	SetLightDifColor(GetColorF(0.25f, 0.25f, 0.25f, 0.5f));
+	SetLightDifColor(DIF_COLOR);
 
 }
 

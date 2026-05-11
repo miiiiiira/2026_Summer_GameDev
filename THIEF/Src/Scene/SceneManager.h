@@ -2,6 +2,7 @@
 
 #include <list>
 #include <memory>
+#include <DxLib.h>
 
 class SceneBase;
 class Loading;
@@ -37,6 +38,9 @@ private:
 	// SceneManager moved = std::move(*SceneManager::GetInstance());
 
 public:
+
+	// 環境光のカラー値、アルファ値
+	static constexpr COLOR_F DIF_COLOR = { 0.4f, 0.4f, 0.4f, 0.5f };
 
 	void Init(void);	// 初期化
 	void Init3D(void);	// 3Dの初期化
