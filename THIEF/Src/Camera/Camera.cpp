@@ -109,11 +109,11 @@ void Camera::SetBeforeDrawFollow(void)
 	MATRIX matY = MGetIdent();
 	matY = MMult(matY, MGetRotY(angle_.y));
 
-	// 注視点の移動
+	// 追従対象の座標
 	VECTOR followPos = follow_->GetPos();
-	VECTOR targetLocalRotPos = VTransform(FOLLOW_TARGET_LOCAL_POS, mat);
-	targetPos_ = VAdd(followPos, targetLocalRotPos);
 
+	// 注視点のY軸座標を保持しておく
+	float targetPrePosY = targetPos_.y;
 	// カメラY軸座標を保持しておく
 	float prePosY = pos_.y;
 
@@ -137,8 +137,11 @@ void Camera::SetBeforeDrawFollow(void)
 	// 線形補間で滑らかにする
 	pos_.y = Math::Lerp(prePosY, pos_.y, COEFFICIENT);
 
-	// 高さを合わせる
-	//targetPos_.y = pos_.y;
+	// 注視点の移動
+	// 回転させた相対座標
+	VECTOR targetLocalRotPos = VTransform(FOLLOW_TARGET_LOCAL_POS, mat);
+	// カメラ座標との高さを一致させるためカメラ座標から回転させた相対座標を足す
+	targetPos_ = VAdd(pos_, targetLocalRotPos);
 
 	// カメラの上方向を計算
 	VECTOR up = VTransform(Math::DIR_U, mat);
