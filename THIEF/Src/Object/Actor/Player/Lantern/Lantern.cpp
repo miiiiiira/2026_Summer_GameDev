@@ -122,10 +122,10 @@ void Lantern::UpdatePos(const VECTOR& cameraPos, const VECTOR& cameraAngle)
 	MV1SetPosition(modelId_, pos_);
 
 	// 回転
-	// 杖の回転を行列にする
+	// ランタンの回転を行列にする
 	MATRIX weaponMat = Matrix::GetMatrixRotateXYZ(angle_);
 
-	// プレイヤーの回転を杖のの回転行列に反映する
+	// プレイヤーの回転をランタンの回転行列に反映する
 	MATRIX mat = Matrix::Multiplication(weaponMat, matRot);
 
 	// 回転行列をモデルに反映

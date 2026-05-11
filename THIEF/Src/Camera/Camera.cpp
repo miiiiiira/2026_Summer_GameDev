@@ -105,15 +105,9 @@ void Camera::SetBeforeDrawFollow(void)
 	mat = MMult(mat, MGetRotX(angle_.x));
 	mat = MMult(mat, MGetRotY(angle_.y));
 
-	// カメラの回転行列(Y軸のみ)を作成
-	MATRIX matY = MGetIdent();
-	matY = MMult(matY, MGetRotY(angle_.y));
-
 	// 追従対象の座標
 	VECTOR followPos = follow_->GetPos();
 
-	// 注視点のY軸座標を保持しておく
-	float targetPrePosY = targetPos_.y;
 	// カメラY軸座標を保持しておく
 	float prePosY = pos_.y;
 
