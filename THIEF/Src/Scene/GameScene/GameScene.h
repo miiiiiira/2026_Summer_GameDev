@@ -4,9 +4,7 @@
 
 #include "../SceneBase.h"
 
-class Camera;
-class Stage;
-class ActorBase;
+class ObjectManager;
 class Goblet;
 
 class GameScene : public SceneBase
@@ -22,25 +20,15 @@ public:
 	void Draw(void)		override;	// 描画
 	void Release(void)	override;	// 解放
 
+	void CameraCreate(void);		// カメラの作成
+	void PlayerCreate(void);		// プレイヤーの作成
+	void EnemyCreate(void);			// 敵の作成
+	void StageCreate(void);			// ステージの作成
+
 private:
-	// カメラ
-	Camera* camera_;
-
-	// ステージ
-	Stage* stage_;
-
-	// 全てのアクター
-	std::vector<ActorBase*> allActor_;
+	// オブジェクトマネージャー
+	ObjectManager* objectManger_;
 
 	// アイテム
 	Goblet* item_;
-
-	// 衝突判定(床)
-	void FieldCollision(ActorBase* actor);
-
-	// 衝突判定(壁)
-	void WallCollision(ActorBase* actor);
-
-	// ポイントライトのハンドル
-	int pointLightHandle_;
 };

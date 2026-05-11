@@ -3,13 +3,10 @@
 
 #include "../../../../Common/Transform/MatrixUtility.h"
 #include "../../../../Common/Math/Math.h"
-#include "../../Player/Player.h"
 #include "../../../../Input/InputManager.h"
 
-Lantern::Lantern(Player* player)
+Lantern::Lantern(void)
 {
-	player_ = player;
-
 	// ポイントライトハンドルの初期化
 	pointLightHandle_ = -1;
 
@@ -78,7 +75,6 @@ void Lantern::Release(void)
 	// ポイントライトのハンドルを解放
 	DeleteLightHandle(pointLightHandle_);
 }
-
 
 void Lantern::UpdatePos(const VECTOR& cameraPos, const VECTOR& cameraAngle)
 {

@@ -1,50 +1,38 @@
-#include "../Common/Math/Math.h"
 #include "Camera.h"
+#include "../Transform/Transform.h"
+#include "../../Object.h"
+#include "../../../Common/Math/Math.h"
+#include "../../../Input/InputManager.h"
+#include "../../../System/SystemManager.h"
+#include "../../../Application.h"
 
-#include "../Common/Math/Math.h"
-#include "../Input/InputManager.h"
-#include "../System/SystemManager.h"
-#include "../Application.h"
-
-#include "../Object/Actor/ActorBase.h"
-#include "../Object/Actor/Player/Player.h"
-
-Camera::Camera(void)
-{
-	// DxLibの初期設定では、
-	// カメラの位置が x = 320.0f, y = 240.0f, z = (画面のサイズによって変化)、
-	// 注視点の位置は x = 320.0f, y = 240.0f, z = 1.0f
-	// カメラの上方向は x = 0.0f, y = 1.0f, z = 0.0f
-	// 右上位置からZ軸のプラス方向を見るようなカメラ
-}
-
-Camera::~Camera(void)
-{
-}
+#include "../PlayerController/PlayerController.h"
 
 void Camera::Init(void)
 {
-	// カメラの初期位置
-	pos_ = DERFAULT_POS;
+	transform_ = owner_->GetComponent<Transform>();
 
-	// カメラの初期角度
+	transform_->pos_ = DERFAULT_POS;
 	angle_ = DERFAULT_ANGLES;
 }
 
 void Camera::Update(void)
 {
-	// 視点操作
 	ProcessRot(true);
+}
+
+void Camera::PreDraw(void)
+{
+	SetBeforeDraw();
 }
 
 void Camera::SetBeforeDraw(void)
 {
-	// クリップ距離を設定する(SetDrawScreenでリセットされる)
 	SetCameraNearFar(VIEW_NEAR, VIEW_FAR);
 
 	switch (mode_)
 	{
-	case Camera::MODE::FIXED_POINT:
+	case Camera::MODE::FIXED:
 		SetBeforeDrawFixedPoint();
 		break;
 	case Camera::MODE::FREE:
@@ -53,125 +41,96 @@ void Camera::SetBeforeDraw(void)
 	case Camera::MODE::FOLLOW:
 		SetBeforeDrawFollow();
 		break;
+	case Camera::MODE::NONE:
+	default:
+		SetBeforeDrawFree();
+		break;
 	}
 }
 
-void Camera::SetBeforeDrawFixedPoint(void)
+void Camera::SetBeforeDrawFixedPoint()
 {
-	// カメラの設定(位置と角度による制御)
 	SetCameraPositionAndAngle(
-		pos_,
+		transform_->pos_,
 		angle_.x,
 		angle_.y,
 		angle_.z
 	);
 }
 
-void Camera::SetBeforeDrawFree(void)
+void Camera::SetBeforeDrawFree()
 {
-	// カメラの設定(位置と角度による制御)
 	SetCameraPositionAndAngle(
-		pos_,
+		transform_->pos_,
 		angle_.x,
 		angle_.y,
 		angle_.z
 	);
 }
 
-void Camera::DrawDebug(void)
+void Camera::SetBeforeDrawFollow()
 {
+	if (!target_) return;
 
-	DrawFormatString(
-		0, 10, 0xffffff,
-		"カメラ座標　 ：(%.1f, %.1f, %.1f)",
-		pos_.x, pos_.y, pos_.z
-	);
-	DrawFormatString(
-		0, 30, 0xffffff,
-		"カメラ角度　 ：(%.1f, %.1f, %.1f)",
-		Math::Rad2Deg(angle_.x),
-		Math::Rad2Deg(angle_.y),
-		Math::Rad2Deg(angle_.z)
-	);
-
-	DrawSphere3D(targetPos_, 20.0f, 10, 0xff0000, 0xff0000, true);
-
-}
-
-void Camera::SetBeforeDrawFollow(void)
-{
 	// カメラの回転行列を作成
 	MATRIX mat = MGetIdent();
 	mat = MMult(mat, MGetRotX(angle_.x));
 	mat = MMult(mat, MGetRotY(angle_.y));
 
 	// 追従対象の座標
-	VECTOR followPos = follow_->GetPos();
+	VECTOR followPos = target_->pos_;
 
 	// カメラY軸座標を保持しておく
-	float prePosY = pos_.y;
-
-	// Player自身のメンバ変数を使用するためにダウンキャストを行い、参照ポインタを作成
-	Player* player = static_cast<Player*> (follow_);
+	float prePosY = transform_->pos_.y;
 
 	// 相対座標からワールド座標に直して、カメラ座標とする
 	// しゃがみ状態かスライディング状態であれば、カメラの位置を下げる
-	if (player->GetNowState() == Player::STATE::CROUCHING
-		|| player->GetNowState() == Player::STATE::SLIDING)
+	if (playerController_->state_ == PlayerState::CROUCHING
+		|| playerController_->state_ == PlayerState::SLIDING)
 	{
 		// 相対座標をカメラの回転を反映
-		pos_ = VAdd(followPos, FOLLOW_CAMERA_LOCAL_POS_CROUCHING);
+		transform_->pos_ = VAdd(followPos, FOLLOW_CAMERA_LOCAL_POS_CROUCHING);
 	}
 	// しゃがみ状態でなければ、カメラの位置は立ち状態のまま
 	else
 	{
-		pos_ = VAdd(followPos, FOLLOW_CAMERA_LOCAL_POS_STANDING);
+		transform_->pos_ = VAdd(followPos, FOLLOW_CAMERA_LOCAL_POS_STANDING);
 	}
 
 	// 線形補間で滑らかにする
-	pos_.y = Math::Lerp(prePosY, pos_.y, COEFFICIENT);
+	transform_->pos_.y = Math::Lerp(prePosY, transform_->pos_.y, COEFFICIENT);
 
 	// 注視点の移動
 	// 回転させた相対座標
 	VECTOR targetLocalRotPos = VTransform(FOLLOW_TARGET_LOCAL_POS, mat);
+
 	// カメラ座標との高さを一致させるためカメラ座標から回転させた相対座標を足す
-	targetPos_ = VAdd(pos_, targetLocalRotPos);
+	targetPos_ = VAdd(transform_->pos_, targetLocalRotPos);
 
 	// カメラの上方向を計算
 	VECTOR up = VTransform(Math::DIR_U, mat);
 
 	// カメラの設定(位置と注視点による制御)
 	SetCameraPositionAndTargetAndUpVec(
-		pos_,
+		transform_->pos_,
 		targetPos_,
 		up
 	);
 }
 
-void Camera::Release(void)
-{
-}
-
 void Camera::ChangeMode(MODE mode)
 {
-	// カメラモードの変更
 	mode_ = mode;
-
-	// 変更時の初期化処理
-	switch (mode_)
-	{
-	case Camera::MODE::FIXED_POINT:
-		break;
-	case Camera::MODE::FREE:
-		break;
-	case Camera::MODE::FOLLOW:
-		break;
-	}
 }
 
-void Camera::SetFollow(ActorBase* follow)
+void Camera::SetTarget(Transform* target)
 {
-	follow_ = follow;
+	target_ = target;
+}
+
+void Camera::SetPlayerController(PlayerController* playerController)
+{
+	playerController_ = playerController;
 }
 
 void Camera::ProcessRot(bool isLimit)
@@ -198,7 +157,7 @@ void Camera::RotKeyboard(bool isLimit)
 
 	// isLimitがtrueだった場合カメラの視点操作(上下)に上限を付ける
 	if (InputManager::GetInstance()->IsNew(KEY_INPUT_DOWN))
-	{ 
+	{
 		angle_.x += rotPow;
 
 		if (isLimit && angle_.x > LIMIT_X_DW_RAD)
@@ -207,9 +166,9 @@ void Camera::RotKeyboard(bool isLimit)
 		}
 	}
 
-	if (InputManager::GetInstance()->IsNew(KEY_INPUT_UP))	
+	if (InputManager::GetInstance()->IsNew(KEY_INPUT_UP))
 	{
-		angle_.x -= rotPow; 
+		angle_.x -= rotPow;
 
 		if (isLimit && angle_.x < LIMIT_X_UP_RAD)
 		{
@@ -219,13 +178,13 @@ void Camera::RotKeyboard(bool isLimit)
 
 	// 視点操作(左右)
 	if (InputManager::GetInstance()->IsNew(KEY_INPUT_RIGHT)) { angle_.y += rotPow; }
-	if (InputManager::GetInstance()->IsNew(KEY_INPUT_LEFT))	{ angle_.y -= rotPow; }
+	if (InputManager::GetInstance()->IsNew(KEY_INPUT_LEFT)) { angle_.y -= rotPow; }
 }
 
 void Camera::RotGamePad(bool isLimit)
 {
 	// 接続されているゲームパッド１の情報を取得
-	InputManager::JOYPAD_IN_STATE padState = 
+	InputManager::JOYPAD_IN_STATE padState =
 		InputManager::GetInstance()->GetJPadInputState(InputManager::JOYPAD_NO::PAD1);
 
 	VECTOR dir = Math::VECTOR_ZERO;
@@ -254,7 +213,6 @@ void Camera::RotGamePad(bool isLimit)
 	{
 		angle_.x = LIMIT_X_UP_RAD;
 	}
-
 }
 
 void Camera::RotMouse(bool isLimit)
@@ -290,5 +248,4 @@ void Camera::RotMouse(bool isLimit)
 
 	//// マウスカーソルを画面中央に戻す
 	SetMousePoint(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2);
-
 }

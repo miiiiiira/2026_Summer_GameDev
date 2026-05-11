@@ -26,7 +26,7 @@ public:
 	static constexpr float COEFFICIENT = 0.1f;
 
 	// コンストラクタ
-	Lantern(Player* player);
+	Lantern(void);
 	// デストラクタ
 	~Lantern(void);
 
@@ -42,9 +42,6 @@ public:
 	void Release(void);
 
 private:
-	// プレイヤーのポインタ
-	Player* player_;
-
 	// ポイントライトのハンドル
 	int pointLightHandle_;
 

@@ -19,15 +19,25 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Common\Transform\Transform.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\EnemyBase.cpp" />
     <ClCompile Include="Src\Object\Actor\Item\Goblet\Goblet.cpp" />
     <ClCompile Include="Src\Object\Actor\Item\ItemBase.cpp" />
     <ClCompile Include="Src\Object\Actor\Player\Lantern\Lantern.cpp" />
+    <ClCompile Include="Src\Object\Collision\CollisionManager.cpp" />
+    <ClCompile Include="Src\Object\Component\Animation\Animation.cpp" />
+    <ClCompile Include="Src\Object\Component\Camera\Camera.cpp" />
+    <ClCompile Include="Src\Object\Component\Collider\Collider.cpp" />
+    <ClCompile Include="Src\Object\Component\Collider\StageCollider\StageCollider.cpp" />
+    <ClCompile Include="Src\Object\Component\PlayerController\PlayerController.cpp" />
+    <ClCompile Include="Src\Object\Component\Render\Render2D.cpp" />
+    <ClCompile Include="Src\Object\Component\Render\Render3D.cpp" />
+    <ClCompile Include="Src\Object\Component\Stage\Stage.cpp" />
+    <ClCompile Include="Src\Object\ObjectManager\ObjectManager.cpp" />
     <ClCompile Include="Src\Scene\Confirm\Confirm.cpp" />
     <ClCompile Include="Src\Application.cpp" />
     <ClCompile Include="Src\Audio\AudioManager.cpp" />
     <ClCompile Include="Src\Audio\SoundTable.cpp" />
-    <ClCompile Include="Src\Camera\Camera.cpp" />
     <ClCompile Include="Src\Common\Collision\Collision.cpp" />
     <ClCompile Include="Src\Common\Draw\Draw.cpp" />
     <ClCompile Include="Src\Common\Fader\Fader.cpp" />
@@ -36,14 +46,10 @@
     <ClCompile Include="Src\Common\System\FpsControl.cpp" />
     <ClCompile Include="Src\Common\Transform\MatrixUtility.cpp" />
     <ClCompile Include="Src\Common\Transform\Quaternion.cpp" />
-    <ClCompile Include="Src\Common\Transform\Transform.cpp" />
     <ClCompile Include="Src\Input\InputManager.cpp" />
     <ClCompile Include="Src\main.cpp" />
-    <ClCompile Include="Src\Object\Actor\ActorBase.cpp" />
-    <ClCompile Include="Src\Object\Actor\Player\Player.cpp" />
     <ClCompile Include="Src\Object\Actor\Player\Upgrade\Upgrade.cpp" />
     <ClCompile Include="Src\Object\Actor\Player\Upgrade\UpgradeManager.cpp" />
-    <ClCompile Include="Src\Object\Actor\Stage\Stage.cpp" />
     <ClCompile Include="Src\Object\Common\AnimationController.cpp" />
     <ClCompile Include="Src\Scene\GameClear\GameClear.cpp" />
     <ClCompile Include="Src\Scene\GameOver\GameOver.cpp" />
@@ -57,17 +63,37 @@
     <ClCompile Include="Src\System\SystemManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Common\Transform\Transform.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\EnemyBase.h" />
     <ClInclude Include="Src\Object\Actor\Item\Goblet\Goblet.h" />
     <ClInclude Include="Src\Object\Actor\Item\ItemBase.h" />
     <ClInclude Include="Src\Object\Actor\Player\Lantern\Lantern.h" />
     <ClInclude Include="Src\Object\Actor\Item\ItemInfo.h" />
+    <ClInclude Include="Src\Object\Collision\CollisionManager.h" />
+    <ClInclude Include="Src\Object\Component\Animation\Animation.h" />
+    <ClInclude Include="Src\Object\Component\Camera\Camera.h" />
+    <ClInclude Include="Src\Object\Component\Collider\2DCollider\CircleCollider.h" />
+    <ClInclude Include="Src\Object\Component\Collider\3DCollider\AABBCollider.h" />
+    <ClInclude Include="Src\Object\Component\Collider\3DCollider\CapsuleCollider.h" />
+    <ClInclude Include="Src\Object\Component\Collider\3DCollider\SphereCollider.h" />
+    <ClInclude Include="Src\Object\Component\Collider\Collider.h" />
+    <ClInclude Include="Src\Object\Component\Collider\StageCollider\StageCollider.h" />
+    <ClInclude Include="Src\Object\Component\Component.h" />
+    <ClInclude Include="Src\Object\Component\PlayerController\PlayerController.h" />
+    <ClInclude Include="Src\Object\Component\Render\Render.h" />
+    <ClInclude Include="Src\Object\Component\Render\Render2D.h" />
+    <ClInclude Include="Src\Object\Component\Render\Render3D.h" />
+    <ClInclude Include="Src\Object\Component\Stage\Stage.h" />
+    <ClInclude Include="Src\Object\Component\Transform\Transform.h" />
+    <ClInclude Include="Src\Object\Component\Transform\Transform2D.h" />
+    <ClInclude Include="Src\Object\Object.h" />
+    <ClInclude Include="Src\Object\ObjectManager\ObjectManager.h" />
+    <ClInclude Include="Src\Object\Tag.h" />
     <ClInclude Include="Src\Scene\Confirm\Confirm.h" />
     <ClInclude Include="Src\Application.h" />
     <ClInclude Include="Src\Audio\AudioManager.h" />
     <ClInclude Include="Src\Audio\SoundInfo.h" />
     <ClInclude Include="Src\Audio\SoundTable.h" />
-    <ClInclude Include="Src\Camera\Camera.h" />
     <ClInclude Include="Src\Common\Collision\Collision.h" />
     <ClInclude Include="Src\Common\Draw\Draw.h" />
     <ClInclude Include="Src\Common\Fader\Fader.h" />
@@ -77,14 +103,10 @@
     <ClInclude Include="Src\Common\System\FpsControl.h" />
     <ClInclude Include="Src\Common\Transform\MatrixUtility.h" />
     <ClInclude Include="Src\Common\Transform\Quaternion.h" />
-    <ClInclude Include="Src\Common\Transform\Transform.h" />
     <ClInclude Include="Src\Input\InputManager.h" />
     <ClInclude Include="Src\main.h" />
-    <ClInclude Include="Src\Object\Actor\ActorBase.h" />
-    <ClInclude Include="Src\Object\Actor\Player\Player.h" />
     <ClInclude Include="Src\Object\Actor\Player\Upgrade\Upgrade.h" />
     <ClInclude Include="Src\Object\Actor\Player\Upgrade\UpgradeManager.h" />
-    <ClInclude Include="Src\Object\Actor\Stage\Stage.h" />
     <ClInclude Include="Src\Object\Common\AnimationController.h" />
     <ClInclude Include="Src\Scene\GameClear\GameClear.h" />
     <ClInclude Include="Src\Scene\GameOver\GameOver.h" />

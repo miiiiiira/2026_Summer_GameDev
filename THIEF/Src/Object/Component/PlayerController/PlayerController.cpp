@@ -1,71 +1,29 @@
-#include "Player.h"
+#include "PlayerController.h"
 
-#include "../../../Application.h"
 #include "../../../Input/InputManager.h"
 #include "../../../Common/Math/Math.h"
-#include "../../../Common/Transform/MatrixUtility.h"
-#include "../../Common/AnimationController.h"
-#include "Lantern/Lantern.h"
 
-#include "../../../Camera/Camera.h"
+#include "../../Object.h"
+#include "../../Component/Transform/Transform.h"
+#include "../../Component/Animation/Animation.h"
+#include "../../Component/Camera/Camera.h"
 
-Player::Player(Camera* camera)
+#include "../Collider/StageCollider/StageCollider.h"
+
+// 初期化
+void PlayerController::Init()
 {
-	camera_ = camera;
-	lantern_ = nullptr;
-}
+	// オーナーからTransform取得
+	transform_ = owner_->GetComponent<Transform>();
 
-Player::~Player(void)
-{
-}
-
-void Player::InitLoad(void)
-{
-	// ランタンクラスの生成・ロード
-	lantern_ = new Lantern(this);
-	lantern_->Load();
-}
-
-void Player::InitTransform(void)
-{
 	// モデルの角度
 	angle_ = { 0.0f, 0.0f, 0.0f };
-	localAngle_ = { 0.0f, Math::Deg2Rad(180.0f), 0.0f };
 
 	// 角度から方向に変換する
 	moveDir_ = { sinf(angle_.y), 0.0f, cosf(angle_.y) };
-	preInputDir_ = moveDir_;
-
-	// 行列の合成(子, 親と指定すると親⇒子の順に適用される)
-	MATRIX mat = Matrix::Multiplication(localAngle_, angle_);
-
-	// 回転行列をモデルに反映
-	MV1SetRotationMatrix(modelId_, mat);
-
-	// モデルの位置設定
-	pos_ = Math::VECTOR_ZERO;
-	MV1SetPosition(modelId_, pos_);
-
-	// 当たり判定を作成
-	startCapsulePos_ = { 0.0f,110,0.0f };
-	endCapsulePos_ = { 0.0f,30.0f,0.0f };
-	capsuleRadius_ = 20.0f;
-	
-	// 当たり判定を取るか
-	isCollision_ = true;
-}
-
-void Player::InitAnimation(void)
-{
-}
-
-void Player::InitPost(void)
-{
-	// ランタンクラスの初期化
-	lantern_->Init();
 
 	// プレイヤーの状態
-	state_ = STATE::IDLE;
+	state_ = PlayerState::IDLE;
 
 	// プレイヤーの移動速度の初期化
 	moveSpeed_ = baseMoveSpeed_ = DEFAULT_SPEED;
@@ -83,87 +41,39 @@ void Player::InitPost(void)
 	range_ = rangeMAX_ = DEFAULT_RENGE;
 }
 
-void Player::Update(void)
+// 更新
+void PlayerController::Update()
 {
-	ActorBase::Update();
+	// 移動方向から角度に変換する
+	float goal = atan2f(moveDir_.x, moveDir_.z);
+
+	// 常に最短経路で補間
+	angle_.y = Math::LerpAngle(angle_.y, goal, 0.2f);
+
+	// 移動処理
+	Move();
 
 	// スタミナ回復処理
 	HealStamina();
 
-	// ランタンクラスの更新処理
-	lantern_->Update(camera_->GetPos(),camera_->GetAngle());
+	// 重力処理
+	ApplyGravity();
 }
 
-void Player::Draw(void)
+// 移動処理
+void PlayerController::Move()
 {
-	ActorBase::Draw();
+	// カメラがなければ処理しない
+	if (!camera_) return;
 
-	// ランタンクラスの更新処理
-	lantern_->Draw();
+	// Transformがなければ処理しない
+	if (!transform_) return;
 
-#ifdef _DEBUG
-	// デバッグ用の描画
-	DebugDraw();
-#endif // _DEBUG
-}
-
-void Player::Release(void)
-{
-	// ランタンクラスの解放
-	lantern_->Release();
-	delete lantern_;
-	lantern_ = nullptr;
-
-	ActorBase::Release();
-}
-
-void Player::Upgrade(PLAYER_UPGRADE type, float upNum)
-{
-	// アップデートしたい能力の情報を得る
-	upgradeType_ = type;
-
-	// 種類によって変更する
-	switch (upgradeType_)
-	{
-	case PLAYER_UPGRADE::HP_UP:
-		break;
-	case PLAYER_UPGRADE::STAMINA_UP:
-
-		// スタミナ最大値を上げる
-		staminaMax_ += upNum;
-
-		break;
-	case PLAYER_UPGRADE::SPEED_UP:
-
-		// 移動速度を上げる
-		baseMoveSpeed_ += upNum;
-
-		break;
-	case PLAYER_UPGRADE::RANGE_UP:
-
-		// 掴み距離を上げる
-		rangeMAX_ += upNum;
-
-		break;
-	case PLAYER_UPGRADE::JUMP_NUM_UP:
-		break;
-	case PLAYER_UPGRADE::MAX:
-		break;
-	default:
-		break;
-	}
-
-	// 強化し終わったらNONへ戻す
-	upgradeType_ = PLAYER_UPGRADE::MAX;
-}
-
-void Player::Move(void)
-{
 	// スライディング処理
 	InputSliding();
 
 	// しゃがみ状態かつ移動速度が0より大きい場合
-	if (state_ == STATE::SLIDING && moveSpeed_ > 0.0f)
+	if (state_ == PlayerState::SLIDING && moveSpeed_ > 0.0f)
 	{
 		// 移動速度を減算
 		moveSpeed_ -= 0.2f;
@@ -173,11 +83,11 @@ void Player::Move(void)
 		{
 			moveSpeed_ = 0.0f;
 			// しゃがみ状態にする
-			state_ = STATE::CROUCHING;
+			state_ = PlayerState::CROUCHING;
 		}
 
 		// 方向×スピードで移動量を作って、座標に足して移動
-		pos_ = VAdd(pos_, VScale(moveDir_, moveSpeed_));
+		transform_->pos_ = VAdd(transform_->pos_, VScale(moveDir_, moveSpeed_));
 
 		return;
 	}
@@ -211,7 +121,7 @@ void Player::Move(void)
 	if (!Math::EqualsVZero(dir))
 	{
 		// 走ったかどうかの判定
-		Run();
+		Dash();
 
 		// 正規化
 		dir = VNorm(dir);
@@ -225,36 +135,65 @@ void Player::Move(void)
 		moveDir_ = VTransform(dir, mat);
 
 		// 方向×スピードで移動量を作って、座標に足して移動
-		pos_ = VAdd(pos_, VScale(moveDir_, moveSpeed_));
+		transform_->pos_ = VAdd(transform_->pos_, VScale(moveDir_, moveSpeed_));
 	}
-	else if(state_ != STATE::SLIDING)
+	else if (state_ != PlayerState::SLIDING)
 	{
 		// 待機状態にする
-		state_ = STATE::IDLE;
+		state_ = PlayerState::IDLE;
 		// 移動速度を初期化
 		moveSpeed_ = 0.0f;
 	}
 
 	// 左Ctrl押されたかつスライディング中じゃない場合
 	if (InputManager::GetInstance()->IsNew(KEY_INPUT_LCONTROL) &&
-		state_ != STATE::SLIDING)
+		state_ != PlayerState::SLIDING)
 	{
 		// しゃがみ状態にする
-		state_ = STATE::CROUCHING;
+		state_ = PlayerState::CROUCHING;
 	}
-
 }
 
-void Player::Run(void)
+// 重力処理
+void PlayerController::ApplyGravity()
 {
+	// StageCollider取得
+	auto stageCol = owner_->GetComponent<StageCollider>();
+	
+	if (!stageCol) return;
 
+	// 接地判定
+	
+	// 空中
+	if (!stageCol->IsGround())
+	{
+		// 重力加算
+		velocityY_ += GRAVITY;
+		
+		// 最大落下速度
+		if (velocityY_ < MAX_FALL)
+			velocityY_ = MAX_FALL;
+	}
+	else
+	{
+		// 地面上なら少し下方向に押す
+		// 0だと浮く場合があるため
+		velocityY_ = -0.1f;
+	}
+
+	// Y座標へ反映
+	transform_->pos_.y += velocityY_;
+}
+
+void PlayerController::Dash(void)
+{
 	// もし走るボタンを押された場合
 	if (InputManager::GetInstance()->IsNew(KEY_INPUT_LSHIFT)
-		&& state_ != STATE::CROUCHING
+		&& state_ != PlayerState::CROUCHING
 		&& stamina_ >= 0.1f)
 	{
 		// プレイヤーの状態を走り状態にする
-		state_ = STATE::RUN;
+		state_ = PlayerState::DASH;
 
 		// スタミナを減らす
 		stamina_ -= 0.1f;
@@ -276,17 +215,15 @@ void Player::Run(void)
 	else
 	{
 		// プレイヤーの状態を普通の移動状態にする
-		state_ = STATE::MOVE;
+		state_ = PlayerState::MOVE;
 
 		// 走るボタンを押されなかった場合
 		// 移動速度はデフォルトに設定
 		moveSpeed_ = baseMoveSpeed_;
-
 	}
-
 }
 
-void Player::InputSliding(void)
+void PlayerController::InputSliding(void)
 {
 	// スライディングの可能時間が無かったら処理を行わない
 	if (slidingInputBufferTime <= 0)return;
@@ -304,7 +241,7 @@ void Player::InputSliding(void)
 	if (InputManager::GetInstance()->IsNew(KEY_INPUT_LCONTROL))
 	{
 		// スライディング状態にする
-		state_ = STATE::SLIDING;
+		state_ = PlayerState::SLIDING;
 		// プレイヤーのデフォルト移動速度にダッシュ分の移動速度を加算
 		moveSpeed_ = baseMoveSpeed_ + DASH_SPEED;
 
@@ -313,7 +250,7 @@ void Player::InputSliding(void)
 	}
 }
 
-void Player::HealStamina(void)
+void PlayerController::HealStamina(void)
 {
 	// スタミナがMaxだったら処理を飛ばす
 	if (stamina_ >= staminaMax_)return;
@@ -333,22 +270,4 @@ void Player::HealStamina(void)
 			stamina_ = staminaMax_;
 		}
 	}
-}
-
-void Player::DebugDraw(void)
-{
-	DrawFormatString(
-		0, 50, 0xffffff,
-		"キャラ角度　 ：(%.1f, %.1f, %.1f)",
-		Math::Rad2Deg(angle_.x),
-		Math::Rad2Deg(angle_.y),
-		Math::Rad2Deg(angle_.z)
-	);
-
-	DrawFormatString(
-		0, 200, 0xFFC800,
-		"スタミナ : %.0f / %.0f",
-		stamina_,
-		staminaMax_
-	);
 }

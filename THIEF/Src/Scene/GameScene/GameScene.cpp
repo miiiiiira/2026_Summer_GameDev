@@ -3,7 +3,6 @@
 #include <DxLib.h>
 
 #include "../../Application.h"
-#include "../../Camera/Camera.h"
 #include "../../Input/InputManager.h"
 #include "../../Audio/AudioManager.h"
 #include "../SceneManager.h"
@@ -11,11 +10,18 @@
 #include "../GameOver/GameOver.h"
 #include "../Pause/Pause.h"
 
-#include "../../Object/Actor/ActorBase.h"
-#include "../../Object/Actor/Player/Player.h"
-
-#include "../../Object/Actor/Stage/Stage.h"
 #include "../../Object/Actor/Item/Goblet/Goblet.h"
+
+#include "../../Object/ObjectManager/ObjectManager.h"
+#include "../../Object/Tag.h"
+
+#include "../../Object/Component/Collider/3DCollider/CapsuleCollider.h"
+#include "../../Object/Component/Collider/StageCollider/StageCollider.h"
+#include "../../Object/Component/Render/Render3D.h"
+#include "../../Object/Component/Camera/Camera.h"
+#include "../../Object/Component/PlayerController/PlayerController.h"
+#include "../../Object/Component/Animation/Animation.h"
+#include "../../Object/Component/Stage/Stage.h"
 
 GameScene::GameScene(void)
 {
@@ -27,18 +33,8 @@ GameScene::~GameScene(void)
 
 void GameScene::Init(void)
 {
-	// カメラの初期化
-	camera_->Init();
-
-	// ステージ初期化
-	stage_->Init();
-
-	// 全てのアクターを初期化
-	for (auto actor : allActor_)
-	{
-		// 初期化
-		actor->Init();
-	}
+	// オブジェクトマネージャー初期化
+	objectManger_->Init();
 
 	// アイテム初期化
 	item_->Init();
@@ -46,27 +42,20 @@ void GameScene::Init(void)
 
 void GameScene::Load(void)
 {
-	// 生成処理
-	camera_ = new Camera();					// カメラの生成
-	stage_ = new Stage();					// ステージの生成
-	Player* player_ = new Player(camera_);	// プレイヤーの生成
+	// オブジェクトマネージャーの生成
+	objectManger_ = new ObjectManager();
 
-	// アクター配列に入れる
-	allActor_.push_back(player_);
+	// ステージの作成
+	StageCreate();
 
-	// カメラモード変更
-	camera_->SetFollow(player_);
-	camera_->ChangeMode(Camera::MODE::FOLLOW);
+	// カメラの作成
+	CameraCreate();
 
-	// ステージの読み込み
-	stage_->Load();
+	// プレイヤーの作成
+	PlayerCreate();
 
-	// 全てのアクターを読み込み
-	for (auto actor : allActor_)
-	{
-		// 読み込み
-		actor->Load();
-	}
+	// 敵の作成
+	EnemyCreate();
 
 	// 杯クラス(アイテム)
 	item_ = new Goblet();
@@ -75,18 +64,7 @@ void GameScene::Load(void)
 
 void GameScene::LoadEnd(void)
 {
-	// カメラの初期化
-	camera_->Init();
-
-	// ステージ初期化
-	stage_->LoadEnd();
-
-	// 全てのアクターを読み込み後
-	for (auto actor : allActor_)
-	{
-		// 読み込み
-		actor->LoadEnd();
-	}
+	Init();
 }
 
 void GameScene::Update(void)
@@ -96,14 +74,12 @@ void GameScene::Update(void)
 	{
 		// ゲームクリアへ
 		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameClear>());
-		return;
 	}
 
 	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_O))
 	{
 		// ゲームオーバーへ
 		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameOver>());
-		return;
 	}
 
 	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_ESCAPE))
@@ -113,46 +89,20 @@ void GameScene::Update(void)
 		return;
 	}
 
-	// カメラの更新
-	camera_->Update();
-
-	// ステージ更新
-	stage_->Update();
-
-	// 全てのアクターを回す
-	for (auto actor : allActor_)
-	{
-		// 更新処理
-		actor->Update();
-
-		// 当たり判定を取るか？
-		if (actor)
-		{
-			// 当たり判定
-			FieldCollision(actor);
-			WallCollision(actor);
-		}
-	}
+	// オブジェクトの更新
+	objectManger_->Update();
 
 	// アイテム更新
 	item_->Update();
-
 }
 
 void GameScene::Draw(void)
 {
-	// カメラの描画更新
-	camera_->SetBeforeDraw();
+	// オブジェクトの描画前
+	objectManger_->PreDraw();
 
-	// ステージ描画
-	stage_->Draw();
-
-	// 全てのアクターを回す
-	for (auto actor : allActor_)
-	{
-		// 更新処理
-		actor->Draw();
-	}
+	// オブジェクトの描画
+	objectManger_->Draw();
 
 	// アイテム描画
 	item_->Draw();
@@ -160,25 +110,8 @@ void GameScene::Draw(void)
 
 void GameScene::Release(void)
 {
-
-	// ステージ解放
-	stage_->Release();
-	delete stage_;
-	
-	// カメラ解放
-	camera_->Release();
-	delete camera_;
-
-	// 全てのアクターを回す
-	for (auto actor : allActor_)
-	{
-		// 更新処理
-		actor->Release();
-		delete actor;
-	}
-
-	// 配列をクリア
-	allActor_.clear();
+	// オブジェクトマネージャー削除
+	delete objectManger_;
 
 	// アイテム解放
 	item_->Release();
@@ -186,92 +119,96 @@ void GameScene::Release(void)
 	item_ = nullptr;
 }
 
-// ステージの床とプレイヤーの衝突
-void GameScene::FieldCollision(ActorBase* actor)
+void GameScene::CameraCreate(void)
 {
-	// 座標を所得
-	VECTOR actorPos = actor->GetPos();
+	// カメラ生成
+	auto cameraObj = objectManger_->CreateObject();
 
-	// 線分の上座標
-	VECTOR startPos = actorPos;
-	startPos.y = actorPos.y + 10.0f;
+	// タグの付与
+	cameraObj->SetTag(Tag::Camera);
 
-	// 線分の下座標
-	VECTOR endPos = actorPos;
-	endPos.y = actorPos.y - 10.0f;
+	// 座標の設定
+	auto cameraTrans = cameraObj->AddComponent<Transform>();
 
-	// ステージのモデルを取得
-	int modelId = stage_->GetModelId();
+	// カメラコンポーネントの付与
+	auto camera = cameraObj->AddComponent<Camera>();
 
-	// 線分とモデルの衝突判定
-	MV1_COLL_RESULT_POLY res =
-		MV1CollCheck_Line(modelId, -1, startPos, endPos);
-
-	// ステージに当たっているか？
-	if (res.HitFlag)
-	{
-		// 当たった場所に戻す
-		actor->CollisionStage(res.HitPosition);
-	}
+	// カメラのモードを変更
+	camera->ChangeMode(Camera::MODE::FOLLOW);
 }
 
-void GameScene::WallCollision(ActorBase* actor)
+void GameScene::PlayerCreate(void)
 {
-	// 座標を取得
-	VECTOR pos = actor->GetPos();
+	// プレイヤー生成
+	auto player = objectManger_->CreateObject();
 
-	// カプセルの座標
-	VECTOR capStartPos = VAdd(pos, actor->GetStartCapsulePos());
-	VECTOR capEndPos = VAdd(pos, actor->GetEndCapsulePos());
+	// タグを付与
+	player->SetTag(Tag::Player);
 
-	// カプセルとの当たり判定
-	auto hits = MV1CollCheck_Capsule
-	(
-		stage_->GetModelId(),			// ステージのモデルID
-		-1,								// ステージ全てのポリゴンを指定
-		capStartPos,					// カプセルの上
-		capEndPos,						// カプセルの下
-		actor->GetCapsuleRadius()		// カプセルの半径
-	);
+	// 座標の設定
+	auto trans = player->AddComponent<Transform>();
+	trans->pos_ = { 0.0f,0.0f,0.0f };
 
-	// 衝突したポリゴン全ての検索
-	for (int i = 0; i < hits.HitNum; i++)
-	{
-		// ポリゴンを1枚に分割
-		auto hit = hits.Dim[i];
+	// 当たり判定の設定
+	auto col = player->AddComponent<CapsuleCollider>();
+	col->radius_ = 20.0f;
 
-		// ポリゴン検索を制限(全てを検索すると重いので)
-		for (int tryCnt = 0; tryCnt < 10; tryCnt++)
-		{
-			// 最初の衝突判定で検出した衝突ポリゴン1枚と衝突判定を取る
-			int pHit = HitCheck_Capsule_Triangle
-			(
-				capStartPos,					// カプセルの上
-				capEndPos,						// カプセルの下
-				actor->GetCapsuleRadius(),		// カプセルの半径
-				hit.Position[0],				// ポリゴン1
-				hit.Position[1],				// ポリゴン2
-				hit.Position[2]					// ポリゴン3
-			);
+	// ステージの取得
+	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 
-			// カプセルとポリゴンが当たっていた
-			if (pHit)
-			{
-				// 当たっていたので座標をポリゴンの法線方向に移動させる
-				pos = VAdd(pos, VScale(hit.Normal, 1.0f));
+	// ステージの当たり判定
+	auto stageCol = player->AddComponent<StageCollider>();
+	stageCol->SetStage(stage);
 
-				// 球体の座標も移動させる
-				capStartPos = VAdd(capStartPos, VScale(hit.Normal, 1.0f));
-				capEndPos = VAdd(capEndPos, VScale(hit.Normal, 1.0f));
+	// カメラの取得
+	auto camera = objectManger_->FindComponentWithTag<Camera>(Tag::Camera);
 
-				// 複数当たっている可能性があるので再検索
-				continue;
-			}
-		}
-	}
-	// 検出したポリゴン情報の後始末
-	MV1CollResultPolyDimTerminate(hits);
+	// 移動の設定
+	auto cont = player->AddComponent<PlayerController>();
+	cont->SetCamera(camera);
 
-	// 計算した場所にアクターを戻す
-	actor->CollisionStage(pos);
+	// プレイヤーの情報をカメラに設定
+	camera->SetTarget(trans);
+	camera->SetPlayerController(cont);
+}
+
+void GameScene::EnemyCreate(void)
+{
+	// 敵の生成
+	auto enemy = objectManger_->CreateObject();
+
+	// タグの付与
+	enemy->SetTag(Tag::Enemy);
+
+	// 座標の設定
+	auto trans = enemy->AddComponent<Transform>();
+	trans->pos_ = { 0,0,0 };
+
+	// 描画の設定
+	auto render = enemy->AddComponent<Render3D>();
+	render->SetModel("Data/Model/Player/Player.mv1");
+
+	// 当たり判定の設定
+	auto col = enemy->AddComponent<CapsuleCollider>();
+	col->radius_ = 20.0f;
+}
+
+void GameScene::StageCreate(void)
+{
+	// ステージの作成
+	auto stage = objectManger_->CreateObject();
+
+	// タグを付与
+	stage->SetTag(Tag::Stage);
+
+	// 座標の設定
+	auto trans = stage->AddComponent<Transform>();
+	trans->pos_ = { 0.0f,0.0f,0.0f };
+
+	// 描画
+	auto render = stage->AddComponent<Render3D>();
+	render->SetModel("Data/Model/Stage/Dummy.mv1");
+
+	// ステージ機能
+	stage->AddComponent<Stage>();
 }
