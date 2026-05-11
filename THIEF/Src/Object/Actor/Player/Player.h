@@ -6,6 +6,7 @@
 #include "Upgrade/Upgrade.h"
 
 class Camera;
+class Lantern;
 
 class Player : public ActorBase
 {
@@ -80,6 +81,9 @@ private:
 	// カメラ
 	Camera* camera_;
 
+	// ランタンクラスのハンドル
+	Lantern* lantern_;
+
 	// プレイヤーのアップグレードの種類
 	PLAYER_UPGRADE upgradeType_;
 
@@ -110,4 +114,7 @@ private:
 
 	// スタミナ回復処理
 	void HealStamina(void);
+
+	// デバッグ用の描画処理
+	void DebugDraw();
 };

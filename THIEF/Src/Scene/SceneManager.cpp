@@ -126,9 +126,6 @@ void SceneManager::Delete(void)
 	// ロード画面の削除
 	load_->Release();
 	delete load_;
-
-	// ポイントライトのハンドルを解放
-	DeleteLightHandle(pointLightHandle_);
 }
 
 void SceneManager::ChangeScene(std::shared_ptr<SceneBase>scene)
@@ -185,10 +182,3 @@ void SceneManager::JumpScene(std::shared_ptr<SceneBase> scene)
 	scenes_.back()->Load();
 	load_->EndAsyncLoad();
 }
-
-const int& SceneManager::GetPointLightHandle(void)
-{
-	// ポイントライトのハンドルを渡す
-	return pointLightHandle_;
-}
-

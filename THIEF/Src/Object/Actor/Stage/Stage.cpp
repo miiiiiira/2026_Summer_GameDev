@@ -15,7 +15,7 @@ Stage::~Stage(void)
 void Stage::Init(void)
 {
 	// モデルの位置
-	pos_ = { 0.0f, 80.0f, 0.0f };
+	pos_ = { 0.0f, 0.0f, 0.0f };
 
 	// モデルの位置を設定
 	MV1SetPosition(modelId_, pos_);
@@ -35,7 +35,7 @@ void Stage::Init(void)
 void Stage::Load(void)
 {
 	// ステージモデルの読み込み
-	modelId_ = MV1LoadModel((Application::PATH_MODEL + "Stage/Stage.mv1").c_str());
+	modelId_ = MV1LoadModel((Application::PATH_MODEL + "Stage/Dummy.mv1").c_str());
 }
 
 void Stage::LoadEnd(void)

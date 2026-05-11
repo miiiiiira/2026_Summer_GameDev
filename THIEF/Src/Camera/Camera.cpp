@@ -138,7 +138,7 @@ void Camera::SetBeforeDrawFollow(void)
 	pos_.y = Math::Lerp(prePosY, pos_.y, COEFFICIENT);
 
 	// ‚‚³‚ğ‡‚í‚¹‚é
-	targetPos_.y = pos_.y;
+	//targetPos_.y = pos_.y;
 
 	// ƒJƒƒ‰‚Ìã•ûŒü‚ğŒvZ
 	VECTOR up = VTransform(Math::DIR_U, mat);

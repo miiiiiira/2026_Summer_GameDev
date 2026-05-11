@@ -5,12 +5,14 @@
 #include "../../../Common/Math/Math.h"
 #include "../../../Common/Transform/MatrixUtility.h"
 #include "../../Common/AnimationController.h"
+#include "Lantern/Lantern.h"
 
 #include "../../../Camera/Camera.h"
 
 Player::Player(Camera* camera)
 {
 	camera_ = camera;
+	lantern_ = nullptr;
 }
 
 Player::~Player(void)
@@ -19,6 +21,9 @@ Player::~Player(void)
 
 void Player::InitLoad(void)
 {
+	// ランタンクラスの生成・ロード
+	lantern_ = new Lantern(this);
+	lantern_->Load();
 }
 
 void Player::InitTransform(void)
@@ -56,6 +61,9 @@ void Player::InitAnimation(void)
 
 void Player::InitPost(void)
 {
+	// ランタンクラスの初期化
+	lantern_->Init();
+
 	// プレイヤーの状態
 	state_ = STATE::IDLE;
 
@@ -81,30 +89,31 @@ void Player::Update(void)
 
 	// スタミナ回復処理
 	HealStamina();
+
+	// ランタンクラスの更新処理
+	lantern_->Update(camera_->GetPos(),camera_->GetAngle());
 }
 
 void Player::Draw(void)
 {
 	ActorBase::Draw();
 
-	DrawFormatString(
-		0, 50, 0xffffff,
-		"キャラ角度　 ：(%.1f, %.1f, %.1f)",
-		Math::Rad2Deg(angle_.x),
-		Math::Rad2Deg(angle_.y),
-		Math::Rad2Deg(angle_.z)
-	);
+	// ランタンクラスの更新処理
+	lantern_->Draw();
 
-	DrawFormatString(
-		0, 200, 0xFFC800,
-		"スタミナ : %.0f / %.0f",
-		stamina_,
-		staminaMax_
-	);
+#ifdef _DEBUG
+	// デバッグ用の描画
+	DebugDraw();
+#endif // _DEBUG
 }
 
 void Player::Release(void)
 {
+	// ランタンクラスの解放
+	lantern_->Release();
+	delete lantern_;
+	lantern_ = nullptr;
+
 	ActorBase::Release();
 }
 
@@ -310,4 +319,22 @@ void Player::HealStamina(void)
 			stamina_ = staminaMax_;
 		}
 	}
+}
+
+void Player::DebugDraw(void)
+{
+	DrawFormatString(
+		0, 50, 0xffffff,
+		"キャラ角度　 ：(%.1f, %.1f, %.1f)",
+		Math::Rad2Deg(angle_.x),
+		Math::Rad2Deg(angle_.y),
+		Math::Rad2Deg(angle_.z)
+	);
+
+	DrawFormatString(
+		0, 200, 0xFFC800,
+		"スタミナ : %.0f / %.0f",
+		stamina_,
+		staminaMax_
+	);
 }
