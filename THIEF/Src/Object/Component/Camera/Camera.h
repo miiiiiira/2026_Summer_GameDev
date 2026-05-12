@@ -31,7 +31,7 @@ public:
 	static constexpr float LIMIT_X_DW_RAD = 50.0f * (DX_PI_F / 180.0f);
 
 	// 視点のしきい値(マウス)
-	static constexpr float THRESHOLD = 1.1f;
+	static constexpr float THRESHOLD = 1.5f;
 
 	// 線形補間の係数
 	static constexpr float COEFFICIENT = 0.1f;

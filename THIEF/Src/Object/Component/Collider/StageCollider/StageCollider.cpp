@@ -1,8 +1,6 @@
 #include "StageCollider.h"
-
 #include <DxLib.h>
 #include <algorithm>
-
 #include "../../../Object.h"
 #include "../../Stage/Stage.h"
 
@@ -11,7 +9,7 @@ void StageCollider::Init()
 {
 	// Transfrom取得
 	transform_ = owner_->GetComponent<Transform>();
-	
+
 	// CapsuleCollider取得
 	capsule_ = owner_->GetComponent<CapsuleCollider>();
 
@@ -25,14 +23,16 @@ void StageCollider::Init()
 void StageCollider::Update()
 {
 	if (!transform_) return;
+
 	if (!capsule_) return;
+
 	if (!stage_) return;
 
 	// 地面判定
 	FieldCollision();
 
 	// 壁判定
-	WallCollision();	
+	WallCollision();
 }
 
 // 地面判定
@@ -50,14 +50,13 @@ void StageCollider::FieldCollision()
 	// 上から下へラインを飛ばす(レイ)
 	VECTOR start = worldPos;
 	start.y += 10.0f;
-
 	VECTOR end = worldPos;
 	end.y -= 200.0f;
 
 	// ライン衝突をチェック
 	auto res = MV1CollCheck_Line(model, -1, start, end);
 
-	// 衝突していないなら終了
+	// 衝突していないなら処理しない
 	if (!res.HitFlag) return;
 
 	// 地面の法線を取得
@@ -98,11 +97,11 @@ void StageCollider::FieldCollision()
 
 	transform_->pos_ = pos;
 }
-
 // 壁判定
 void StageCollider::WallCollision()
 {
 	if (!capsule_) return;
+
 	if (!stage_) return;
 
 	// モデルIDを取得
@@ -128,10 +127,10 @@ void StageCollider::WallCollision()
 	for (int i = 0; i < hits.HitNum; i++)
 	{
 		auto hit = hits.Dim[i];
-
 		// 最大5回押し戻し
 		for (int tryCnt = 0; tryCnt < 5; tryCnt++)
 		{
+
 			// まだめり込んでいるか？
 			if (!HitCheck_Capsule_Triangle(
 				capStart,
@@ -147,7 +146,7 @@ void StageCollider::WallCollision()
 
 			// ポリゴンの法線
 			VECTOR normal = hit.Normal;
-	
+
 			// Yは無視する
 			normal.y = 0.0f;
 
@@ -170,16 +169,16 @@ void StageCollider::WallCollision()
 		}
 	}
 
+	// 衝突情報を削除する
+	MV1CollResultPolyDimTerminate(hits);
 	transform_->pos_ = pos;
 }
-
 // 通常移動
 VECTOR StageCollider::ResolveMove(VECTOR move)
 {
+
 	if (!capsule_ || !stage_) return move;
-
 	int model = stage_->GetModelId();
-
 	VECTOR pos = transform_->pos_;
 
 	// 移動後位置
@@ -211,7 +210,6 @@ VECTOR StageCollider::ResolveMove(VECTOR move)
 
 		// 安全clamp
 		dotUp = std::clamp(dotUp, -1.0f, 1.0f);
-
 		float angle = acosf(dotUp) * (180.0f / DX_PI_F);
 
 		// 急斜面
@@ -219,7 +217,6 @@ VECTOR StageCollider::ResolveMove(VECTOR move)
 		{
 			// 水平方向のみ
 			normal.y = 0.0f;
-
 			float len = VSize(normal);
 			if (len < 0.001f) continue;
 
@@ -238,21 +235,19 @@ VECTOR StageCollider::ResolveMove(VECTOR move)
 		}
 	}
 
+	// 衝突情報を削除する
+	MV1CollResultPolyDimTerminate(hits);
 	return move;
 }
-
 // 段差対応移動
 VECTOR StageCollider::ResolveStepMove(VECTOR move)
 {
 	if (!capsule_ || !stage_) return move;
-
 	int model = stage_->GetModelId();
-
 	VECTOR pos = transform_->pos_;
 
 	// 通常移動位置
 	VECTOR nextPos = VAdd(pos, move);
-
 	VECTOR capStart = VAdd(nextPos, capsule_->startOffset_);
 	VECTOR capEnd = VAdd(nextPos, capsule_->endOffset_);
 
@@ -266,6 +261,8 @@ VECTOR StageCollider::ResolveStepMove(VECTOR move)
 	// 当たらなければそのまま
 	if (hit.HitNum == 0)
 	{
+		// 衝突情報を削除する
+		MV1CollResultPolyDimTerminate(hit);
 		return move;
 	}
 
@@ -275,12 +272,10 @@ VECTOR StageCollider::ResolveStepMove(VECTOR move)
 	// 少し持ち上げる
 	VECTOR stepPos = pos;
 	stepPos.y += STEP_HEIGHT;
-
 	VECTOR stepNext = VAdd(stepPos, move);
-
 	VECTOR stepStart = VAdd(stepNext, capsule_->startOffset_);
 	VECTOR stepEnd = VAdd(stepNext, capsule_->endOffset_);
-	
+
 	// 再判定
 	auto stepHit = MV1CollCheck_Capsule(
 		model, -1,
@@ -294,6 +289,9 @@ VECTOR StageCollider::ResolveStepMove(VECTOR move)
 		move.y += STEP_HEIGHT;
 		return move;
 	}
+
+	// 衝突情報を削除する
+	MV1CollResultPolyDimTerminate(hit);
 
 	// ダメならスライド
 	return ResolveMove(move);

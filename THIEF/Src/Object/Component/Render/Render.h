@@ -12,7 +12,7 @@ public:
 	virtual void Draw(void) override {};
 	
 	// ‰ð•ú
-	virtual void Release() {}
+	virtual void Release() {};
 
 	// ƒnƒ“ƒhƒ‹‚ð•Ô‚·
 	int GetHandle(void) const { return handle_; }

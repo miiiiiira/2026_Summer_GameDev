@@ -174,23 +174,23 @@ void GameScene::PlayerCreate(void)
 
 void GameScene::EnemyCreate(void)
 {
-	// “G‚Ì¶¬
-	auto enemy = objectManger_->CreateObject();
+	//// “G‚Ì¶¬
+	//auto enemy = objectManger_->CreateObject();
 
-	// ƒ^ƒO‚Ì•t—^
-	enemy->SetTag(Tag::Enemy);
+	//// ƒ^ƒO‚Ì•t—^
+	//enemy->SetTag(Tag::Enemy);
 
-	// À•W‚ÌÝ’è
-	auto trans = enemy->AddComponent<Transform>();
-	trans->pos_ = { 0,0,0 };
+	//// À•W‚ÌÝ’è
+	//auto trans = enemy->AddComponent<Transform>();
+	//trans->pos_ = { 0,0,0 };
 
-	// •`‰æ‚ÌÝ’è
-	auto render = enemy->AddComponent<Render3D>();
-	render->SetModel("Data/Model/Player/Player.mv1");
+	//// •`‰æ‚ÌÝ’è
+	//auto render = enemy->AddComponent<Render3D>();
+	//render->SetModel("Data/Model/Player/Player.mv1");
 
-	// “–‚½‚è”»’è‚ÌÝ’è
-	auto col = enemy->AddComponent<CapsuleCollider>();
-	col->radius_ = 20.0f;
+	//// “–‚½‚è”»’è‚ÌÝ’è
+	//auto col = enemy->AddComponent<CapsuleCollider>();
+	//col->radius_ = 20.0f;
 }
 
 void GameScene::StageCreate(void)
