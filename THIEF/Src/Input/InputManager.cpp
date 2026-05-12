@@ -33,6 +33,8 @@ void InputManager::Init(void)
 	Add(KEY_INPUT_O);
 	Add(KEY_INPUT_ESCAPE);
 
+	Add(KEY_INPUT_K);
+
 	InputManager::MouseInfo info;
 
 	// ¶ƒNƒŠƒbƒN

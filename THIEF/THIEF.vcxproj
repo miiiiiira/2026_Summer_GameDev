@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Common\Shader\Shader.cpp" />
     <ClCompile Include="Src\Common\Transform\Transform.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\EnemyBase.cpp" />
     <ClCompile Include="Src\Object\Actor\Item\Goblet\Goblet.cpp" />
@@ -63,6 +64,7 @@
     <ClCompile Include="Src\System\SystemManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Common\Shader\Shader.h" />
     <ClInclude Include="Src\Common\Transform\Transform.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\EnemyBase.h" />
     <ClInclude Include="Src\Object\Actor\Item\Goblet\Goblet.h" />
@@ -118,6 +120,16 @@
     <ClInclude Include="Src\Scene\SceneManager.h" />
     <ClInclude Include="Src\Scene\TitleScene\TitleScene.h" />
     <ClInclude Include="Src\System\SystemManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Src\Common\Shader\CtrShader.hlsl">
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename).pso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0_level_9_3</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Src\Common\Shader\CtrShader.pso" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

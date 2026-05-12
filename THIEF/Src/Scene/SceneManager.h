@@ -2,10 +2,12 @@
 
 #include <list>
 #include <memory>
+#include <chrono>
 #include <DxLib.h>
 
 class SceneBase;
 class Loading;
+class Shader;
 
 class SceneManager
 {
@@ -66,6 +68,8 @@ public:
 	// ゲーム終了取得
 	bool GetGameEnd(void) { return isGameEnd_; }
 
+	const float& GetTotalTime(void);
+
 private:
 
 	// 各種シーン
@@ -74,6 +78,18 @@ private:
 	// ロード画面
 	Loading* load_;
 
+	// シェーダー
+	Shader* shader_;
+
 	// ゲーム終了
 	bool isGameEnd_;
+
+	// デルタタイム
+	std::chrono::system_clock::time_point mPreTime;
+	float mDeltaTime;
+	float mTotalTime;
+
+
+	int mainScreen_;
+	bool isShader_;
 };

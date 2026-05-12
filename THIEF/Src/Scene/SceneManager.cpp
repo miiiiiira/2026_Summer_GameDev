@@ -3,8 +3,11 @@
 #include "Loading/Loading.h"
 #include "TitleScene/TitleScene.h"
 #include "GameScene/GameScene.h"
+#include "../Application.h"
 
 #include "../System/SystemManager.h"
+#include "../Input/InputManager.h"
+#include "../Common/Shader/Shader.h"
 
 SceneManager* SceneManager::instance_ = nullptr;
 
@@ -31,6 +34,16 @@ void SceneManager::Init(void)
 
 	// 3D情報の初期化
 	Init3D();
+
+	mainScreen_ = MakeScreen(Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, true);
+
+	mTotalTime = 0.0f;
+	mPreTime = std::chrono::system_clock::now();
+
+	shader_ = new Shader();
+	shader_->Init();
+
+	isShader_ = true;
 
 	// 最初はタイトル画面から
 	ChangeScene(std::make_shared<TitleScene>());
@@ -65,6 +78,14 @@ void SceneManager::Init3D(void)
 // 更新
 void SceneManager::Update(void)
 {
+	// デルタタイム
+	auto nowTime = std::chrono::system_clock::now();
+	mDeltaTime = static_cast<float>(
+		std::chrono::duration_cast<std::chrono::nanoseconds>(nowTime - mPreTime).count() / 1000000000.0);
+	mPreTime = nowTime;
+
+	mTotalTime += mDeltaTime;
+
 	// シーンがなければ終了
 	if (scenes_.empty()) { return; }
 
@@ -103,11 +124,31 @@ void SceneManager::Draw(void)
 	// 通常の更新
 	else
 	{
+		SetDrawScreen(mainScreen_);
+		ClearDrawScreen();
+
 		// 積まれているもの全てを描画する
 		for (auto& scene : scenes_)
 		{
 			// シーンの描画
 			scene->Draw();
+		}
+
+		SetDrawScreen(DX_SCREEN_BACK);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+
+		if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_K))
+		{
+			isShader_ = !isShader_;
+		}
+
+		if (isShader_)
+		{
+			shader_->Draw(mainScreen_);
+		}
+		else
+		{
+			DrawGraph(0, 0, mainScreen_, false);
 		}
 	}
 }
@@ -124,6 +165,10 @@ void SceneManager::Delete(void)
 	// ロード画面の削除
 	load_->Release();
 	delete load_;
+
+	shader_->Release();
+	delete shader_;
+	DeleteGraph(mainScreen_);
 }
 
 void SceneManager::ChangeScene(std::shared_ptr<SceneBase>scene)
@@ -179,4 +224,10 @@ void SceneManager::JumpScene(std::shared_ptr<SceneBase> scene)
 	load_->StartAsyncLoad();
 	scenes_.back()->Load();
 	load_->EndAsyncLoad();
+}
+
+const float& SceneManager::GetTotalTime(void)
+{
+	// TODO: return ステートメントをここに挿入します
+	return mTotalTime;
 }
