@@ -41,5 +41,8 @@ protected:
 
 	// 重力をかける
 	void Gravity(void);
+
+	// デバッグ用の描画
+	void DrawDebug(void);
 };
 

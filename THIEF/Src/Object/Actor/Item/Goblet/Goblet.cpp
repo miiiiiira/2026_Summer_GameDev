@@ -12,7 +12,7 @@ Goblet::~Goblet(void)
 void Goblet::Load(void)
 {
 	// ÉÇÉfÉãÇÃì«Ç›çûÇ›
-	info_.modelId_ = MV1LoadModel("Data/item/Goblet.mv1");
+	info_.modelId_ = MV1LoadModel("Data/Model/Item/Goblet.mv1");
 }
 
 void Goblet::Init(void)

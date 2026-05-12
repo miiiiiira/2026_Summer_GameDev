@@ -188,6 +188,14 @@ bool InputManager::ChangeDevicePad(void)
 		|| IsPadLStickTrgDown(JOYPAD_NO::PAD1, JOYPAD_STICK::LEFT) || IsPadLStickTrgDown(JOYPAD_NO::PAD1, JOYPAD_STICK::RIGHT);
 }
 
+bool InputManager::PushAnyButton(void)
+{
+	return  FindMouse(MOUSE_INPUT_LEFT).keyTrgDown 
+		|| IsTrgDown(KEY_INPUT_SPACE) || IsTrgDown(KEY_INPUT_RETURN)
+		|| IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::A) || IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::B)
+		|| IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::X) || IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::Y);
+}
+
 InputManager::InputManager(void)
 {
 	mouseInput_ = -1;

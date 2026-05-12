@@ -178,6 +178,9 @@ public:
 	// パッドに切り替え
 	bool ChangeDevicePad(void);
 
+	// タイトル遷移
+	bool PushAnyButton(void);
+
 private:
 
 	// キー情報

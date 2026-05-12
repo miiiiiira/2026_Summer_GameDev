@@ -23,6 +23,12 @@ void ItemBase::Draw(void)
 {
 	// モデルを描画
 	MV1DrawModel(info_.modelId_);
+
+#ifdef _DEBUG
+	// デバッグ表示
+	DrawDebug();
+#endif // _DEBUG
+
 }
 
 void ItemBase::Release(void)
@@ -67,4 +73,9 @@ void ItemBase::Gravity(void)
 
 	// 座標に重力を反映
 	info_.pos_.y += info_.gravity_;
+}
+
+void ItemBase::DrawDebug(void)
+{
+	DrawSphere3D(info_.pos_, 50.0f, 12, 0xff0000, 0xff0000, false);
 }
