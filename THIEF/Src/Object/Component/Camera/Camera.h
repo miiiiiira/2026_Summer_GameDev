@@ -61,8 +61,11 @@ public:
 	// プレイヤーの情報をもらう　※プレイヤーの場合
 	void SetPlayerController(PlayerController* playerController);
 
-	// 座標の取得
-	const VECTOR& GetAngle() const { return angle_; }
+	// 向きの取得
+	VECTOR* GetAngle(void) { return &angle_; }
+
+	// Transformを返す
+	Transform* GetTransform();
 
 private:
 	// 描画前のカメラ設定

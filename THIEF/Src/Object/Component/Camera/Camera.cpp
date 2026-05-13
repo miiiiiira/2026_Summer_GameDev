@@ -133,6 +133,12 @@ void Camera::SetPlayerController(PlayerController* playerController)
 	playerController_ = playerController;
 }
 
+
+Transform* Camera::GetTransform()
+{
+	return owner_->GetComponent<Transform>();
+}
+
 void Camera::ProcessRot(bool isLimit)
 {
 	if (SystemManager::GetInstance().GetIsDevice())

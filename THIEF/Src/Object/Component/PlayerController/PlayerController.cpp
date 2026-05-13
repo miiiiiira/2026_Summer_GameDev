@@ -93,7 +93,7 @@ void PlayerController::Move()
 	}
 
 	// カメラ角度を取得
-	VECTOR cameraAngles = camera_->GetAngle();
+	VECTOR* cameraAngles = camera_->GetAngle();
 
 	// 移動量
 	VECTOR dir = Math::VECTOR_ZERO;
@@ -129,7 +129,7 @@ void PlayerController::Move()
 		// XYZの回転行列
 		// XZ平面移動にする場合は、XZの回転を考慮しないようにする
 		MATRIX mat = MGetIdent();
-		mat = MMult(mat, MGetRotY(cameraAngles.y));
+		mat = MMult(mat, MGetRotY(cameraAngles->y));
 
 		// 回転行列を使用して、ベクトルを回転させる
 		moveDir_ = VTransform(dir, mat);

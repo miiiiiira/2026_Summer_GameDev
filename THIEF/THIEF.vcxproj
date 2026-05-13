@@ -24,7 +24,7 @@
     <ClCompile Include="Src\Object\Actor\Enemy\EnemyBase.cpp" />
     <ClCompile Include="Src\Object\Actor\Item\Goblet\Goblet.cpp" />
     <ClCompile Include="Src\Object\Actor\Item\ItemBase.cpp" />
-    <ClCompile Include="Src\Object\Actor\Player\Lantern\Lantern.cpp" />
+    <ClCompile Include="Src\Object\Component\Lantern\Lantern.cpp" />
     <ClCompile Include="Src\Object\Collision\CollisionManager.cpp" />
     <ClCompile Include="Src\Object\Component\Animation\Animation.cpp" />
     <ClCompile Include="Src\Object\Component\Camera\Camera.cpp" />
@@ -69,7 +69,7 @@
     <ClInclude Include="Src\Object\Actor\Enemy\EnemyBase.h" />
     <ClInclude Include="Src\Object\Actor\Item\Goblet\Goblet.h" />
     <ClInclude Include="Src\Object\Actor\Item\ItemBase.h" />
-    <ClInclude Include="Src\Object\Actor\Player\Lantern\Lantern.h" />
+    <ClInclude Include="Src\Object\Component\Lantern\Lantern.h" />
     <ClInclude Include="Src\Object\Actor\Item\ItemInfo.h" />
     <ClInclude Include="Src\Object\Collision\CollisionManager.h" />
     <ClInclude Include="Src\Object\Component\Animation\Animation.h" />

@@ -7,6 +7,7 @@ enum class Tag
 	Enemy,
 	Camera,
 
+	Lantern,
 	Stage,
 	Object,
 	BreakObject,
