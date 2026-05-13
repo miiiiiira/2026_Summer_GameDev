@@ -230,6 +230,11 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\DxLib;$(DXLIB_DIR)</AdditionalLibraryDirectories>
     </Link>
+    <FxCompile>
+      <ShaderModel>4.0</ShaderModel>
+      <ShaderType>Pixel</ShaderType>
+      <ObjectFileOutput>$(ProjectDir)Src/Common/Shader/%(Filename).pso</ObjectFileOutput>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -241,12 +246,18 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\DxLib;$(DXLIB_DIR)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\DxLib;$(DXLIB_DIR)</AdditionalLibraryDirectories>
     </Link>
+    <FxCompile>
+      <ShaderModel>4.0</ShaderModel>
+      <ShaderType>Pixel</ShaderType>
+      <ObjectFileOutput>$(ProjectDir)Src/Common/Shader/%(Filename).pso</ObjectFileOutput>
+    </FxCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
