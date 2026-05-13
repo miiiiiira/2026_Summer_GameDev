@@ -69,7 +69,7 @@ void Lantern::Draw(void)
 
 void Lantern::SetCameraPosAngle(VECTOR* cameraPos, VECTOR* cameraAngle)
 {
-	// カメラの座標と向きの参照先を保持
+	// カメラの座標と向きのポインタを保持
 	cameraPos_ = cameraPos;
 	cameraAngle_ = cameraAngle;
 }

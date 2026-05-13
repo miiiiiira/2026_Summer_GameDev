@@ -35,9 +35,9 @@ void Goblet::Init(void)
 	// 金額(アイテムのHP)初期化
 	info_.money_ = MONEY;
 
-	// 重力有効化
-	info_.isGravity_ = true;
-
 	// 生存中にする
 	info_.isAlive_ = true;
+
+	// 初めは掴まれていない状態にする
+	info_.isGrabbed = false;
 }

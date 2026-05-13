@@ -34,9 +34,12 @@ struct ItemInfo
 	// 重力
 	float gravity_;
 
-	// 重力をかけるか true / 重力をかける , false / 重力をかけない
-	bool isGravity_;
+	// プレイヤーとの相対座標Z軸のみ
+	float localPosZ_;
 
 	// 生存フラグ	true / 生存中にする , false / 生存している
 	bool isAlive_;
+
+	// 掴まれているか　true / 掴まれている, false / 掴まれていない
+	bool isGrabbed;
 };
