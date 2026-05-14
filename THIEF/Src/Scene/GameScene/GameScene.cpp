@@ -244,3 +244,7 @@ void GameScene::StageCreate(void)
 	// ステージ機能
 	stage->AddComponent<Stage>();
 }
+
+void GameScene::CheckItemPlayerCollision(void)
+{
+}

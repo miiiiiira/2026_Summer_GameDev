@@ -39,6 +39,7 @@
 
 # debug information files
 *.dwo
+*.pso
 THIEF/.vs/
 THIEF/x64/
 THIEF/Log.txt

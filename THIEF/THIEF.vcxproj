@@ -44,7 +44,6 @@
     <ClCompile Include="Src\Common\Draw\Draw.cpp" />
     <ClCompile Include="Src\Common\Fader\Fader.cpp" />
     <ClCompile Include="Src\Common\Math\Math.cpp" />
-    <ClCompile Include="Src\Common\System\Fader.cpp" />
     <ClCompile Include="Src\Common\System\FpsControl.cpp" />
     <ClCompile Include="Src\Common\Transform\MatrixUtility.cpp" />
     <ClCompile Include="Src\Common\Transform\Quaternion.cpp" />
@@ -103,7 +102,6 @@
     <ClInclude Include="Src\Common\Fader\Fader.h" />
     <ClInclude Include="Src\Common\Math\Math.h" />
     <ClInclude Include="Src\Common\Math\Vector2.h" />
-    <ClInclude Include="Src\Common\System\Fader.h" />
     <ClInclude Include="Src\Common\System\FpsControl.h" />
     <ClInclude Include="Src\Common\Transform\MatrixUtility.h" />
     <ClInclude Include="Src\Common\Transform\Quaternion.h" />

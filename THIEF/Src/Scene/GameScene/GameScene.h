@@ -32,4 +32,7 @@ private:
 
 	// アイテム
 	Goblet* item_;
+
+	// アイテムとプレイヤーの掴み用当たり判定
+	void CheckItemPlayerCollision(void);
 };
