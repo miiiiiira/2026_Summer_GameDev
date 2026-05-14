@@ -102,6 +102,9 @@ void ItemBase::EndGrabbed(void)
 {
 	// íÕÇ‹ÇÍÇƒÇ¢Ç»Ç¢èÛë‘Ç…Ç∑ÇÈ
 	info_.isGrabbed = false;
+
+	MV1SetPosition(info_.modelId_, info_.pos_);
+	MV1SetRotationXYZ(info_.modelId_, info_.angle_);
 }
 
 void ItemBase::SetCameraPosAngle(VECTOR* cameraPos, VECTOR* cameraAngle)

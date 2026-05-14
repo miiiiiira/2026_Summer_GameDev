@@ -257,8 +257,6 @@ void GameScene::StageCreate(void)
 
 void GameScene::CheckItemPlayerCollision(void)
 {
-	// アイテムの座標
-	VECTOR itemPos = item_->GetInfo().pos_;
 	// アイテムのモデルIDを取得
 	int itemModelId = item_->GetModelID();
 
@@ -294,13 +292,16 @@ void GameScene::CheckItemPlayerCollision(void)
 	// 座標に反映
 	downPos = VAdd(*cameraPos, localPosRot);
 
+	// 当たり判定情報を最新の状態に更新
+	MV1RefreshCollInfo(itemModelId, -1);
+
 	// 線分とモデルの衝突判定
 	MV1_COLL_RESULT_POLY res =
 		MV1CollCheck_Line(itemModelId, -1, topPos, downPos);
 
 	if (res.HitFlag)
 	{
-			// アイテムの追従モードをオンにする
-		item_->StartGrabbed({ -20.0f ,0.0f,50.0f });
+		// アイテムの追従モードをオンにする
+		item_->StartGrabbed({ 10.0f ,0.0f,50.0f });
 	}
 }
