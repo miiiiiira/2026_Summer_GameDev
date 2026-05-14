@@ -46,6 +46,9 @@ public:
 	void Init() override;		// ‰Šú‰»
 	void Update() override;		// XV
 
+	// Transform‚ğ•Ô‚·
+	Transform* GetTransform();
+
 	// ƒJƒƒ‰İ’è
 	void SetCamera(Camera* camera) { camera_ = camera; }
 

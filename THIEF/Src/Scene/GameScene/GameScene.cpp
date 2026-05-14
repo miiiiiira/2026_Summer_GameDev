@@ -24,6 +24,8 @@
 #include "../../Object/Component/Stage/Stage.h"
 #include "../../Object/Component/Lantern/Lantern.h"
 #include "../../Object/Component/Transform/Transform.h"
+#include "../../Common/Transform/MatrixUtility.h"
+
 
 GameScene::GameScene(void)
 {
@@ -65,6 +67,11 @@ void GameScene::Load(void)
 	// 杯クラス(アイテム)
 	item_ = new Goblet();
 	item_->Load();
+	// カメラの取得
+	auto camera = objectManger_->FindComponentWithTag<Camera>(Tag::Camera);
+	VECTOR* cameraPos = &camera->GetTransform()->pos_;
+	VECTOR* cameraAngle = camera->GetAngle();
+	item_->SetCameraPosAngle(cameraPos, cameraAngle);
 }
 
 void GameScene::LoadEnd(void)
@@ -99,6 +106,9 @@ void GameScene::Update(void)
 
 	// アイテム更新
 	item_->Update();
+
+	// アイテムとプレイヤーのレンジの当たり判定
+	CheckItemPlayerCollision();
 }
 
 void GameScene::Draw(void)
@@ -247,4 +257,50 @@ void GameScene::StageCreate(void)
 
 void GameScene::CheckItemPlayerCollision(void)
 {
+	// アイテムの座標
+	VECTOR itemPos = item_->GetInfo().pos_;
+	// アイテムのモデルIDを取得
+	int itemModelId = item_->GetModelID();
+
+	// カメラの取得
+	auto camera = objectManger_->FindComponentWithTag<Camera>(Tag::Camera);
+	VECTOR* cameraPos = &camera->GetTransform()->pos_;
+	VECTOR* cameraAngle = camera->GetAngle();
+
+	// 線分の上座標
+	VECTOR topPos = *cameraPos;
+
+	// 線分の下座標
+	VECTOR downPos = *cameraPos;
+
+	// カメラの回転行列
+	VECTOR vec = { cameraAngle->x ,cameraAngle->y ,0.0f };
+	MATRIX matRot = Matrix::GetMatrixRotateXYZ(vec);
+
+	// カメラの視線方向のベクトルを計算
+	// DxlibのVTransformを使用
+	VECTOR forward = VGet(0.0f, 0.0f, 1.0f); // 前方向をZ軸とする
+	// カメラの方向を算出
+	VECTOR cameraDir = VTransform(forward, matRot);
+
+	// ローカル座標
+	VECTOR localPosRot;
+
+	// 相対座標
+	VECTOR LOCAL_POS = { 0.0f,0.0f,100.0f };
+
+	localPosRot = VTransform(LOCAL_POS, matRot);
+
+	// 座標に反映
+	downPos = VAdd(*cameraPos, localPosRot);
+
+	// 線分とモデルの衝突判定
+	MV1_COLL_RESULT_POLY res =
+		MV1CollCheck_Line(itemModelId, -1, topPos, downPos);
+
+	if (res.HitFlag)
+	{
+			// アイテムの追従モードをオンにする
+		item_->StartGrabbed({ -20.0f ,0.0f,50.0f });
+	}
 }

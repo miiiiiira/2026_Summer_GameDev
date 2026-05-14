@@ -32,6 +32,8 @@ public:
 	// アイテムの情報を渡す
 	const ItemInfo& GetInfo(void);
 
+	int GetModelID(void) { return info_.modelId_; }
+
 	// 指定された座標と向きを反映させる
 	void SetPosAngle(const VECTOR& pos,const VECTOR& angle);
 
@@ -39,7 +41,7 @@ public:
 	void SetDamage(int damage);
 
 	// 掴まれた状態にする
-	void StartGrabbed(float localPosZ);
+	void StartGrabbed(VECTOR localPos);
 
 	// 掴まれた状態を終了する
 	void EndGrabbed(void);

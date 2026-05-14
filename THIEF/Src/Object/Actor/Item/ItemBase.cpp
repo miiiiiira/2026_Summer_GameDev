@@ -3,6 +3,7 @@
 #include "../../../Common/Transform/MatrixUtility.h"
 #include "../../../Common/Math/Math.h"
 #include "../../Component/PlayerController/PlayerController.h"
+#include "../../../Input/InputManager.h"
 
 ItemBase::ItemBase(void)
 	:cameraPos_(nullptr)
@@ -23,6 +24,11 @@ void ItemBase::Update(void)
 	{
 		// プレイヤーの位置を見て移動処理を行う
 		TrackingPlayer();
+
+		if (InputManager::GetInstance()->IsClickMouseLeft())
+		{
+			EndGrabbed();
+		}
 	}
 	// 掴まれていなかったら
 	else
@@ -84,12 +90,12 @@ void ItemBase::SetDamage(int damage)
 	}
 }
 
-void ItemBase::StartGrabbed(float localPosZ)
+void ItemBase::StartGrabbed(VECTOR localPos)
 {
 	// 掴まれた状態にする
 	info_.isGrabbed = true;
 
-	info_.localPosZ_ = localPosZ;
+	info_.localPos_ = localPos;
 }
 
 void ItemBase::EndGrabbed(void)
@@ -134,7 +140,7 @@ void ItemBase::TrackingPlayer(void)
 	VECTOR localPosRot;
 
 	// 座標
-	localPosRot = VTransform({0.0f,0.0f,info_.localPosZ_}, matRot);
+	localPosRot = VTransform(info_.localPos_, matRot);
 
 	// ランタンの座標に反映
 	info_.pos_ = VAdd(*cameraPos_, localPosRot);

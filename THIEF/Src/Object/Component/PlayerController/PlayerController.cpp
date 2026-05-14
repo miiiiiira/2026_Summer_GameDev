@@ -60,6 +60,11 @@ void PlayerController::Update()
 	ApplyGravity();
 }
 
+Transform* PlayerController::GetTransform()
+{
+	return owner_->GetComponent<Transform>();
+}
+
 // ˆÚ“®ˆ—
 void PlayerController::Move()
 {

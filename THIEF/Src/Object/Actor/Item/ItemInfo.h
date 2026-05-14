@@ -34,8 +34,8 @@ struct ItemInfo
 	// 重力
 	float gravity_;
 
-	// プレイヤーとの相対座標Z軸のみ
-	float localPosZ_;
+	// プレイヤーとの相対座標
+	VECTOR localPos_;
 
 	// 生存フラグ	true / 生存中にする , false / 生存している
 	bool isAlive_;
