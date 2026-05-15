@@ -24,11 +24,6 @@ void ItemBase::Update(void)
 	{
 		// プレイヤーの位置を見て移動処理を行う
 		TrackingPlayer();
-
-		if (InputManager::GetInstance()->IsClickMouseLeft())
-		{
-			EndGrabbed();
-		}
 	}
 	// 掴まれていなかったら
 	else

@@ -6,6 +6,7 @@
 class Camera;
 class Transform;
 class Animation;
+class ItemBase;
 
 // プレイヤーの状態
 enum class PlayerState
@@ -15,6 +16,12 @@ enum class PlayerState
 	DASH,
 	CROUCHING,
 	SLIDING,
+};
+
+enum class GraspingState
+{
+	NOT_GRAPING,
+	IS_GRAPING,
 };
 
 // プレイヤー制御コンポーネント
@@ -52,9 +59,17 @@ public:
 	// カメラ設定
 	void SetCamera(Camera* camera) { camera_ = camera; }
 
-	// 現在の状態
+	// 指定された掴み動作を設定
+	void ChangeGrapingState(const GraspingState& grapState);
+
+	// アイテムクラスのポインタ取得
+	void SetItemClassPoint(ItemBase* item) { item_ = item; }
+
+	// 現在の状態表すステート
 	PlayerState state_ = PlayerState::IDLE;
 
+	// 掴み状態を表すステート
+	GraspingState grapState_ = GraspingState::NOT_GRAPING;
 private:
 	// 移動処理
 	void Move();
@@ -72,7 +87,14 @@ private:
 	// スタミナ回復処理
 	void HealStamina(void);
 
+	// 掴み判定処理
+	void Grasping(void);
+
 private:
+
+	// アイテム
+	ItemBase* item_ = nullptr;
+
 	// 現在の落下速度
 	float velocityY_ = 0.0f;
 

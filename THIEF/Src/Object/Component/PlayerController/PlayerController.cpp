@@ -7,6 +7,7 @@
 #include "../../Component/Transform/Transform.h"
 #include "../../Component/Animation/Animation.h"
 #include "../../Component/Camera/Camera.h"
+#include "../../Actor/Item/ItemBase.h"
 
 #include "../Collider/StageCollider/StageCollider.h"
 
@@ -58,11 +59,23 @@ void PlayerController::Update()
 
 	// 重力処理
 	ApplyGravity();
+
+	// アイテムの中身がなかったら
+	if (item_ == nullptr)return;
+
+	// 掴み動作処理
+	Grasping();
 }
 
 Transform* PlayerController::GetTransform()
 {
 	return owner_->GetComponent<Transform>();
+}
+
+void PlayerController::ChangeGrapingState(const GraspingState& grapState)
+{
+	// 指定された掴み動作を設定
+	grapState_ = grapState;
 }
 
 // 移動処理
@@ -274,5 +287,28 @@ void PlayerController::HealStamina(void)
 			// 最大スタミナを超えないようにする
 			stamina_ = staminaMax_;
 		}
+	}
+}
+
+void PlayerController::Grasping(void)
+{
+	switch (grapState_)
+	{
+	case GraspingState::NOT_GRAPING:
+		break;
+	case GraspingState::IS_GRAPING:
+
+		// マウスの左クリックが今離されたか、マウスの左クリックを押されていなかったら
+		if (InputManager::GetInstance()->IsTrgUpMouseLeft()||!InputManager::GetInstance()->IsClickMouseLeft())
+		{
+			// 掴み動作を終わる
+			grapState_ = GraspingState::NOT_GRAPING;
+			// アイテムの追従を終わる
+			item_->EndGrabbed();
+		}
+
+		break;
+	default:
+		break;
 	}
 }

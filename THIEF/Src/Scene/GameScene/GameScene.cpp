@@ -49,6 +49,10 @@ void GameScene::Load(void)
 	// オブジェクトマネージャーの生成
 	objectManger_ = new ObjectManager();
 
+	// 杯クラス(アイテム)
+	item_ = new Goblet();
+	item_->Load();
+
 	// ステージの作成
 	StageCreate();
 
@@ -64,9 +68,6 @@ void GameScene::Load(void)
 	// 敵の作成
 	EnemyCreate();
 
-	// 杯クラス(アイテム)
-	item_ = new Goblet();
-	item_->Load();
 	// カメラの取得
 	auto camera = objectManger_->FindComponentWithTag<Camera>(Tag::Camera);
 	VECTOR* cameraPos = &camera->GetTransform()->pos_;
@@ -185,6 +186,10 @@ void GameScene::PlayerCreate(void)
 	// プレイヤーの情報をカメラに設定
 	camera->SetTarget(trans);
 	camera->SetPlayerController(cont);
+
+	// アイテムクラスのポインタを取得
+	auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
+	playerController->SetItemClassPoint(item_);
 }
 
 void GameScene::LanternCreate(void)
@@ -257,6 +262,12 @@ void GameScene::StageCreate(void)
 
 void GameScene::CheckItemPlayerCollision(void)
 {
+	// プレイヤーの取得
+	auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
+
+	// プレイヤーが何かを掴んでいる状態だったら処理を行わない
+	if (player->grapState_ != GraspingState::NOT_GRAPING)return;
+
 	// アイテムのモデルIDを取得
 	int itemModelId = item_->GetModelID();
 
@@ -299,9 +310,12 @@ void GameScene::CheckItemPlayerCollision(void)
 	MV1_COLL_RESULT_POLY res =
 		MV1CollCheck_Line(itemModelId, -1, topPos, downPos);
 
-	if (res.HitFlag)
+	// 当たっているかつ、マウスが押されていたら
+	if (res.HitFlag&& InputManager::GetInstance()->IsClickMouseLeft())
 	{
 		// アイテムの追従モードをオンにする
 		item_->StartGrabbed({ 10.0f ,0.0f,50.0f });
+		// 掴み状態にする
+		player->ChangeGrapingState(GraspingState::IS_GRAPING);
 	}
 }
