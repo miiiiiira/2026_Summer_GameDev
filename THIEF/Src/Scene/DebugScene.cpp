@@ -45,7 +45,7 @@ void DebugScene::Init(void)
 
 	pointNum_ = 0;
 	time_ = 0;
-	edit_ = EditMode::ENEMY_NODE_POINT;
+	edit_ = EditMode::SPAWN_POINT;
 }
 
 void DebugScene::Load(void)
@@ -374,6 +374,83 @@ void DebugScene::PlaceItemNodePoint(void)
 
 void DebugScene::PlaceSpawnPoint(void)
 {
+	auto camera = objectManger_->FindComponentWithTag<Camera>(Tag::Camera);
+	VECTOR* cameraPos = &camera->GetTransform()->pos_;
+	VECTOR* cameraAngle = camera->GetAngle();
+
+	// 左クリックでカメラの座標をデバックポイントとして追加
+	if (InputManager::GetInstance()->IsTrgMouseLeft())
+	{
+		cameraPos->y -= 100.0f;
+
+		Point point;
+		point.id = pointNum_;
+		point.pos = *cameraPos;
+		points_.push_back(point);
+
+		pointNum_++;
+	}
+
+	// 右クリックで最後のデバッグポイントを削除
+	if (InputManager::GetInstance()->IsTrgMouseRight())
+	{
+		// 線分の上座標
+		VECTOR topPos = *cameraPos;
+		// 線分の下座標
+		VECTOR downPos = *cameraPos;
+
+		// カメラの回転行列
+		VECTOR vec = { cameraAngle->x ,cameraAngle->y ,0.0f };
+		MATRIX matRot = Matrix::GetMatrixRotateXYZ(vec);
+
+		// カメラの視線方向のベクトルを計算
+		// DxlibのVTransformを使用
+		VECTOR forward = VGet(0.0f, 0.0f, 1.0f); // 前方向をZ軸とする
+		// カメラの方向を算出
+		VECTOR cameraDir = VTransform(forward, matRot);
+
+		// ローカル座標
+		VECTOR localPosRot = {};
+
+		// 相対座標
+		VECTOR LOCAL_POS = { 0.0f,0.0f,500.0f };
+
+		localPosRot = VTransform(LOCAL_POS, matRot);
+
+		// 座標に反映
+		downPos = VAdd(*cameraPos, localPosRot);
+
+		auto targetIt = points_.end();
+
+		for (auto it = points_.begin(); it != points_.end(); ++it)
+		{
+			if (HitCheck_Line_Sphere(topPos, downPos, it->pos, 30.0f))
+			{
+				targetIt = it;
+				break;
+			}
+		}
+
+		if (targetIt != points_.end())
+		{
+			// 指定したデバッグポイントを削除
+			points_.erase(targetIt);
+			pointNum_--;
+
+			// IDを振りなおす
+			for (int i = 0; i < points_.size(); i++)
+			{
+				points_[i].id = i;
+			}
+		}
+	}
+
+	// エンターでデバックポイントを保存
+	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_RETURN))
+	{
+		// デバッグポイントの保存
+		SavePoints();
+	}
 }
 
 void DebugScene::SavePoints(void)
@@ -396,7 +473,7 @@ void DebugScene::SavePoints(void)
 
 void DebugScene::SaveEnemyNodePoints(void)
 {
-	std::ofstream ofs("Data/PointSave.csv");
+	std::ofstream ofs("Data/EnemyPointSave.csv");
 
 	if (!ofs) return;
 
@@ -410,10 +487,30 @@ void DebugScene::SaveEnemyNodePoints(void)
 
 void DebugScene::SaveItemNodePoints(void)
 {
+	std::ofstream ofs("Data/ItemPointSave.csv");
+
+	if (!ofs) return;
+
+	// 形式: x y z
+	for (const auto& point : points_) {
+		ofs << point.id << "," << point.pos.x << "," <<
+			point.pos.y << "," << point.pos.z << "\n";
+	}
+	ofs.close();
 }
 
 void DebugScene::SaveSpawnPoints(void)
 {
+	std::ofstream ofs("Data/PlayerPointSave.csv");
+
+	if (!ofs) return;
+
+	// 形式: x y z
+	for (const auto& point : points_) {
+		ofs << point.id << "," << point.pos.x << "," <<
+			point.pos.y << "," << point.pos.z << "\n";
+	}
+	ofs.close();
 }
 
 void DebugScene::LoadPoints(void)
