@@ -10,6 +10,7 @@
 #include "../../Application.h"
 #include "../Confirm/Confirm.h"
 #include "../GameScene/GameScene.h"
+#include "../DebugScene.h"
 
 MainMenu::MainMenu(void)
 {
@@ -65,6 +66,15 @@ void MainMenu::Update(void)
 			break;
 		}
 	}
+
+#ifdef _DEBUG
+	// Lキーを押したらデバッグシーン
+	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_L))
+	{
+		SceneManager::GetInstance()->JumpScene(std::make_shared<DebugScene>());
+		return;
+	}
+#endif //_DEBUG
 
 	ChangeSelect(nextSelect);
 
