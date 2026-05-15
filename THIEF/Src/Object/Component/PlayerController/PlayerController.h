@@ -144,6 +144,9 @@ private:
 	// スタミナを回復させるまでの時間カウンタ
 	int staminaCounter_;
 
+	// ジャンプ中か　true / ジャンプ中 , false / ジャンプ中でない
+	bool isJumping_;
+
 	// 掴み距離
 	float range_;
 	float rangeMax_;

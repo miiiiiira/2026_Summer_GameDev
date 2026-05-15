@@ -38,6 +38,9 @@ void PlayerController::Init()
 	// スタミナを回復させるまでの時間カウンタの初期化
 	staminaCounter_ = 0;
 
+	// ジャンプフラグの初期化
+	isJumping_ = false;
+
 	// 掴み距離の初期化
 	range_ = rangeMax_ = DEFAULT_RENGE;
 }
@@ -186,6 +189,9 @@ void PlayerController::ApplyGravity()
 	
 	if (!stageCol) return;
 
+	// Y座標へ反映
+	transform_->pos_.y += velocityY_;
+
 	// 接地判定
 	
 	// 空中
@@ -197,16 +203,23 @@ void PlayerController::ApplyGravity()
 		// 最大落下速度
 		if (velocityY_ < MAX_FALL)
 			velocityY_ = MAX_FALL;
+
+		if (!isJumping_)
+		{
+			isJumping_ = true;
+		}
 	}
 	else
 	{
 		// 地面上なら少し下方向に押す
 		// 0だと浮く場合があるため
 		velocityY_ = -0.1f;
-	}
 
-	// Y座標へ反映
-	transform_->pos_.y += velocityY_;
+		if (isJumping_)
+		{
+			isJumping_ = false;
+		}
+	}
 }
 
 void PlayerController::Dash(void)
@@ -313,10 +326,13 @@ void PlayerController::HealStamina(void)
 
 void PlayerController::Jump(void)
 {
-	// ジャンプボタンを押されたら
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_SPACE))
+	// ジャンプボタンを押されたかつ、ジャンプ中では無かったら
+	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_SPACE) && !isJumping_)
 	{
 		velocityY_ = 100.0f;
+
+		// ジャンプ中にする
+		isJumping_ = true;
 	}
 }
 
