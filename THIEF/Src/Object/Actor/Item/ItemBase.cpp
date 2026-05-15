@@ -85,12 +85,23 @@ void ItemBase::SetDamage(int damage)
 	}
 }
 
-void ItemBase::StartGrabbed(VECTOR localPos)
+void ItemBase::SetLocalPos(VECTOR localPos)
+{
+	info_.localPos_ = localPos;
+}
+
+void ItemBase::SetLocalPos(float localPosZ)
+{
+	info_.localPos_.z = localPosZ;
+}
+
+void ItemBase::StartGrabbing(VECTOR localPos)
 {
 	// 掴まれた状態にする
 	info_.isGrabbed = true;
 
-	info_.localPos_ = localPos;
+	// プレイヤーとの相対座標をセット
+	SetLocalPos(localPos);
 }
 
 void ItemBase::EndGrabbed(void)
@@ -159,6 +170,8 @@ void ItemBase::TrackingPlayer(void)
 	// 回転行列をモデルに反映
 	MV1SetRotationMatrix(info_.modelId_, mat);
 
+	// 当たり判定情報を最新の状態に更新
+	MV1RefreshCollInfo(info_.modelId_, -1);
 }
 
 void ItemBase::DrawDebug(void)

@@ -108,7 +108,7 @@ void GameScene::Update(void)
 	// アイテム更新
 	item_->Update();
 
-	// アイテムとプレイヤーのレンジの当たり判定
+	// アイテムとプレイヤーの掴める範囲の当たり判定
 	CheckItemPlayerCollision();
 }
 
@@ -286,25 +286,16 @@ void GameScene::CheckItemPlayerCollision(void)
 	VECTOR vec = { cameraAngle->x ,cameraAngle->y ,0.0f };
 	MATRIX matRot = Matrix::GetMatrixRotateXYZ(vec);
 
-	// カメラの視線方向のベクトルを計算
-	// DxlibのVTransformを使用
-	VECTOR forward = VGet(0.0f, 0.0f, 1.0f); // 前方向をZ軸とする
-	// カメラの方向を算出
-	VECTOR cameraDir = VTransform(forward, matRot);
-
 	// ローカル座標
 	VECTOR localPosRot;
 
 	// 相対座標
-	VECTOR LOCAL_POS = { 0.0f,0.0f,100.0f };
+	VECTOR LOCAL_POS = { 0.0f,0.0f,player->GetRangeMax()};
 
 	localPosRot = VTransform(LOCAL_POS, matRot);
 
 	// 座標に反映
 	downPos = VAdd(*cameraPos, localPosRot);
-
-	// 当たり判定情報を最新の状態に更新
-	MV1RefreshCollInfo(itemModelId, -1);
 
 	// 線分とモデルの衝突判定
 	MV1_COLL_RESULT_POLY res =
@@ -313,9 +304,13 @@ void GameScene::CheckItemPlayerCollision(void)
 	// 当たっているかつ、マウスが押されていたら
 	if (res.HitFlag&& InputManager::GetInstance()->IsClickMouseLeft())
 	{
+		float dist = VSize(VSub(res.HitPosition, *cameraPos));
+
+		if (dist < PlayerController::MIN_RENGE)dist = PlayerController::MIN_RENGE;
+
 		// アイテムの追従モードをオンにする
-		item_->StartGrabbed({ 10.0f ,0.0f,50.0f });
+		item_->StartGrabbing({0.0f,-10.0f,dist });
 		// 掴み状態にする
-		player->ChangeGrapingState(GraspingState::IS_GRAPING);
+		player->StartGrabbing(dist);
 	}
 }

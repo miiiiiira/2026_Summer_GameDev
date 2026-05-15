@@ -7,32 +7,40 @@ void InputManager::Init(void)
 {
 	// ゲームで使用したいキーを、
 	// 事前にここで登録しておいてください
-	Add(KEY_INPUT_SPACE);
 	Add(KEY_INPUT_RETURN);
-	Add(KEY_INPUT_LSHIFT);
-	Add(KEY_INPUT_LCONTROL);
 
+	// 移動
 	Add(KEY_INPUT_W);
 	Add(KEY_INPUT_A);
 	Add(KEY_INPUT_S);
 	Add(KEY_INPUT_D);
-
+	// ジャンプ
+	Add(KEY_INPUT_SPACE);
+	// ダッシュ
+	Add(KEY_INPUT_LSHIFT);
+	// しゃがみ
+	Add(KEY_INPUT_LCONTROL);
+	// ランタンを奥にする
 	Add(KEY_INPUT_Q);
+
 	Add(KEY_INPUT_E);
 	Add(KEY_INPUT_R);
 	Add(KEY_INPUT_F);
 	Add(KEY_INPUT_X);
 	Add(KEY_INPUT_Z);
 
+	// キーボードでの視点
 	Add(KEY_INPUT_LEFT);
 	Add(KEY_INPUT_RIGHT);
 	Add(KEY_INPUT_UP);
 	Add(KEY_INPUT_DOWN);
 
-	Add(KEY_INPUT_C);
-	Add(KEY_INPUT_O);
+	// ポーズモード
 	Add(KEY_INPUT_ESCAPE);
 
+	// デバッグ用
+	Add(KEY_INPUT_O);
+	Add(KEY_INPUT_C);
 	Add(KEY_INPUT_K);
 
 	InputManager::MouseInfo info;

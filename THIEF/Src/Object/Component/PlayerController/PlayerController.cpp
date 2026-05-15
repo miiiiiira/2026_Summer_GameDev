@@ -39,7 +39,7 @@ void PlayerController::Init()
 	staminaCounter_ = 0;
 
 	// 掴み距離の初期化
-	range_ = rangeMAX_ = DEFAULT_RENGE;
+	range_ = rangeMax_ = DEFAULT_RENGE;
 }
 
 // 更新
@@ -67,15 +67,18 @@ void PlayerController::Update()
 	Grasping();
 }
 
+void PlayerController::Draw()
+{
+#ifdef _DEBUG
+
+	DebugDraw();
+
+#endif // _DEBUG
+}
+
 Transform* PlayerController::GetTransform()
 {
 	return owner_->GetComponent<Transform>();
-}
-
-void PlayerController::ChangeGrapingState(const GraspingState& grapState)
-{
-	// 指定された掴み動作を設定
-	grapState_ = grapState;
 }
 
 // 移動処理
@@ -307,8 +310,81 @@ void PlayerController::Grasping(void)
 			item_->EndGrabbed();
 		}
 
+		// つかめる範囲に変更があったら
+		if (RangeUpdate())
+		{
+			// アイテムに反映させる
+			item_->SetLocalPos(range_);
+		}
+
 		break;
 	default:
 		break;
 	}
+}
+
+float PlayerController::GetRangeMax(void)
+{
+	return rangeMax_;
+}
+
+void PlayerController::StartGrabbing(float range)
+{
+	// 掴み状態を始める
+	grapState_ = GraspingState::IS_GRAPING;
+
+	range_ = range;
+}
+
+bool PlayerController::RangeUpdate(void)
+{
+	int wheel;
+	// マウスホイールの回転量を取得
+	wheel = GetMouseWheelRotVol();
+
+	// 回転量が0より大きかったら(ホイールを奥に回転させていたら)
+	if (wheel > 0)
+	{
+		// 掴める範囲を奥にする
+		range_ += 10.0f;
+
+		// 最大値が超えないようにする
+		if (range_ > rangeMax_)
+		{
+			range_ = rangeMax_;
+		}
+
+		// 変更があったらtrueを返す
+		return true;
+	}
+	// 回転量が0より小さかったら(ホイールを手前に回転させていたら)
+	else if (wheel < 0)
+	{
+		// 掴める範囲を手前にする
+		range_ -= 10.0f;
+
+		// 最小値が超えないようにする
+		if (range_ < MIN_RENGE)
+		{
+			range_ = MIN_RENGE;
+		}
+
+		// 変更があったらtrueを返す
+		return true;
+	}
+
+	// 変更がなかったらfalseを返す
+	return false;
+}
+
+void PlayerController::DebugDraw(void)
+{
+	DrawFormatString(10, 220, 0xff0000,
+		"%d",
+		GetMouseWheelRotVol());
+
+
+	DrawFormatString(0, 200, 0xffc800,
+		"スタミナ : %.0f / %.0f",
+		stamina_, staminaMax_);
 }

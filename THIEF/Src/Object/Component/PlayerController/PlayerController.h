@@ -27,6 +27,11 @@ enum class GraspingState
 // プレイヤー制御コンポーネント
 class PlayerController : public Component
 {
+public:
+
+	// プレイヤーの掴み距離の最小値
+	static constexpr float MIN_RENGE = 50.0f;
+
 private:
 	// 通常時移動速度
 	static constexpr float DEFAULT_SPEED = 7.0f;
@@ -47,11 +52,12 @@ private:
 	static constexpr int RECOVERY_STAMINA_WAIT_TIME = 1 * 60;
 
 	// プレイヤーの掴み距離
-	static constexpr float DEFAULT_RENGE = 50.0f;
+	static constexpr float DEFAULT_RENGE = 200.0f;
 
 public:
 	void Init() override;		// 初期化
 	void Update() override;		// 更新
+	void Draw() override;		// 描画
 
 	// Transformを返す
 	Transform* GetTransform();
@@ -59,8 +65,11 @@ public:
 	// カメラ設定
 	void SetCamera(Camera* camera) { camera_ = camera; }
 
+	// 掴める最大範囲を取得
+	float GetRangeMax(void);
+
 	// 指定された掴み動作を設定
-	void ChangeGrapingState(const GraspingState& grapState);
+	void StartGrabbing(float range);
 
 	// アイテムクラスのポインタ取得
 	void SetItemClassPoint(ItemBase* item) { item_ = item; }
@@ -89,7 +98,6 @@ private:
 
 	// 掴み判定処理
 	void Grasping(void);
-
 private:
 
 	// アイテム
@@ -132,5 +140,11 @@ private:
 
 	// 掴み距離
 	float range_;
-	float rangeMAX_;
+	float rangeMax_;
+
+	// つかめる範囲の設定
+	bool RangeUpdate(void);
+
+	// デバッグ用描画
+	void DebugDraw(void);
 };

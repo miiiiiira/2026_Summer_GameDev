@@ -11,7 +11,7 @@ public:
 	static constexpr float GRAVITY = 0.25f;
 
 	// 線形補間の係数
-	static constexpr float COEFFICIENT = 0.1f;
+	static constexpr float COEFFICIENT = 0.3f;
 
 	// コンストラクタ
 	ItemBase(void);
@@ -40,8 +40,14 @@ public:
 	// アイテムにダメージを与える
 	void SetDamage(int damage);
 
+	// ローカル座標を設定
+	// 全部の軸
+	void SetLocalPos(VECTOR localPos);
+	// Z軸のみ
+	void SetLocalPos(float localPosZ);
+
 	// 掴まれた状態にする
-	void StartGrabbed(VECTOR localPos);
+	void StartGrabbing(VECTOR localPos);
 
 	// 掴まれた状態を終了する
 	void EndGrabbed(void);
