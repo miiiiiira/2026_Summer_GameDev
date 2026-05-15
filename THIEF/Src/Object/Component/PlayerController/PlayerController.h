@@ -40,7 +40,7 @@ private:
 	static constexpr float DASH_SPEED = 10.0f;
 
 	// スライディング可能時間(秒数)
-	static constexpr int SLIDING_INPUT_BUFFER_TIME = 2 * 60;
+	static constexpr int SLIDING_INPUT_BUFFER_TIME = 1 * 60;
 
 	// スタミナ
 	static constexpr float DEFAULT_STAMINA = 10.0f;
@@ -49,10 +49,13 @@ private:
 	static constexpr float RECOVERY_STAMINA = 0.05f;
 
 	// スタミナ回復を行うまでの時間(秒数)
-	static constexpr int RECOVERY_STAMINA_WAIT_TIME = 1 * 60;
+	static constexpr int RECOVERY_STAMINA_WAIT_TIME = 3 * 60;
 
 	// プレイヤーの掴み距離
 	static constexpr float DEFAULT_RENGE = 200.0f;
+
+	// 掴み距離を伸ばす時の速度
+	static constexpr float EXTEND_RENGE_MOVE = 10.0f;
 
 public:
 	void Init() override;		// 初期化
@@ -95,6 +98,9 @@ private:
 
 	// スタミナ回復処理
 	void HealStamina(void);
+
+	// ジャンプ処理
+	void Jump(void);
 
 	// 掴み判定処理
 	void Grasping(void);

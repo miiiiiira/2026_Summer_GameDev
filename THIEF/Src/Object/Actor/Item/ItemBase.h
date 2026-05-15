@@ -34,9 +34,6 @@ public:
 
 	int GetModelID(void) { return info_.modelId_; }
 
-	// 指定された座標と向きを反映させる
-	void SetPosAngle(const VECTOR& pos,const VECTOR& angle);
-
 	// アイテムにダメージを与える
 	void SetDamage(int damage);
 

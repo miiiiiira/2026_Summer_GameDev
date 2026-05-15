@@ -60,6 +60,9 @@ void PlayerController::Update()
 	// 重力処理
 	ApplyGravity();
 
+	// ジャンプ処理
+	Jump();
+
 	// アイテムの中身がなかったら
 	if (item_ == nullptr)return;
 
@@ -93,7 +96,7 @@ void PlayerController::Move()
 	// スライディング処理
 	InputSliding();
 
-	// しゃがみ状態かつ移動速度が0より大きい場合
+	// スライディング状態かつ移動速度が0より大きく移動している場合
 	if (state_ == PlayerState::SLIDING && moveSpeed_ > 0.0f)
 	{
 		// 移動速度を減算
@@ -279,6 +282,21 @@ void PlayerController::HealStamina(void)
 	// カウンターを進める
 	staminaCounter_++;
 
+	// しゃがみ状態だったら
+	if (state_ == PlayerState::CROUCHING)
+	{
+		// スタミナ回復させる
+		stamina_ += RECOVERY_STAMINA;
+
+		if (stamina_ > staminaMax_)
+		{
+			// 最大スタミナを超えないようにする
+			stamina_ = staminaMax_;
+		}
+
+		return;
+	}
+
 	// スタミナ回復を行うまでの制限時間を超えたら入る
 	if (staminaCounter_ >= RECOVERY_STAMINA_WAIT_TIME)
 	{
@@ -290,6 +308,15 @@ void PlayerController::HealStamina(void)
 			// 最大スタミナを超えないようにする
 			stamina_ = staminaMax_;
 		}
+	}
+}
+
+void PlayerController::Jump(void)
+{
+	// ジャンプボタンを押されたら
+	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_SPACE))
+	{
+		velocityY_ = 100.0f;
 	}
 }
 
@@ -346,7 +373,7 @@ bool PlayerController::RangeUpdate(void)
 	if (wheel > 0)
 	{
 		// 掴める範囲を奥にする
-		range_ += 10.0f;
+		range_ += EXTEND_RENGE_MOVE;
 
 		// 最大値が超えないようにする
 		if (range_ > rangeMax_)
@@ -361,7 +388,7 @@ bool PlayerController::RangeUpdate(void)
 	else if (wheel < 0)
 	{
 		// 掴める範囲を手前にする
-		range_ -= 10.0f;
+		range_ -= EXTEND_RENGE_MOVE;
 
 		// 最小値が超えないようにする
 		if (range_ < MIN_RENGE)

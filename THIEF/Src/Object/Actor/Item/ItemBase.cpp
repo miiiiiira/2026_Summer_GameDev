@@ -59,16 +59,6 @@ const ItemInfo& ItemBase::GetInfo(void)
 	return info_;
 }
 
-void ItemBase::SetPosAngle(const VECTOR& pos, const VECTOR& angle)
-{
-	// 指定された座標と向きを反映
-	info_.pos_ = pos;
-	info_.angle_ = angle;
-
-	MV1SetPosition(info_.modelId_, info_.pos_);
-	MV1SetRotationXYZ(info_.modelId_, info_.angle_);
-}
-
 void ItemBase::SetDamage(int damage)
 {
 	// 指定のダメージ分お金を削る
@@ -129,7 +119,7 @@ void ItemBase::Gravity(void)
 void ItemBase::TrackingPlayer(void)
 {
 	// プレイヤーの座標
-		// カメラの座標や向きのポインタの中身がなかったら処理を行わない
+	// カメラの座標や向きのポインタの中身がなかったら処理を行わない
 	if (cameraPos_ == nullptr || cameraAngle_ == nullptr)return;
 
 	// 前の座標を保持しておく
@@ -139,19 +129,13 @@ void ItemBase::TrackingPlayer(void)
 	VECTOR vec = { cameraAngle_->x ,cameraAngle_->y ,0.0f };
 	MATRIX matRot = Matrix::GetMatrixRotateXYZ(vec);
 
-	// カメラの視線方向のベクトルを計算
-	// DxlibのVTransformを使用
-	VECTOR forward = VGet(0.0f, 0.0f, 1.0f); // 前方向をZ軸とする
-	// カメラの方向を算出
-	VECTOR cameraDir = VTransform(forward, matRot);
-
 	// ローカル座標
 	VECTOR localPosRot;
 
 	// 座標
 	localPosRot = VTransform(info_.localPos_, matRot);
 
-	// ランタンの座標に反映
+	// アイテムの座標に反映
 	info_.pos_ = VAdd(*cameraPos_, localPosRot);
 
 	// 線形補間で滑らかにする

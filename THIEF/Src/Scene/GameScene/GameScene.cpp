@@ -59,11 +59,11 @@ void GameScene::Load(void)
 	// カメラの作成
 	CameraCreate();
 
-	// プレイヤーの作成
-	PlayerCreate();
-
 	// ランタンの作成
 	LanternCreate();
+
+	// プレイヤーの作成
+	PlayerCreate();
 
 	// 敵の作成
 	EnemyCreate();
@@ -153,6 +153,33 @@ void GameScene::CameraCreate(void)
 	camera->ChangeMode(Camera::MODE::FOLLOW);
 }
 
+void GameScene::LanternCreate(void)
+{
+	// ランタン生成
+	auto lantern = objectManger_->CreateObject();
+
+	// タグを付与
+	lantern->SetTag(Tag::Lantern);
+
+	// 描画
+	auto render = lantern->AddComponent<Render3D>();
+	render->SetModel("Data/Model/Lantern/Lantern.mv1");
+
+	// ランタン機能
+	auto cont = lantern->AddComponent<Lantern>();
+	// カメラの取得
+	auto camera = objectManger_->FindComponentWithTag<Camera>(Tag::Camera);
+	VECTOR* cameraPos = &camera->GetTransform()->pos_;
+	VECTOR* cameraAngle = camera->GetAngle();
+
+	// カメラの座標ポインタと向きポインタを付与
+	cont->SetCameraPosAngle(cameraPos, cameraAngle);
+
+	// 座標の設定
+	auto trans = lantern->AddComponent<Transform>();
+	trans->pos_ = { 0.0f,0.0f,0.0f };
+}
+
 void GameScene::PlayerCreate(void)
 {
 	// プレイヤー生成
@@ -190,33 +217,6 @@ void GameScene::PlayerCreate(void)
 	// アイテムクラスのポインタを取得
 	auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
 	playerController->SetItemClassPoint(item_);
-}
-
-void GameScene::LanternCreate(void)
-{
-	// ランタン生成
-	auto lantern = objectManger_->CreateObject();
-
-	// タグを付与
-	lantern->SetTag(Tag::Lantern);
-
-	// 描画
-	auto render = lantern->AddComponent<Render3D>();
-	render->SetModel("Data/Model/Lantern/Lantern.mv1");
-
-	// ランタン機能
-	auto cont = lantern->AddComponent<Lantern>();
-	// カメラの取得
-	auto camera = objectManger_->FindComponentWithTag<Camera>(Tag::Camera);
-	VECTOR* cameraPos = &camera->GetTransform()->pos_;
-	VECTOR* cameraAngle = camera->GetAngle();
-	
-	// カメラの座標ポインタと向きポインタを付与
-	cont->SetCameraPosAngle(cameraPos,cameraAngle);
-
-	// 座標の設定
-	auto trans = lantern->AddComponent<Transform>();
-	trans->pos_ = { 0.0f,0.0f,0.0f };
 }
 
 void GameScene::EnemyCreate(void)
