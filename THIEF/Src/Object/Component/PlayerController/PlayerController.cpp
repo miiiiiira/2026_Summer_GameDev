@@ -38,9 +38,6 @@ void PlayerController::Init()
 	// スタミナを回復させるまでの時間カウンタの初期化
 	staminaCounter_ = 0;
 
-	// ジャンプフラグの初期化
-	isJumping_ = false;
-
 	// 掴み距離の初期化
 	range_ = rangeMax_ = DEFAULT_RENGE;
 }
@@ -60,11 +57,11 @@ void PlayerController::Update()
 	// スタミナ回復処理
 	HealStamina();
 
-	// 重力処理
-	ApplyGravity();
-
 	// ジャンプ処理
 	Jump();
+
+	// 重力処理
+	ApplyGravity();
 
 	// アイテムの中身がなかったら
 	if (item_ == nullptr)return;
@@ -203,22 +200,12 @@ void PlayerController::ApplyGravity()
 		// 最大落下速度
 		if (velocityY_ < MAX_FALL)
 			velocityY_ = MAX_FALL;
-
-		if (!isJumping_)
-		{
-			isJumping_ = true;
-		}
 	}
 	else
 	{
 		// 地面上なら少し下方向に押す
 		// 0だと浮く場合があるため
 		velocityY_ = -0.1f;
-
-		if (isJumping_)
-		{
-			isJumping_ = false;
-		}
 	}
 }
 
@@ -326,13 +313,20 @@ void PlayerController::HealStamina(void)
 
 void PlayerController::Jump(void)
 {
-	// ジャンプボタンを押されたかつ、ジャンプ中では無かったら
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_SPACE) && !isJumping_)
-	{
-		velocityY_ = 100.0f;
 
-		// ジャンプ中にする
-		isJumping_ = true;
+	// StageCollider取得
+	auto stageCol = owner_->GetComponent<StageCollider>();
+
+	if (!stageCol) return;
+
+	// ジャンプボタンを押されたかつ、ジャンプ中では無かったら
+	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_SPACE) && stageCol->IsGround())
+	{
+		// ジャンプ力を設定
+		velocityY_ = JUMP_POW;
+
+		// 接地フラグを折る
+		stageCol->IsGroundFold();
 	}
 }
 

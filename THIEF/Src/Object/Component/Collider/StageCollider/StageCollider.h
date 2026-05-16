@@ -25,6 +25,9 @@ public:
 	// 接地判定
 	bool IsGround() const { return isGround_; }
 
+	// 接地フラグを折る
+	void IsGroundFold(void) { isGround_ = false; }
+
 private:
 
 	// 地面との当たり判定

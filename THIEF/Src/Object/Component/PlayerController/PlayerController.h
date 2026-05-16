@@ -112,11 +112,14 @@ private:
 	// 現在の落下速度
 	float velocityY_ = 0.0f;
 
+	// ジャンプ力
+	const float JUMP_POW = 25.0f;
+
 	// 重力加速度
-	const float GRAVITY = -0.8f;
+	const float GRAVITY = -1.98f;
 
 	// 最大落下速度
-	const float MAX_FALL = -20.0f;
+	const float MAX_FALL = -40.0f;
 
 	// Transformコンポーネント
 	Transform* transform_ = nullptr;
@@ -143,9 +146,6 @@ private:
 
 	// スタミナを回復させるまでの時間カウンタ
 	int staminaCounter_;
-
-	// ジャンプ中か　true / ジャンプ中 , false / ジャンプ中でない
-	bool isJumping_;
 
 	// 掴み距離
 	float range_;

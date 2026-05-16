@@ -49,9 +49,10 @@ void StageCollider::FieldCollision()
 
 	// 上から下へラインを飛ばす(レイ)
 	VECTOR start = worldPos;
-	start.y += 10.0f;
+	start.y += 50.0f;
+
 	VECTOR end = worldPos;
-	end.y -= 200.0f;
+	end.y -= 0.0f;
 
 	// ライン衝突をチェック
 	auto res = MV1CollCheck_Line(model, -1, start, end);

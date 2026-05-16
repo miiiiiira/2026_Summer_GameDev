@@ -192,17 +192,6 @@ void GameScene::PlayerCreate(void)
 	auto trans = player->AddComponent<Transform>();
 	trans->pos_ = { 0.0f,0.0f,0.0f };
 
-	// 当たり判定の設定
-	auto col = player->AddComponent<CapsuleCollider>();
-	col->radius_ = 20.0f;
-
-	// ステージの取得
-	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
-
-	// ステージの当たり判定
-	auto stageCol = player->AddComponent<StageCollider>();
-	stageCol->SetStage(stage);
-
 	// カメラの取得
 	auto camera = objectManger_->FindComponentWithTag<Camera>(Tag::Camera);
 
@@ -213,6 +202,17 @@ void GameScene::PlayerCreate(void)
 	// プレイヤーの情報をカメラに設定
 	camera->SetTarget(trans);
 	camera->SetPlayerController(cont);
+
+	// 当たり判定の設定
+	auto col = player->AddComponent<CapsuleCollider>();
+	col->radius_ = 20.0f;
+
+	// ステージの取得
+	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+
+	// ステージの当たり判定
+	auto stageCol = player->AddComponent<StageCollider>();
+	stageCol->SetStage(stage);
 
 	// アイテムクラスのポインタを取得
 	auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
