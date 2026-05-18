@@ -59,11 +59,11 @@ void DebugScene::Load(void)
 	// カメラの作成
 	CameraCreate();
 
-	// プレイヤーの作成
-	PlayerCreate();
-
 	// ランタンの作成
 	LanternCreate();
+
+	// プレイヤーの作成
+	PlayerCreate();
 
 	// 敵の作成
 	EnemyCreate();
@@ -166,41 +166,6 @@ void DebugScene::CameraCreate(void)
 	camera->ChangeMode(Camera::MODE::FOLLOW);
 }
 
-void DebugScene::PlayerCreate(void)
-{
-	// プレイヤー生成
-	auto player = objectManger_->CreateObject();
-
-	// タグを付与
-	player->SetTag(Tag::Player);
-
-	// 座標の設定
-	auto trans = player->AddComponent<Transform>();
-	trans->pos_ = { 0.0f,0.0f,0.0f };
-
-	// 当たり判定の設定
-	auto col = player->AddComponent<CapsuleCollider>();
-	col->radius_ = 20.0f;
-
-	// ステージの取得
-	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
-
-	// ステージの当たり判定
-	auto stageCol = player->AddComponent<StageCollider>();
-	stageCol->SetStage(stage);
-
-	// カメラの取得
-	auto camera = objectManger_->FindComponentWithTag<Camera>(Tag::Camera);
-
-	// 移動の設定
-	auto cont = player->AddComponent<PlayerController>();
-	cont->SetCamera(camera);
-
-	// プレイヤーの情報をカメラに設定
-	camera->SetTarget(trans);
-	camera->SetPlayerController(cont);
-}
-
 void DebugScene::LanternCreate(void)
 {
 	// ランタン生成
@@ -226,6 +191,48 @@ void DebugScene::LanternCreate(void)
 	// 座標の設定
 	auto trans = lantern->AddComponent<Transform>();
 	trans->pos_ = { 0.0f,0.0f,0.0f };
+}
+
+void DebugScene::PlayerCreate(void)
+{
+	// プレイヤー生成
+	auto player = objectManger_->CreateObject();
+
+	// タグを付与
+	player->SetTag(Tag::Player);
+
+	// 座標の設定
+	auto trans = player->AddComponent<Transform>();
+	trans->pos_ = { 0.0f,0.0f,0.0f };
+
+	// 移動の設定
+	auto cont = player->AddComponent<PlayerController>();
+
+	// カメラの取得
+	auto camera = objectManger_->FindComponentWithTag<Camera>(Tag::Camera);
+	// プレイヤーの情報をカメラに設定
+	camera->SetTarget(trans);
+	camera->SetPlayerController(cont);
+
+	// 当たり判定の設定
+	auto col = player->AddComponent<CapsuleCollider>();
+	col->radius_ = 20.0f;
+
+	// ステージの取得
+	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+
+	// ステージの当たり判定
+	auto stageCol = player->AddComponent<StageCollider>();
+	stageCol->SetStage(stage);
+
+	// プレイヤー取得
+	auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
+
+	// ランタン取得
+	auto lantern = objectManger_->FindComponentWithTag<Lantern>(Tag::Lantern);
+
+	// プレイヤークラスにカメラ、アイテム、ランタンのポインタを渡す
+	playerController->SetPointers(camera, nullptr, lantern);
 }
 
 void DebugScene::EnemyCreate(void)

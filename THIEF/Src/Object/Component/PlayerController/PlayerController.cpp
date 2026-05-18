@@ -119,6 +119,9 @@ void PlayerController::Move()
 	// Transformがなければ処理しない
 	if (!transform_) return;
 
+	// ランタンがなければ処理しない
+	if (!lantern_) return;
+
 	// スライディング処理
 	InputSliding();
 
