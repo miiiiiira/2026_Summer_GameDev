@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Scene\DebugScene.cpp" />
     <ClCompile Include="Src\Object\Component\Collider\ItemCollider\ItemCollider.cpp" />
     <ClCompile Include="Src\Common\Shader\Shader.cpp" />
     <ClCompile Include="Src\Common\Transform\Transform.cpp" />
@@ -64,6 +65,7 @@
     <ClCompile Include="Src\System\SystemManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Scene\DebugScene.h" />
     <ClInclude Include="Src\Object\Component\Collider\ItemCollider\ItemCollider.h" />
     <ClInclude Include="Src\Common\Shader\Shader.h" />
     <ClInclude Include="Src\Common\Transform\Transform.h" />
