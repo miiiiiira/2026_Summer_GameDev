@@ -18,6 +18,12 @@ public:
 	// 金額
 	static constexpr int MONEY = 1000;
 
+	// 当たり判定用の半径
+	static constexpr float COLLISION_RADIUS = 5.0f;
+
+	// 当たり判定用のオフセット
+	static constexpr float COLLISION_OFFSET = 7.0f;
+
 	// コンストラクタ
 	Goblet(void);
 	// デストラクタ

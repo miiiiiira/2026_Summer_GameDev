@@ -75,6 +75,12 @@ void ItemBase::SetDamage(int damage)
 	}
 }
 
+void ItemBase::SetPos(const VECTOR& pos)
+{
+	// 指定された座標に設定
+	info_.pos_ = pos;
+}
+
 void ItemBase::SetLocalPos(VECTOR localPos)
 {
 	info_.localPos_ = localPos;
@@ -145,11 +151,11 @@ void ItemBase::TrackingPlayer(void)
 	MV1SetPosition(info_.modelId_, info_.pos_);
 
 	// 回転
-	// ランタンの回転を行列にする
-	MATRIX weaponMat = Matrix::GetMatrixRotateXYZ(info_.angle_);
+	// アイテムの回転を行列にする
+	MATRIX lanternMat = Matrix::GetMatrixRotateXYZ(info_.angle_);
 
 	// プレイヤーの回転をランタンの回転行列に反映する
-	MATRIX mat = Matrix::Multiplication(weaponMat, matRot);
+	MATRIX mat = Matrix::Multiplication(lanternMat, matRot);
 
 	// 回転行列をモデルに反映
 	MV1SetRotationMatrix(info_.modelId_, mat);
@@ -160,5 +166,10 @@ void ItemBase::TrackingPlayer(void)
 
 void ItemBase::DrawDebug(void)
 {
-	DrawSphere3D(info_.pos_, 20.0f, 8, 0xff0000, 0xff0000, false);
+	VECTOR start = info_.pos_;
+	start.y -= info_.collisionOffset_;
+	VECTOR end = info_.pos_;
+	end.y += info_.collisionOffset_;
+
+	DrawCapsule3D(start, end, info_.collisionRadius_, 8, 0xff0000, 0xff0000, false);
 }

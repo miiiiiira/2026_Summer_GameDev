@@ -35,6 +35,8 @@ private:
 
 	// アイテムとプレイヤーの掴み用当たり判定
 	void CheckItemPlayerCollision(void);
+	// アイテムとステージの当たり判定
+	void CheckItemStageCollision(void);
 
 	void DebugDraw(void);
 };

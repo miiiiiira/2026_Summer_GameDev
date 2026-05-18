@@ -34,6 +34,12 @@ struct ItemInfo
 	// 重力
 	float gravity_;
 
+	// 当たり判定用半径
+	float collisionRadius_;
+
+	// 当たり判定のカプセル用ずらし数
+	float collisionOffset_;
+
 	// プレイヤーとの相対座標
 	VECTOR localPos_;
 

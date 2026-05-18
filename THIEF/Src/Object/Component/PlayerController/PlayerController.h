@@ -44,7 +44,7 @@ private:
 	static constexpr int SLIDING_INPUT_BUFFER_TIME = 1 * 60;
 
 	// スタミナ
-	static constexpr float DEFAULT_STAMINA = 10.0f;
+	static constexpr float DEFAULT_STAMINA = 40.0f;
 
 	// スタミナ回復量
 	static constexpr float RECOVERY_STAMINA = 0.05f;

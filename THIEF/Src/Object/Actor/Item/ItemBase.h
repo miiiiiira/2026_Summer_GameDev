@@ -32,10 +32,14 @@ public:
 	// アイテムの情報を渡す
 	const ItemInfo& GetInfo(void);
 
+	// モデルIDを渡す
 	int GetModelID(void) { return info_.modelId_; }
 
 	// アイテムにダメージを与える
 	void SetDamage(int damage);
+
+	// 指定された座標をアイテムの座標に反映
+	void SetPos(const VECTOR& pos);
 
 	// ローカル座標を設定
 	// 全部の軸

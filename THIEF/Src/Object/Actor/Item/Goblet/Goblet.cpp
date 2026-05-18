@@ -35,6 +35,10 @@ void Goblet::Init(void)
 	// 金額(アイテムのHP)初期化
 	info_.money_ = MONEY;
 
+	// 当たり判定用の半径を初期化
+	info_.collisionRadius_ = COLLISION_RADIUS;
+	info_.collisionOffset_ = COLLISION_OFFSET;
+
 	// 生存中にする
 	info_.isAlive_ = true;
 

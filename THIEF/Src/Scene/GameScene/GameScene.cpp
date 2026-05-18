@@ -110,6 +110,8 @@ void GameScene::Update(void)
 
 	// アイテムとプレイヤーの掴める範囲の当たり判定
 	CheckItemPlayerCollision();
+	// アイテムとステージの当たり判定
+	CheckItemStageCollision();
 }
 
 void GameScene::Draw(void)
@@ -301,19 +303,107 @@ void GameScene::CheckItemPlayerCollision(void)
 	downPos = VAdd(*cameraPos, localPosRot);
 
 	// 線分とモデルの衝突判定
-	MV1_COLL_RESULT_POLY res =
+	MV1_COLL_RESULT_POLY hitResult =
 		MV1CollCheck_Line(itemModelId, -1, topPos, downPos);
 
 	// 当たっているかつ、マウスが押されていたら
-	if (res.HitFlag&& InputManager::GetInstance()->IsClickMouseLeft())
+	if (hitResult.HitFlag&& InputManager::GetInstance()->IsClickMouseLeft())
 	{
-		float dist = VSize(VSub(res.HitPosition, *cameraPos));
+		// カメラの逆回転行列を作成する（ワールド → カメラローカル変換用）
+		MATRIX matRotInv = MInverse(matRot);
 
+		// カメラから見たアイテム中心座標との相対ベクトルを計算
+		VECTOR itemToCameraWorld = VSub(item_->GetInfo().pos_, *cameraPos);
+
+		// ワールドの相対ベクトルを、カメラローカルに変換
+		VECTOR itemLocalPos = VTransform(itemToCameraWorld, matRotInv);
+
+		// カメラと当たった場所の距離を求める
+		float dist = VSize(VSub(hitResult.HitPosition, *cameraPos));
+
+		// 距離が最低距離値よりも小さかったら最低距離値にする
 		if (dist < PlayerController::MIN_RENGE)dist = PlayerController::MIN_RENGE;
 
 		// アイテムの追従モードをオンにする
-		item_->StartGrabbing({0.0f,-10.0f,dist });
+		item_->StartGrabbing({ itemLocalPos.x,itemLocalPos.y,dist });
 		// 掴み状態にする
 		player->StartGrabbing(dist);
 	}
+}
+
+void GameScene::CheckItemStageCollision(void)
+{
+	// ステージの取得
+	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+	// ステージのモデルID取得
+	int stageModelId = stage->GetModelId();
+
+	// アイテムの座標
+	VECTOR itemPos = item_->GetInfo().pos_;
+	// カプセルの線分用にオフセット分ずらす
+	VECTOR capStart = itemPos;
+	capStart.y -= item_->GetInfo().collisionOffset_;
+	VECTOR capEnd = itemPos;
+	capEnd.y += item_->GetInfo().collisionOffset_;
+
+	// アイテムの当たり判定用の半径
+	float capRad = item_->GetInfo().collisionRadius_;
+
+	// カプセルとモデルの衝突チェック
+	MV1_COLL_RESULT_POLY_DIM hitResult = MV1CollCheck_Capsule(
+		stage->GetModelId(),
+		-1,
+		capStart,
+		capEnd,
+		capRad
+	);
+
+	// 全当たり判定処理
+	for (int i = 0; i < hitResult.HitNum; i++)
+	{
+		auto hit = hitResult.Dim[i];
+		// 最大5回押し戻し
+		for (int tryCnt = 0; tryCnt < 5; tryCnt++)
+		{
+
+			// まだめり込んでいるか？
+			if (!HitCheck_Capsule_Triangle(
+				capStart,
+				capEnd,
+				capRad,
+				hit.Position[0],
+				hit.Position[1],
+				hit.Position[2]
+			))
+			{
+				break;
+			}
+
+			// ポリゴンの法線
+			VECTOR normal = hit.Normal;
+
+			// 長さチェック
+			if (VSize(normal) < 0.001f) break;
+
+			// 正規化
+			normal = VNorm(normal);
+
+			// 押し戻し量
+			const float PUSH_POWER = 2.0f;
+			VECTOR push = VScale(normal, PUSH_POWER);
+
+			// 押し戻し
+			itemPos = VAdd(itemPos, push);
+
+			// 押し戻したのでカプセルの位置も更新
+			capStart = VAdd(capStart, push);
+			capEnd = VAdd(capEnd, push);
+		}
+	}
+
+	// 衝突情報を削除する
+	MV1CollResultPolyDimTerminate(hitResult);
+
+	// アイテムに押し出し後の座標を反映
+	item_->SetPos(itemPos);
 }
