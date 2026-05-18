@@ -74,6 +74,17 @@ void Lantern::SetCameraPosAngle(VECTOR* cameraPos, VECTOR* cameraAngle)
 	cameraAngle_ = cameraAngle;
 }
 
+void Lantern::SetLight(bool lightFlg)
+{
+	// 指定されたライト状態にする
+	SetLightEnableHandle(pointLightHandle_, lightFlg);
+}
+
+bool Lantern::GetLight(void)
+{
+	return GetLightEnableHandle(pointLightHandle_);
+}
+
 void Lantern::UpdatePos(void)
 {
 	// カメラの座標や向きのポインタの中身がなかったら処理を行わない

@@ -46,14 +46,15 @@ public:
 	// Transformを返す
 	Transform* GetTransform();
 
-	// ワールド座標に変換
-	VECTOR ToWorldPos(VECTOR local);
-
-	// ローカル座標に変換
-	VECTOR ToLocalPos(VECTOR world);
-
 	// カメラの座標と向きを参照できるようにする
 	void SetCameraPosAngle(VECTOR* cameraPos, VECTOR* cameraAngle);
+
+	// 指定されたライト状態にする　true / ライトを付ける , false / ライトを消す
+	void SetLight(bool lightFlg);
+
+	// ライトの状態を見る　true / ライトがついている , false / ライトがついていない
+	bool GetLight(void);
+
 private:
 	// ポイントライトのハンドル
 	int pointLightHandle_ = -1;

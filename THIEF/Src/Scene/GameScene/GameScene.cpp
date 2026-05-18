@@ -192,13 +192,11 @@ void GameScene::PlayerCreate(void)
 	auto trans = player->AddComponent<Transform>();
 	trans->pos_ = { 0.0f,0.0f,0.0f };
 
-	// カメラの取得
-	auto camera = objectManger_->FindComponentWithTag<Camera>(Tag::Camera);
-
 	// 移動の設定
 	auto cont = player->AddComponent<PlayerController>();
-	cont->SetCamera(camera);
 
+	// カメラの取得
+	auto camera = objectManger_->FindComponentWithTag<Camera>(Tag::Camera);
 	// プレイヤーの情報をカメラに設定
 	camera->SetTarget(trans);
 	camera->SetPlayerController(cont);
@@ -214,9 +212,14 @@ void GameScene::PlayerCreate(void)
 	auto stageCol = player->AddComponent<StageCollider>();
 	stageCol->SetStage(stage);
 
-	// アイテムクラスのポインタを取得
+	// プレイヤー取得
 	auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
-	playerController->SetItemClassPoint(item_);
+
+	// ランタン取得
+	auto lantern = objectManger_->FindComponentWithTag<Lantern>(Tag::Lantern);
+
+	// プレイヤークラスにカメラ、アイテム、ランタンのポインタを渡す
+	playerController->SetPointers(camera,item_,lantern);
 }
 
 void GameScene::EnemyCreate(void)

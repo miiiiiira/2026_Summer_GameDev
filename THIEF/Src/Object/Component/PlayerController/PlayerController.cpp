@@ -8,6 +8,7 @@
 #include "../../Component/Animation/Animation.h"
 #include "../../Component/Camera/Camera.h"
 #include "../../Actor/Item/ItemBase.h"
+#include "../../Component/Lantern/Lantern.h"
 
 #include "../Collider/StageCollider/StageCollider.h"
 
@@ -84,6 +85,31 @@ Transform* PlayerController::GetTransform()
 	return owner_->GetComponent<Transform>();
 }
 
+float PlayerController::GetRangeMax(void)
+{
+	return rangeMax_;
+}
+
+void PlayerController::StartGrabbing(float range)
+{
+	// 掴み状態を始める
+	grapState_ = GraspingState::IS_GRAPING;
+
+	range_ = range;
+}
+
+void PlayerController::SetPointers(Camera* camera, ItemBase* item, Lantern* lantern)
+{
+	// カメラクラスのポインタを設定
+	camera_ = camera;
+
+	// アイテムクラスのポインタを設定
+	item_ = item;
+
+	// ランタンクラスのポインタを設定
+	lantern_ = lantern;
+}
+
 // 移動処理
 void PlayerController::Move()
 {
@@ -96,25 +122,8 @@ void PlayerController::Move()
 	// スライディング処理
 	InputSliding();
 
-	// スライディング状態かつ移動速度が0より大きく移動している場合
-	if (state_ == PlayerState::SLIDING && moveSpeed_ > 0.0f)
-	{
-		// 移動速度を減算
-		moveSpeed_ -= 0.2f;
-
-		// 0以下にならないようにする
-		if (moveSpeed_ <= 0.0f)
-		{
-			moveSpeed_ = 0.0f;
-			// しゃがみ状態にする
-			state_ = PlayerState::CROUCHING;
-		}
-
-		// 方向×スピードで移動量を作って、座標に足して移動
-		transform_->pos_ = VAdd(transform_->pos_, VScale(moveDir_, moveSpeed_));
-
-		return;
-	}
+	// スライディングからしゃがみ処理
+	if (SlidingToCrouching())return;
 
 	// カメラ角度を取得
 	VECTOR* cameraAngles = camera_->GetAngle();
@@ -140,6 +149,13 @@ void PlayerController::Move()
 		// アナログキーの入力値から方向を取得
 		dir = InputManager::GetInstance()->GetDirectionXZAKey(padState.AKeyLX, padState.AKeyLY);
 
+	}
+
+	// 光がついてなかったら付ける
+	if (!lantern_->GetLight())
+	{
+		// ランタンの光をつける
+		lantern_->SetLight(true);
 	}
 
 	if (!Math::EqualsVZero(dir))
@@ -169,13 +185,9 @@ void PlayerController::Move()
 		moveSpeed_ = 0.0f;
 	}
 
-	// 左Ctrl押されたかつスライディング中じゃない場合
-	if (InputManager::GetInstance()->IsNew(KEY_INPUT_LCONTROL) &&
-		state_ != PlayerState::SLIDING)
-	{
-		// しゃがみ状態にする
-		state_ = PlayerState::CROUCHING;
-	}
+	// しゃがみ処理
+	Crouching();
+
 }
 
 // 重力処理
@@ -211,7 +223,7 @@ void PlayerController::ApplyGravity()
 
 void PlayerController::Dash(void)
 {
-	// もし走るボタンを押された場合
+	// もし走るボタンを押されたかつ、しゃがみ状態じゃないかつ、スタミナがあった場合
 	if (InputManager::GetInstance()->IsNew(KEY_INPUT_LSHIFT)
 		&& state_ != PlayerState::CROUCHING
 		&& stamina_ >= 0.1f)
@@ -271,6 +283,48 @@ void PlayerController::InputSliding(void)
 
 		// スライディング可能時間を初期化
 		slidingInputBufferTime = 0;
+
+		// ランタンの光を消す
+		lantern_->SetLight(false);
+	}
+}
+
+bool PlayerController::SlidingToCrouching(void)
+{
+	// スライディング状態かつ移動速度が0より大きく移動している場合
+	if (state_ == PlayerState::SLIDING && moveSpeed_ > 0.0f)
+	{
+		// 移動速度を減算
+		moveSpeed_ -= 0.2f;
+
+		// 0以下にならないようにする
+		if (moveSpeed_ <= 0.0f)
+		{
+			moveSpeed_ = 0.0f;
+			// しゃがみ状態にする
+			state_ = PlayerState::CROUCHING;
+		}
+
+		// 方向×スピードで移動量を作って、座標に足して移動
+		transform_->pos_ = VAdd(transform_->pos_, VScale(moveDir_, moveSpeed_));
+
+		return true;
+	}
+
+	return false;
+}
+
+void PlayerController::Crouching(void)
+{
+	// 左Ctrl押されたかつスライディング中じゃない場合
+	if (InputManager::GetInstance()->IsNew(KEY_INPUT_LCONTROL) &&
+		state_ != PlayerState::SLIDING)
+	{
+		// しゃがみ状態にする
+		state_ = PlayerState::CROUCHING;
+
+		// ランタンの光を消す
+		lantern_->SetLight(false);
 	}
 }
 
@@ -360,18 +414,6 @@ void PlayerController::Grasping(void)
 	}
 }
 
-float PlayerController::GetRangeMax(void)
-{
-	return rangeMax_;
-}
-
-void PlayerController::StartGrabbing(float range)
-{
-	// 掴み状態を始める
-	grapState_ = GraspingState::IS_GRAPING;
-
-	range_ = range;
-}
 
 bool PlayerController::RangeUpdate(void)
 {

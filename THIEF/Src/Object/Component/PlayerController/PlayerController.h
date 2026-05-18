@@ -7,6 +7,7 @@ class Camera;
 class Transform;
 class Animation;
 class ItemBase;
+class Lantern;
 
 // プレイヤーの状態
 enum class PlayerState
@@ -65,17 +66,14 @@ public:
 	// Transformを返す
 	Transform* GetTransform();
 
-	// カメラ設定
-	void SetCamera(Camera* camera) { camera_ = camera; }
-
 	// 掴める最大範囲を取得
 	float GetRangeMax(void);
 
 	// 指定された掴み動作を設定
 	void StartGrabbing(float range);
 
-	// アイテムクラスのポインタ取得
-	void SetItemClassPoint(ItemBase* item) { item_ = item; }
+	// アイテムクラス、ランタンクラスのポインタ取得
+	void SetPointers(Camera* camera, ItemBase* item, Lantern* lantern);
 
 	// 現在の状態表すステート
 	PlayerState state_ = PlayerState::IDLE;
@@ -96,6 +94,12 @@ private:
 	// スライディング
 	void InputSliding(void);
 
+	// スライディングからしゃがみ処理
+	bool SlidingToCrouching(void);
+	
+	// しゃがみ処理
+	void Crouching(void);
+
 	// スタミナ回復処理
 	void HealStamina(void);
 
@@ -104,10 +108,23 @@ private:
 
 	// 掴み判定処理
 	void Grasping(void);
+
+	// つかめる範囲の設定
+	bool RangeUpdate(void);
+
+	// デバッグ用描画
+	void DebugDraw(void);
+
 private:
+
+	// カメラ
+	Camera* camera_ = nullptr;
 
 	// アイテム
 	ItemBase* item_ = nullptr;
+
+	// ランタン
+	Lantern* lantern_ = nullptr;
 
 	// 現在の落下速度
 	float velocityY_ = 0.0f;
@@ -130,9 +147,6 @@ private:
 	// 移動方向
 	VECTOR moveDir_;
 
-	// カメラ
-	Camera* camera_ = nullptr;
-
 	// 移動速度
 	float moveSpeed_;
 	float baseMoveSpeed_;
@@ -151,9 +165,4 @@ private:
 	float range_;
 	float rangeMax_;
 
-	// つかめる範囲の設定
-	bool RangeUpdate(void);
-
-	// デバッグ用描画
-	void DebugDraw(void);
 };
