@@ -40,8 +40,8 @@ private:
 	// ダッシュ時の移動速度
 	static constexpr float DASH_SPEED = 10.0f;
 
-	// スライディング可能時間(秒数)
-	static constexpr int SLIDING_INPUT_BUFFER_TIME = 1 * 60;
+	// スライディング可能時間(0.5秒数)
+	static constexpr int SLIDING_INPUT_BUFFER_TIME = 20;
 
 	// スタミナ
 	static constexpr float DEFAULT_STAMINA = 40.0f;
@@ -51,6 +51,9 @@ private:
 
 	// スタミナ回復を行うまでの時間(秒数)
 	static constexpr int RECOVERY_STAMINA_WAIT_TIME = 3 * 60;
+
+	// ジャンプ可能数
+	static constexpr int DEFAULT_JUMP_NUM = 1;
 
 	// プレイヤーの掴み距離
 	static constexpr float DEFAULT_RENGE = 200.0f;
@@ -160,6 +163,11 @@ private:
 
 	// スタミナを回復させるまでの時間カウンタ
 	int staminaCounter_;
+
+	// ジャンプ数
+	int jumpNum_;
+	// ジャンプ可能回数
+	int jumpNumMax_;
 
 	// 掴み距離
 	float range_;

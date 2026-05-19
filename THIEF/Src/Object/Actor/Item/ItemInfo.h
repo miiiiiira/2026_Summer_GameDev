@@ -32,7 +32,7 @@ struct ItemInfo
 	int money_;
 
 	// d—Í
-	float gravity_;
+	float velocityY_;
 
 	// “–‚½‚è”»’è—p”¼Œa
 	float collisionRadius_;

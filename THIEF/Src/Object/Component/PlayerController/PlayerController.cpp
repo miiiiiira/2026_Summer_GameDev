@@ -39,6 +39,11 @@ void PlayerController::Init()
 	// スタミナを回復させるまでの時間カウンタの初期化
 	staminaCounter_ = 0;
 
+	// ジャンプ数の初期化
+	jumpNum_ = 0;
+	// ジャンプ可能数の初期化
+	jumpNumMax_ = DEFAULT_JUMP_NUM;
+
 	// 掴み距離の初期化
 	range_ = rangeMax_ = DEFAULT_RENGE;
 }
@@ -221,6 +226,9 @@ void PlayerController::ApplyGravity()
 		// 地面上なら少し下方向に押す
 		// 0だと浮く場合があるため
 		velocityY_ = -0.1f;
+
+		// ジャンプした回数を初期化
+		jumpNum_ = 0;
 	}
 }
 
@@ -376,9 +384,13 @@ void PlayerController::Jump(void)
 
 	if (!stageCol) return;
 
-	// ジャンプボタンを押されたかつ、ジャンプ中では無かったら
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_SPACE) && stageCol->IsGround())
+	// ジャンプボタンを押されたかつ、ジャンプ中では無いかつ、ジャンプ回数がMaxまで到達していなかったら
+	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_SPACE)
+		&& jumpNum_ < jumpNumMax_)
 	{
+		// ジャンプした回数を加算
+		++jumpNum_;
+
 		// ジャンプ力を設定
 		velocityY_ = JUMP_POW;
 

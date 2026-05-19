@@ -8,7 +8,10 @@ class ItemBase
 public:
 
 	// アイテムにかける重力
-	static constexpr float GRAVITY = 0.25f;
+	static constexpr float GRAVITY = -0.25f;
+
+	// 最大落下速度
+	const float MAX_FALL = -5.0f;
 
 	// 線形補間の係数
 	static constexpr float COEFFICIENT = 0.3f;

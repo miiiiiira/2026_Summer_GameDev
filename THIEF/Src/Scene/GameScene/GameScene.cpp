@@ -385,6 +385,11 @@ void GameScene::CheckItemStageCollision(void)
 			// 長さチェック
 			if (VSize(normal) < 0.001f) break;
 
+			// XZ軸の法線情報を0にしておく
+			// Y軸のみの押し出しを行いたいため
+			normal.x = 0.0f;
+			normal.z = 0.0f;
+
 			// 正規化
 			normal = VNorm(normal);
 
@@ -405,5 +410,8 @@ void GameScene::CheckItemStageCollision(void)
 	MV1CollResultPolyDimTerminate(hitResult);
 
 	// アイテムに押し出し後の座標を反映
-	item_->SetPos(itemPos);
+	if (item_->GetInfo().pos_.y != itemPos.y)
+	{
+		item_->SetPos(itemPos);
+	}
 }
