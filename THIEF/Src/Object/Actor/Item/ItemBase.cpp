@@ -10,7 +10,8 @@ ItemBase::ItemBase(void)
 	,cameraAngle_(nullptr)
 {
 	info_.modelId_ = -1;
-	info_.velocityY_ = -0.1f;
+	info_.velocity_ = VGet(0.0f,0.0f,0.0f);
+	info_.prevPos_ = info_.pos_;
 }
 
 ItemBase::~ItemBase(void)
@@ -19,16 +20,17 @@ ItemBase::~ItemBase(void)
 
 void ItemBase::Update(void)
 {
+	// 前回座標を更新
+	info_.prevPos_ = info_.pos_;
+
 	// 掴まれていたら
 	if (info_.isGrabbed)
 	{
 		// プレイヤーの位置を見て移動処理を行う
 		TrackingPlayer();
 	}
-
-	// 掴まれていなかったら
-	// 重力をかける
-	Gravity();
+		// 重力をかける
+		Gravity();
 }
 
 void ItemBase::Draw(void)
@@ -77,18 +79,15 @@ void ItemBase::SetPos(const VECTOR& pos)
 {
 	// 指定された座標に設定
 	info_.pos_ = pos;
+
+	// モデルに座標を反映
 	MV1SetPosition(info_.modelId_, info_.pos_);
 
-	// 重力の初期化
-	info_.velocityY_ = -0.1f;
+	// 当たり判定更新
+	MV1RefreshCollInfo(info_.modelId_, -1);
 }
 
-void ItemBase::SetLocalPos(VECTOR localPos)
-{
-	info_.localPos_ = localPos;
-}
-
-void ItemBase::SetLocalPos(float localPosZ)
+void ItemBase::SetLocalPosZ(float localPosZ)
 {
 	info_.localPos_.z = localPosZ;
 }
@@ -99,10 +98,8 @@ void ItemBase::StartGrabbing(VECTOR localPos)
 	info_.isGrabbed = true;
 
 	// プレイヤーとの相対座標をセット
-	SetLocalPos(localPos);
-
-	// 重力を初期化する
-	info_.velocityY_ = -0.1f;
+	info_.localPos_ = localPos;
+	info_.velocity_.y = 0.0f;
 }
 
 void ItemBase::EndGrabbed(void)
@@ -114,7 +111,7 @@ void ItemBase::EndGrabbed(void)
 	MV1SetRotationXYZ(info_.modelId_, info_.angle_);
 
 	// 重力を初期化する
-	info_.velocityY_ = -0.1f;
+	info_.velocity_.y = 0.0f;
 }
 
 void ItemBase::SetCameraPosAngle(VECTOR* cameraPos, VECTOR* cameraAngle)
@@ -127,14 +124,14 @@ void ItemBase::SetCameraPosAngle(VECTOR* cameraPos, VECTOR* cameraAngle)
 void ItemBase::Gravity(void)
 {
 	// 座標に重力を反映
-	info_.pos_.y += info_.velocityY_;
+	info_.pos_.y += info_.velocity_.y;
 
 	// 重力加算
-	info_.velocityY_ += GRAVITY;
+	info_.velocity_.y += GRAVITY;
 
 	// 最大落下速度
-	if (info_.velocityY_ < MAX_FALL)
-		info_.velocityY_ = MAX_FALL;
+	if (info_.velocity_.y < MAX_FALL)
+		info_.velocity_.y = MAX_FALL;
 
 	// モデルの座標を反映
 	MV1SetPosition(info_.modelId_, info_.pos_);

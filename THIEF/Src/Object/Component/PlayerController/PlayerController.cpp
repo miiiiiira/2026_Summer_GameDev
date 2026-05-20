@@ -420,7 +420,7 @@ void PlayerController::Grasping(void)
 		if (RangeUpdate())
 		{
 			// ƒAƒCƒeƒ€‚É”½‰f‚³‚¹‚é
-			item_->SetLocalPos(range_);
+			item_->SetLocalPosZ(range_);
 		}
 
 		break;

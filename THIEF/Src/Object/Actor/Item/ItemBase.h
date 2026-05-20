@@ -11,7 +11,7 @@ public:
 	static constexpr float GRAVITY = -0.25f;
 
 	// 最大落下速度
-	const float MAX_FALL = -5.0f;
+	static constexpr float MAX_FALL = -15.0f;
 
 	// 線形補間の係数
 	static constexpr float COEFFICIENT = 0.3f;
@@ -45,10 +45,8 @@ public:
 	void SetPos(const VECTOR& pos);
 
 	// ローカル座標を設定
-	// 全部の軸
-	void SetLocalPos(VECTOR localPos);
 	// Z軸のみ
-	void SetLocalPos(float localPosZ);
+	void SetLocalPosZ(float localPosZ);
 
 	// 掴まれた状態にする
 	void StartGrabbing(VECTOR localPos);

@@ -25,14 +25,20 @@ struct ItemInfo
 	// 座標
 	VECTOR pos_;
 
+	// 前回座標
+	VECTOR prevPos_;
+
 	// アイテムの種類
 	ITEM_TAG itemTag_;
 
 	// 金額(アイテムのHP)
 	int money_;
 
+	// アイテムの耐久値
+	float durability_;
+
 	// 重力
-	float velocityY_;
+	VECTOR velocity_;
 
 	// 当たり判定用半径
 	float collisionRadius_;

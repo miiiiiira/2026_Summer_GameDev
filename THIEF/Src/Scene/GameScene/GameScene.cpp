@@ -309,25 +309,16 @@ void GameScene::CheckItemPlayerCollision(void)
 	// 当たっているかつ、マウスが押されていたら
 	if (hitResult.HitFlag&& InputManager::GetInstance()->IsClickMouseLeft())
 	{
-		// カメラの逆回転行列を作成する（ワールド → カメラローカル変換用）
-		MATRIX matRotInv = MInverse(matRot);
-
-		// カメラから見たアイテム中心座標との相対ベクトルを計算
-		VECTOR itemToCameraWorld = VSub(item_->GetInfo().pos_, *cameraPos);
-
-		// ワールドの相対ベクトルを、カメラローカルに変換
-		VECTOR itemLocalPos = VTransform(itemToCameraWorld, matRotInv);
-
 		// カメラと当たった場所の距離を求める
-		float dist = VSize(VSub(hitResult.HitPosition, *cameraPos));
+		float distance = VSize(VSub(hitResult.HitPosition, *cameraPos));
 
 		// 距離が最低距離値よりも小さかったら最低距離値にする
-		if (dist < PlayerController::MIN_RENGE)dist = PlayerController::MIN_RENGE;
+		if (distance < PlayerController::MIN_RENGE)distance = PlayerController::MIN_RENGE;
 
 		// アイテムの追従モードをオンにする
-		item_->StartGrabbing({ itemLocalPos.x,itemLocalPos.y,dist });
+		item_->StartGrabbing({ 0,0,distance });
 		// 掴み状態にする
-		player->StartGrabbing(dist);
+		player->StartGrabbing(distance);
 	}
 }
 
@@ -335,83 +326,164 @@ void GameScene::CheckItemStageCollision(void)
 {
 	// ステージの取得
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+
+	// ステージが取得できないなら処理しない
+	if (!stage) return;
+
 	// ステージのモデルID取得
 	int stageModelId = stage->GetModelId();
 
-	// アイテムの座標
-	VECTOR itemPos = item_->GetInfo().pos_;
-	// カプセルの線分用にオフセット分ずらす
-	VECTOR capStart = itemPos;
-	capStart.y -= item_->GetInfo().collisionOffset_;
-	VECTOR capEnd = itemPos;
-	capEnd.y += item_->GetInfo().collisionOffset_;
+	// 現在の座標
+	VECTOR currentPos = item_->GetInfo().pos_;
 
-	// アイテムの当たり判定用の半径
-	float capRad = item_->GetInfo().collisionRadius_;
+	// 前回の座標取得
+	VECTOR prevPos = item_->GetInfo().prevPos_;
 
-	// カプセルとモデルの衝突チェック
-	MV1_COLL_RESULT_POLY_DIM hitResult = MV1CollCheck_Capsule(
-		stage->GetModelId(),
-		-1,
-		capStart,
-		capEnd,
-		capRad
-	);
+	// 移動量(前回の座標と現在の座標の差分)
+	VECTOR move = VSub(currentPos, prevPos);
 
-	// 全当たり判定処理
-	for (int i = 0; i < hitResult.HitNum; i++)
+	// 移動距離(距離を取る)
+	float distance = VSize(move);
+
+	// アイテムの半径取得
+	float itemRad = item_->GetInfo().collisionRadius_;
+
+	// 半径ベースで分割
+	int stepCount = (int)(distance / itemRad) + 1;
+
+	// 最大ステップ数
+	const int MAX_STEP = 16;
+
+	// 最低制限(最低でも1回は動くようにする)
+	if (stepCount < 1)
+		stepCount = 1;
+
+	// 最大制限(試行回数が多すぎて重くなるのを防ぐ)
+	if (stepCount > MAX_STEP)
+		stepCount = MAX_STEP;
+
+	// 1ステップ移動量を計算
+	VECTOR stepMove = VScale(move, 1.0f / stepCount);
+
+	// 判定用座標
+	VECTOR testPos = prevPos;
+
+	// 分割移動
+	for (int step = 0; step < stepCount; step++)
 	{
-		auto hit = hitResult.Dim[i];
-		// 最大5回押し戻し
-		for (int tryCnt = 0; tryCnt < 5; tryCnt++)
-		{
+		// 判定用座標に1ステップの移動量を足し、次座標を計算
+		VECTOR nextPos = VAdd(testPos, stepMove);
 
-			// まだめり込んでいるか？
-			if (!HitCheck_Capsule_Triangle(
+		// カプセル開始座標
+		VECTOR capStart = nextPos;
+		capStart.y -= item_->GetInfo().collisionOffset_;
+
+		// カプセル終了座標
+		VECTOR capEnd = nextPos;
+		capEnd.y += item_->GetInfo().collisionOffset_;
+
+		// 衝突判定　ステージモデルとカプセル(アイテム)
+		MV1_COLL_RESULT_POLY_DIM hitResult =
+			MV1CollCheck_Capsule(
+				stageModelId,
+				-1,
 				capStart,
 				capEnd,
-				capRad,
-				hit.Position[0],
-				hit.Position[1],
-				hit.Position[2]
-			))
-			{
-				break;
-			}
+				itemRad
+			);
 
-			// ポリゴンの法線
+		// 当たっていなければ移動確定
+		if (hitResult.HitNum <= 0)
+		{
+			testPos = nextPos;
+
+			// 衝突情報の解放
+			MV1CollResultPolyDimTerminate(hitResult);
+
+			continue;
+		}
+
+		// 衝突押し戻し
+		for (int i = 0; i < hitResult.HitNum; i++)
+		{
+			auto& hit = hitResult.Dim[i];
+
+			// 法線
 			VECTOR normal = hit.Normal;
 
-			// 長さチェック
-			if (VSize(normal) < 0.001f) break;
+			// 法線の長さを確認
+			float normalLength = VSize(normal);
 
-			// XZ軸の法線情報を0にしておく
-			// Y軸のみの押し出しを行いたいため
-			normal.x = 0.0f;
-			normal.z = 0.0f;
+			// 小さすぎたら処理をしない
+			if (normalLength < 0.0001f)
+				continue;
 
 			// 正規化
 			normal = VNorm(normal);
 
-			// 押し戻し量
-			const float PUSH_POWER = 2.0f;
-			VECTOR push = VScale(normal, PUSH_POWER);
+			// めり込み解消
+			
+			// 三角形最近点取得
+			bool isHit =
+				HitCheck_Capsule_Triangle(
+					capStart,
+					capEnd,
+					itemRad,
+					hit.Position[0],
+					hit.Position[1],
+					hit.Position[2]
+				);
+
+			// めり込んでなければスキップ
+			if (!isHit)
+				continue;
+
+			// 押し戻し量計算
+
+			// 少しずつ押し戻す
+			const float PUSH_BACK = 0.5f;
+
+			// 押し出し量を計算
+			VECTOR push = VScale(normal, PUSH_BACK);
 
 			// 押し戻し
-			itemPos = VAdd(itemPos, push);
+			nextPos = VAdd(nextPos, push);
 
-			// 押し戻したのでカプセルの位置も更新
+			// 壁沿い移動
+			float dot = VDot(stepMove, normal);
+
+			// 壁に向かっている場合だけ
+			if (dot < 0.0f)
+			{
+				// 法線成分除去
+				VECTOR slide =
+					VSub(
+						stepMove,
+						VScale(normal, dot)
+					);
+
+				// スライド移動へ変更
+				stepMove = slide;
+			}
+
+			// カプセル位置更新
 			capStart = VAdd(capStart, push);
 			capEnd = VAdd(capEnd, push);
 		}
+
+		// 衝突情報の解放
+		MV1CollResultPolyDimTerminate(hitResult);
 	}
 
-	// 衝突情報を削除する
-	MV1CollResultPolyDimTerminate(hitResult);
+	// 最終位置更新
+	item_->SetPos(testPos);
 
-	// アイテムに押し出し後の座標を反映
-	if (item_->GetInfo().pos_.y != itemPos.y)
-	{
-		item_->SetPos(itemPos);
-	}
+	if (VSize(VSub(testPos, prevPos)) < 50)return;
+
+	VECTOR vel = item_->GetInfo().velocity_;
+
+	float hitSpeed = VSize(vel);
+	// スピードをそのままダメージに変換（例：スピードの10倍のダメージ）
+	int damage = static_cast<int>(hitSpeed * 10.0f);
+	item_->SetDamage(damage);
 }

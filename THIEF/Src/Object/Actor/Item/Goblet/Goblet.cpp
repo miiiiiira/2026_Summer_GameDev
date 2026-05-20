@@ -29,11 +29,17 @@ void Goblet::Init(void)
 	info_.pos_ = DEFAULT_POS;
 	MV1SetPosition(info_.modelId_, info_.pos_);
 
+	// 前回座標初期化
+	info_.prevPos_ = info_.pos_;
+
 	// アイテムの種類初期化
 	info_.itemTag_ = ITEM_TAG::GOBLET;
 
 	// 金額(アイテムのHP)初期化
 	info_.money_ = MONEY;
+
+	// 耐久値の初期化
+	info_.durability_ = DURABILITY;
 
 	// 当たり判定用の半径を初期化
 	info_.collisionRadius_ = COLLISION_RADIUS;
