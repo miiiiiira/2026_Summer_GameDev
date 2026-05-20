@@ -6,6 +6,7 @@
 
 class ObjectManager;
 class Goblet;
+class Yeti;
 
 class GameScene : public SceneBase
 {
@@ -32,6 +33,8 @@ private:
 
 	// アイテム
 	Goblet* item_;
+
+	Yeti* enemy_;
 
 	// アイテムとプレイヤーの掴み用当たり判定
 	void CheckItemPlayerCollision(void);

@@ -11,6 +11,7 @@
 #include "../Pause/Pause.h"
 
 #include "../../Object/Actor/Item/Goblet/Goblet.h"
+#include "../../Object/Actor/Enemy/Yeti/Yeti.h"
 
 #include "../../Object/ObjectManager/ObjectManager.h"
 #include "../../Object/Tag.h"
@@ -42,6 +43,8 @@ void GameScene::Init(void)
 
 	// アイテム初期化
 	item_->Init();
+
+	enemy_->Init();
 }
 
 void GameScene::Load(void)
@@ -52,6 +55,9 @@ void GameScene::Load(void)
 	// 杯クラス(アイテム)
 	item_ = new Goblet();
 	item_->Load();
+
+	enemy_ = new Yeti();
+	enemy_->Load();
 
 	// ステージの作成
 	StageCreate();
@@ -107,6 +113,7 @@ void GameScene::Update(void)
 
 	// アイテム更新
 	item_->Update();
+	enemy_->Update();
 
 	// アイテムとプレイヤーの掴める範囲の当たり判定
 	CheckItemPlayerCollision();
@@ -122,6 +129,7 @@ void GameScene::Draw(void)
 
 	// アイテム描画
 	item_->Draw();
+	enemy_->Draw();
 }
 
 void GameScene::Release(void)
@@ -133,6 +141,10 @@ void GameScene::Release(void)
 	item_->Release();
 	delete item_;
 	item_ = nullptr;
+
+	enemy_->Release();
+	delete enemy_;
+	enemy_ = nullptr;
 }
 
 void GameScene::CameraCreate(void)
