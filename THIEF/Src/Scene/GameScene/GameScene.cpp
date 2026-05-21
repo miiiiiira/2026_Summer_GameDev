@@ -333,6 +333,9 @@ void GameScene::CheckItemStageCollision(void)
 	// ステージのモデルID取得
 	int stageModelId = stage->GetModelId();
 
+	// 接触したかどうか
+	bool isHitStage = false;
+
 	// 現在の座標
 	VECTOR currentPos = item_->GetInfo().pos_;
 
@@ -438,6 +441,9 @@ void GameScene::CheckItemStageCollision(void)
 			if (!isHit)
 				continue;
 
+			// 接触しているためフラグをたてる
+			isHitStage = true;
+
 			// 押し戻し量計算
 
 			// 少しずつ押し戻す
@@ -478,12 +484,37 @@ void GameScene::CheckItemStageCollision(void)
 	// 最終位置更新
 	item_->SetPos(testPos);
 
-	if (VSize(VSub(testPos, prevPos)) < 50)return;
+	// 空中にいるならダメージ処理しない
+	if (!isHitStage)return;
 
-	VECTOR vel = item_->GetInfo().velocity_;
+	float hitSpeed = 0;
 
-	float hitSpeed = VSize(vel);
+	// アイテムが掴まれていたら
+	if (item_->GetInfo().isGrabbed)
+	{
+		hitSpeed = VSize(VSub(currentPos,prevPos));
+		// 重力分を引いておく(重力でお金が削れるのを防ぐため)
+		hitSpeed -= VSize(item_->GetInfo().velocity_);
+	}
+	// 掴まれていないかつ、空中状態から1度も設置していなかったら
+	else if (!item_->GetInfo().isGrabbed && !item_->GetInfo().hasTouchedStage_)
+	{
+		hitSpeed = VSize(VSub(item_->GetInfo().grabbedPos_,testPos));
+		// 重力分を引いておく(重力でお金が削れるのを防ぐため)
+		hitSpeed -= VSize(item_->GetInfo().velocity_);
+
+		// 設置したためフラグを折る
+		item_->FalseHasToucheStage();
+	}
+
 	// スピードをそのままダメージに変換（例：スピードの10倍のダメージ）
 	int damage = static_cast<int>(hitSpeed * 10.0f);
+	// マイナス値になるのを防ぐ
+	if (damage < 0)
+	{
+		damage *= -1;
+	}
+
 	item_->SetDamage(damage);
+
 }

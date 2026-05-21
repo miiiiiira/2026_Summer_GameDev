@@ -11,7 +11,6 @@ ItemBase::ItemBase(void)
 {
 	info_.modelId_ = -1;
 	info_.velocity_ = VGet(0.0f,0.0f,0.0f);
-	info_.prevPos_ = info_.pos_;
 }
 
 ItemBase::~ItemBase(void)
@@ -29,8 +28,8 @@ void ItemBase::Update(void)
 		// プレイヤーの位置を見て移動処理を行う
 		TrackingPlayer();
 	}
-		// 重力をかける
-		Gravity();
+	// 重力をかける
+	Gravity();
 }
 
 void ItemBase::Draw(void)
@@ -61,8 +60,9 @@ const ItemInfo& ItemBase::GetInfo(void)
 
 void ItemBase::SetDamage(int damage)
 {
-	// 指定のダメージ分お金を削る
-	info_.money_ -= damage;
+	// 指定のダメージから頑丈さ分引いた数値を実際に与えるダメージとする
+	int dmg = damage - info_.hardness_;
+	info_.money_ -= dmg;
 
 	// お金が0以下になったら
 	if (info_.money_ <= 0)
@@ -97,6 +97,9 @@ void ItemBase::StartGrabbing(VECTOR localPos)
 	// 掴まれた状態にする
 	info_.isGrabbed = true;
 
+	// 空中状態で一度もステージに接触していないとする
+	info_.hasTouchedStage_ = false;
+
 	// プレイヤーとの相対座標をセット
 	info_.localPos_ = localPos;
 	info_.velocity_.y = 0.0f;
@@ -106,6 +109,9 @@ void ItemBase::EndGrabbed(void)
 {
 	// 掴まれていない状態にする
 	info_.isGrabbed = false;
+
+	// 離された瞬間の座標を取っておく
+	info_.grabbedPos_ = info_.pos_;
 
 	MV1SetPosition(info_.modelId_, info_.pos_);
 	MV1SetRotationXYZ(info_.modelId_, info_.angle_);
@@ -181,10 +187,14 @@ void ItemBase::TrackingPlayer(void)
 
 void ItemBase::DrawDebug(void)
 {
+	// お金表示
+	DrawFormatString(0, 0, 0xff0000, "%d", info_.money_);
+
 	VECTOR start = info_.pos_;
 	start.y -= info_.collisionOffset_;
 	VECTOR end = info_.pos_;
 	end.y += info_.collisionOffset_;
 
+	// 当たり判定用のカプセル大きさ確認
 	DrawCapsule3D(start, end, info_.collisionRadius_, 8, 0xff0000, 0xff0000, false);
 }

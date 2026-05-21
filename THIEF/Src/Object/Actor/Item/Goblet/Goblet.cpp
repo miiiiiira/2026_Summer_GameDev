@@ -32,14 +32,17 @@ void Goblet::Init(void)
 	// 前回座標初期化
 	info_.prevPos_ = info_.pos_;
 
+	// 離された時の座標を初期化
+	info_.grabbedPos_ = info_.pos_;
+
 	// アイテムの種類初期化
 	info_.itemTag_ = ITEM_TAG::GOBLET;
 
 	// 金額(アイテムのHP)初期化
 	info_.money_ = MONEY;
 
-	// 耐久値の初期化
-	info_.durability_ = DURABILITY;
+	// 頑丈さ初期化
+	info_.hardness_ = HARDNESS;
 
 	// 当たり判定用の半径を初期化
 	info_.collisionRadius_ = COLLISION_RADIUS;
@@ -50,4 +53,7 @@ void Goblet::Init(void)
 
 	// 初めは掴まれていない状態にする
 	info_.isGrabbed = false;
+
+	// 初めは
+	info_.hasTouchedStage_ = true;
 }

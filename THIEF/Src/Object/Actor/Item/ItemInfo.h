@@ -28,14 +28,17 @@ struct ItemInfo
 	// 前回座標
 	VECTOR prevPos_;
 
+	// 離された時の座標
+	VECTOR grabbedPos_;
+
 	// アイテムの種類
 	ITEM_TAG itemTag_;
 
-	// 金額(アイテムのHP)
+	// 金額(HP)
 	int money_;
 
-	// アイテムの耐久値
-	float durability_;
+	// アイテムの頑丈さ
+	float hardness_;
 
 	// 重力
 	VECTOR velocity_;
@@ -54,4 +57,7 @@ struct ItemInfo
 
 	// 掴まれているか　true / 掴まれている, false / 掴まれていない
 	bool isGrabbed;
+
+	// 空中から1度でもステージに接触したかどうか　true / 接触した , false / 接触していない
+	bool hasTouchedStage_;
 };

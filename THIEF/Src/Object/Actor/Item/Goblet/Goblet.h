@@ -24,8 +24,8 @@ public:
 	// 当たり判定用のオフセット
 	static constexpr float COLLISION_OFFSET = 7.0f;
 
-	// 耐久値
-	static constexpr float DURABILITY = 10.0f;
+	// 頑丈さ
+	static constexpr float HARDNESS = 10.0f;
 
 	// コンストラクタ
 	Goblet(void);
