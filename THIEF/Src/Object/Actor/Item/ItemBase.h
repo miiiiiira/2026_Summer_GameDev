@@ -54,8 +54,8 @@ public:
 	// 掴まれた状態を終了する
 	void EndGrabbed(void);
 
-	// ステージに接触したため、フラグを折る
-	void FalseHasToucheStage(void) { info_.hasTouchedStage_ = false; }
+	// ステージに接触したため
+	void TrueHasToucheStage(void) { info_.hasTouchedStage_ = true; }
 
 	// カメラの座標と向きを参照できるようにする
 	void SetCameraPosAngle(VECTOR* cameraPos, VECTOR* cameraAngle);

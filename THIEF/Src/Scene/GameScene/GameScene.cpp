@@ -406,6 +406,9 @@ void GameScene::CheckItemStageCollision(void)
 			continue;
 		}
 
+		// 当たっているためフラグをたてる
+		isHitStage = true;
+
 		// 衝突押し戻し
 		for (int i = 0; i < hitResult.HitNum; i++)
 		{
@@ -440,9 +443,6 @@ void GameScene::CheckItemStageCollision(void)
 			// めり込んでなければスキップ
 			if (!isHit)
 				continue;
-
-			// 接触しているためフラグをたてる
-			isHitStage = true;
 
 			// 押し戻し量計算
 
@@ -503,18 +503,14 @@ void GameScene::CheckItemStageCollision(void)
 		// 重力分を引いておく(重力でお金が削れるのを防ぐため)
 		hitSpeed -= VSize(item_->GetInfo().velocity_);
 
-		// 設置したためフラグを折る
-		item_->FalseHasToucheStage();
+		// 設置したためフラグを接触フラグを立てる
+		item_->TrueHasToucheStage();
 	}
 
-	// スピードをそのままダメージに変換（例：スピードの10倍のダメージ）
-	int damage = static_cast<int>(hitSpeed * 10.0f);
+	// スピードをそのままダメージに変換
+	int damage = static_cast<int>(hitSpeed);
+
 	// マイナス値になるのを防ぐ
-	if (damage < 0)
-	{
-		damage *= -1;
-	}
-
-	item_->SetDamage(damage);
+	item_->SetDamage(abs(damage));
 
 }

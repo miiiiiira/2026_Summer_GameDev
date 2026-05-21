@@ -11,6 +11,12 @@ ItemBase::ItemBase(void)
 {
 	info_.modelId_ = -1;
 	info_.velocity_ = VGet(0.0f,0.0f,0.0f);
+
+	// 初めは掴まれていない状態にする
+	info_.isGrabbed = false;
+
+	// 地面に接触していることにする
+	info_.hasTouchedStage_ = true;
 }
 
 ItemBase::~ItemBase(void)
@@ -62,8 +68,11 @@ void ItemBase::SetDamage(int damage)
 {
 	// 指定のダメージから頑丈さ分引いた数値を実際に与えるダメージとする
 	int dmg = damage - info_.hardness_;
-	info_.money_ -= dmg;
 
+	// ダメージがマイナス値だったらHPに変更を行わない(回復してしまうため)
+	if (dmg < 0)return;
+
+	info_.money_ -= dmg;
 	// お金が0以下になったら
 	if (info_.money_ <= 0)
 	{
@@ -73,6 +82,7 @@ void ItemBase::SetDamage(int damage)
 		// 生存フラグを折る
 		info_.isAlive_ = false;
 	}
+
 }
 
 void ItemBase::SetPos(const VECTOR& pos)

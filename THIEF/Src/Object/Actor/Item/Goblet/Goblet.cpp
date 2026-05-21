@@ -50,10 +50,4 @@ void Goblet::Init(void)
 
 	// ¶‘¶’†‚É‚·‚é
 	info_.isAlive_ = true;
-
-	// ‰‚ß‚Í’Í‚Ü‚ê‚Ä‚¢‚È‚¢ó‘Ô‚É‚·‚é
-	info_.isGrabbed = false;
-
-	// ‰‚ß‚Í
-	info_.hasTouchedStage_ = true;
 }
