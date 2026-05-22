@@ -19,9 +19,14 @@ public:
 	// 外部からモデルを設定
 	void SetModel(std::string path);
 
+	// 描画フラグを設定
+	void SetIsDraw(bool flg);
+
 	// ハンドルを返す
 	int GetModel(void) const{ return handle_; }
 
 private:
 	Transform* transform_ = nullptr;
+
+	bool isDraw_;
 };

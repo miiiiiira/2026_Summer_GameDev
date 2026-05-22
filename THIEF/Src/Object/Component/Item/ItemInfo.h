@@ -22,9 +22,6 @@ struct ItemInfo
 	// Œü‚«
 	VECTOR angle_;
 
-	// À•W
-	VECTOR pos_;
-
 	// ‘O‰ñÀ•W
 	VECTOR prevPos_;
 

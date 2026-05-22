@@ -15,6 +15,7 @@
 
 #include "../../Object/Component/Collider/3DCollider/CapsuleCollider.h"
 #include "../../Object/Component/Collider/StageCollider/StageCollider.h"
+#include "../../Object/Component/Collider/ItemCollider/ItemCollider.h"
 #include "../../Object/Component/Render/Render3D.h"
 #include "../../Object/Component/Camera/Camera.h"
 #include "../../Object/Component/PlayerController/PlayerController.h"
@@ -57,6 +58,9 @@ void GameScene::Load(void)
 
 	// プレイヤーの作成
 	PlayerCreate();
+
+	// アイテムの作成
+	ItemCreate();
 
 	// 敵の作成
 	EnemyCreate();
@@ -191,11 +195,8 @@ void GameScene::PlayerCreate(void)
 	// ランタン取得
 	auto lantern = objectManger_->FindComponentWithTag<Lantern>(Tag::Lantern);
 
-	// アイテム取得
-	//auto item = objectManger_->FindComponentWithTag<Goblet>(Tag::Goblet);
-
 	// プレイヤークラスにカメラ、アイテム、ランタンのポインタを渡す
-	playerController->SetPointers(camera/*,item*/, lantern);
+	playerController->SetPointers(camera, lantern);
 }
 
 void GameScene::EnemyCreate(void)
@@ -241,32 +242,42 @@ void GameScene::StageCreate(void)
 
 void GameScene::ItemCreate(void)
 {
-	//// ステージの作成
-	//auto goblet = objectManger_->CreateObject();
+	// ステージの作成
+	auto item = objectManger_->CreateObject();
 
-	//// タグを付与
-	//goblet->SetTag(Tag::Goblet);
+	// タグを付与
+	item->SetTag(Tag::Goblet);
 
-	//// 座標の設定
-	//auto trans = goblet->AddComponent<Transform>();
-	//trans->pos_ = { 0.0f,0.0f,0.0f };
+	// 座標の設定
+	auto trans = item->AddComponent<Transform>();
+	trans->pos_ = { 0.0f,100.0f,0.0f };
 
-	//// 描画
-	//auto render = goblet->AddComponent<Render3D>();
-	//render->SetModel("Data/Model/Item/Goblet.mv1");
+	// 描画
+	auto render = item->AddComponent<Render3D>();
+	render->SetModel("Data/Model/Item/Goblet.mv1");
 
-	//// アイテム機能
-	//goblet->AddComponent<Item>();
+	// アイテム機能
+	item->AddComponent<Goblet>();
 
-	//// プレイヤー取得
-	//auto item = objectManger_->FindComponentWithTag<Goblet>(Tag::Goblet);
-	//
-	//// プレイヤー取得
-	//auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
-	//// カメラの取得
-	//auto camera = objectManger_->FindComponentWithTag<Camera>(Tag::Camera);
-	//VECTOR* cameraPos = &camera->GetTransform()->pos_;
-	//VECTOR* cameraAngle = camera->GetAngle();
-	//item->SetPlayerCameraInfo(playerController, cameraPos, cameraAngle);
+	// プレイヤー取得
+	auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
+
+	// ステージ取得
+	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+
+	// アイテムの当たり判定
+	auto itemCol = item->AddComponent<ItemCollider>();
+	// プレイヤーを渡す
+	itemCol->SetPlayer(playerController);
+	// ステージのモデルハンドルを渡す
+	itemCol->SetStageModelId(stage->GetModelId());
+
+	// カメラの取得
+	auto camera = objectManger_->FindComponentWithTag<Camera>(Tag::Camera);
+	VECTOR* cameraPos = &camera->GetTransform()->pos_;
+	VECTOR* cameraAngle = camera->GetAngle();
+
+	auto goblet = objectManger_->FindComponentWithTag<Goblet>(Tag::Goblet);
+	goblet->SetPlayerCameraInfo(playerController, cameraPos, cameraAngle);
 }
 

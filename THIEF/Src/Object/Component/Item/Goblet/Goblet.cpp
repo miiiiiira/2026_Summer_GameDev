@@ -10,7 +10,7 @@ Goblet::~Goblet(void)
 {
 }
 
-void Goblet::Init(void)
+void Goblet::SetParam(void)
 {
 	// 大きさ初期化
 	info_.scale_ = SCALE;
@@ -19,16 +19,6 @@ void Goblet::Init(void)
 	// 向き初期化
 	info_.angle_ = DEFAULT_ANGLE;
 	MV1SetRotationXYZ(info_.modelId_, info_.angle_);
-
-	// 座標初期化
-	info_.pos_ = DEFAULT_POS;
-	MV1SetPosition(info_.modelId_, info_.pos_);
-
-	// 前回座標初期化
-	info_.prevPos_ = info_.pos_;
-
-	// 離された時の座標を初期化
-	info_.grabbedPos_ = info_.pos_;
 
 	// アイテムの種類初期化
 	info_.itemTag_ = ITEM_TAG::GOBLET;

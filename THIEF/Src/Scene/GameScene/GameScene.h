@@ -30,6 +30,4 @@ public:
 private:
 	// オブジェクトマネージャー
 	ObjectManager* objectManger_;
-
-	void DebugDraw(void);
 };

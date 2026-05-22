@@ -7,7 +7,6 @@ class Camera;
 class Transform;
 class Animation;
 class Item;
-class Goblet;
 class Lantern;
 
 // プレイヤーの状態
@@ -81,7 +80,9 @@ public:
 	void StartGrabbing(float range);
 
 	// アイテムクラス、ランタンクラスのポインタ取得
-	void SetPointers(Camera* camera/*, Goblet* item*/, Lantern* lantern);
+	void SetPointers(Camera* camera, Lantern* lantern);
+
+	void SetItemPoint(Item* item);
 
 	// 現在の状態表すステート
 	PlayerState state_ = PlayerState::IDLE;
@@ -129,7 +130,7 @@ private:
 	Camera* camera_ = nullptr;
 
 	// アイテム
-	Goblet* item_ = nullptr;
+	Item* item_ = nullptr;
 
 	// ランタン
 	Lantern* lantern_ = nullptr;

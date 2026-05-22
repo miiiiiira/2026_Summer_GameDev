@@ -7,6 +7,7 @@ void Render3D::Init(void)
 {
 	// オーナーから位置情報を取得
 	transform_ = owner_->GetComponent<Transform>();
+	isDraw_ = true;
 }
 
 void Render3D::Update(void)
@@ -24,6 +25,9 @@ void Render3D::Draw()
 {
 	// ロードされていないなら処理しない
 	if (handle_ == -1) return;
+
+	// 描画フラグがfalseだったら処理しない
+	if (!isDraw_)return;
 
 	// モデルを描画
 	MV1DrawModel(handle_);
@@ -45,4 +49,9 @@ void Render3D::SetModel(std::string path)
 	// 既に読み込み済みだったら削除して読み込み
 	Release();
 	handle_ = MV1LoadModel(path.c_str());
+}
+
+void Render3D::SetIsDraw(bool flg)
+{
+	isDraw_ = flg;
 }

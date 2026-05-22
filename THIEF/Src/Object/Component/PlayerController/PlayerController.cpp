@@ -8,7 +8,6 @@
 #include "../../Component/Animation/Animation.h"
 #include "../../Component/Camera/Camera.h"
 #include "../../Component/Item/Item.h"
-#include "../../Component/Item/Goblet/Goblet.h"
 #include "../../Component/Lantern/Lantern.h"
 
 #include "../Collider/StageCollider/StageCollider.h"
@@ -70,9 +69,6 @@ void PlayerController::Update()
 	// 重力処理
 	ApplyGravity();
 
-	// アイテムの中身がなかったら
-	if (item_ == nullptr)return;
-
 	// 掴み動作処理
 	Grasping();
 }
@@ -109,16 +105,19 @@ void PlayerController::StartGrabbing(float range)
 	range_ = range;
 }
 
-void PlayerController::SetPointers(Camera* camera/*, Goblet* item*/, Lantern* lantern)
+void PlayerController::SetPointers(Camera* camera, Lantern* lantern)
 {
 	// カメラクラスのポインタを設定
 	camera_ = camera;
 
-	// アイテムクラスのポインタを設定
-	//item_ = item;
-
 	// ランタンクラスのポインタを設定
 	lantern_ = lantern;
+}
+
+void PlayerController::SetItemPoint(Item* item)
+{
+	// アイテムクラスのポインタを設定
+	item_ = item;
 }
 
 // 移動処理
@@ -431,20 +430,24 @@ void PlayerController::Grasping(void)
 		break;
 	case GrasbbingState::IS_GRABBING:
 
+		// アイテムの中身がなかったら
+		if (item_ == nullptr)return;
+
 		// マウスの左クリックが今離されたか、マウスの左クリックを押されていなかったら
 		if (InputManager::GetInstance()->IsTrgUpMouseLeft()||!InputManager::GetInstance()->IsClickMouseLeft())
 		{
 			// 掴み動作を終わる
 			grabState_ = GrasbbingState::NOT_GRABBING;
 			// アイテムの追従を終わる
-			//item_->EndGrabbed();
+			item_->EndGrabbed();
+			item_ = nullptr;
 		}
 
 		// つかめる範囲に変更があったら
 		if (RangeUpdate())
 		{
 			// アイテムに反映させる
-			//item_->SetLocalPosZ(range_);
+			item_->SetLocalPosZ(range_);
 		}
 
 		break;

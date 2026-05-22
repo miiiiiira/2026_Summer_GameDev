@@ -12,9 +12,6 @@ public:
 	// Œü‚«
 	static constexpr VECTOR DEFAULT_ANGLE = { 0.0f,0.0f,0.0f };
 
-	// À•W
-	static constexpr VECTOR DEFAULT_POS = { 10.0f,100.0f,20.0f };
-
 	// ‹àŠz
 	static constexpr int MONEY = 1000;
 
@@ -33,6 +30,6 @@ public:
 	~Goblet(void)override;
 
 	// ‰Šú‰»ˆ—
-	void Init(void) override;
+	void SetParam(void) override;
 };
 

@@ -21,13 +21,11 @@ protected:
 	static constexpr float COEFFICIENT = 0.3f;
 
 public:
-	// コンストラクタ
-	Item();
 	// デストラクタ
-	virtual ~Item(void);
+	virtual ~Item(void)override;
 
 	// 初期化処理
-	virtual void Init(void) = 0;
+	void Init(void)override;
 	// 更新処理
 	void Update(void)override;
 	// 描画処理
@@ -76,6 +74,9 @@ protected:
 	// アイテムの情報
 	ItemInfo info_;
 
+	// Transform
+	Transform* trans_;
+
 	// プレイヤー
 	PlayerController* player_;
 
@@ -99,6 +100,9 @@ protected:
 
 	// カメラの回転行列を取得
 	MATRIX CameraMatrix(void);
+
+	// 個々のパラメータを設定する
+	virtual void SetParam(void) = 0;
 
 	// デバッグ用の描画
 	void DrawDebug(void);
