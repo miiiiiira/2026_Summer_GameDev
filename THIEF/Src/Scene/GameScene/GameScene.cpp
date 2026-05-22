@@ -270,7 +270,7 @@ void GameScene::ItemCreate(void)
 	// プレイヤーを渡す
 	itemCol->SetPlayer(playerController);
 	// ステージのモデルハンドルを渡す
-	itemCol->SetStageModelId(stage->GetModelId());
+	itemCol->SetStage(stage);
 
 	// カメラの取得
 	auto camera = objectManger_->FindComponentWithTag<Camera>(Tag::Camera);

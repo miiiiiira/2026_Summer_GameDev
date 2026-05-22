@@ -2,12 +2,12 @@
 
 #include "../../Component.h"
 #include "../../Transform/Transform.h"
-#include "../3DCollider/CapsuleCollider.h"
 #include "../../Item/Item.h"
 
 // 前方宣言
 class Item;
 class PlayerController;
+class Stage;
 
 // アイテム衝突コンポーネント
 class ItemCollider : public Component
@@ -19,8 +19,8 @@ public:
 	// プレイヤー設定
 	void SetPlayer(PlayerController* player) { player_ = player; }
 
-	// ステージモデルId設定
-	void SetStageModelId(int modelId) { stageModelId_ = modelId; }
+	// ステージ設定
+	void SetStage(Stage* stage) { stage_ = stage; }
 
 	// 接地判定
 	bool IsGround(void) const { return isGround_; }
@@ -44,17 +44,14 @@ private:
 	// Transform
 	Transform* transform_ = nullptr;
 
-	// Capsule
-	CapsuleCollider* capsule_ = nullptr;
-
 	// アイテム
 	Item* item_ = nullptr;
 
 	// プレイヤー
 	PlayerController* player_ = nullptr;
 
-	// ステージモデルハンドル
-	int stageModelId_ = -1;
+	// ステージ
+	Stage* stage_ = nullptr;
 
 	// ステージTransform
 	Transform* stageTransform_ = nullptr;

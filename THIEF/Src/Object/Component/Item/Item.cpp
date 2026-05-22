@@ -61,8 +61,9 @@ void Item::Update(void)
 		// プレイヤーの位置を見て移動処理を行う
 		TrackingPlayer();
 	}
+
 	// 重力をかける
-	//Gravity();
+	Gravity();
 }
 
 void Item::Draw(void)
