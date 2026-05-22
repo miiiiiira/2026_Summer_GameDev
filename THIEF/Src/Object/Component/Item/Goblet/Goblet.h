@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../ItemBase.h"
+#include "../Item.h"
 
-class Goblet : public ItemBase
+class Goblet : public Item
 {
 public:
 
@@ -28,12 +28,10 @@ public:
 	static constexpr float HARDNESS = 10.0f;
 
 	// コンストラクタ
-	Goblet(void);
+	Goblet();
 	// デストラクタ
 	~Goblet(void)override;
 
-	// 読み込み処理
-	void Load(void) override;
 	// 初期化処理
 	void Init(void) override;
 };

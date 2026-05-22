@@ -25,18 +25,11 @@ public:
 	void LanternCreate(void);		// ランタンの作成
 	void EnemyCreate(void);			// 敵の作成
 	void StageCreate(void);			// ステージの作成
+	void ItemCreate(void);			// アイテムの作成
 
 private:
 	// オブジェクトマネージャー
 	ObjectManager* objectManger_;
-
-	// アイテム
-	Goblet* item_;
-
-	// アイテムとプレイヤーの掴み用当たり判定
-	void CheckItemPlayerCollision(void);
-	// アイテムとステージの当たり判定
-	void CheckItemStageCollision(void);
 
 	void DebugDraw(void);
 };

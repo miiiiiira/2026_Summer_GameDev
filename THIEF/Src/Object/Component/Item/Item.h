@@ -1,11 +1,15 @@
 #pragma once
 
-#include <DxLib.h>
-#include"../../Component/Item/ItemInfo.h"
+#include "../Component.h"
+#include "ItemInfo.h"
 
-class ItemBase
+// 前方宣言
+class Transform;
+class PlayerController;
+
+class Item :public Component
 {
-public:
+protected:
 
 	// アイテムにかける重力
 	static constexpr float GRAVITY = -0.25f;
@@ -16,27 +20,37 @@ public:
 	// 線形補間の係数
 	static constexpr float COEFFICIENT = 0.3f;
 
+public:
 	// コンストラクタ
-	ItemBase(void);
+	Item();
 	// デストラクタ
-	virtual ~ItemBase(void);
+	virtual ~Item(void);
 
-	// 読み込み処理
-	virtual void Load(void) = 0;
 	// 初期化処理
 	virtual void Init(void) = 0;
 	// 更新処理
-	void Update(void);
+	void Update(void)override;
 	// 描画処理
-	void Draw(void);
-	// 解放処理
-	void Release(void);
+	void Draw(void)override;
+
+	void SetPlayerCameraInfo(PlayerController* player, VECTOR* cameraPos, VECTOR* cameraAngle);
+
+public:
+
+	// Transformを返す
+	Transform* GetTransform();
 
 	// アイテムの情報を渡す
 	const ItemInfo& GetInfo(void);
 
 	// モデルIDを渡す
 	int GetModelID(void) { return info_.modelId_; }
+
+	VECTOR GetLineStartPos(void);
+	VECTOR GetLineEndPos(void);
+	float GetCameraDistance(VECTOR pos);
+
+public:
 
 	// アイテムにダメージを与える
 	void SetDamage(int damage);
@@ -57,13 +71,13 @@ public:
 	// ステージに接触したため
 	void TrueHasTouchedStage(void) { info_.hasTouchedStage_ = true; }
 
-	// カメラの座標と向きを参照できるようにする
-	void SetCameraPosAngle(VECTOR* cameraPos, VECTOR* cameraAngle);
-
 protected:
 
 	// アイテムの情報
 	ItemInfo info_;
+
+	// プレイヤー
+	PlayerController* player_;
 
 	// カメラの座標
 	VECTOR* cameraPos_;
@@ -76,6 +90,15 @@ protected:
 
 	// プレイヤーの位置をみて移動処理を行う
 	void TrackingPlayer(void);
+
+	// カメラ情報でローカル座標を回転させる
+	VECTOR ToCameraLocalPosRot(void);
+
+	// 方向から回転行列を算出
+	MATRIX AngleToMatrix(void);
+
+	// カメラの回転行列を取得
+	MATRIX CameraMatrix(void);
 
 	// デバッグ用の描画
 	void DrawDebug(void);

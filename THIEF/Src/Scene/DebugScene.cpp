@@ -8,8 +8,6 @@
 #include "GameOver/GameOver.h"
 #include "Pause/Pause.h"
 
-#include "../Object/Actor/Item/Goblet/Goblet.h"
-
 #include "../Object/ObjectManager/ObjectManager.h"
 #include "../Object/Tag.h"
 
@@ -232,7 +230,7 @@ void DebugScene::PlayerCreate(void)
 	auto lantern = objectManger_->FindComponentWithTag<Lantern>(Tag::Lantern);
 
 	// プレイヤークラスにカメラ、アイテム、ランタンのポインタを渡す
-	playerController->SetPointers(camera, nullptr, lantern);
+	playerController->SetPointers(camera/*, nullptr*/, lantern);
 }
 
 void DebugScene::EnemyCreate(void)

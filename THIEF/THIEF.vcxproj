@@ -19,12 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Component\Item\Item.cpp" />
     <ClCompile Include="Src\Scene\DebugScene.cpp" />
     <ClCompile Include="Src\Object\Component\Collider\ItemCollider\ItemCollider.cpp" />
     <ClCompile Include="Src\Common\Shader\Shader.cpp" />
     <ClCompile Include="Src\Common\Transform\Transform.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\EnemyBase.cpp" />
-    <ClCompile Include="Src\Object\Actor\Item\Goblet\Goblet.cpp" />
+    <ClCompile Include="Src\Object\Component\Item\Goblet\Goblet.cpp" />
     <ClCompile Include="Src\Object\Actor\Item\ItemBase.cpp" />
     <ClCompile Include="Src\Object\Component\Lantern\Lantern.cpp" />
     <ClCompile Include="Src\Object\Collision\CollisionManager.cpp" />
@@ -65,15 +66,16 @@
     <ClCompile Include="Src\System\SystemManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Component\Item\Item.h" />
+    <ClInclude Include="Src\Object\Component\Item\ItemInfo.h" />
     <ClInclude Include="Src\Scene\DebugScene.h" />
     <ClInclude Include="Src\Object\Component\Collider\ItemCollider\ItemCollider.h" />
     <ClInclude Include="Src\Common\Shader\Shader.h" />
     <ClInclude Include="Src\Common\Transform\Transform.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\EnemyBase.h" />
-    <ClInclude Include="Src\Object\Actor\Item\Goblet\Goblet.h" />
+    <ClInclude Include="Src\Object\Component\Item\Goblet\Goblet.h" />
     <ClInclude Include="Src\Object\Actor\Item\ItemBase.h" />
     <ClInclude Include="Src\Object\Component\Lantern\Lantern.h" />
-    <ClInclude Include="Src\Object\Actor\Item\ItemInfo.h" />
     <ClInclude Include="Src\Object\Collision\CollisionManager.h" />
     <ClInclude Include="Src\Object\Component\Animation\Animation.h" />
     <ClInclude Include="Src\Object\Component\Camera\Camera.h" />

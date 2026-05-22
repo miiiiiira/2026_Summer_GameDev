@@ -59,6 +59,7 @@ void ItemBase::Release(void)
 	MV1DeleteModel(info_.modelId_);
 }
 
+
 const ItemInfo& ItemBase::GetInfo(void)
 {
 	return info_;

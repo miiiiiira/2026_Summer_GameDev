@@ -6,23 +6,25 @@
 class Camera;
 class Transform;
 class Animation;
-class ItemBase;
+class Item;
+class Goblet;
 class Lantern;
 
 // プレイヤーの状態
 enum class PlayerState
 {
-	IDLE,
-	MOVE,
-	DASH,
-	CROUCHING,
-	SLIDING,
+	IDLE,		// 待機
+	MOVE,		// 移動
+	DASH,		// ダッシュ	
+	CROUCHING,	// しゃがみ
+	SLIDING,	// スライディング
 };
 
-enum class GraspingState
+enum class GrasbbingState
 {
-	NOT_GRAPING,
-	IS_GRAPING,
+	NOT_GRABBING,	// 掴もうとしてない
+	TRY_GRABBING,	// 掴もうとしている
+	IS_GRABBING,	// 掴んでいる
 };
 
 // プレイヤー制御コンポーネント
@@ -72,17 +74,20 @@ public:
 	// 掴める最大範囲を取得
 	float GetRangeMax(void);
 
+	// 掴んでいるかの状態を取得
+	GrasbbingState GetGrabbingState(void);
+
 	// 指定された掴み動作を設定
 	void StartGrabbing(float range);
 
 	// アイテムクラス、ランタンクラスのポインタ取得
-	void SetPointers(Camera* camera, ItemBase* item, Lantern* lantern);
+	void SetPointers(Camera* camera/*, Goblet* item*/, Lantern* lantern);
 
 	// 現在の状態表すステート
 	PlayerState state_ = PlayerState::IDLE;
 
 	// 掴み状態を表すステート
-	GraspingState grapState_ = GraspingState::NOT_GRAPING;
+	GrasbbingState grabState_ = GrasbbingState::NOT_GRABBING;
 private:
 	// 移動処理
 	void Move();
@@ -124,7 +129,7 @@ private:
 	Camera* camera_ = nullptr;
 
 	// アイテム
-	ItemBase* item_ = nullptr;
+	Goblet* item_ = nullptr;
 
 	// ランタン
 	Lantern* lantern_ = nullptr;

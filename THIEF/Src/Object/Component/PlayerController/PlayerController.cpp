@@ -7,7 +7,8 @@
 #include "../../Component/Transform/Transform.h"
 #include "../../Component/Animation/Animation.h"
 #include "../../Component/Camera/Camera.h"
-#include "../../Actor/Item/ItemBase.h"
+#include "../../Component/Item/Item.h"
+#include "../../Component/Item/Goblet/Goblet.h"
 #include "../../Component/Lantern/Lantern.h"
 
 #include "../Collider/StageCollider/StageCollider.h"
@@ -95,21 +96,26 @@ float PlayerController::GetRangeMax(void)
 	return rangeMax_;
 }
 
+GrasbbingState PlayerController::GetGrabbingState(void)
+{
+	return grabState_;
+}
+
 void PlayerController::StartGrabbing(float range)
 {
 	// 掴み状態を始める
-	grapState_ = GraspingState::IS_GRAPING;
+	grabState_ = GrasbbingState::IS_GRABBING;
 
 	range_ = range;
 }
 
-void PlayerController::SetPointers(Camera* camera, ItemBase* item, Lantern* lantern)
+void PlayerController::SetPointers(Camera* camera/*, Goblet* item*/, Lantern* lantern)
 {
 	// カメラクラスのポインタを設定
 	camera_ = camera;
 
 	// アイテムクラスのポインタを設定
-	item_ = item;
+	//item_ = item;
 
 	// ランタンクラスのポインタを設定
 	lantern_ = lantern;
@@ -401,26 +407,44 @@ void PlayerController::Jump(void)
 
 void PlayerController::Grasping(void)
 {
-	switch (grapState_)
+	switch (grabState_)
 	{
-	case GraspingState::NOT_GRAPING:
+	case GrasbbingState::NOT_GRABBING:
+
+		// 掴もうとしていたら
+		if (InputManager::GetInstance()->IsTrgMouseLeft())
+		{
+			// 状態を変更
+			grabState_ = GrasbbingState::TRY_GRABBING;
+		}
+
 		break;
-	case GraspingState::IS_GRAPING:
+	case GrasbbingState::TRY_GRABBING:
+
+		// 掴もうとしていなくなったら
+		if (!InputManager::GetInstance()->IsClickMouseLeft())
+		{
+			// 状態を変更
+			grabState_ = GrasbbingState::NOT_GRABBING;
+		}
+
+		break;
+	case GrasbbingState::IS_GRABBING:
 
 		// マウスの左クリックが今離されたか、マウスの左クリックを押されていなかったら
 		if (InputManager::GetInstance()->IsTrgUpMouseLeft()||!InputManager::GetInstance()->IsClickMouseLeft())
 		{
 			// 掴み動作を終わる
-			grapState_ = GraspingState::NOT_GRAPING;
+			grabState_ = GrasbbingState::NOT_GRABBING;
 			// アイテムの追従を終わる
-			item_->EndGrabbed();
+			//item_->EndGrabbed();
 		}
 
 		// つかめる範囲に変更があったら
 		if (RangeUpdate())
 		{
 			// アイテムに反映させる
-			item_->SetLocalPosZ(range_);
+			//item_->SetLocalPosZ(range_);
 		}
 
 		break;

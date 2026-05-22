@@ -9,6 +9,7 @@ enum class Tag
 
 	Lantern,
 	Stage,
+	Goblet,
 	Object,
 	BreakObject,
 };
