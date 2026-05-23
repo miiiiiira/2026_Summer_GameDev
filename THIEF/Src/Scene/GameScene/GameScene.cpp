@@ -44,7 +44,8 @@ void GameScene::Init(void)
 	// ƒAƒCƒeƒ€‰Šú‰»
 	item_->Init();
 
-	enemy_->Init();
+	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+	enemy_->Init(stage->GetModelId());
 }
 
 void GameScene::Load(void)

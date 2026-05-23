@@ -1,17 +1,20 @@
 #pragma once
 #include<vector>
-#include <DxLib.h>
+#include <functional>
+#include "EnemyData.h"
 
 class EnemyBase
 {
 public:
-
+	
+	// ウェイポイント
 	struct Waypoint
 	{
 		int id;			// ウェイポイントID
 		VECTOR pos;		// 座標
 	};
 
+	// エッジ
 	struct Edge
 	{
 		Waypoint way;	// 行った先のウェイポイントID
@@ -24,36 +27,30 @@ public:
 	virtual ~EnemyBase(void);
 
 	// 読み込み処理
-	virtual void Load(void) = 0;
+	virtual void Load(void);
 	// 初期化処理
-	virtual void Init(void) = 0;
+	virtual void Init(int id = -1) = 0;
 	// 更新処理
-	void Update(void);
+	virtual void Update(void) = 0;
 	// 描画処理
-	void Draw(void);
+	virtual void Draw(void);
 	// 解放処理
 	void Release(void);
 
-	void FindPath(int startNodeId, int goalNodeId);
-
+	std::vector<Edge> FindPath(int startNodeId, int goalNodeId);
 
 protected:
 
-	// モデルのハンドル
-	int modelId_;
+	EnemyData data_;
 
-	// 大きさ
-	VECTOR scale_;
-
-	// 向き
-	VECTOR angle_;
-
-	// 座標
-	VECTOR pos_;
-
-private:
-	void AddEdge(int fromId, int toId);
+	int stageId_ = -1;
 
 	std::vector<Waypoint> way_;
 	std::vector<std::vector<Edge>> edgeList_;
+
+	void AddEdge(int fromId, int toId);
+
+private:
+	void LoadCsvData(void);
+
 };
