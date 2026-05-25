@@ -74,6 +74,7 @@ private:
 	int currentNodeId_;		// 今いるノード
 	int prevNodeId_;		// 前回のノード
 	int prevPrevNodeId_;	// 前々回のノード
+	int nextNodeId_;
 	float patrolRadius_;	// 巡回用の半径
 
 	void SetMoveDirPatrol(void);

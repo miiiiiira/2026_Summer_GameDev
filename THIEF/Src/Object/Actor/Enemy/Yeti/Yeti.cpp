@@ -79,15 +79,14 @@ void Yeti::Load(void)
 
 void Yeti::Update(void)
 {
-
 	// プレイヤーの遅延回転処理
 	DelayRotate();
 
 	// 行列の合成(子, 親と指定すると親⇒子の順に適用される)
 	MATRIX mat = Matrix::Multiplication(localAngle_, angle_);
-
 	// 回転行列をモデルに反映
 	MV1SetRotationMatrix(modelId_, mat);
+
 	switch (state_)
 	{
 	case Yeti::STATE::THINK: UpdateThink(); break;
@@ -115,9 +114,23 @@ void Yeti::Draw(void)
 	// 巡回ルート描画
 	for (const auto& point : way_)
 	{
+		unsigned int color = 0x0000ff;
+		if (point.id == nextNodeId_)
+		{
+			color = 0x006400;
+		}
+		else if (point.id == prevNodeId_)
+		{
+			color = 0xff8c00;
+		}
+		else if (point.id == prevPrevNodeId_)
+		{
+			color = 0xfff5ee;
+		}
+
 		DrawSphere3D(
 			point.pos, 50.0f, 10,
-			0x0000ff, 0x0000ff, false);
+			color, color, false);
 	}
 #endif
 }
@@ -135,13 +148,15 @@ void Yeti::SetMoveDirPatrol(void)
 
 int Yeti::SelectNextNode(void)
 {
-
 	for (const auto& edge : edgeList_[currentNodeId_])
 	{
 		int nextId = edge.way.id;
 
-		// エッジリスト内の距離が半径より大きかったら処理しない
-		if (edge.cost > patrolRadius_) continue;
+		float distance = VSize(VSub(edge.way.pos, pos_));
+
+		// 敵の座標から半径以内に無いポイントは除外
+		if (distance > patrolRadius_) continue;
+
 		// 前回、前々回のノードは除外する
 		if (nextId == prevNodeId_) continue;
 		if (nextId == prevPrevNodeId_) continue;
@@ -153,14 +168,17 @@ int Yeti::SelectNextNode(void)
 	if (!candidates_.empty())
 	{
 		int index = GetRand(static_cast<int>(candidates_.size() - 1));
+		nextNodeId_ = candidates_[index];
 		return candidates_[index];
 	}
 
 	if (prevNodeId_ != -1)
 	{
+		nextNodeId_ = prevNodeId_;
 		return prevNodeId_;
 	}
 
+	nextNodeId_ = currentNodeId_;
 	return currentNodeId_;
 }
 
@@ -219,7 +237,7 @@ void Yeti::ChangeThink(void)
 	// ランダムに次の行動を決定
 	// 20%で待機、80%で徘徊
 	int rand = GetRand(100);
-	if (rand < 20)
+	if (rand < 30)
 	{
 		ChangeState(STATE::IDLE);
 	}
