@@ -437,6 +437,13 @@ void PlayerController::Grasping(void)
 		// アイテムの中身がなかったら
 		if (item_ == nullptr)return;
 
+		// つかめる範囲に変更があったら
+		if (RangeUpdate())
+		{
+			// アイテムに反映させる
+			item_->SetLocalPosZ(range_);
+		}
+
 		// マウスの左クリックが今離されたか、マウスの左クリックを押されていなかったら
 		if (InputManager::GetInstance()->IsTrgUpMouseLeft()||!InputManager::GetInstance()->IsClickMouseLeft())
 		{
@@ -445,13 +452,6 @@ void PlayerController::Grasping(void)
 			// アイテムの追従を終わる
 			item_->EndGrabbed();
 			item_ = nullptr;
-		}
-
-		// つかめる範囲に変更があったら
-		if (RangeUpdate())
-		{
-			// アイテムに反映させる
-			item_->SetLocalPosZ(range_);
 		}
 
 		break;

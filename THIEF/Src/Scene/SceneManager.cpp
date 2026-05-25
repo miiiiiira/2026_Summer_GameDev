@@ -6,6 +6,7 @@
 #include "../Application.h"
 
 #include "../System/SystemManager.h"
+#include "../Object/Score/ScoreManager.h"
 #include "../Input/InputManager.h"
 #include "../Common/Shader/Shader.h"
 
@@ -31,6 +32,9 @@ void SceneManager::Init(void)
 
 	//システム管理生成
 	SystemManager::CreateInstance();
+
+	//金額管理生成
+	ScoreManager::CreateInstance();
 
 	// 3D情報の初期化
 	Init3D();
@@ -161,6 +165,9 @@ void SceneManager::Delete(void)
 
 	// システム管理解放
 	SystemManager::GetInstance().Destroy();
+
+	// 金額管理解放
+	ScoreManager::GetInstance().Destroy();
 
 	// ロード画面の削除
 	load_->Release();

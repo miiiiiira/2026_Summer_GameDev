@@ -4,12 +4,8 @@
 class ScoreManager
 {
 public:
-
-	// マウス感度
-	static constexpr float MOUSE_SENSITIVITY = 0.003f;
-
-	// パッド感度
-	static constexpr float PAD_SENSITIVITY = 0.03f;
+	// 目標金額
+	static constexpr float TARGET_PRICE = 500;
 
 	// 明示的にインステンスを生成する
 	static void CreateInstance(void);
@@ -24,15 +20,21 @@ public:
 	void ResetGame(void);
 
 	// 納品金額に加算
-	void SetDeliveryPrice(const int price) { deliveryPrice_ = price; }
+	void AddDeliveryPrice(const int price) { deliveryPrice_ += price; }
 
 	// 納品金額を返す
 	const int GetDeliveryPrice(void) const { return deliveryPrice_; }
 
-	// 持っている全金額に加算
-	void SetTotalPrice(const int deliveryPrice) { totalPrice_ = deliveryPrice; }
+	// 指定の目標金額を設定
+	void SetTargetPrice(const int targetPrice) { targetPrice_ = targetPrice; }
 
-	// 持っている全金額を返す
+	// 指定の目標金額を返す
+	const int GetTargetPrice(void) const { return targetPrice_; }
+	
+	// ゲームクリア後のショップで使える金額に加算
+	void AddTotalPrice(const int deliveryPrice) { totalPrice_ += deliveryPrice; }
+
+	// ゲームクリア後のショップで使える金額を返す
 	const int GetTotalPrice(void) const { return totalPrice_; }
 
 private:
@@ -43,7 +45,10 @@ private:
 	// 納品金額
 	int deliveryPrice_;
 
-	// 持っている全金額
+	// 目標金額
+	int targetPrice_;
+
+	// ゲームクリア後のショップで使える金額
 	int totalPrice_;
 
 	// 操作デバイス(true = マウス操作 / false = ゲームパッド操作）
