@@ -9,11 +9,10 @@ class Stage;
 class DeliveryLocationCollider:public Component
 {
 public:
+
 	void Init(void) override;		// 初期化
 	void Update(void) override;		// 更新
-
-	// アイテム設定
-	void SetItem(Item* item) { item_ = item; }
+	void Draw(void) override;		// 描画
 
 private:
 
@@ -25,7 +24,6 @@ private:
 	// ステージ
 	Stage* stage_ = nullptr;
 
-	// アイテム
-	Item* item_ = nullptr;
+	void DebugDraw(void);
 };
 

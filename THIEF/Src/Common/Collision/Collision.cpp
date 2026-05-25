@@ -24,6 +24,16 @@ namespace Collision
         return HitSpheres(closest, capRadius, sphPos, sphRadius);
     }
 
+    bool HitAABBs(VECTOR pos1 , VECTOR size1, VECTOR pos2, VECTOR size2)
+    {
+        // XYZé≤ÇªÇÍÇºÇÍÇ≈èdÇ»ÇËîªíË
+        return (
+            abs(pos1.x - pos2.x) <= (size1.x + size2.x)&&
+            abs(pos1.y - pos2.y) <= (size1.y + size2.y)&&
+            abs(pos1.z - pos2.z) <= (size1.z + size2.z)
+            );
+    }
+
     bool HitPoint2Box(const Vector2& pointPos, const Vector2& boxPos, float sizeX, float sizeY)
     {
         bool ret = false;

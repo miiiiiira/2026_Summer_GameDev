@@ -16,6 +16,7 @@
 #include "../../Object/Component/Collider/3DCollider/CapsuleCollider.h"
 #include "../../Object/Component/Collider/StageCollider/StageCollider.h"
 #include "../../Object/Component/Collider/ItemCollider/ItemCollider.h"
+#include "../../Object/Component/Collider/DeliveryLocationCollider/DeliveryLocationCollider.h"
 #include "../../Object/Component/Render/Render3D.h"
 #include "../../Object/Component/Camera/Camera.h"
 #include "../../Object/Component/PlayerController/PlayerController.h"
@@ -235,6 +236,10 @@ void GameScene::StageCreate(void)
 
 	// ステージ機能
 	stage->AddComponent<Stage>();
+
+	// 納品場所の当たり判定追加
+	stage->AddComponent<DeliveryLocationCollider>();
+	
 }
 
 void GameScene::ItemCreate(void)
@@ -266,10 +271,12 @@ void GameScene::ItemCreate(void)
 	auto itemCol = item->AddComponent<ItemCollider>();
 	// プレイヤーを渡す
 	itemCol->SetPlayer(playerController);
-	// ステージのモデルハンドルを渡す
+	// ステージを渡す
 	itemCol->SetStage(stage);
 
-	auto goblet = objectManger_->FindComponentWithTag<Goblet>(Tag::Goblet);
-	goblet->SetPlayer(playerController);
+	auto goblet = item->GetComponent<Goblet>();
+
+	// ステージにアイテムを渡す
+	stage->SetItem(goblet);
 }
 

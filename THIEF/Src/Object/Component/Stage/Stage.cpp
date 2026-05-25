@@ -3,6 +3,7 @@
 #include <DxLib.h>
 
 #include "../Render/Render3D.h"
+#include "../Collider/DeliveryLocationCollider/DeliveryLocationCollider.h"
 #include "../../Object.h"
 
 void Stage::Init()
@@ -25,6 +26,7 @@ void Stage::Init()
 
 	// ステージの座標
 	deliveryPos_ = trans->pos_;
+	deliveryPos_.y += DELIVERY_LOCATION_SIZE_HIG;
 	deliveryPos_.z += 500.0f;
 }
 
@@ -40,9 +42,19 @@ Transform* Stage::GetTransform()
 	return owner_->GetComponent<Transform>();
 }
 
+void Stage::SetItem(Item* item)
+{
+	item_ = item;
+}
+
 VECTOR Stage::GetDeliveryPos(void)
 {
 	return deliveryPos_;
+}
+
+Item* Stage::GetItem(void)
+{
+	return item_;
 }
 
 VECTOR Stage::ToWorldPos(VECTOR local)
@@ -59,15 +71,16 @@ VECTOR Stage::ToLocalPos(VECTOR world)
 
 void Stage::DebugDraw(void)
 {
-	float cubeRad = 100.0f;
 	VECTOR startPos, endPos;
 	startPos = endPos = deliveryPos_;
 
-	startPos.x -= cubeRad;
-	startPos.z -= cubeRad;
+	startPos.x -= DELIVERY_LOCATION_SIZE_WID;
+	startPos.y -= DELIVERY_LOCATION_SIZE_HIG;
+	startPos.z -= DELIVERY_LOCATION_SIZE_WID;
 
-	endPos.x += cubeRad;
-	endPos.y += cubeRad * 2;
-	endPos.z += cubeRad;
+	endPos.x += DELIVERY_LOCATION_SIZE_WID;
+	endPos.y += DELIVERY_LOCATION_SIZE_HIG;
+	endPos.z += DELIVERY_LOCATION_SIZE_WID;
+
 	DrawCube3D(startPos, endPos, 0x0000ff, 0x0000ff, false);
 }

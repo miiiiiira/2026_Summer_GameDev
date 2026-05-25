@@ -15,6 +15,9 @@ namespace Collision
         const VECTOR& sphPos, float sphRadius,
         const VECTOR& capA, const VECTOR& capB, float capRadius);
 
+    // AABB同士の衝突判定(中心座標、中心から端までの半径)
+    bool HitAABBs(VECTOR pos1, VECTOR size1, VECTOR pos2, VECTOR size2);
+
 #pragma endregion
 
 #pragma region 2D

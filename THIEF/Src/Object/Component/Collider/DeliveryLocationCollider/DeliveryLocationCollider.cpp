@@ -3,6 +3,7 @@
 #include "../../Transform/Transform.h"
 #include "../../Stage/Stage.h"
 #include "../../Item/Item.h"
+#include "../../../../Common/Collision/Collision.h"
 
 void DeliveryLocationCollider::Init(void)
 {
@@ -14,10 +15,49 @@ void DeliveryLocationCollider::Update(void)
 {
 	if (!stage_)return;
 
-	if (!item_)return;
+	if (!stage_->GetItem())return;
 
 	// アイテムと納品場所の当たり判定
 	ItemToDeliveryLocationCollision();
+}
+
+void DeliveryLocationCollider::Draw(void)
+{
+	if (!stage_)return;
+
+	if (!stage_->GetItem())return;
+
+#ifdef _DEBUG
+	DebugDraw();
+#endif // _DEBUG
+}
+
+void DeliveryLocationCollider::DebugDraw(void)
+{
+	// 納品場所の座標
+	VECTOR deliveryPos = stage_->GetDeliveryPos();
+
+	// 納品場所のサイズ
+	VECTOR deliverySize = { Stage::DELIVERY_LOCATION_SIZE_WID
+		,Stage::DELIVERY_LOCATION_SIZE_HIG
+		,Stage::DELIVERY_LOCATION_SIZE_WID };
+
+	// アイテムの座標
+	VECTOR itemPos = stage_->GetItem()->GetTransform()->pos_;
+
+	// アイテムのサイズ(中心から端までの半径)
+	VECTOR itemSize = { stage_->GetItem()->GetInfo().collisionRadiusX_
+		, stage_->GetItem()->GetInfo().collisionRadiusY_
+		,stage_->GetItem()->GetInfo().collisionRadiusX_ };
+
+	if (Collision::HitAABBs(deliveryPos, deliverySize, itemPos, itemSize))
+	{
+		DrawString(20, 400, "当たった！", 0xffffff);
+	}
+	else
+	{
+		DrawString(20, 400, "当たってない…", 0xffffff);
+	}
 }
 
 void DeliveryLocationCollider::ItemToDeliveryLocationCollision(void)
@@ -25,19 +65,26 @@ void DeliveryLocationCollider::ItemToDeliveryLocationCollision(void)
 	// 納品場所の座標
 	VECTOR deliveryPos = stage_->GetDeliveryPos();
 
+	// 納品場所のサイズ
+	VECTOR deliverySize = { Stage::DELIVERY_LOCATION_SIZE_WID
+		,Stage::DELIVERY_LOCATION_SIZE_HIG
+		,Stage::DELIVERY_LOCATION_SIZE_WID };
+
 	// アイテムの座標
-	VECTOR itemPos = item_->GetTransform()->pos_;
+	VECTOR itemPos = stage_->GetItem()->GetTransform()->pos_;
 
-	// アイテムの半径
-	float itemRadX = item_->GetInfo().collisionRadiusX_;
-	float itemRadY = item_->GetInfo().collisionRadiusY_;
+	// アイテムのサイズ(中心から端までの半径)
+	VECTOR itemSize = { stage_->GetItem()->GetInfo().collisionRadiusX_
+		, stage_->GetItem()->GetInfo().collisionRadiusY_
+		,stage_->GetItem()->GetInfo().collisionRadiusX_ };
 
-	//auto b = aabb->transform_->pos_;
+	if (Collision::HitAABBs(deliveryPos, deliverySize, itemPos, itemSize))
+	{
+		stage_->GetItem()->SetHasTouchedDelivery(true);
+	}
+	else
+	{
+		stage_->GetItem()->SetHasTouchedDelivery(false);
+	}
 
-	//// XYZ軸それぞれで重なり判定
-	//return (
-	//	abs(a.x - b.x) <= (size_.x + aabb->size_.x) * 0.5f &&
-	//	abs(a.y - b.y) <= (size_.y + aabb->size_.y) * 0.5f &&
-	//	abs(a.z - b.z) <= (size_.z + aabb->size_.z) * 0.5f
-	//	);
 }

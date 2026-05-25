@@ -4,7 +4,6 @@
 #include "../../../Common/Math/Math.h"
 #include "../Render/Render3D.h"
 #include "../../Object.h"
-#include "../PlayerController/PlayerController.h"
 #include "../../../Common/CameraUtility/CameraUtility.h"
 
 Item::~Item(void)
@@ -79,11 +78,6 @@ void Item::Draw(void)
 	// デバッグ表示
 	DrawDebug();
 #endif // _DEBUG
-}
-
-void Item::SetPlayer(PlayerController* player)
-{
-	player_ = player;
 }
 
 Transform* Item::GetTransform()
@@ -189,9 +183,6 @@ void Item::Gravity(void)
 
 void Item::TrackingPlayer(void)
 {
-	// プレイヤーがなかったら処理をしない
-	if (player_ == nullptr)return;
-
 	// 前の座標を保持しておく
 	VECTOR prePos = trans_->pos_;
 

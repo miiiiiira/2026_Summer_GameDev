@@ -5,7 +5,6 @@
 
 // 前方宣言
 class Transform;
-class PlayerController;
 
 class Item :public Component
 {
@@ -30,9 +29,6 @@ public:
 	void Update(void)override;
 	// 描画処理
 	void Draw(void)override;
-
-	// プレイヤー設定
-	void SetPlayer(PlayerController* player);
 
 public:
 
@@ -70,7 +66,7 @@ public:
 	void TrueHasTouchedStage(void) { info_.hasTouchedStage_ = true; }
 
 	// 納品場所に入ったかどうかを変更
-	void TrueHasTouchedDelivery(bool flg) { info_.hasTouchedDeliveryLocation_ = flg; }
+	void SetHasTouchedDelivery(bool flg) { info_.hasTouchedDeliveryLocation_ = flg; }
 
 protected:
 
@@ -79,9 +75,6 @@ protected:
 
 	// Transform
 	Transform* trans_;
-
-	// プレイヤー
-	PlayerController* player_;
 
 	// 重力をかける
 	void Gravity(void);
