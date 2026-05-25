@@ -44,8 +44,6 @@ void SystemManager::Destroy()
 
 void SystemManager::ResetGame()
 {
-	score_ = 0; // ÉXÉRÉAÇ0Ç≈èâä˙âª
-
 	MouseSensitivity_ = MOUSE_SENSITIVITY;
 	PadSensitivity_ = PAD_SENSITIVITY;
 }
@@ -54,7 +52,6 @@ SystemManager::SystemManager(void)
 {
 	MouseSensitivity_ = MOUSE_SENSITIVITY;
 	PadSensitivity_ = PAD_SENSITIVITY;
-	score_ = 0;
 
 	if (GetJoypadNum() == 0)
 	{

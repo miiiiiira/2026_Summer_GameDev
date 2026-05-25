@@ -52,5 +52,5 @@ private:
 	VECTOR deliveryPos_;
 
 	// デバック用描画
-	void DebugDraw(void);
+	void DrawDebug(void);
 };

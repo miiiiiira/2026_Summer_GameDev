@@ -221,6 +221,9 @@ void ItemCollider::StageCollision(void)
 	// 納品場所にはいっているなら処理をしない
 	if (item_->GetInfo().hasTouchedDeliveryLocation_)return;
 
+	//　持っていても空中判定になっていなければ、処理をしない
+	if (item_->GetInfo().isGrabbed && item_->GetInfo().hasTouchedStage_)return;
+
 	float hitSpeed = 0;
 
 	// アイテムが掴まれていたら

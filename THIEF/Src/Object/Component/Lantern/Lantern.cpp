@@ -90,9 +90,6 @@ void Lantern::UpdatePos(void)
 	// カメラの方向を算出
 	VECTOR cameraDir = CameraUtility::CameraRotToPos(forward);
 
-	// ローカル座標
-	VECTOR localPosRot;
-
 	// 座標
 	// 方向と同じ要領で、相対座標を回転
 	if (InputManager::GetInstance()->IsNew(KEY_INPUT_Q))

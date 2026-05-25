@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Score\ScoreManager.cpp" />
     <ClCompile Include="Src\Common\CameraUtility\CameraUtility.cpp" />
     <ClCompile Include="Src\Object\Component\Collider\DeliveryLocationCollider\DeliveryLocationCollider.cpp" />
     <ClCompile Include="Src\Object\Component\Item\Item.cpp" />
@@ -52,8 +53,8 @@
     <ClCompile Include="Src\Common\Transform\Quaternion.cpp" />
     <ClCompile Include="Src\Input\InputManager.cpp" />
     <ClCompile Include="Src\main.cpp" />
-    <ClCompile Include="Src\Object\Actor\Player\Upgrade\Upgrade.cpp" />
-    <ClCompile Include="Src\Object\Actor\Player\Upgrade\UpgradeManager.cpp" />
+    <ClCompile Include="Src\Object\Actor\Upgrade\Upgrade.cpp" />
+    <ClCompile Include="Src\Object\Actor\Upgrade\UpgradeManager.cpp" />
     <ClCompile Include="Src\Object\Common\AnimationController.cpp" />
     <ClCompile Include="Src\Scene\GameClear\GameClear.cpp" />
     <ClCompile Include="Src\Scene\GameOver\GameOver.cpp" />
@@ -67,6 +68,7 @@
     <ClCompile Include="Src\System\SystemManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Score\ScoreManager.h" />
     <ClInclude Include="Src\Common\CameraUtility\CameraUtility.h" />
     <ClInclude Include="Src\Object\Component\Collider\DeliveryLocationCollider\DeliveryLocationCollider.h" />
     <ClInclude Include="Src\Object\Component\Item\Item.h" />
@@ -113,8 +115,8 @@
     <ClInclude Include="Src\Common\Transform\Quaternion.h" />
     <ClInclude Include="Src\Input\InputManager.h" />
     <ClInclude Include="Src\main.h" />
-    <ClInclude Include="Src\Object\Actor\Player\Upgrade\Upgrade.h" />
-    <ClInclude Include="Src\Object\Actor\Player\Upgrade\UpgradeManager.h" />
+    <ClInclude Include="Src\Object\Actor\Upgrade\Upgrade.h" />
+    <ClInclude Include="Src\Object\Actor\Upgrade\UpgradeManager.h" />
     <ClInclude Include="Src\Object\Common\AnimationController.h" />
     <ClInclude Include="Src\Scene\GameClear\GameClear.h" />
     <ClInclude Include="Src\Scene\GameOver\GameOver.h" />

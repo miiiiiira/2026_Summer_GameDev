@@ -61,6 +61,12 @@ void Item::Update(void)
 	// 掴まれていたら
 	if (info_.isGrabbed)
 	{
+		if (info_.hasTouchedStage_)
+		{
+			// 空中状態で一度もステージに接触していないとする
+			info_.hasTouchedStage_ = false;
+		}
+
 		// プレイヤーの位置を見て移動処理を行う
 		TrackingPlayer();
 	}
@@ -142,9 +148,6 @@ void Item::StartGrabbing(VECTOR localPos)
 	// 掴まれた状態にする
 	info_.isGrabbed = true;
 
-	// 空中状態で一度もステージに接触していないとする
-	info_.hasTouchedStage_ = false;
-
 	// プレイヤーとの相対座標をセット
 	info_.localPos_ = localPos;
 	info_.velocity_.y = 0.0f;
@@ -206,7 +209,7 @@ void Item::TrackingPlayer(void)
 void Item::DrawDebug(void)
 {
 	// お金表示
-	DrawFormatString(0, 0, 0xff0000, "%d", info_.money_);
+	DrawFormatString(20, 300, 0xff0000, "残り残高:%d", info_.money_);
 
 	VECTOR start = trans_->pos_;
 	start.y -= info_.collisionRadiusY_;

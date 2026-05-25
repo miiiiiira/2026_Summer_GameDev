@@ -38,12 +38,6 @@ public:
 	// パッド感度を返す
 	const float GetPadSensitivity(void) const { return PadSensitivity_; }
 
-	// スコアを格納
-	void SetScore(const int score) { score_ = score; }
-
-	// スコアを返す
-	const int GetScore(void) const { return score_; }
-
 	// 操作デバイス種類を返す	true = マウス操作 / false = ゲームパッド操作
 	const bool GetIsDevice(void)const { return isDeviceMouse_; }
 
@@ -57,9 +51,6 @@ private:
 
 	// パッド感度
 	float PadSensitivity_;
-
-	// スコア
-	int score_;
 
 	// 操作デバイス(true = マウス操作 / false = ゲームパッド操作）
 	bool isDeviceMouse_;

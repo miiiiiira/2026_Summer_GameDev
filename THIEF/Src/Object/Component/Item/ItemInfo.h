@@ -35,7 +35,7 @@ struct ItemInfo
 	int money_;
 
 	// アイテムの頑丈さ
-	float hardness_;
+	int hardness_;
 
 	// 重力
 	VECTOR velocity_;

@@ -20,7 +20,7 @@ public:
 	static constexpr float COLLISION_RADIUS_Y = 7.0f;
 
 	// 頑丈さ
-	static constexpr float HARDNESS = 10.0f;
+	static constexpr int HARDNESS = 10;
 
 	// コンストラクタ
 	Goblet();

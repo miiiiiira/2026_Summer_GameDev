@@ -52,11 +52,11 @@ void DeliveryLocationCollider::DebugDraw(void)
 
 	if (Collision::HitAABBs(deliveryPos, deliverySize, itemPos, itemSize))
 	{
-		DrawString(20, 400, "当たった！", 0xffffff);
+		DrawString(20, 400, "納品場所に入った！", 0xffffff);
 	}
 	else
 	{
-		DrawString(20, 400, "当たってない…", 0xffffff);
+		DrawString(20, 400, "納品場所に入ってない…", 0xffffff);
 	}
 }
 

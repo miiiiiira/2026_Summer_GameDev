@@ -33,7 +33,7 @@ void Stage::Init()
 void Stage::Draw(void)
 {
 #ifdef _DEBUG
-	DebugDraw();
+	DrawDebug();
 #endif // _DEBUG
 }
 
@@ -69,7 +69,7 @@ VECTOR Stage::ToLocalPos(VECTOR world)
 	return VSub(world, trans->pos_);
 }
 
-void Stage::DebugDraw(void)
+void Stage::DrawDebug(void)
 {
 	VECTOR startPos, endPos;
 	startPos = endPos = deliveryPos_;
