@@ -1,10 +1,14 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include "../../Common/AnimationController.h"
+#include "../../../Common/Math/Math.h"
+#include "../../../Common/Transform/MatrixUtility.h"
 #include "EnemyBase.h"
 
 EnemyBase::EnemyBase(void)
 {
+	animationController_ = nullptr;
 }
 
 EnemyBase::~EnemyBase(void)
@@ -24,17 +28,24 @@ void EnemyBase::Draw(void)
 void EnemyBase::Release(void)
 {
 	MV1DeleteModel(modelId_);
+
+	if (animationController_ != nullptr)
+	{
+		animationController_->Release();
+		delete animationController_;
+		animationController_ = nullptr;
+	}
 }
 
-std::vector<EnemyBase::Edge> EnemyBase::FindPath(int startNodeId, int goalNodeId)
-{
-	int nodeCount = static_cast<int>(way_.size());
-
-
-	std::vector<Edge> list;
-
-	return list;
-}
+//std::vector<EnemyBase::Edge> EnemyBase::FindPath(int startNodeId, int goalNodeId)
+//{
+//	int nodeCount = static_cast<int>(way_.size());
+//
+//
+//	std::vector<Edge> list;
+//
+//	return list;
+//}
 
 void EnemyBase::LoadCsvData(void)
 {
@@ -87,6 +98,15 @@ void EnemyBase::LoadCsvData(void)
 
 		way_.push_back(way);
 	}
+}
+
+void EnemyBase::DelayRotate(void)
+{
+	// ˆÚ“®•ûŒü‚©‚çŠp“x‚É•ÏŠ·‚·‚é
+	float goal = atan2f(moveDir_.x, moveDir_.z);
+
+	// í‚ÉÅ’ZŒo˜H‚Å•âŠÔ
+	angle_.y = Math::LerpAngle(angle_.y, goal, 0.2f);
 }
 
 void EnemyBase::AddEdge(int fromId, int toId)

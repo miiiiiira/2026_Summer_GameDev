@@ -1,5 +1,8 @@
 #include "../../../../Application.h"
 #include "../../../../Scene/SceneManager.h"
+#include "../../../../Common/Math/Math.h"
+#include "../../../../Common/Transform/MatrixUtility.h"
+#include "../../../Common/AnimationController.h"
 #include "Yeti.h"
 
 
@@ -23,13 +26,20 @@ void Yeti::Init(int id)
 	MV1SetScale(modelId_, scale_);
 
 	angle_ = DEFAULT_ANGLE;
-	localAngle_ = DEFAULT_ANGLE;
-	MV1SetRotationXYZ(modelId_, angle_);
+	localAngle_ = { 0.0f, Math::Deg2Rad(180.0f), 0.0f };
+	// 行列の合成(子, 親と指定すると親⇒子の順に適用される)
+	MATRIX mat = Matrix::Multiplication(localAngle_, angle_);
+
+	// 回転行列をモデルに反映
+	MV1SetRotationMatrix(modelId_, mat);
 
 	pos_ = DEFAULT_POS;
 	MV1SetPosition(modelId_, pos_);
 
 	patrolRadius_ = 1000.0f;
+
+	// 初期アニメーション再生
+	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
 
 	candidates_.reserve(way_.size());
 
@@ -49,7 +59,7 @@ void Yeti::Init(int id)
 		}
 	}
 
-	ChangeState(STATE::PATROL);
+	ChangeState(STATE::IDLE);
 }
 
 void Yeti::Load(void)
@@ -57,10 +67,27 @@ void Yeti::Load(void)
 	EnemyBase::Load();
 
 	modelId_ = MV1LoadModel((Application::PATH_MODEL + "Enemy/Yeti.mv1").c_str());
+
+	// モデルアニメーション制御の初期化
+	animationController_ = new AnimationController(modelId_);
+	for (int i = 0; i < static_cast<int>(ANIM_TYPE::MAX); i++)
+	{
+		animationController_->AddInFbx(i, 0.5f, i);
+	}
+
 }
 
 void Yeti::Update(void)
 {
+
+	// プレイヤーの遅延回転処理
+	DelayRotate();
+
+	// 行列の合成(子, 親と指定すると親⇒子の順に適用される)
+	MATRIX mat = Matrix::Multiplication(localAngle_, angle_);
+
+	// 回転行列をモデルに反映
+	MV1SetRotationMatrix(modelId_, mat);
 	switch (state_)
 	{
 	case Yeti::STATE::THINK: UpdateThink(); break;
@@ -74,6 +101,8 @@ void Yeti::Update(void)
 	default:
 		break;
 	}
+
+	animationController_->Update();
 }
 
 void Yeti::Draw(void)
@@ -203,6 +232,7 @@ void Yeti::ChangeThink(void)
 void Yeti::ChangeIdle(void)
 {
 	step_ = 3.0f;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
 }
 
 void Yeti::ChangePatrol(void)
@@ -225,6 +255,9 @@ void Yeti::ChangePatrol(void)
 
 	// 移動スピード
 	moveSpeed_ = 5.0f;
+
+	animationController_->Play(static_cast<int>(ANIM_TYPE::WALK), true);
+
 }
 
 void Yeti::ChangeChase(void)
@@ -254,7 +287,7 @@ void Yeti::UpdateThink(void)
 
 void Yeti::UpdateIdle(void)
 {
-	step_ -= SceneManager::GetInstance()->GetTotalTime();
+	step_ -= SceneManager::GetInstance()->GetDeltaTime();
 
 	if (step_ < 0.0f)
 	{

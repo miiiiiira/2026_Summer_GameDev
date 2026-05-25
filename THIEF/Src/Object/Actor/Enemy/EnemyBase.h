@@ -2,6 +2,8 @@
 #include<vector>
 #include <DxLib.h>
 
+class AnimationController;
+
 class EnemyBase
 {
 public:
@@ -36,9 +38,11 @@ public:
 	// ‰ğ•úˆ—
 	void Release(void);
 
-	std::vector<Edge> FindPath(int startNodeId, int goalNodeId);
+	//std::vector<Edge> FindPath(int startNodeId, int goalNodeId);
 
 protected:
+
+	AnimationController* animationController_;
 
 	int modelId_;
 	VECTOR scale_;
@@ -59,6 +63,9 @@ protected:
 	std::vector<std::vector<Edge>> edgeList_;
 
 	void AddEdge(int fromId, int toId);
+
+	// ˆÚ“®•ûŒü‚É‰‚¶‚½’x‰„‰ñ“]
+	void DelayRotate(void);
 
 private:
 	void LoadCsvData(void);

@@ -36,6 +36,7 @@ public:
 		WAVE,
 		WEAPON,
 		YES,
+		MAX,
 	};
 
 	// ‘å‚«‚³
