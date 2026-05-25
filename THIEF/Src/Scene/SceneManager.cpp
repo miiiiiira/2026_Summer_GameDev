@@ -231,3 +231,9 @@ const float& SceneManager::GetTotalTime(void)
 	// TODO: return ステートメントをここに挿入します
 	return mTotalTime;
 }
+
+const float& SceneManager::GetDeltaTime(void)
+{
+	// TODO: return ステートメントをここに挿入します
+	return mDeltaTime;
+}

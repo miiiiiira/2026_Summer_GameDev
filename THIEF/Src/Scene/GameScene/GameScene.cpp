@@ -10,6 +10,7 @@
 #include "../GameOver/GameOver.h"
 #include "../Pause/Pause.h"
 
+#include "../../Object/Actor/Enemy/Yeti/Yeti.h"
 #include "../../Object/ObjectManager/ObjectManager.h"
 #include "../../Object/Tag.h"
 
@@ -42,12 +43,18 @@ void GameScene::Init(void)
 {
 	// オブジェクトマネージャー初期化
 	objectManger_->Init();
+
+	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+	enemy_->Init(stage->GetModelId());
 }
 
 void GameScene::Load(void)
 {
 	// オブジェクトマネージャーの生成
 	objectManger_ = new ObjectManager();
+
+	enemy_ = new Yeti();
+	enemy_->Load();
 
 	// ステージの作成
 	StageCreate();
@@ -100,6 +107,8 @@ void GameScene::Update(void)
 
 	// オブジェクトの更新
 	objectManger_->Update();
+
+	enemy_->Update();
 }
 
 void GameScene::Draw(void)
@@ -109,12 +118,18 @@ void GameScene::Draw(void)
 
 	// オブジェクトの描画
 	objectManger_->Draw();
+
+	enemy_->Draw();
 }
 
 void GameScene::Release(void)
 {
 	// オブジェクトマネージャー削除
 	delete objectManger_;
+
+	enemy_->Release();
+	delete enemy_;
+	enemy_ = nullptr;
 }
 
 void GameScene::CameraCreate(void)

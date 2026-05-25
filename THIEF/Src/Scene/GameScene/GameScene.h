@@ -6,6 +6,7 @@
 
 class ObjectManager;
 class Goblet;
+class Yeti;
 
 class GameScene : public SceneBase
 {
@@ -30,4 +31,8 @@ public:
 private:
 	// オブジェクトマネージャー
 	ObjectManager* objectManger_;
+
+	Yeti* enemy_;
+
+	void DebugDraw(void);
 };

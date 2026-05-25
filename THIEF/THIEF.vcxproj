@@ -66,6 +66,7 @@
     <ClCompile Include="Src\Scene\SceneManager.cpp" />
     <ClCompile Include="Src\Scene\TitleScene\TitleScene.cpp" />
     <ClCompile Include="Src\System\SystemManager.cpp" />
+    <ClCompile Include="Src\Object\Actor\Enemy\Yeti\Yeti.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Object\Score\ScoreManager.h" />
@@ -128,6 +129,7 @@
     <ClInclude Include="Src\Scene\SceneManager.h" />
     <ClInclude Include="Src\Scene\TitleScene\TitleScene.h" />
     <ClInclude Include="Src\System\SystemManager.h" />
+    <ClInclude Include="Src\Object\Actor\Enemy\Yeti\Yeti.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Src\Common\Shader\CtrShader.hlsl">

@@ -69,6 +69,7 @@ public:
 	bool GetGameEnd(void) { return isGameEnd_; }
 
 	const float& GetTotalTime(void);
+	const float& GetDeltaTime(void);
 
 private:
 

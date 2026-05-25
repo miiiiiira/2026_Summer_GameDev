@@ -145,6 +145,8 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\Component\Item\Item.cpp">
+	</ClCompile>
+	<ClCompile Include="Src\Object\Actor\Enemy\Yeti\Yeti.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -318,6 +320,8 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\Component\Item\ItemInfo.h">
+	</ClInclude>
+	<ClInclude Include="Src\Object\Actor\Enemy\Yeti\Yeti.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
