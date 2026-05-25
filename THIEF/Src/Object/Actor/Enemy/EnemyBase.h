@@ -1,7 +1,6 @@
 #pragma once
 #include<vector>
-#include <functional>
-#include "EnemyData.h"
+#include <DxLib.h>
 
 class EnemyBase
 {
@@ -41,7 +40,18 @@ public:
 
 protected:
 
-	EnemyData data_;
+	int modelId_;
+	VECTOR scale_;
+	VECTOR angle_;
+	VECTOR localAngle_;
+	VECTOR pos_;
+	VECTOR moveDir_;
+	float moveSpeed_;
+	VECTOR movePow_;
+	VECTOR prevPos_;
+	VECTOR jumpPow_;
+	float stepJump_;
+	bool isJump_;
 
 	int stageId_ = -1;
 

@@ -326,9 +326,6 @@
     <ClInclude Include="Src\Object\Actor\Enemy\Yeti\Yeti.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Object\Actor\Enemy\EnemyData.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Src\Common\Shader\CtrShader.hlsl" />

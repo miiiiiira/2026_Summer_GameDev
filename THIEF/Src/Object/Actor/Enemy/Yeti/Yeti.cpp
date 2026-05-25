@@ -11,7 +11,6 @@ Yeti::Yeti(void)
 	patrolRadius_(0.0f),
 	nextWayPoint_{0.0f, 0.0f, 0.0f}
 {
-	//rand_ = std::mt19937(std::random_device{}());
 }
 
 Yeti::~Yeti(void)
@@ -20,17 +19,19 @@ Yeti::~Yeti(void)
 
 void Yeti::Init(int id)
 {
-	data_.scale_ = SCALE;
-	MV1SetScale(data_.modelId_, data_.scale_);
+	scale_ = SCALE;
+	MV1SetScale(modelId_, scale_);
 
-	data_.angle_ = DEFAULT_ANGLE;
-	data_.angle_ = DEFAULT_ANGLE;
-	MV1SetRotationXYZ(data_.modelId_, data_.angle_);
+	angle_ = DEFAULT_ANGLE;
+	localAngle_ = DEFAULT_ANGLE;
+	MV1SetRotationXYZ(modelId_, angle_);
 
-	data_.pos_ = DEFAULT_POS;
-	MV1SetPosition(data_.modelId_, data_.pos_);
+	pos_ = DEFAULT_POS;
+	MV1SetPosition(modelId_, pos_);
 
 	patrolRadius_ = 1000.0f;
+
+	candidates_.reserve(way_.size());
 
 	if (id == -1) return;
 	stageId_ = id;
@@ -55,7 +56,7 @@ void Yeti::Load(void)
 {
 	EnemyBase::Load();
 
-	data_.modelId_ = MV1LoadModel((Application::PATH_MODEL + "Enemy/Yeti.mv1").c_str());
+	modelId_ = MV1LoadModel((Application::PATH_MODEL + "Enemy/Yeti.mv1").c_str());
 }
 
 void Yeti::Update(void)
@@ -80,7 +81,7 @@ void Yeti::Draw(void)
 	EnemyBase::Draw();
 
 #ifdef _DEBUG
-	DrawSphere3D(data_.pos_, patrolRadius_, 8, GetColor(0, 255, 0), GetColor(0, 0, 0), FALSE);
+	DrawSphere3D(pos_, patrolRadius_, 8, GetColor(0, 255, 0), GetColor(0, 0, 0), FALSE);
 
 	// 巡回ルート描画
 	for (const auto& point : way_)
@@ -97,16 +98,14 @@ void Yeti::SetMoveDirPatrol(void)
 	VECTOR tmpPos = nextWayPoint_;
 	tmpPos.y = 0.0f;
 
-	VECTOR pos = data_.pos_;
+	VECTOR pos = pos_;
 	pos.y = 0.0f;
 
-	data_.moveDir_ = VNorm(VSub(tmpPos, pos));
+	moveDir_ = VNorm(VSub(tmpPos, pos));
 }
 
 int Yeti::SelectNextNode(void)
 {
-	// 候補リストを作る
-	std::vector<int> candidates;
 
 	for (const auto& edge : edgeList_[currentNodeId_])
 	{
@@ -118,16 +117,14 @@ int Yeti::SelectNextNode(void)
 		if (nextId == prevNodeId_) continue;
 		if (nextId == prevPrevNodeId_) continue;
 
-		candidates.push_back(nextId);
+		candidates_.push_back(nextId);
 	}
 
 	// 候補があった場合ランダムに選ぶ
-	if (!candidates.empty())
+	if (!candidates_.empty())
 	{
-		//std::uniform_int_distribution<int> dist(0, static_cast<int>(candidates.size()) - 1);
-		//int index = dist(rand_);
-		int index = GetRand(static_cast<int>(candidates.size() - 1));
-		return candidates[index];
+		int index = GetRand(static_cast<int>(candidates_.size() - 1));
+		return candidates_[index];
 	}
 
 	if (prevNodeId_ != -1)
@@ -211,7 +208,7 @@ void Yeti::ChangeIdle(void)
 void Yeti::ChangePatrol(void)
 {
 	// 移動量ゼロ
-	data_.movePow_ = { 0.0f, 0.0f, 0.0f };
+	movePow_ = { 0.0f, 0.0f, 0.0f };
 
 	int lastNodeId = currentNodeId_;
 	
@@ -227,7 +224,7 @@ void Yeti::ChangePatrol(void)
 	SetMoveDirPatrol();
 
 	// 移動スピード
-	data_.moveSpeed_ = 5.0f;
+	moveSpeed_ = 5.0f;
 }
 
 void Yeti::ChangeChase(void)
@@ -270,7 +267,7 @@ void Yeti::UpdateIdle(void)
 void Yeti::UpdatePatrol(void)
 {
 	// 目的地までの距離を測る
-	VECTOR target = VSub(nextWayPoint_, data_.pos_);
+	VECTOR target = VSub(nextWayPoint_, pos_);
 	target.y = 0.0f;
 	float dist = VSize(target);
 
@@ -281,11 +278,11 @@ void Yeti::UpdatePatrol(void)
 		return;
 	}
 
-	data_.movePow_ = VScale(data_.moveDir_, data_.moveSpeed_);
+	movePow_ = VScale(moveDir_, moveSpeed_);
 
-	data_.pos_ = VAdd(data_.pos_, data_.movePow_);
+	pos_ = VAdd(pos_, movePow_);
 
-	MV1SetPosition(data_.modelId_, data_.pos_);
+	MV1SetPosition(modelId_, pos_);
 }
 
 void Yeti::UpdateChase(void)

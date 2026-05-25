@@ -66,7 +66,6 @@
     <ClCompile Include="Src\Object\Actor\Enemy\Yeti\Yeti.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Src\Object\Actor\Enemy\EnemyData.h" />
     <ClInclude Include="Src\Scene\DebugScene.h" />
     <ClInclude Include="Src\Object\Component\Collider\ItemCollider\ItemCollider.h" />
     <ClInclude Include="Src\Common\Shader\Shader.h" />

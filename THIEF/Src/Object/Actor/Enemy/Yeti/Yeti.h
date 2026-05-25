@@ -1,6 +1,5 @@
 #pragma once
 #include<vector>
-#include <random>
 #include "../EnemyBase.h"
 
 class Yeti : public EnemyBase
@@ -69,12 +68,12 @@ private:
 
 	STATE state_;
 
+	std::vector<int> candidates_;
+
 	int currentNodeId_;		// 今いるノード
 	int prevNodeId_;		// 前回のノード
 	int prevPrevNodeId_;	// 前々回のノード
 	float patrolRadius_;	// 巡回用の半径
-
-	std::mt19937 rand_;		// 乱数エンジン
 
 	void SetMoveDirPatrol(void);
 

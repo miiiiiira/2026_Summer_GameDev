@@ -18,12 +18,12 @@ void EnemyBase::Load(void)
 
 void EnemyBase::Draw(void)
 {
-	MV1DrawModel(data_.modelId_);
+	MV1DrawModel(modelId_);
 }
 
 void EnemyBase::Release(void)
 {
-	MV1DeleteModel(data_.modelId_);
+	MV1DeleteModel(modelId_);
 }
 
 std::vector<EnemyBase::Edge> EnemyBase::FindPath(int startNodeId, int goalNodeId)
