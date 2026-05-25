@@ -26,6 +26,7 @@
 #include "../../Object/Component/Item/Goblet/Goblet.h"
 #include "../../Object/Component/Transform/Transform.h"
 #include "../../Common/Transform/MatrixUtility.h"
+#include "../../Common/CameraUtility/CameraUtility.h"
 
 
 GameScene::GameScene(void)
@@ -52,6 +53,9 @@ void GameScene::Load(void)
 
 	// カメラの作成
 	CameraCreate();
+
+	// カメラユーティリティにカメラのポインタを渡す
+	CameraUtility::SetCameraPoint(objectManger_->FindComponentWithTag<Camera>(Tag::Camera));
 
 	// ランタンの作成
 	LanternCreate();
@@ -144,13 +148,6 @@ void GameScene::LanternCreate(void)
 
 	// ランタン機能
 	auto cont = lantern->AddComponent<Lantern>();
-	// カメラの取得
-	auto camera = objectManger_->FindComponentWithTag<Camera>(Tag::Camera);
-	VECTOR* cameraPos = &camera->GetTransform()->pos_;
-	VECTOR* cameraAngle = camera->GetAngle();
-
-	// カメラの座標ポインタと向きポインタを付与
-	cont->SetCameraPosAngle(cameraPos, cameraAngle);
 
 	// 座標の設定
 	auto trans = lantern->AddComponent<Transform>();
@@ -195,8 +192,8 @@ void GameScene::PlayerCreate(void)
 	// ランタン取得
 	auto lantern = objectManger_->FindComponentWithTag<Lantern>(Tag::Lantern);
 
-	// プレイヤークラスにカメラ、アイテム、ランタンのポインタを渡す
-	playerController->SetPointers(camera, lantern);
+	// ランタンのポインタを渡す
+	playerController->SetLantern(lantern);
 }
 
 void GameScene::EnemyCreate(void)
@@ -272,12 +269,7 @@ void GameScene::ItemCreate(void)
 	// ステージのモデルハンドルを渡す
 	itemCol->SetStage(stage);
 
-	// カメラの取得
-	auto camera = objectManger_->FindComponentWithTag<Camera>(Tag::Camera);
-	VECTOR* cameraPos = &camera->GetTransform()->pos_;
-	VECTOR* cameraAngle = camera->GetAngle();
-
 	auto goblet = objectManger_->FindComponentWithTag<Goblet>(Tag::Goblet);
-	goblet->SetPlayerCameraInfo(playerController, cameraPos, cameraAngle);
+	goblet->SetPlayer(playerController);
 }
 

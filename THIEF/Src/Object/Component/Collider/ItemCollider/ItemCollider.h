@@ -2,7 +2,6 @@
 
 #include "../../Component.h"
 #include "../../Transform/Transform.h"
-#include "../../Item/Item.h"
 
 // 前方宣言
 class Item;
@@ -41,9 +40,6 @@ private:
 	// 接地フラグ
 	bool isGround_ = false;
 
-	// Transform
-	Transform* transform_ = nullptr;
-
 	// アイテム
 	Item* item_ = nullptr;
 
@@ -52,12 +48,5 @@ private:
 
 	// ステージ
 	Stage* stage_ = nullptr;
-
-	// ステージTransform
-	Transform* stageTransform_ = nullptr;
-
-	// アイテムのTransform
-	Transform* itemTransform_ = nullptr;
-
 };
 

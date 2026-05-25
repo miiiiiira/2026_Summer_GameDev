@@ -16,10 +16,8 @@ public:
 	static constexpr int MONEY = 1000;
 
 	// 当たり判定用の半径
-	static constexpr float COLLISION_RADIUS = 5.0f;
-
-	// 当たり判定用のオフセット
-	static constexpr float COLLISION_OFFSET = 7.0f;
+	static constexpr float COLLISION_RADIUS_X = 5.0f;
+	static constexpr float COLLISION_RADIUS_Y = 7.0f;
 
 	// 頑丈さ
 	static constexpr float HARDNESS = 10.0f;

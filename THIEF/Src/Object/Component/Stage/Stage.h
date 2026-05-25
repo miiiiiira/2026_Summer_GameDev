@@ -13,12 +13,16 @@ class Stage : public Component
 public:
 	// 初期化
 	void Init(void) override;
+	void Draw(void) override;
 
 	// モデルIDを返す
 	int GetModelId() const { return modelId_; }
 
 	// Transformを返す
 	Transform* GetTransform();
+
+	// 納品場所の座標を返す
+	VECTOR GetDeliveryPos(void);
 
 	// ワールド座標に変換
 	VECTOR ToWorldPos(VECTOR local);
@@ -29,4 +33,10 @@ public:
 private:
 	// モデルID
 	int modelId_ = -1;
+
+	// 納品場所の座標
+	VECTOR deliveryPos_;
+
+	// デバック用描画
+	void DebugDraw(void);
 };

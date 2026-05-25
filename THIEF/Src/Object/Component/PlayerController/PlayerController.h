@@ -3,7 +3,6 @@
 #include <DxLib.h>
 
 // 前方宣言
-class Camera;
 class Transform;
 class Animation;
 class Item;
@@ -70,18 +69,22 @@ public:
 	// Transformを返す
 	Transform* GetTransform();
 
-	// 掴める最大範囲を取得
-	float GetRangeMax(void);
-
 	// 掴んでいるかの状態を取得
 	GrasbbingState GetGrabbingState(void);
+
+	// 掴むときの線分の初め座標を渡す
+	VECTOR GetLineStartPos(void);
+
+	// 掴むときの線分の終わり座標を渡す
+	VECTOR GetLineEndPos(void);
 
 	// 指定された掴み動作を設定
 	void StartGrabbing(float range);
 
-	// アイテムクラス、ランタンクラスのポインタ取得
-	void SetPointers(Camera* camera, Lantern* lantern);
+	// ランタンクラスのポインタ取得
+	void SetLantern(Lantern* lantern);
 
+	// アイテムを取得
 	void SetItemPoint(Item* item);
 
 	// 現在の状態表すステート
@@ -125,9 +128,6 @@ private:
 	void DebugDraw(void);
 
 private:
-
-	// カメラ
-	Camera* camera_ = nullptr;
 
 	// アイテム
 	Item* item_ = nullptr;

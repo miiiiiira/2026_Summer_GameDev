@@ -5,6 +5,7 @@
 #include "../Render/Render3D.h"
 #include "../../Object.h"
 #include "../PlayerController/PlayerController.h"
+#include "../../../Common/CameraUtility/CameraUtility.h"
 
 Item::~Item(void)
 {
@@ -43,6 +44,9 @@ void Item::Init(void)
 	// 地面に接触していることにする
 	info_.hasTouchedStage_ = true;
 
+	// 納品場所に入っていない状態にする
+	info_.hasTouchedDeliveryLocation_ = false;
+
 	// 個々のパラメータを設定
 	SetParam();
 }
@@ -77,11 +81,9 @@ void Item::Draw(void)
 #endif // _DEBUG
 }
 
-void Item::SetPlayerCameraInfo(PlayerController* player, VECTOR* cameraPos, VECTOR* cameraAngle)
+void Item::SetPlayer(PlayerController* player)
 {
 	player_ = player;
-	cameraPos_ = cameraPos;
-	cameraAngle_ = cameraAngle;
 }
 
 Transform* Item::GetTransform()
@@ -94,31 +96,9 @@ const ItemInfo& Item::GetInfo(void)
 	return info_;
 }
 
-VECTOR Item::GetLineStartPos(void)
-{
-	// カメラの位置をラインの初め座標とする
-	return *cameraPos_;
-}
-
-VECTOR Item::GetLineEndPos(void)
-{
-	// ローカル座標
-	VECTOR localPosRot;
-
-	// 相対座標
-	VECTOR LOCAL_POS = { 0.0f,0.0f,player_->GetRangeMax() };
-
-	localPosRot = VTransform(LOCAL_POS, CameraMatrix());
-
-	// 座標に反映
-	VECTOR downPos = VAdd(*cameraPos_, localPosRot);
-
-	return downPos;
-}
-
 float Item::GetCameraDistance(VECTOR pos)
 {
-	return VSize(VSub(pos, *cameraPos_));
+	return VSize(VSub(pos, CameraUtility::GetCameraPos()));
 }
 
 void Item::SetDamage(int damage)
@@ -216,7 +196,7 @@ void Item::TrackingPlayer(void)
 	VECTOR prePos = trans_->pos_;
 
 	// ローカル座標に
-	trans_->pos_ = VAdd(*cameraPos_, ToCameraLocalPosRot());;
+	trans_->pos_ = CameraUtility::AddCameraPosLocalPos(info_.localPos_);
 
 	// 線形補間で滑らかにする
 	trans_->pos_ = Math::Lerp(prePos, trans_->pos_, COEFFICIENT);
@@ -226,36 +206,10 @@ void Item::TrackingPlayer(void)
 
 	// 回転
 	// 回転行列をモデルに反映
-	MV1SetRotationMatrix(info_.modelId_, AngleToMatrix());
+	MV1SetRotationMatrix(info_.modelId_, CameraUtility::AngleToMatrix(info_.angle_));
 
 	// 当たり判定情報を最新の状態に更新
 	MV1RefreshCollInfo(info_.modelId_, -1);
-}
-
-VECTOR Item::ToCameraLocalPosRot(void)
-{
-	// ローカル座標
-	VECTOR localPosRot = VTransform(info_.localPos_, CameraMatrix());
-
-	return  localPosRot;
-}
-
-MATRIX Item::AngleToMatrix(void)
-{
-	// アイテムの回転を行列にする
-	MATRIX lanternMat = Matrix::GetMatrixRotateXYZ(info_.angle_);
-
-	// プレイヤーの回転をランタンの回転行列に反映する
-	MATRIX mat = Matrix::Multiplication(lanternMat, CameraMatrix());
-	return mat;
-}
-
-MATRIX Item::CameraMatrix(void)
-{
-	// カメラの回転行列
-	VECTOR vec = { cameraAngle_->x ,cameraAngle_->y ,0.0f };
-	MATRIX matRot = Matrix::GetMatrixRotateXYZ(vec);
-	return matRot;
 }
 
 void Item::DrawDebug(void)
@@ -264,10 +218,10 @@ void Item::DrawDebug(void)
 	DrawFormatString(0, 0, 0xff0000, "%d", info_.money_);
 
 	VECTOR start = trans_->pos_;
-	start.y -= info_.collisionOffset_;
+	start.y -= info_.collisionRadiusY_;
 	VECTOR end = trans_->pos_;
-	end.y += info_.collisionOffset_;
+	end.y += info_.collisionRadiusY_;
 
 	// 当たり判定用のカプセル大きさ確認
-	DrawCapsule3D(start, end, info_.collisionRadius_, 8, 0xff0000, 0xff0000, false);
+	DrawCapsule3D(start, end, info_.collisionRadiusX_, 8, 0xff0000, 0xff0000, false);
 }

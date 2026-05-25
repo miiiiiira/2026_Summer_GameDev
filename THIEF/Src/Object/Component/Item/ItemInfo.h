@@ -41,10 +41,8 @@ struct ItemInfo
 	VECTOR velocity_;
 
 	// 当たり判定用半径
-	float collisionRadius_;
-
-	// 当たり判定のカプセル用ずらし数
-	float collisionOffset_;
+	float collisionRadiusX_;
+	float collisionRadiusY_;
 
 	// プレイヤーとの相対座標
 	VECTOR localPos_;
@@ -57,4 +55,7 @@ struct ItemInfo
 
 	// 空中から1度でもステージに接触したかどうか　true / 接触した , false / 接触していない
 	bool hasTouchedStage_;
+
+	// 納品場所に入っているかどうか		true / 入っている , false / 入っていない
+	bool hasTouchedDeliveryLocation_;
 };

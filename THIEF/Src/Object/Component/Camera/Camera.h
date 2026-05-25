@@ -62,7 +62,7 @@ public:
 	void SetPlayerController(PlayerController* playerController);
 
 	// Œü‚«‚ÌŽæ“¾
-	VECTOR* GetAngle(void) { return &angle_; }
+	VECTOR& GetAngle(void) { return angle_; }
 
 	// Transform‚ð•Ô‚·
 	Transform* GetTransform();

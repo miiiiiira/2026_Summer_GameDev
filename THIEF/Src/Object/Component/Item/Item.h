@@ -31,7 +31,8 @@ public:
 	// 描画処理
 	void Draw(void)override;
 
-	void SetPlayerCameraInfo(PlayerController* player, VECTOR* cameraPos, VECTOR* cameraAngle);
+	// プレイヤー設定
+	void SetPlayer(PlayerController* player);
 
 public:
 
@@ -44,8 +45,7 @@ public:
 	// モデルIDを渡す
 	int GetModelID(void) { return info_.modelId_; }
 
-	VECTOR GetLineStartPos(void);
-	VECTOR GetLineEndPos(void);
+	// カメラとの距離を渡す
 	float GetCameraDistance(VECTOR pos);
 
 public:
@@ -66,8 +66,11 @@ public:
 	// 掴まれた状態を終了する
 	void EndGrabbed(void);
 
-	// ステージに接触したため
+	// ステージに接触したためフラグを立てる
 	void TrueHasTouchedStage(void) { info_.hasTouchedStage_ = true; }
+
+	// 納品場所に入ったかどうかを変更
+	void TrueHasTouchedDelivery(bool flg) { info_.hasTouchedDeliveryLocation_ = flg; }
 
 protected:
 
@@ -80,26 +83,11 @@ protected:
 	// プレイヤー
 	PlayerController* player_;
 
-	// カメラの座標
-	VECTOR* cameraPos_;
-
-	// カメラの向き
-	VECTOR* cameraAngle_;
-
 	// 重力をかける
 	void Gravity(void);
 
 	// プレイヤーの位置をみて移動処理を行う
 	void TrackingPlayer(void);
-
-	// カメラ情報でローカル座標を回転させる
-	VECTOR ToCameraLocalPosRot(void);
-
-	// 方向から回転行列を算出
-	MATRIX AngleToMatrix(void);
-
-	// カメラの回転行列を取得
-	MATRIX CameraMatrix(void);
 
 	// 個々のパラメータを設定する
 	virtual void SetParam(void) = 0;

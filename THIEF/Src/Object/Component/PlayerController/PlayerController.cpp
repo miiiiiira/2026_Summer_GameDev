@@ -6,9 +6,10 @@
 #include "../../Object.h"
 #include "../../Component/Transform/Transform.h"
 #include "../../Component/Animation/Animation.h"
-#include "../../Component/Camera/Camera.h"
 #include "../../Component/Item/Item.h"
 #include "../../Component/Lantern/Lantern.h"
+#include "../../../Common/Transform/MatrixUtility.h"
+#include "../../../Common/CameraUtility/CameraUtility.h"
 
 #include "../Collider/StageCollider/StageCollider.h"
 
@@ -87,14 +88,26 @@ Transform* PlayerController::GetTransform()
 	return owner_->GetComponent<Transform>();
 }
 
-float PlayerController::GetRangeMax(void)
-{
-	return rangeMax_;
-}
-
 GrasbbingState PlayerController::GetGrabbingState(void)
 {
 	return grabState_;
+}
+
+VECTOR PlayerController::GetLineStartPos(void)
+{
+	// カメラの位置をラインの初め座標とする
+	return CameraUtility::GetCameraPos();
+}
+
+VECTOR PlayerController::GetLineEndPos(void)
+{
+	// 相対座標
+	VECTOR LOCAL_POS = { 0.0f,0.0f,rangeMax_ };
+
+	// 座標に反映
+	VECTOR downPos = CameraUtility::AddCameraPosLocalPos(LOCAL_POS);
+
+	return downPos;
 }
 
 void PlayerController::StartGrabbing(float range)
@@ -105,11 +118,8 @@ void PlayerController::StartGrabbing(float range)
 	range_ = range;
 }
 
-void PlayerController::SetPointers(Camera* camera, Lantern* lantern)
+void PlayerController::SetLantern(Lantern* lantern)
 {
-	// カメラクラスのポインタを設定
-	camera_ = camera;
-
 	// ランタンクラスのポインタを設定
 	lantern_ = lantern;
 }
@@ -123,9 +133,6 @@ void PlayerController::SetItemPoint(Item* item)
 // 移動処理
 void PlayerController::Move()
 {
-	// カメラがなければ処理しない
-	if (!camera_) return;
-
 	// Transformがなければ処理しない
 	if (!transform_) return;
 
@@ -137,9 +144,6 @@ void PlayerController::Move()
 
 	// スライディングからしゃがみ処理
 	if (SlidingToCrouching())return;
-
-	// カメラ角度を取得
-	VECTOR* cameraAngles = camera_->GetAngle();
 
 	// 移動量
 	VECTOR dir = Math::VECTOR_ZERO;
@@ -182,7 +186,7 @@ void PlayerController::Move()
 		// XYZの回転行列
 		// XZ平面移動にする場合は、XZの回転を考慮しないようにする
 		MATRIX mat = MGetIdent();
-		mat = MMult(mat, MGetRotY(cameraAngles->y));
+		mat = MMult(mat, MGetRotY(CameraUtility::GetCameraAngle().y));
 
 		// 回転行列を使用して、ベクトルを回転させる
 		moveDir_ = VTransform(dir, mat);

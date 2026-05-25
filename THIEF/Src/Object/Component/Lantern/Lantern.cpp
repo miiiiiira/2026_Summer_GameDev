@@ -1,15 +1,13 @@
 #include "Lantern.h"
 
-
 #include "../../../Common/Transform/MatrixUtility.h"
+#include "../../../Common/CameraUtility/CameraUtility.h"
 #include "../../../Common/Math/Math.h"
 #include "../../../Input/InputManager.h"
 #include "../Render/Render3D.h"
 #include "../../Object.h"
 
 Lantern::Lantern(void)
-	:cameraPos_(nullptr)
-	,cameraAngle_(nullptr)
 {
 	// 追加ポイントライト
 	pointLightHandle_ = CreatePointLightHandle(
@@ -67,13 +65,6 @@ void Lantern::Draw(void)
 
 }
 
-void Lantern::SetCameraPosAngle(VECTOR* cameraPos, VECTOR* cameraAngle)
-{
-	// カメラの座標と向きのポインタを保持
-	cameraPos_ = cameraPos;
-	cameraAngle_ = cameraAngle;
-}
-
 void Lantern::SetLight(bool lightFlg)
 {
 	// 指定されたライト状態にする
@@ -87,24 +78,17 @@ bool Lantern::GetLight(void)
 
 void Lantern::UpdatePos(void)
 {
-	// カメラの座標や向きのポインタの中身がなかったら処理を行わない
-	if (cameraPos_ == nullptr || cameraAngle_ == nullptr)return;
-
 	// オーナーからTransformを取得
 	auto trans = owner_->GetComponent<Transform>();
 
 	// 前の座標を保持しておく
 	VECTOR prePos = trans->pos_;
 
-	// カメラの回転行列
-	VECTOR vec = { cameraAngle_->x ,cameraAngle_->y ,0.0f };
-	MATRIX matRot = Matrix::GetMatrixRotateXYZ(vec);
-
 	// カメラの視線方向のベクトルを計算
 	// DxlibのVTransformを使用
 	VECTOR forward = VGet(0.0f, 0.0f, 1.0f); // 前方向をZ軸とする
 	// カメラの方向を算出
-	VECTOR cameraDir = VTransform(forward, matRot);
+	VECTOR cameraDir = CameraUtility::CameraRotToPos(forward);
 
 	// ローカル座標
 	VECTOR localPosRot;
@@ -113,17 +97,14 @@ void Lantern::UpdatePos(void)
 	// 方向と同じ要領で、相対座標を回転
 	if (InputManager::GetInstance()->IsNew(KEY_INPUT_Q))
 	{
-		// ランタンを遠くに離す相対座標を回転させる
-		localPosRot = VTransform(REACH_MAX_LIGHT, matRot);
+		// ランタンの座標に反映
+		trans->pos_ = CameraUtility::AddCameraPosLocalPos(REACH_MAX_LIGHT);
 	}
 	else
 	{
-		// ランタンを近くにする相対座標を回転させる
-		localPosRot = VTransform(REACH_DEFAULT_LIGHT, matRot);
+		// ランタンの座標に反映
+		trans->pos_ = CameraUtility::AddCameraPosLocalPos(REACH_DEFAULT_LIGHT);
 	}
-
-	// ランタンの座標に反映
-	trans->pos_ = VAdd(*cameraPos_, localPosRot);
 
 	// 線形補間で滑らかにする
 	trans->pos_ = Math::Lerp(prePos, trans->pos_, COEFFICIENT);
@@ -136,7 +117,7 @@ void Lantern::UpdatePos(void)
 	MATRIX weaponMat = Matrix::GetMatrixRotateXYZ(angle_);
 
 	// プレイヤーの回転をランタンの回転行列に反映する
-	MATRIX mat = Matrix::Multiplication(weaponMat, matRot);
+	MATRIX mat = Matrix::Multiplication(weaponMat, CameraUtility::GetCameraMatrix());
 
 	// 回転行列をモデルに反映
 	MV1SetRotationMatrix(modelId_, mat);

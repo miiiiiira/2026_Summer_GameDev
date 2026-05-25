@@ -22,11 +22,27 @@ void Stage::Init()
 
 	// 衝突情報構築
 	MV1SetupCollInfo(modelId_, -1);
+
+	// ステージの座標
+	deliveryPos_ = trans->pos_;
+	deliveryPos_.z += 500.0f;
+}
+
+void Stage::Draw(void)
+{
+#ifdef _DEBUG
+	DebugDraw();
+#endif // _DEBUG
 }
 
 Transform* Stage::GetTransform()
 {
 	return owner_->GetComponent<Transform>();
+}
+
+VECTOR Stage::GetDeliveryPos(void)
+{
+	return deliveryPos_;
 }
 
 VECTOR Stage::ToWorldPos(VECTOR local)
@@ -39,4 +55,19 @@ VECTOR Stage::ToLocalPos(VECTOR world)
 {
 	auto trans = owner_->GetComponent<Transform>();
 	return VSub(world, trans->pos_);
+}
+
+void Stage::DebugDraw(void)
+{
+	float cubeRad = 100.0f;
+	VECTOR startPos, endPos;
+	startPos = endPos = deliveryPos_;
+
+	startPos.x -= cubeRad;
+	startPos.z -= cubeRad;
+
+	endPos.x += cubeRad;
+	endPos.y += cubeRad * 2;
+	endPos.z += cubeRad;
+	DrawCube3D(startPos, endPos, 0x0000ff, 0x0000ff, false);
 }

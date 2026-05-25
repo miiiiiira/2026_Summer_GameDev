@@ -46,9 +46,6 @@ public:
 	// Transformを返す
 	Transform* GetTransform();
 
-	// カメラの座標と向きを参照できるようにする
-	void SetCameraPosAngle(VECTOR* cameraPos, VECTOR* cameraAngle);
-
 	// 指定されたライト状態にする　true / ライトを付ける , false / ライトを消す
 	void SetLight(bool lightFlg);
 
@@ -67,12 +64,6 @@ private:
 
 	// モデルの向き
 	VECTOR angle_;
-
-	// カメラの座標
-	VECTOR* cameraPos_;
-
-	// カメラの向き
-	VECTOR* cameraAngle_;
 
 	// 座標更新処理
 	void UpdatePos(void);

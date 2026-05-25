@@ -21,6 +21,7 @@
 #include "../Object/Component/Lantern/Lantern.h"
 #include "../Object/Component/Transform/Transform.h"
 #include "../Common/Transform/MatrixUtility.h"
+#include "../Common/CameraUtility/CameraUtility.h"
 
 #include "DebugScene.h"
 
@@ -56,6 +57,9 @@ void DebugScene::Load(void)
 
 	// カメラの作成
 	CameraCreate();
+
+	// カメラユーティリティにカメラのポインタを渡す
+	CameraUtility::SetCameraPoint(objectManger_->FindComponentWithTag<Camera>(Tag::Camera));
 
 	// ランタンの作成
 	LanternCreate();
@@ -178,13 +182,6 @@ void DebugScene::LanternCreate(void)
 
 	// ランタン機能
 	auto cont = lantern->AddComponent<Lantern>();
-	// カメラの取得
-	auto camera = objectManger_->FindComponentWithTag<Camera>(Tag::Camera);
-	VECTOR* cameraPos = &camera->GetTransform()->pos_;
-	VECTOR* cameraAngle = camera->GetAngle();
-
-	// カメラの座標ポインタと向きポインタを付与
-	cont->SetCameraPosAngle(cameraPos, cameraAngle);
 
 	// 座標の設定
 	auto trans = lantern->AddComponent<Transform>();
@@ -229,8 +226,8 @@ void DebugScene::PlayerCreate(void)
 	// ランタン取得
 	auto lantern = objectManger_->FindComponentWithTag<Lantern>(Tag::Lantern);
 
-	// プレイヤークラスにカメラ、アイテム、ランタンのポインタを渡す
-	playerController->SetPointers(camera/*, nullptr*/, lantern);
+	// プレイヤークラスにランタンのポインタを渡す
+	playerController->SetLantern(lantern);
 }
 
 void DebugScene::EnemyCreate(void)
@@ -294,18 +291,15 @@ void DebugScene::PlaceDebugPoint(void)
 
 void DebugScene::PlaceEnemyNodePoint(void)
 {
-	auto camera = objectManger_->FindComponentWithTag<Camera>(Tag::Camera);
-	VECTOR* cameraPos = &camera->GetTransform()->pos_;
-	VECTOR* cameraAngle = camera->GetAngle();
+	VECTOR cameraPos = CameraUtility::GetCameraPos();
 
 	// 左クリックでカメラの座標をデバックポイントとして追加
 	if (InputManager::GetInstance()->IsTrgMouseLeft())
 	{
-		cameraPos->y -= 100.0f;
-
 		Point point;
 		point.id = pointNum_;
-		point.pos = *cameraPos;
+		point.pos = cameraPos;
+		point.pos.y -= 100.0f;
 		points_.push_back(point);
 
 		pointNum_++;
@@ -315,30 +309,21 @@ void DebugScene::PlaceEnemyNodePoint(void)
 	if (InputManager::GetInstance()->IsTrgMouseRight())
 	{
 		// 線分の上座標
-		VECTOR topPos = *cameraPos;
+		VECTOR topPos = cameraPos;
 		// 線分の下座標
-		VECTOR downPos = *cameraPos;
-
-		// カメラの回転行列
-		VECTOR vec = { cameraAngle->x ,cameraAngle->y ,0.0f };
-		MATRIX matRot = Matrix::GetMatrixRotateXYZ(vec);
+		VECTOR downPos = cameraPos;
 
 		// カメラの視線方向のベクトルを計算
 		// DxlibのVTransformを使用
 		VECTOR forward = VGet(0.0f, 0.0f, 1.0f); // 前方向をZ軸とする
 		// カメラの方向を算出
-		VECTOR cameraDir = VTransform(forward, matRot);
-
-		// ローカル座標
-		VECTOR localPosRot = {};
+		VECTOR cameraDir = CameraUtility::AddCameraPosLocalPos(forward);
 
 		// 相対座標
 		VECTOR LOCAL_POS = { 0.0f,0.0f,500.0f };
 
-		localPosRot = VTransform(LOCAL_POS, matRot);
-
 		// 座標に反映
-		downPos = VAdd(*cameraPos, localPosRot);
+		downPos = CameraUtility::AddCameraPosLocalPos(LOCAL_POS);
 
 		auto targetIt = points_.end();
 
@@ -379,18 +364,15 @@ void DebugScene::PlaceItemNodePoint(void)
 
 void DebugScene::PlaceSpawnPoint(void)
 {
-	auto camera = objectManger_->FindComponentWithTag<Camera>(Tag::Camera);
-	VECTOR* cameraPos = &camera->GetTransform()->pos_;
-	VECTOR* cameraAngle = camera->GetAngle();
+	VECTOR cameraPos = CameraUtility::GetCameraPos();
 
 	// 左クリックでカメラの座標をデバックポイントとして追加
 	if (InputManager::GetInstance()->IsTrgMouseLeft())
 	{
-		cameraPos->y -= 100.0f;
-
 		Point point;
 		point.id = pointNum_;
-		point.pos = *cameraPos;
+		point.pos = cameraPos;
+		point.pos.y -= 100.0f;
 		points_.push_back(point);
 
 		pointNum_++;
@@ -400,30 +382,21 @@ void DebugScene::PlaceSpawnPoint(void)
 	if (InputManager::GetInstance()->IsTrgMouseRight())
 	{
 		// 線分の上座標
-		VECTOR topPos = *cameraPos;
+		VECTOR topPos = cameraPos;
 		// 線分の下座標
-		VECTOR downPos = *cameraPos;
-
-		// カメラの回転行列
-		VECTOR vec = { cameraAngle->x ,cameraAngle->y ,0.0f };
-		MATRIX matRot = Matrix::GetMatrixRotateXYZ(vec);
+		VECTOR downPos = cameraPos;
 
 		// カメラの視線方向のベクトルを計算
 		// DxlibのVTransformを使用
 		VECTOR forward = VGet(0.0f, 0.0f, 1.0f); // 前方向をZ軸とする
 		// カメラの方向を算出
-		VECTOR cameraDir = VTransform(forward, matRot);
-
-		// ローカル座標
-		VECTOR localPosRot = {};
+		VECTOR cameraDir = CameraUtility::AddCameraPosLocalPos(forward);
 
 		// 相対座標
 		VECTOR LOCAL_POS = { 0.0f,0.0f,500.0f };
 
-		localPosRot = VTransform(LOCAL_POS, matRot);
-
 		// 座標に反映
-		downPos = VAdd(*cameraPos, localPosRot);
+		downPos = CameraUtility::AddCameraPosLocalPos(LOCAL_POS);
 
 		auto targetIt = points_.end();
 

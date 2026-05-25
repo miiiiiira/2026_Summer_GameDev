@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Common\CameraUtility\CameraUtility.cpp" />
+    <ClCompile Include="Src\Object\Component\Collider\DeliveryLocationCollider\DeliveryLocationCollider.cpp" />
     <ClCompile Include="Src\Object\Component\Item\Item.cpp" />
     <ClCompile Include="Src\Scene\DebugScene.cpp" />
     <ClCompile Include="Src\Object\Component\Collider\ItemCollider\ItemCollider.cpp" />
@@ -65,6 +67,8 @@
     <ClCompile Include="Src\System\SystemManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Common\CameraUtility\CameraUtility.h" />
+    <ClInclude Include="Src\Object\Component\Collider\DeliveryLocationCollider\DeliveryLocationCollider.h" />
     <ClInclude Include="Src\Object\Component\Item\Item.h" />
     <ClInclude Include="Src\Object\Component\Item\ItemInfo.h" />
     <ClInclude Include="Src\Scene\DebugScene.h" />

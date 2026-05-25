@@ -30,8 +30,8 @@ void Goblet::SetParam(void)
 	info_.hardness_ = HARDNESS;
 
 	// “–‚½‚è”»’è—p‚Ì”¼Œa‚ğ‰Šú‰»
-	info_.collisionRadius_ = COLLISION_RADIUS;
-	info_.collisionOffset_ = COLLISION_OFFSET;
+	info_.collisionRadiusX_ = COLLISION_RADIUS_X;
+	info_.collisionRadiusY_ = COLLISION_RADIUS_Y;
 
 	// ¶‘¶’†‚É‚·‚é
 	info_.isAlive_ = true;

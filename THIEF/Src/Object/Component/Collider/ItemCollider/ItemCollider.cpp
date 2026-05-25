@@ -2,22 +2,23 @@
 #include "../../../Object.h"
 #include "../../PlayerController/PlayerController.h"
 #include "../../Stage/Stage.h"
+#include "../../Item/Item.h"
 #include "../../../../Common/Transform/MatrixUtility.h"
 
 void ItemCollider::Init(void)
 {
 	// アイテムの確保
 	item_ = owner_->GetComponent<Item>();
-
-	// Transform取得
-	transform_ = owner_->GetComponent<Transform>();
 }
 
 void ItemCollider::Update(void)
 {
-	if (!transform_) return;
+
+	if (!item_) return;
 
 	if (!player_) return;
+
+	if (!stage_) return;
 
 	// プレイヤーの掴み機能との当たり判定
 	PlayerGrabCollision();
@@ -35,10 +36,10 @@ void ItemCollider::PlayerGrabCollision(void)
 	int itemModelId = item_->GetModelID();
 
 	// 線分の上座標
-	VECTOR topPos = item_->GetLineStartPos();
+	VECTOR topPos = player_->GetLineStartPos();
 
 	// 線分の下座標
-	VECTOR downPos = item_->GetLineEndPos();
+	VECTOR downPos = player_->GetLineEndPos();
 
 	// 線分とモデルの衝突判定
 	MV1_COLL_RESULT_POLY hitResult =
@@ -79,7 +80,7 @@ void ItemCollider::StageCollision(void)
 	float distance = VSize(move);
 
 	// アイテムの半径取得
-	float itemRad = item_->GetInfo().collisionRadius_;
+	float itemRad = item_->GetInfo().collisionRadiusX_;
 
 	// 半径ベースで分割
 	int stepCount = (int)(distance / itemRad) + 1;
@@ -109,11 +110,11 @@ void ItemCollider::StageCollision(void)
 
 		// カプセル開始座標
 		VECTOR capStart = nextPos;
-		capStart.y -= item_->GetInfo().collisionOffset_;
+		capStart.y -= item_->GetInfo().collisionRadiusY_;
 
 		// カプセル終了座標
 		VECTOR capEnd = nextPos;
-		capEnd.y += item_->GetInfo().collisionOffset_;
+		capEnd.y += item_->GetInfo().collisionRadiusY_;
 
 		// 衝突判定　ステージモデルとカプセル(アイテム)
 		MV1_COLL_RESULT_POLY_DIM hitResult =
@@ -216,6 +217,9 @@ void ItemCollider::StageCollision(void)
 
 	// 空中にいるならダメージ処理しない
 	if (!isHitStage)return;
+
+	// 納品場所にはいっているなら処理をしない
+	if (item_->GetInfo().hasTouchedDeliveryLocation_)return;
 
 	float hitSpeed = 0;
 
