@@ -29,6 +29,9 @@ void Goblet::SetParam(void)
 	// Šæä‚³‰Šú‰»
 	info_.hardness_ = HARDNESS;
 
+	// d‚³‰Šú‰»
+	info_.weight_ = WEIGHT;
+
 	// “–‚½‚è”»’è—p‚Ì”¼Œa‚ğ‰Šú‰»
 	info_.collisionRadiusX_ = COLLISION_RADIUS_X;
 	info_.collisionRadiusY_ = COLLISION_RADIUS_Y;

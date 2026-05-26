@@ -22,6 +22,9 @@ public:
 	// 頑丈さ
 	static constexpr int HARDNESS = 10;
 
+	// 重さ
+	static constexpr float WEIGHT = -3.0f;
+
 	// コンストラクタ
 	Goblet();
 	// デストラクタ

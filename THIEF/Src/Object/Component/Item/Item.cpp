@@ -69,10 +69,17 @@ void Item::Update(void)
 
 		// プレイヤーの位置を見て移動処理を行う
 		TrackingPlayer();
-	}
 
-	// 重力をかける
-	Gravity();
+		// アイテムの重さを反映
+		Weight();
+	}
+	else
+	{
+
+		// 重力をかける
+		Gravity();
+
+	}
 }
 
 void Item::Draw(void)
@@ -179,6 +186,15 @@ void Item::Gravity(void)
 	// 最大落下速度
 	if (info_.velocity_.y < MAX_FALL)
 		info_.velocity_.y = MAX_FALL;
+
+	// モデルの座標を反映
+	MV1SetPosition(info_.modelId_, trans_->pos_);
+}
+
+void Item::Weight(void)
+{
+	// 座標にアイテムの重さを反映
+	trans_->pos_.y += info_.weight_;
 
 	// モデルの座標を反映
 	MV1SetPosition(info_.modelId_, trans_->pos_);

@@ -40,6 +40,9 @@ struct ItemInfo
 	// d—Í
 	VECTOR velocity_;
 
+	// d‚³
+	float weight_;
+
 	// “–‚½‚è”»’è—p”¼Œa
 	float collisionRadiusX_;
 	float collisionRadiusY_;

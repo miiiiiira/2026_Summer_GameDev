@@ -79,6 +79,9 @@ protected:
 	// 重力をかける
 	void Gravity(void);
 
+	// アイテムの重み
+	void Weight(void);
+
 	// プレイヤーの位置をみて移動処理を行う
 	void TrackingPlayer(void);
 
