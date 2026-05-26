@@ -114,6 +114,8 @@ void Yeti::Draw(void)
 	// 巡回ルート描画
 	for (const auto& point : way_)
 	{
+		float distance = VSize(VSub(point.pos, pos_));
+
 		unsigned int color = 0x0000ff;
 		if (point.id == nextNodeId_)
 		{
@@ -126,6 +128,10 @@ void Yeti::Draw(void)
 		else if (point.id == prevPrevNodeId_)
 		{
 			color = 0xfff5ee;
+		}
+		else if (distance > patrolRadius_)
+		{
+			color = 0xff0000;
 		}
 
 		DrawSphere3D(
@@ -148,6 +154,9 @@ void Yeti::SetMoveDirPatrol(void)
 
 int Yeti::SelectNextNode(void)
 {
+	// 有効ノードを探す前に空にする
+	candidates_.clear();
+
 	for (const auto& edge : edgeList_[currentNodeId_])
 	{
 		int nextId = edge.way.id;
