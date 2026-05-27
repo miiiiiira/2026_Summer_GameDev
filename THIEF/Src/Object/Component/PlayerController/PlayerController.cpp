@@ -504,10 +504,6 @@ bool PlayerController::RangeUpdate(void)
 
 void PlayerController::DebugDraw(void)
 {
-	DrawFormatString(10, 220, 0xff0000,
-		"%d",
-		GetMouseWheelRotVol());
-
 
 	DrawFormatString(0, 200, 0xffc800,
 		"スタミナ : %.0f / %.0f",
