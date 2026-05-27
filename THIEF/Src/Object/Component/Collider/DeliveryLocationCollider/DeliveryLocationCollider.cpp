@@ -19,11 +19,12 @@ void DeliveryLocationCollider::Init(void)
 void DeliveryLocationCollider::Update(void)
 {
 	if (!stage_)return;
-
 	if (!stage_->GetItem())return;
 
 	// アイテムと納品場所の当たり判定
 	ItemToDeliveryLocationCollision();
+
+	if (!player_)return;
 
 	// 納品完了スイッチとプレイヤー掴み機能との当たり判定
 	DoneSwitchToPlayerGrabbingCollision();
