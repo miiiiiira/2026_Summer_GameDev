@@ -10,6 +10,7 @@
 #include "../../Component/Lantern/Lantern.h"
 #include "../../../Common/Transform/MatrixUtility.h"
 #include "../../../Common/CameraUtility/CameraUtility.h"
+#include "../../../Scene/SceneManager.h"
 
 #include "../Collider/StageCollider/StageCollider.h"
 
@@ -56,7 +57,7 @@ void PlayerController::Update()
 	float goal = atan2f(moveDir_.x, moveDir_.z);
 
 	// 常に最短経路で補間
-	angle_.y = Math::LerpAngle(angle_.y, goal, 0.2f);
+	angle_.y = Math::LerpAngle(angle_.y, goal, COEFFICIENT);
 
 	// 移動処理
 	Move();
@@ -72,6 +73,14 @@ void PlayerController::Update()
 
 	// 掴み動作処理
 	Grasping();
+
+	// 一定の座標いったら
+	if (transform_->pos_.y < DEAD_POS_Y)
+	{
+		// ゲームオーバー
+		SceneManager::GetInstance()->TrueGameOver();
+		return;
+	}
 }
 
 void PlayerController::Draw()

@@ -7,6 +7,7 @@
 class ObjectManager;
 class Goblet;
 class Yeti;
+class Crosshair;
 
 class GameScene : public SceneBase
 {
@@ -33,4 +34,7 @@ private:
 	ObjectManager* objectManger_;
 
 	Yeti* enemy_;
+
+	// ƒNƒƒXƒwƒA
+	Crosshair* crosshair_;
 };

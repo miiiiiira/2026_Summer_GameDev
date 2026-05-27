@@ -6,6 +6,7 @@
 #include "../../PlayerController/PlayerController.h"
 #include "../../../../Common/Manager/Score/ScoreManager.h"
 #include "../../../../Common/Collision/Collision.h"
+#include "../../../../Common/Crosshair/Crosshair.h"
 #include "../../../../Application.h"
 #include "../../../../Scene/SceneManager.h"
 
@@ -85,7 +86,7 @@ void DeliveryLocationCollider::ItemToDeliveryLocationCollision(void)
 void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 {
 	// プレイヤーが何かを掴んでいる状態だったら処理を行わない
-	if (player_->grabState_ == GrasbbingState::IS_GRABBING)return;
+	if (player_->GetGrabbingState() == GrasbbingState::IS_GRABBING)return;
 
 	// 納品完了スイッチの座標
 	VECTOR doneSwitchPos = stage_->GetDoneSwitchPos();
@@ -99,23 +100,34 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 	// 線分の下座標
 	VECTOR lineEndPos = player_->GetLineEndPos();
 
-	// 当たっているかつ、掴もうとしていたら
-	if (Collision::HitLineSphere(lineStartPos, lineEndPos, doneSwitchPos, doneSwitchRad)
-		&& player_->GetGrabbingState() == GrasbbingState::TRY_GRABBING)
+	// 当たっている
+	if (Collision::HitLineSphere(lineStartPos, lineEndPos, doneSwitchPos, doneSwitchRad))
 	{
-		// 納品済みの金額を確認
-		int deliveryPrice = ScoreManager::GetInstance().GetDeliveryPrice();
-		// 目標金額を確認
-		int targetPrice = ScoreManager::GetInstance().GetTargetPrice();
+		// クロスヘアの種類を掴めるに変更
+		crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::CAN_GRABB);
 
-		// 目標金額を達成していたら
-		if (deliveryPrice >= targetPrice)
+		// 掴もうとしていたら
+		if (player_->GetGrabbingState() == GrasbbingState::TRY_GRABBING)
 		{
-			// ゲームクリアへ
-			SceneManager::GetInstance()->TrueGameClear();
-			return;
-		}
+			// 納品済みの金額を確認
+			int deliveryPrice = ScoreManager::GetInstance().GetDeliveryPrice();
+			// 目標金額を確認
+			int targetPrice = ScoreManager::GetInstance().GetTargetPrice();
 
+			// 目標金額を達成していたら
+			if (deliveryPrice >= targetPrice)
+			{
+				// ゲームクリアへ
+				SceneManager::GetInstance()->TrueGameClear();
+				return;
+			}
+
+		}
+	}
+	else
+	{
+		// クロスヘアの種類を掴めないに変更
+		crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::NOT_GRABB);
 	}
 }
 
@@ -147,37 +159,6 @@ void DeliveryLocationCollider::DebugDraw(void)
 	else
 	{
 		DrawString(20, 400, "納品場所に入ってない…", 0xffffff);
-	}
-
-#pragma endregion
-
-#pragma region 納品完了スイッチ
-
-	// プレイヤーが何かを掴んでいる状態だったら処理を行わない
-	if (player_->grabState_ == GrasbbingState::IS_GRABBING)return;
-
-	// 納品完了スイッチの座標
-	VECTOR doneSwitchPos = stage_->GetDoneSwitchPos();
-
-	// 納品完了スイッチの半径
-	float doneSwitchRad = Stage::DONE_SWITCH_RAD;
-
-	// 線分の上座標
-	VECTOR lineStartPos = player_->GetLineStartPos();
-
-	// 線分の下座標
-	VECTOR lineEndPos = player_->GetLineEndPos();
-
-	// 当たっているかつ、掴もうとしていたら
-	if (Collision::HitLineSphere(lineStartPos, lineEndPos, doneSwitchPos, doneSwitchRad)
-		&& player_->GetGrabbingState() == GrasbbingState::TRY_GRABBING)
-	{
-		DrawString(20, 420, "スイッチに触っている！", 0xffffff);
-	}
-	else
-	{
-		DrawString(20, 420, "スイッチに触っていない！", 0xffffff);
-
 	}
 
 #pragma endregion

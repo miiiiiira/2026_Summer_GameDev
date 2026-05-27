@@ -5,6 +5,7 @@
 // 前方宣言
 class Stage;
 class PlayerController;
+class Crosshair;
 
 class DeliveryLocationCollider:public Component
 {
@@ -16,6 +17,9 @@ public:
 
 	// プレイヤー設定
 	void SetPlayer(PlayerController* player) { player_ = player; }
+
+	// クロスヘア設定
+	void SetCrosshair(Crosshair* crosshair) { crosshair_ = crosshair; }
 
 private:
 
@@ -32,6 +36,9 @@ private:
 
 	// プレイヤー
 	PlayerController* player_ = nullptr;
+
+	// クロスヘア
+	Crosshair* crosshair_ = nullptr;
 
 	void DebugDraw(void);
 };

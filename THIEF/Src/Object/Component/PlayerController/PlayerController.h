@@ -61,6 +61,12 @@ private:
 	// 掴み距離を伸ばす時の速度
 	static constexpr float EXTEND_RENGE_MOVE = 10.0f;
 
+	// 線形補間の係数
+	static constexpr float COEFFICIENT = 0.2f;
+	
+	// プレイヤーが死ぬ座標
+	static constexpr float DEAD_POS_Y = -1000.0f;
+
 public:
 	void Init() override;		// 初期化
 	void Update() override;		// 更新
@@ -90,8 +96,6 @@ public:
 	// 現在の状態表すステート
 	PlayerState state_ = PlayerState::IDLE;
 
-	// 掴み状態を表すステート
-	GrasbbingState grabState_ = GrasbbingState::NOT_GRABBING;
 private:
 	// 移動処理
 	void Move();
@@ -179,4 +183,6 @@ private:
 	float range_;
 	float rangeMax_;
 
+	// 掴み状態を表すステート
+	GrasbbingState grabState_ = GrasbbingState::NOT_GRABBING;
 };

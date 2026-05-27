@@ -7,6 +7,7 @@
 class Item;
 class PlayerController;
 class Stage;
+class Crosshair;
 
 // アイテム衝突コンポーネント
 class ItemCollider : public Component
@@ -20,6 +21,9 @@ public:
 
 	// ステージ設定
 	void SetStage(Stage* stage) { stage_ = stage; }
+
+	// クロスヘア設定
+	void SetCrosshair(Crosshair* crosshair) { crosshair_ = crosshair; }
 
 	// 接地判定
 	bool IsGround(void) const { return isGround_; }
@@ -48,5 +52,8 @@ private:
 
 	// ステージ
 	Stage* stage_ = nullptr;
+
+	// クロスヘア
+	Crosshair* crosshair_ = nullptr;
 };
 

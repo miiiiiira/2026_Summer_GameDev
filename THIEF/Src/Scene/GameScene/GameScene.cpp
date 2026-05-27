@@ -12,6 +12,7 @@
 #include "../Pause/Pause.h"
 
 #include "../../Object/Actor/Enemy/Yeti/Yeti.h"
+#include "../../Common/Crosshair/Crosshair.h"
 #include "../../Object/ObjectManager/ObjectManager.h"
 #include "../../Object/Tag.h"
 
@@ -54,6 +55,8 @@ void GameScene::Init(void)
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 	enemy_->Init(stage->GetModelId());
 
+	// クロスヘアの初期化処理
+	crosshair_->Init();
 }
 
 void GameScene::Load(void)
@@ -63,6 +66,10 @@ void GameScene::Load(void)
 
 	enemy_ = new Yeti();
 	enemy_->Load();
+
+	// クロスヘアの作成
+	crosshair_ = new Crosshair();
+	crosshair_->Load();
 
 	// カメラの作成
 	CameraCreate();
@@ -114,6 +121,9 @@ void GameScene::Update(void)
 
 	enemy_->Update();
 
+	// クロスヘアの更新
+	crosshair_->Update();
+
 	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_ESCAPE))
 	{
 		// ポーズモードへ
@@ -152,6 +162,10 @@ void GameScene::Draw(void)
 	int targetPrice = ScoreManager::GetInstance().GetTargetPrice();
 
 	DrawFormatString(Application::SCREEN_SIZE_X - 200, 50, 0xffffff, "%d　／　%d", deliveryPrice, targetPrice);
+
+	// クロスヘアの描画
+	crosshair_->Draw();
+
 }
 
 void GameScene::Release(void)
@@ -162,6 +176,10 @@ void GameScene::Release(void)
 	enemy_->Release();
 	delete enemy_;
 	enemy_ = nullptr;
+
+	crosshair_->Release();
+	delete crosshair_;
+	crosshair_ = nullptr;
 }
 
 void GameScene::CameraCreate(void)
@@ -203,6 +221,7 @@ void GameScene::StageCreate(void)
 
 	// 納品場所の当たり判定追加
 	auto delivery = stage->AddComponent<DeliveryLocationCollider>();
+	delivery->SetCrosshair(crosshair_);
 }
 
 void GameScene::LanternCreate(void)
@@ -323,6 +342,8 @@ void GameScene::ItemCreate(void)
 	itemCol->SetPlayer(playerController);
 	// ステージを渡す
 	itemCol->SetStage(stage);
+	// クロスヘアを渡す
+	itemCol->SetCrosshair(crosshair_);
 
 	// ステージにアイテムを渡す
 	stage->SetItem(goblet);

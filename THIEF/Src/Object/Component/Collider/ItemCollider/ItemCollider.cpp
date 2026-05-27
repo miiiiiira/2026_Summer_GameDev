@@ -4,6 +4,7 @@
 #include "../../Stage/Stage.h"
 #include "../../Item/Item.h"
 #include "../../../../Common/Transform/MatrixUtility.h"
+#include "../../../../Common/Crosshair/Crosshair.h"
 
 void ItemCollider::Init(void)
 {
@@ -30,7 +31,7 @@ void ItemCollider::Update(void)
 void ItemCollider::PlayerGrabCollision(void)
 {
 	// プレイヤーが何かを掴んでいる状態だったら処理を行わない
-	if (player_->grabState_ == GrasbbingState::IS_GRABBING)return;
+	if (player_->GetGrabbingState() == GrasbbingState::IS_GRABBING) return;
 
 	// アイテムのモデルIDを取得
 	int itemModelId = item_->GetModelID();
@@ -45,21 +46,32 @@ void ItemCollider::PlayerGrabCollision(void)
 	MV1_COLL_RESULT_POLY hitResult =
 		MV1CollCheck_Line(itemModelId, -1, lineStartPos, lineEndPos);
 
-	// 当たっているかつ、掴もうとしていたら
-	if (hitResult.HitFlag && player_->GetGrabbingState() == GrasbbingState::TRY_GRABBING)
+	// 当たっている
+	if (hitResult.HitFlag)
 	{
-		// カメラと当たった場所の距離を求める
-		float distance = item_->GetCameraDistance(hitResult.HitPosition);
+		// クロスヘアの種類を掴めるに変更
+		crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::CAN_GRABB);
 
-		// 距離が最低距離値よりも小さかったら最低距離値にする
-		if (distance < PlayerController::MIN_RENGE)distance = PlayerController::MIN_RENGE;
+		// 掴もうとしていたら
+		if (player_->GetGrabbingState() == GrasbbingState::TRY_GRABBING)
+		{
+			// カメラと当たった場所の距離を求める
+			float distance = item_->GetCameraDistance(hitResult.HitPosition);
 
-		// アイテムの追従モードをオンにする
-		item_->StartGrabbing({ 0,0,distance });
-		// 掴み状態にする
-		player_->StartGrabbing(distance);
-		player_->SetItemPoint(item_);
+			// 距離が最低距離値よりも小さかったら最低距離値にする
+			if (distance < PlayerController::MIN_RENGE)distance = PlayerController::MIN_RENGE;
+
+			// アイテムの追従モードをオンにする
+			item_->StartGrabbing({ 0,0,distance });
+			// 掴み状態にする
+			player_->StartGrabbing(distance);
+			player_->SetItemPoint(item_);
+
+			// クロスヘアの種類を掴んでいるに変更
+			crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::GRABBING);
+		}
 	}
+
 }
 
 void ItemCollider::StageCollision(void)
