@@ -69,7 +69,7 @@ private:
 
 	STATE state_;
 
-	std::vector<int> candidates_;
+	std::vector<int> candidates_;	// Œó•â‚Ìƒm[ƒh‚ğŠi”[‚·‚é
 
 	int currentNodeId_;		// ¡‚¢‚éƒm[ƒh
 	int prevNodeId_;		// ‘O‰ñ‚Ìƒm[ƒh
