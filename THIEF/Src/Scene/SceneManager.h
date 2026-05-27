@@ -71,6 +71,16 @@ public:
 	const float& GetTotalTime(void);
 	const float& GetDeltaTime(void);
 
+	// ゲームクリアかどうか取得
+	const bool GetIsClear(void) { return isClear_; }
+	// ゲームオーバーかどうか取得
+	const bool GetIsOver(void) { return isOver_; }
+
+	// ゲームクリアのフラグをたてる
+	void TrueGameClear(void);
+	// ゲームオーバーのフラグをたてる
+	void TrueGameOver(void);
+
 private:
 
 	// 各種シーン
@@ -90,7 +100,11 @@ private:
 	float mDeltaTime;
 	float mTotalTime;
 
-
 	int mainScreen_;
 	bool isShader_;
+
+	// ゲームクリア判定用
+	bool isClear_;
+	// ゲームオーバー判定用
+	bool isOver_;
 };

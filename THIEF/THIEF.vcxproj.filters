@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Src\Audio\AudioManager.cpp">
+    <ClCompile Include="Src\Common\Manager\Audio\AudioManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Audio\SoundTable.cpp">
+    <ClCompile Include="Src\Common\Manager\Audio\SoundTable.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Common\Collision\Collision.cpp">
@@ -42,13 +42,7 @@
     <ClCompile Include="Src\Common\Transform\Quaternion.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Input\InputManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Object\Actor\Player\Upgrade\Upgrade.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Object\Actor\Player\Upgrade\UpgradeManager.cpp">
+    <ClCompile Include="Src\Common\Manager\Input\InputManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\Common\AnimationController.cpp">
@@ -81,7 +75,7 @@
     <ClCompile Include="Src\Scene\SceneManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\System\SystemManager.cpp">
+    <ClCompile Include="Src\Common\Manager\System\SystemManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application.cpp">
@@ -145,19 +139,34 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\Component\Item\Item.cpp">
-	</ClCompile>
-	<ClCompile Include="Src\Object\Actor\Enemy\Yeti\Yeti.cpp">
+    </ClCompile>
+    <ClCompile Include="Src\Object\Actor\Enemy\Yeti\Yeti.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Common\Manager\Score\ScoreManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Common\CameraUtility\CameraUtility.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Object\Component\Collider\DeliveryLocationCollider\DeliveryLocationCollider.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Object\Actor\Upgrade\Upgrade.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Object\Actor\Upgrade\UpgradeManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Src\Audio\AudioManager.h">
+    <ClInclude Include="Src\Common\Manager\Audio\AudioManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Audio\SoundInfo.h">
+    <ClInclude Include="Src\Common\Manager\Audio\SoundInfo.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Audio\SoundTable.h">
+    <ClInclude Include="Src\Common\Manager\Audio\SoundTable.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Common\Collision\Collision.h">
@@ -184,13 +193,7 @@
     <ClInclude Include="Src\Common\Transform\Quaternion.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Input\InputManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Object\Actor\Player\Upgrade\Upgrade.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Object\Actor\Player\Upgrade\UpgradeManager.h">
+    <ClInclude Include="Src\Common\Manager\Input\InputManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\Common\AnimationController.h">
@@ -223,7 +226,7 @@
     <ClInclude Include="Src\Scene\SceneManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\System\SystemManager.h">
+    <ClInclude Include="Src\Common\Manager\System\SystemManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Application.h">
@@ -320,8 +323,23 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\Component\Item\ItemInfo.h">
-	</ClInclude>
-	<ClInclude Include="Src\Object\Actor\Enemy\Yeti\Yeti.h">
+    </ClInclude>
+    <ClInclude Include="Src\Object\Actor\Enemy\Yeti\Yeti.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Common\Manager\Score\ScoreManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Common\CameraUtility\CameraUtility.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Object\Component\Collider\DeliveryLocationCollider\DeliveryLocationCollider.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Object\Actor\Upgrade\Upgrade.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Object\Actor\Upgrade\UpgradeManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

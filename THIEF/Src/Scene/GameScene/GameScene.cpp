@@ -3,8 +3,9 @@
 #include <DxLib.h>
 
 #include "../../Application.h"
-#include "../../Input/InputManager.h"
-#include "../../Audio/AudioManager.h"
+#include "../../Common/Manager/Input/InputManager.h"
+#include "../../Common/Manager/Audio/AudioManager.h"
+#include "../../Common/Manager/Score/ScoreManager.h"
 #include "../SceneManager.h"
 #include "../GameClear/GameClear.h"
 #include "../GameOver/GameOver.h"
@@ -31,6 +32,9 @@
 #include "../../Common/CameraUtility/CameraUtility.h"
 
 
+#include "../../Common/Collision/Collision.h"
+
+
 GameScene::GameScene(void)
 {
 }
@@ -41,11 +45,15 @@ GameScene::~GameScene(void)
 
 void GameScene::Init(void)
 {
+	// スコアの初期化
+	ScoreManager::GetInstance().ResetGame();
+
 	// オブジェクトマネージャー初期化
 	objectManger_->Init();
 
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 	enemy_->Init(stage->GetModelId());
+
 }
 
 void GameScene::Load(void)
@@ -56,14 +64,14 @@ void GameScene::Load(void)
 	enemy_ = new Yeti();
 	enemy_->Load();
 
-	// ステージの作成
-	StageCreate();
-
 	// カメラの作成
 	CameraCreate();
 
 	// カメラユーティリティにカメラのポインタを渡す
 	CameraUtility::SetCameraPoint(objectManger_->FindComponentWithTag<Camera>(Tag::Camera));
+
+	// ステージの作成
+	StageCreate();
 
 	// ランタンの作成
 	LanternCreate();
@@ -71,11 +79,11 @@ void GameScene::Load(void)
 	// プレイヤーの作成
 	PlayerCreate();
 
-	// アイテムの作成
-	ItemCreate();
-
 	// 敵の作成
 	EnemyCreate();
+
+	// アイテムの作成
+	ItemCreate();
 }
 
 void GameScene::LoadEnd(void)
@@ -85,18 +93,26 @@ void GameScene::LoadEnd(void)
 
 void GameScene::Update(void)
 {
+#ifdef _DEBUG
 
 	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_C))
 	{
-		// ゲームクリアへ
-		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameClear>());
+		// ゲームクリアにする
+		SceneManager::GetInstance()->TrueGameClear();
 	}
 
 	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_O))
 	{
-		// ゲームオーバーへ
-		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameOver>());
+		// ゲームオーバーにする
+		SceneManager::GetInstance()->TrueGameOver();
 	}
+
+#endif // _DEBUG
+
+	// オブジェクトの更新
+	objectManger_->Update();
+
+	enemy_->Update();
 
 	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_ESCAPE))
 	{
@@ -105,10 +121,18 @@ void GameScene::Update(void)
 		return;
 	}
 
-	// オブジェクトの更新
-	objectManger_->Update();
+	if (SceneManager::GetInstance()->GetIsClear())
+	{
+		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameClear>());
+		return;
+	}
 
-	enemy_->Update();
+	if (SceneManager::GetInstance()->GetIsOver())
+	{
+		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameOver>());
+		return;
+	}
+
 }
 
 void GameScene::Draw(void)
@@ -116,10 +140,18 @@ void GameScene::Draw(void)
 	// オブジェクトの描画前
 	objectManger_->PreDraw();
 
+	enemy_->Draw();
+
 	// オブジェクトの描画
 	objectManger_->Draw();
 
-	enemy_->Draw();
+	// 納品済みの金額を確認
+	int deliveryPrice = ScoreManager::GetInstance().GetDeliveryPrice();
+
+	// 目標金額を確認
+	int targetPrice = ScoreManager::GetInstance().GetTargetPrice();
+
+	DrawFormatString(Application::SCREEN_SIZE_X - 200, 50, 0xffffff, "%d　／　%d", deliveryPrice, targetPrice);
 }
 
 void GameScene::Release(void)
@@ -148,6 +180,29 @@ void GameScene::CameraCreate(void)
 
 	// カメラのモードを変更
 	camera->ChangeMode(Camera::MODE::FOLLOW);
+}
+
+void GameScene::StageCreate(void)
+{
+	// ステージの作成
+	auto stage = objectManger_->CreateObject();
+
+	// タグを付与
+	stage->SetTag(Tag::Stage);
+
+	// 座標の設定
+	auto trans = stage->AddComponent<Transform>();
+	trans->pos_ = { 0.0f,0.0f,0.0f };
+
+	// 描画
+	auto render = stage->AddComponent<Render3D>();
+	render->SetModel("Data/Model/Stage/Dummy.mv1");
+
+	// ステージ機能
+	stage->AddComponent<Stage>();
+
+	// 納品場所の当たり判定追加
+	auto delivery = stage->AddComponent<DeliveryLocationCollider>();
 }
 
 void GameScene::LanternCreate(void)
@@ -210,6 +265,10 @@ void GameScene::PlayerCreate(void)
 
 	// ランタンのポインタを渡す
 	playerController->SetLantern(lantern);
+
+	// 納品場所用当たり判定にプレイヤーを渡す
+	auto deliveryCol = stage->GetOwner()->GetComponent<DeliveryLocationCollider>();
+	deliveryCol->SetPlayer(playerController);
 }
 
 void GameScene::EnemyCreate(void)
@@ -233,33 +292,9 @@ void GameScene::EnemyCreate(void)
 	//col->radius_ = 20.0f;
 }
 
-void GameScene::StageCreate(void)
-{
-	// ステージの作成
-	auto stage = objectManger_->CreateObject();
-
-	// タグを付与
-	stage->SetTag(Tag::Stage);
-
-	// 座標の設定
-	auto trans = stage->AddComponent<Transform>();
-	trans->pos_ = { 0.0f,0.0f,0.0f };
-
-	// 描画
-	auto render = stage->AddComponent<Render3D>();
-	render->SetModel("Data/Model/Stage/Dummy.mv1");
-
-	// ステージ機能
-	stage->AddComponent<Stage>();
-
-	// 納品場所の当たり判定追加
-	stage->AddComponent<DeliveryLocationCollider>();
-	
-}
-
 void GameScene::ItemCreate(void)
 {
-	// ステージの作成
+	// アイテムの作成
 	auto item = objectManger_->CreateObject();
 
 	// タグを付与
@@ -274,7 +309,7 @@ void GameScene::ItemCreate(void)
 	render->SetModel("Data/Model/Item/Goblet.mv1");
 
 	// アイテム機能
-	item->AddComponent<Goblet>();
+	auto goblet = item->AddComponent<Goblet>();
 
 	// プレイヤー取得
 	auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
@@ -289,9 +324,7 @@ void GameScene::ItemCreate(void)
 	// ステージを渡す
 	itemCol->SetStage(stage);
 
-	auto goblet = item->GetComponent<Goblet>();
-
 	// ステージにアイテムを渡す
 	stage->SetItem(goblet);
-}
 
+}

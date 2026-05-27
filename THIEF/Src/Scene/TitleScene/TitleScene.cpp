@@ -2,8 +2,8 @@
 
 #include <DxLib.h>
 
-#include "../../Input/InputManager.h"
-#include "../../Audio/AudioManager.h"
+#include "../../Common/Manager/Input/InputManager.h"
+#include "../../Common/Manager/Audio/AudioManager.h"
 #include "../SceneManager.h"
 #include "../../Application.h"
 #include "../GameScene/GameScene.h"

@@ -1,6 +1,6 @@
 #include "PlayerController.h"
 
-#include "../../../Input/InputManager.h"
+#include "../../../Common/Manager/Input/InputManager.h"
 #include "../../../Common/Math/Math.h"
 
 #include "../../Object.h"
@@ -95,12 +95,6 @@ GrasbbingState PlayerController::GetGrabbingState(void)
 
 VECTOR PlayerController::GetLineStartPos(void)
 {
-	// カメラの位置をラインの初め座標とする
-	return CameraUtility::GetCameraPos();
-}
-
-VECTOR PlayerController::GetLineEndPos(void)
-{
 	// 相対座標
 	VECTOR LOCAL_POS = { 0.0f,0.0f,rangeMax_ };
 
@@ -108,6 +102,12 @@ VECTOR PlayerController::GetLineEndPos(void)
 	VECTOR downPos = CameraUtility::AddCameraPosLocalPos(LOCAL_POS);
 
 	return downPos;
+}
+
+VECTOR PlayerController::GetLineEndPos(void)
+{
+	// カメラの位置をラインの初め座標とする
+	return CameraUtility::GetCameraPos();
 }
 
 void PlayerController::StartGrabbing(float range)

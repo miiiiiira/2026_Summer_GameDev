@@ -3,9 +3,9 @@
 #include <DxLib.h>
 
 #include "Common/System/FpsControl.h"
-#include "Input/InputManager.h"
+#include "Common/Manager/Input/InputManager.h"
 #include "Scene/SceneManager.h"
-#include "Audio/AudioManager.h"
+#include "Common/Manager/Audio/AudioManager.h"
 
 Application* Application::instance_ = nullptr;
 

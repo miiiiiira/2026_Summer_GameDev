@@ -3,9 +3,11 @@
 #include "../../Transform/Transform.h"
 #include "../../Stage/Stage.h"
 #include "../../Item/Item.h"
-#include "../../../Score/ScoreManager.h"
+#include "../../PlayerController/PlayerController.h"
+#include "../../../../Common/Manager/Score/ScoreManager.h"
 #include "../../../../Common/Collision/Collision.h"
 #include "../../../../Application.h"
+#include "../../../../Scene/SceneManager.h"
 
 void DeliveryLocationCollider::Init(void)
 {
@@ -21,53 +23,19 @@ void DeliveryLocationCollider::Update(void)
 
 	// アイテムと納品場所の当たり判定
 	ItemToDeliveryLocationCollision();
+
+	// 納品完了スイッチとプレイヤー掴み機能との当たり判定
+	DoneSwitchToPlayerGrabbingCollision();
 }
 
 void DeliveryLocationCollider::Draw(void)
 {
-	// 納品済みの金額を確認
-	int deliveryPrice = ScoreManager::GetInstance().GetDeliveryPrice();
-
-	// 目標金額を確認
-	int targetPrice = ScoreManager::GetInstance().GetTargetPrice();
-
-	DrawFormatString(Application::SCREEN_SIZE_X - 200, 50, 0xffffff, "%d　／　%d", deliveryPrice, targetPrice);
-
 	if (!stage_)return;
-
-	if (!stage_->GetItem())return;
-
+	if (!player_)return;
 #ifdef _DEBUG
 	DebugDraw();
 #endif // _DEBUG
-}
 
-void DeliveryLocationCollider::DebugDraw(void)
-{
-	// 納品場所の座標
-	VECTOR deliveryPos = stage_->GetDeliveryPos();
-
-	// 納品場所のサイズ
-	VECTOR deliverySize = { Stage::DELIVERY_LOCATION_SIZE_WID
-		,Stage::DELIVERY_LOCATION_SIZE_HIG
-		,Stage::DELIVERY_LOCATION_SIZE_WID };
-
-	// アイテムの座標
-	VECTOR itemPos = stage_->GetItem()->GetTransform()->pos_;
-
-	// アイテムのサイズ(中心から端までの半径)
-	VECTOR itemSize = { stage_->GetItem()->GetInfo().collisionRadiusX_
-		, stage_->GetItem()->GetInfo().collisionRadiusY_
-		,stage_->GetItem()->GetInfo().collisionRadiusX_ };
-
-	if (Collision::HitAABBs(deliveryPos, deliverySize, itemPos, itemSize))
-	{
-		DrawString(20, 400, "納品場所に入った！", 0xffffff);
-	}
-	else
-	{
-		DrawString(20, 400, "納品場所に入ってない…", 0xffffff);
-	}
 }
 
 void DeliveryLocationCollider::ItemToDeliveryLocationCollision(void)
@@ -76,9 +44,9 @@ void DeliveryLocationCollider::ItemToDeliveryLocationCollision(void)
 	VECTOR deliveryPos = stage_->GetDeliveryPos();
 
 	// 納品場所のサイズ
-	VECTOR deliverySize = { Stage::DELIVERY_LOCATION_SIZE_WID
-		,Stage::DELIVERY_LOCATION_SIZE_HIG
-		,Stage::DELIVERY_LOCATION_SIZE_WID };
+	VECTOR deliverySize = { Stage::DELIVERY_SIZE_WID_RAD
+		,Stage::DELIVERY_SIZE_HIG_RAD
+		,Stage::DELIVERY_SIZE_WID_RAD };
 
 	// 判定をするアイテムのポインタ
 	Item* item = stage_->GetItem();
@@ -112,4 +80,105 @@ void DeliveryLocationCollider::ItemToDeliveryLocationCollision(void)
 		ScoreManager::GetInstance().AddDeliveryPrice(-item->GetInfo().money_);
 	}
 
+}
+
+void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
+{
+	// プレイヤーが何かを掴んでいる状態だったら処理を行わない
+	if (player_->grabState_ == GrasbbingState::IS_GRABBING)return;
+
+	// 納品完了スイッチの座標
+	VECTOR doneSwitchPos = stage_->GetDoneSwitchPos();
+
+	// 納品完了スイッチの半径
+	float doneSwitchRad = Stage::DONE_SWITCH_RAD;
+
+	// 線分の上座標
+	VECTOR lineStartPos = player_->GetLineStartPos();
+
+	// 線分の下座標
+	VECTOR lineEndPos = player_->GetLineEndPos();
+
+	// 当たっているかつ、掴もうとしていたら
+	if (Collision::HitLineSphere(lineStartPos, lineEndPos, doneSwitchPos, doneSwitchRad)
+		&& player_->GetGrabbingState() == GrasbbingState::TRY_GRABBING)
+	{
+		// 納品済みの金額を確認
+		int deliveryPrice = ScoreManager::GetInstance().GetDeliveryPrice();
+		// 目標金額を確認
+		int targetPrice = ScoreManager::GetInstance().GetTargetPrice();
+
+		// 目標金額を達成していたら
+		if (deliveryPrice >= targetPrice)
+		{
+			// ゲームクリアへ
+			SceneManager::GetInstance()->TrueGameClear();
+			return;
+		}
+
+	}
+}
+
+void DeliveryLocationCollider::DebugDraw(void)
+{
+
+#pragma region 納品場所
+
+	// 納品場所の座標
+	VECTOR deliveryPos = stage_->GetDeliveryPos();
+
+	// 納品場所のサイズ
+	VECTOR deliverySize = { Stage::DELIVERY_SIZE_HIG_RAD
+		,Stage::DELIVERY_SIZE_HIG_RAD
+		,Stage::DELIVERY_SIZE_WID_RAD };
+
+	// アイテムの座標
+	VECTOR itemPos = stage_->GetItem()->GetTransform()->pos_;
+
+	// アイテムのサイズ(中心から端までの半径)
+	VECTOR itemSize = { stage_->GetItem()->GetInfo().collisionRadiusX_
+		, stage_->GetItem()->GetInfo().collisionRadiusY_
+		,stage_->GetItem()->GetInfo().collisionRadiusX_ };
+
+	if (Collision::HitAABBs(deliveryPos, deliverySize, itemPos, itemSize))
+	{
+		DrawString(20, 400, "納品場所に入った！", 0xffffff);
+	}
+	else
+	{
+		DrawString(20, 400, "納品場所に入ってない…", 0xffffff);
+	}
+
+#pragma endregion
+
+#pragma region 納品完了スイッチ
+
+	// プレイヤーが何かを掴んでいる状態だったら処理を行わない
+	if (player_->grabState_ == GrasbbingState::IS_GRABBING)return;
+
+	// 納品完了スイッチの座標
+	VECTOR doneSwitchPos = stage_->GetDoneSwitchPos();
+
+	// 納品完了スイッチの半径
+	float doneSwitchRad = Stage::DONE_SWITCH_RAD;
+
+	// 線分の上座標
+	VECTOR lineStartPos = player_->GetLineStartPos();
+
+	// 線分の下座標
+	VECTOR lineEndPos = player_->GetLineEndPos();
+
+	// 当たっているかつ、掴もうとしていたら
+	if (Collision::HitLineSphere(lineStartPos, lineEndPos, doneSwitchPos, doneSwitchRad)
+		&& player_->GetGrabbingState() == GrasbbingState::TRY_GRABBING)
+	{
+		DrawString(20, 420, "スイッチに触っている！", 0xffffff);
+	}
+	else
+	{
+		DrawString(20, 420, "スイッチに触っていない！", 0xffffff);
+
+	}
+
+#pragma endregion
 }

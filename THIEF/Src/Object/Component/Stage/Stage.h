@@ -14,9 +14,18 @@ class Stage : public Component
 public:
 
 	// 納品場所のサイズ横幅
-	static constexpr float DELIVERY_LOCATION_SIZE_WID = 100.0f;
+	static constexpr float DELIVERY_SIZE_WID_RAD = 100.0f;
 	// 納品場所のサイズ縦幅
-	static constexpr float DELIVERY_LOCATION_SIZE_HIG = 100.0f;
+	static constexpr float DELIVERY_SIZE_HIG_RAD = 100.0f;
+
+	// ステージと納品場所までの相対座標
+	static constexpr VECTOR DELIVERY_LOCAL_POS = { 0.0f,100.0f,500.0f };
+
+	// 納品完了スイッチの半径
+	static constexpr float DONE_SWITCH_RAD= 20.0f;
+
+	// ステージと納品完了スイッチまでの相対座標
+	static constexpr VECTOR DONE_SWITCH_LOCAL_POS = { 110.0f,100.0f,375.0f };
 
 	// 初期化
 	void Init(void) override;
@@ -30,6 +39,9 @@ public:
 
 	// 納品場所の座標を返す
 	VECTOR GetDeliveryPos(void);
+
+	// 納品完了スイッチの座標を返す
+	VECTOR GetDoneSwitchPos(void);
 
 	Item* GetItem(void);
 
@@ -50,6 +62,9 @@ private:
 
 	// 納品場所の座標
 	VECTOR deliveryPos_;
+
+	// 納品完了スイッチの座標
+	VECTOR doneSwitchPos_;
 
 	// デバック用描画
 	void DrawDebug(void);

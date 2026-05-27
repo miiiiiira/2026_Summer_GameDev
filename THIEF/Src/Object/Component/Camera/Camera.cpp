@@ -2,8 +2,8 @@
 #include "../Transform/Transform.h"
 #include "../../Object.h"
 #include "../../../Common/Math/Math.h"
-#include "../../../Input/InputManager.h"
-#include "../../../System/SystemManager.h"
+#include "../../../Common/Manager/Input/InputManager.h"
+#include "../../../Common/Manager/System/SystemManager.h"
 #include "../../../Application.h"
 
 #include "../PlayerController/PlayerController.h"

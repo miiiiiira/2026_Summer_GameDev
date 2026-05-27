@@ -22,6 +22,8 @@ public:
 
 	// このComponentを持っているObjectを設定
 	void SetOwner(Object* owner) { owner_ = owner; }
+	// このComponentのオーナーを渡す
+	Object* GetOwner(void) { return owner_; }
 
 protected:
 	// このComponentを持っているObject

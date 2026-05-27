@@ -22,10 +22,10 @@ public:
 	void Release(void)	override;	// 解放
 
 	void CameraCreate(void);		// カメラの作成
-	void PlayerCreate(void);		// プレイヤーの作成
-	void LanternCreate(void);		// ランタンの作成
-	void EnemyCreate(void);			// 敵の作成
 	void StageCreate(void);			// ステージの作成
+	void LanternCreate(void);		// ランタンの作成
+	void PlayerCreate(void);		// プレイヤーの作成
+	void EnemyCreate(void);			// 敵の作成
 	void ItemCreate(void);			// アイテムの作成
 
 private:
@@ -33,6 +33,4 @@ private:
 	ObjectManager* objectManger_;
 
 	Yeti* enemy_;
-
-	void DebugDraw(void);
 };

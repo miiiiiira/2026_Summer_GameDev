@@ -24,10 +24,14 @@ void Stage::Init()
 	// 衝突情報構築
 	MV1SetupCollInfo(modelId_, -1);
 
-	// ステージの座標
+	// 納品場所の座標
 	deliveryPos_ = trans->pos_;
-	deliveryPos_.y += DELIVERY_LOCATION_SIZE_HIG;
-	deliveryPos_.z += 500.0f;
+	deliveryPos_ = VAdd(deliveryPos_, DELIVERY_LOCAL_POS);
+
+	// 納品完了スイッチの座標
+	doneSwitchPos_ = trans->pos_;
+	doneSwitchPos_ = VAdd(doneSwitchPos_, DONE_SWITCH_LOCAL_POS);
+
 }
 
 void Stage::Draw(void)
@@ -52,6 +56,11 @@ VECTOR Stage::GetDeliveryPos(void)
 	return deliveryPos_;
 }
 
+VECTOR Stage::GetDoneSwitchPos(void)
+{
+	return doneSwitchPos_;
+}
+
 Item* Stage::GetItem(void)
 {
 	return item_;
@@ -71,16 +80,20 @@ VECTOR Stage::ToLocalPos(VECTOR world)
 
 void Stage::DrawDebug(void)
 {
+	// 納品場所の当たり判定の視覚化
 	VECTOR startPos, endPos;
 	startPos = endPos = deliveryPos_;
 
-	startPos.x -= DELIVERY_LOCATION_SIZE_WID;
-	startPos.y -= DELIVERY_LOCATION_SIZE_HIG;
-	startPos.z -= DELIVERY_LOCATION_SIZE_WID;
+	startPos.x -= DELIVERY_SIZE_WID_RAD;
+	startPos.y -= DELIVERY_SIZE_HIG_RAD;
+	startPos.z -= DELIVERY_SIZE_WID_RAD;
 
-	endPos.x += DELIVERY_LOCATION_SIZE_WID;
-	endPos.y += DELIVERY_LOCATION_SIZE_HIG;
-	endPos.z += DELIVERY_LOCATION_SIZE_WID;
+	endPos.x += DELIVERY_SIZE_WID_RAD;
+	endPos.y += DELIVERY_SIZE_HIG_RAD;
+	endPos.z += DELIVERY_SIZE_WID_RAD;
 
 	DrawCube3D(startPos, endPos, 0x0000ff, 0x0000ff, false);
+
+	// 納品完了スイッチの当たり判定視覚化
+	DrawSphere3D(doneSwitchPos_, DONE_SWITCH_RAD, 10.0f, 0x00ff00, 0x00ff00, true);
 }

@@ -36,14 +36,14 @@ void ItemCollider::PlayerGrabCollision(void)
 	int itemModelId = item_->GetModelID();
 
 	// 線分の上座標
-	VECTOR topPos = player_->GetLineStartPos();
+	VECTOR lineStartPos = player_->GetLineStartPos();
 
 	// 線分の下座標
-	VECTOR downPos = player_->GetLineEndPos();
+	VECTOR lineEndPos = player_->GetLineEndPos();
 
 	// 線分とモデルの衝突判定
 	MV1_COLL_RESULT_POLY hitResult =
-		MV1CollCheck_Line(itemModelId, -1, topPos, downPos);
+		MV1CollCheck_Line(itemModelId, -1, lineStartPos, lineEndPos);
 
 	// 当たっているかつ、掴もうとしていたら
 	if (hitResult.HitFlag && player_->GetGrabbingState() == GrasbbingState::TRY_GRABBING)

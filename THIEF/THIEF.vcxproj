@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Src\Object\Score\ScoreManager.cpp" />
+    <ClCompile Include="Src\Common\Manager\Score\ScoreManager.cpp" />
     <ClCompile Include="Src\Common\CameraUtility\CameraUtility.cpp" />
     <ClCompile Include="Src\Object\Component\Collider\DeliveryLocationCollider\DeliveryLocationCollider.cpp" />
     <ClCompile Include="Src\Object\Component\Item\Item.cpp" />
@@ -42,8 +42,8 @@
     <ClCompile Include="Src\Object\ObjectManager\ObjectManager.cpp" />
     <ClCompile Include="Src\Scene\Confirm\Confirm.cpp" />
     <ClCompile Include="Src\Application.cpp" />
-    <ClCompile Include="Src\Audio\AudioManager.cpp" />
-    <ClCompile Include="Src\Audio\SoundTable.cpp" />
+    <ClCompile Include="Src\Common\Manager\Audio\AudioManager.cpp" />
+    <ClCompile Include="Src\Common\Manager\Audio\SoundTable.cpp" />
     <ClCompile Include="Src\Common\Collision\Collision.cpp" />
     <ClCompile Include="Src\Common\Draw\Draw.cpp" />
     <ClCompile Include="Src\Common\Fader\Fader.cpp" />
@@ -51,7 +51,7 @@
     <ClCompile Include="Src\Common\System\FpsControl.cpp" />
     <ClCompile Include="Src\Common\Transform\MatrixUtility.cpp" />
     <ClCompile Include="Src\Common\Transform\Quaternion.cpp" />
-    <ClCompile Include="Src\Input\InputManager.cpp" />
+    <ClCompile Include="Src\Common\Manager\Input\InputManager.cpp" />
     <ClCompile Include="Src\main.cpp" />
     <ClCompile Include="Src\Object\Actor\Upgrade\Upgrade.cpp" />
     <ClCompile Include="Src\Object\Actor\Upgrade\UpgradeManager.cpp" />
@@ -65,11 +65,11 @@
     <ClCompile Include="Src\Scene\SceneBase.cpp" />
     <ClCompile Include="Src\Scene\SceneManager.cpp" />
     <ClCompile Include="Src\Scene\TitleScene\TitleScene.cpp" />
-    <ClCompile Include="Src\System\SystemManager.cpp" />
+    <ClCompile Include="Src\Common\Manager\System\SystemManager.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\Yeti\Yeti.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Src\Object\Score\ScoreManager.h" />
+    <ClInclude Include="Src\Common\Manager\Score\ScoreManager.h" />
     <ClInclude Include="Src\Common\CameraUtility\CameraUtility.h" />
     <ClInclude Include="Src\Object\Component\Collider\DeliveryLocationCollider\DeliveryLocationCollider.h" />
     <ClInclude Include="Src\Object\Component\Item\Item.h" />
@@ -103,9 +103,9 @@
     <ClInclude Include="Src\Object\Tag.h" />
     <ClInclude Include="Src\Scene\Confirm\Confirm.h" />
     <ClInclude Include="Src\Application.h" />
-    <ClInclude Include="Src\Audio\AudioManager.h" />
-    <ClInclude Include="Src\Audio\SoundInfo.h" />
-    <ClInclude Include="Src\Audio\SoundTable.h" />
+    <ClInclude Include="Src\Common\Manager\Audio\AudioManager.h" />
+    <ClInclude Include="Src\Common\Manager\Audio\SoundInfo.h" />
+    <ClInclude Include="Src\Common\Manager\Audio\SoundTable.h" />
     <ClInclude Include="Src\Common\Collision\Collision.h" />
     <ClInclude Include="Src\Common\Draw\Draw.h" />
     <ClInclude Include="Src\Common\Fader\Fader.h" />
@@ -114,7 +114,7 @@
     <ClInclude Include="Src\Common\System\FpsControl.h" />
     <ClInclude Include="Src\Common\Transform\MatrixUtility.h" />
     <ClInclude Include="Src\Common\Transform\Quaternion.h" />
-    <ClInclude Include="Src\Input\InputManager.h" />
+    <ClInclude Include="Src\Common\Manager\Input\InputManager.h" />
     <ClInclude Include="Src\main.h" />
     <ClInclude Include="Src\Object\Actor\Upgrade\Upgrade.h" />
     <ClInclude Include="Src\Object\Actor\Upgrade\UpgradeManager.h" />
@@ -128,7 +128,7 @@
     <ClInclude Include="Src\Scene\SceneBase.h" />
     <ClInclude Include="Src\Scene\SceneManager.h" />
     <ClInclude Include="Src\Scene\TitleScene\TitleScene.h" />
-    <ClInclude Include="Src\System\SystemManager.h" />
+    <ClInclude Include="Src\Common\Manager\System\SystemManager.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\Yeti\Yeti.h" />
   </ItemGroup>
   <ItemGroup>

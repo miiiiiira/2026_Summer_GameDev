@@ -5,9 +5,9 @@
 #include "GameScene/GameScene.h"
 #include "../Application.h"
 
-#include "../System/SystemManager.h"
-#include "../Object/Score/ScoreManager.h"
-#include "../Input/InputManager.h"
+#include "../Common/Manager/System/SystemManager.h"
+#include "../Common/Manager/Score/ScoreManager.h"
+#include "../Common/Manager/Input/InputManager.h"
 #include "../Common/Shader/Shader.h"
 
 SceneManager* SceneManager::instance_ = nullptr;
@@ -48,6 +48,11 @@ void SceneManager::Init(void)
 	shader_->Init();
 
 	isShader_ = true;
+
+	// ゲームクリア判定用初期化
+	isClear_ = false;
+	// ゲームオーバー判定用初期化
+	isOver_ = false;
 
 	// 最初はタイトル画面から
 	ChangeScene(std::make_shared<TitleScene>());
@@ -180,7 +185,6 @@ void SceneManager::Delete(void)
 
 void SceneManager::ChangeScene(std::shared_ptr<SceneBase>scene)
 {
-
 	// シーンが空か？
 	if (scenes_.empty())
 	{
@@ -193,6 +197,11 @@ void SceneManager::ChangeScene(std::shared_ptr<SceneBase>scene)
 		scenes_.back()->Release();
 		scenes_.back() = scene;
 	}
+
+	// ゲームクリア判定用初期化
+	isClear_ = false;
+	// ゲームオーバー判定用初期化
+	isOver_ = false;
 
 	// 読み込み(非同期)
 	load_->StartAsyncLoad();
@@ -224,6 +233,11 @@ void SceneManager::JumpScene(std::shared_ptr<SceneBase> scene)
 	for (auto& scene : scenes_) { scene->Release(); }
 	scenes_.clear();
 
+	// ゲームクリア判定用初期化
+	isClear_ = false;
+	// ゲームオーバー判定用初期化
+	isOver_ = false;
+
 	// 新しく積む
 	scenes_.push_back(scene);
 
@@ -243,4 +257,14 @@ const float& SceneManager::GetDeltaTime(void)
 {
 	// TODO: return ステートメントをここに挿入します
 	return mDeltaTime;
+}
+
+void SceneManager::TrueGameClear(void)
+{
+	isClear_ = true;
+}
+
+void SceneManager::TrueGameOver(void)
+{
+	isOver_ = true;
 }
