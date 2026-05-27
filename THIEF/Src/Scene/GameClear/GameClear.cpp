@@ -9,8 +9,9 @@
 
 GameClear::GameClear(void)
 {
-	
 	handle_ = -1;
+	// マウスの表示する
+	SetMouseDispFlag(true);
 }
 
 GameClear::~GameClear(void)
@@ -34,8 +35,8 @@ void GameClear::LoadEnd(void)
 
 void GameClear::Update(void)
 {
-	// スペースが押されると次のシーンへ
-	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_SPACE))
+	// ボタンが押されると次のシーンへ
+	if (InputManager::GetInstance()->PushAnyButton())
 	{
 		// ゲームシーンへ
 		SceneManager::GetInstance()->ChangeScene(std::make_shared<TitleScene>());

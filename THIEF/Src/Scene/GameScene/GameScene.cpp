@@ -38,6 +38,8 @@
 
 GameScene::GameScene(void)
 {
+	// マウスの表示を消す
+	SetMouseDispFlag(false);
 }
 
 GameScene::~GameScene(void)

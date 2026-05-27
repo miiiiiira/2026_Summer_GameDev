@@ -15,6 +15,8 @@ TitleScene::TitleScene(void)
 	buttonHandle_ = -1;
 	alpha_ = 0.0f;
 	isIncreasing_ = false;
+	// マウスの表示する
+	SetMouseDispFlag(true);
 }
 
 TitleScene::~TitleScene(void)
@@ -42,8 +44,8 @@ void TitleScene::LoadEnd(void)
 
 void TitleScene::Update(void)
 {
-	// スペースが押されると次のシーンへ
-	if(InputManager::GetInstance()->PushAnyButton())
+	// ボタンが押されると次のシーンへ
+	if (InputManager::GetInstance()->PushAnyButton())
 	{
 		// ゲームシーンへ
 		SceneManager::GetInstance()->PushScene(std::make_shared<MainMenu>());

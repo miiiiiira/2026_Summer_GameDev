@@ -5,6 +5,7 @@
 #include "../Render/Render3D.h"
 #include "../../Object.h"
 #include "../../../Common/CameraUtility/CameraUtility.h"
+#include "../../../Application.h"
 
 Item::~Item(void)
 {
@@ -87,10 +88,8 @@ void Item::Draw(void)
 	// 生存していなかったら描画しない
 	if (!info_.isAlive_)return;
 
-#ifdef _DEBUG
 	// デバッグ表示
 	DrawDebug();
-#endif // _DEBUG
 }
 
 Transform* Item::GetTransform()
@@ -251,8 +250,11 @@ void Item::TrackingPlayer(void)
 
 void Item::DrawDebug(void)
 {
-	// お金表示
-	DrawFormatString(20, 300, 0xff0000, "残り残高:%d", info_.money_);
+	if (info_.isGrabbed)
+	{
+		// お金表示
+		DrawFormatString(Application::SCREEN_SIZE_X / 2 - 20, 50, 0xff0000, "%d円", info_.money_);
+	}
 
 	VECTOR start = trans_->pos_;
 	start.y -= info_.collisionRadiusY_;

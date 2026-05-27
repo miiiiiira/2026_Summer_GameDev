@@ -10,6 +10,8 @@
 GameOver::GameOver(void)
 {
 	handle_ = -1;
+	// マウスの表示する
+	SetMouseDispFlag(true);
 }
 
 GameOver::~GameOver(void)
@@ -31,8 +33,8 @@ void GameOver::LoadEnd(void)
 
 void GameOver::Update(void)
 {
-	// スペースが押されると次のシーンへ
-	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_SPACE))
+	// ボタンが押されると次のシーンへ
+	if (InputManager::GetInstance()->PushAnyButton())
 	{
 		// ゲームシーンへ
 		SceneManager::GetInstance()->ChangeScene(std::make_shared<TitleScene>());

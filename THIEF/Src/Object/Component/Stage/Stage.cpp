@@ -36,9 +36,7 @@ void Stage::Init()
 
 void Stage::Draw(void)
 {
-#ifdef _DEBUG
 	DrawDebug();
-#endif // _DEBUG
 }
 
 Transform* Stage::GetTransform()

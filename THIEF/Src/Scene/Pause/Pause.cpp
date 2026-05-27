@@ -15,6 +15,9 @@ Pause::Pause(void)
 	handle_ = -1;
 	frameImg_ = -1;
 	confirm_ = nullptr;
+
+	// マウスの表示する
+	SetMouseDispFlag(true);
 }
 
 Pause::~Pause(void)
@@ -153,6 +156,10 @@ void Pause::UpdateContinue(void)
 {
 	// マウスカーソルを画面中央に戻す
 	SetMousePoint(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2);
+
+	// マウスの表示を消す
+	SetMouseDispFlag(false);
+
 	// ゲームシーンへ
 	SceneManager::GetInstance()->PopScene();
 }
