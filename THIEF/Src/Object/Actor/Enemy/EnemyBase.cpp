@@ -128,10 +128,19 @@ void EnemyBase::AddEdge(int fromId, int toId)
 	VECTOR posA = way_[fromId].pos;
 	VECTOR posB = way_[toId].pos;
 
-	// 線分とモデルの衝突判定
-	MV1_COLL_RESULT_POLY res = MV1CollCheck_Line(stageId_, -1, posA, posB);
+	float checkRadius = 10.0f;
 
-	if (res.HitFlag) return;
+	// 線分とモデルの衝突判定
+	MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, posA, posB, checkRadius);
+
+	// 当たっていたら、省く
+	if (res.HitNum > 0)
+	{
+		// 後始末をする
+		MV1CollResultPolyDimTerminate(res);
+		return;
+	}
+
 	Edge edge = {};
 	edge.way.id = way_[toId].id;	// 行った先
 	edge.way.pos = way_[toId].pos;	// 行った先の座標
@@ -139,4 +148,7 @@ void EnemyBase::AddEdge(int fromId, int toId)
 	edge.cost = VSize(VSub(posB, posA));
 
 	edgeList_[fromId].push_back(edge);
+
+	// 後始末をする
+	MV1CollResultPolyDimTerminate(res);
 }
