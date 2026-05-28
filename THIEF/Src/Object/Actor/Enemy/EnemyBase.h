@@ -71,7 +71,10 @@ protected:
 	// ˆÚ“®•ûŒü‚É‰‚¶‚½’x‰„‰ñ“]
 	void DelayRotate(void);
 
+	// ƒvƒŒƒCƒ„[’Ç]ˆ—
+	void LookPlayer(void);
+
+
 private:
 	void LoadCsvData(void);
-
 };

@@ -76,6 +76,7 @@ private:
 	int prevPrevNodeId_;	// 前々回のノード
 	int nextNodeId_;
 	float patrolRadius_;	// 巡回用の半径
+	float viewRadius_;		// 視野用の半径
 
 	void SetMoveDirPatrol(void);
 
@@ -84,10 +85,11 @@ private:
 	// ノード到着時
 	void ArriveNode(void);
 
-	// 状態遷移
-	void ChangeState(STATE state);
+	// 移動処理
+	void Move(void);
 
 	// 状態遷移
+	void ChangeState(STATE state);
 	void ChangeThink(void);
 	void ChangeIdle(void);
 	void ChangePatrol(void);
@@ -106,5 +108,4 @@ private:
 	void UpdateHit(void);
 	void UpdateDead(void);
 	void UpdateEnd(void);
-
 };
