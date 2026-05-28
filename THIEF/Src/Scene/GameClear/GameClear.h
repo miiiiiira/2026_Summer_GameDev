@@ -18,7 +18,9 @@ public:
 
 private:
 
+	static constexpr int TITLE_POS_X = 512;
+	static constexpr int TITLE_POS_Y = 480;
+
 	int handle_;
-
+	int tiHandle_;
 };
-

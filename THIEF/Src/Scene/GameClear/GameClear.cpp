@@ -12,6 +12,7 @@ GameClear::GameClear(void)
 	handle_ = -1;
 	// マウスの表示する
 	SetMouseDispFlag(true);
+	tiHandle_ = -1;
 }
 
 GameClear::~GameClear(void)
@@ -20,7 +21,8 @@ GameClear::~GameClear(void)
 
 void GameClear::Init(void)
 {
-	handle_ = LoadGraph("Data/Image/GCI.png");
+	handle_ = LoadGraph("Data/Image/GC.png"); 
+	tiHandle_ = LoadGraph("Data/Image/TT.png");
 }
 
 void GameClear::Load(void)
@@ -54,9 +56,11 @@ void GameClear::Draw(void)
 	/*DrawGraph(0, 0, handle_, true);*/
 	DrawRotaGraph(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2 - 100, 1.0, 0.0, handle_, true);
 
+	DrawRotaGraph(TITLE_POS_X, TITLE_POS_Y, 1.0, 0.0, tiHandle_, true);
 }
 
 void GameClear::Release(void)
 {
 	DeleteGraph(handle_);
+	DeleteGraph(tiHandle_);
 }
