@@ -1,5 +1,6 @@
 #pragma once
 
+class Item;
 
 class ScoreManager
 {
@@ -37,10 +38,15 @@ public:
 	// ゲームクリア後のショップで使える金額を返す
 	const int GetTotalPrice(void) const { return totalPrice_; }
 
+	void SetItem(Item* item) { item_ = item; }
+
 private:
 
 	// 静的インスタンス
 	static ScoreManager* instance_;
+
+	// アイテム
+	Item* item_ = nullptr;
 
 	// 納品金額
 	int deliveryPrice_;
