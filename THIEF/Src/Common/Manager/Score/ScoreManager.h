@@ -8,7 +8,7 @@ class ScoreManager
 {
 public:
 	// 目標金額
-	static constexpr float TARGET_PRICE = 500;
+	static constexpr int TARGET_PRICE = 500;
 
 	// 明示的にインステンスを生成する
 	static void CreateInstance(void);

@@ -15,7 +15,8 @@ public:
 	void Init(void);	// 初期化(全オブジェクト)
 	void Update(void);	// 更新(全オブジェクト)
 	void PreDraw(void);	// 描画前(全オブジェクト)
-	void Draw(void);	// 描画(全オブジェクト)
+	void Draw2D(void);	// 2D描画(全オブジェクト)
+	void Draw3D(void);	// 3D描画(全オブジェクト)
 
 	Object* FindWithTag(Tag tag);
 

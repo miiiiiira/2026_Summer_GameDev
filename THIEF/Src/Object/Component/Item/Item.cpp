@@ -83,7 +83,21 @@ void Item::Update(void)
 	}
 }
 
-void Item::Draw(void)
+void Item::Draw2D(void)
+{
+	// ¶‘¶‚µ‚Ä‚¢‚È‚©‚Á‚½‚ç•`‰æ‚µ‚È‚¢
+	if (!info_.isAlive_)return;
+
+	if (info_.isGrabbed)
+	{
+		VECTOR moneyPos = ConvWorldPosToScreenPos(trans_->pos_);
+
+		// ‚¨‹à•\Ž¦
+		DrawFormatStringF(moneyPos.x, moneyPos.y, 0xff0000, "%d‰~", info_.money_);
+	}
+}
+
+void Item::Draw3D(void)
 {
 	// ¶‘¶‚µ‚Ä‚¢‚È‚©‚Á‚½‚ç•`‰æ‚µ‚È‚¢
 	if (!info_.isAlive_)return;
@@ -250,14 +264,6 @@ void Item::TrackingPlayer(void)
 
 void Item::DrawDebug(void)
 {
-	if (info_.isGrabbed)
-	{
-		VECTOR moneyPos = ConvWorldPosToScreenPos(trans_->pos_);
-
-		// ‚¨‹à•\Ž¦
-		DrawFormatString(moneyPos.x, moneyPos.y, 0xff0000, "%d‰~", info_.money_);
-	}
-
 #ifdef _DEBUG
 
 	VECTOR start = trans_->pos_;

@@ -110,8 +110,8 @@ void DebugScene::Draw(void)
 	// オブジェクトの描画前
 	objectManger_->PreDraw();
 
-	// オブジェクトの描画
-	objectManger_->Draw();
+	// オブジェクトの3D描画
+	objectManger_->Draw3D();
 
 	int y = 20;
 
@@ -140,6 +140,9 @@ void DebugScene::Draw(void)
 	{
 		DrawString(Application::SCREEN_SIZE_X / 2 - 50, 20, "ポイントの位置をセーブしました!", 0xff0000);
 	}
+
+	// オブジェクトの2D描画
+	objectManger_->Draw2D();
 }
 
 void DebugScene::Release(void)

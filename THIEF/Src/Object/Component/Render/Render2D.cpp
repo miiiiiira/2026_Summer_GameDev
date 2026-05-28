@@ -8,7 +8,7 @@ void Render2D::Init()
 	transform_ = owner_->GetComponent<Transform2D>();
 }
 
-void Render2D::Draw()
+void Render2D::Draw2D()
 {
 	// ƒ[ƒh‚³‚ê‚Ä‚¢‚È‚¢‚È‚ç
 	if (handle_ == -1) return;

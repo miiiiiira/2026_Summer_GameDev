@@ -32,7 +32,7 @@ public:
 
 	// ‰Šú‰»
 	void Init(void) override;
-	void Draw(void) override;
+	void Draw3D(void) override;
 	
 	// ƒ‚ƒfƒ‹ID‚ğ•Ô‚·
 	int GetModelId() const { return modelId_; }

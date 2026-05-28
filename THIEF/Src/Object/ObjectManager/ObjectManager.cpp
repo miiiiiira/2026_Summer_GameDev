@@ -34,16 +34,28 @@ void ObjectManager::PreDraw(void)
 		obj->PreDraw();
 }
 
-// 描画(全オブジェクト)
-void ObjectManager::Draw(void)
+// 2D描画(全オブジェクト)
+void ObjectManager::Draw2D(void)
 {
 	// 描画フェーズの最初で、プライオリティが低い順（奥から手前）に並び替える
-	//std::sort(objects_.begin(), objects_.end(), [](Component* a, Component* b) {
-	//	return a->GetOwner()->GetPriority() < b->GetOwner()->GetPriority();
-	//	});
+	std::sort(objects_.begin(), objects_.end(), [](const std::unique_ptr<Object>& a, const std::unique_ptr<Object>& b) {
+		return a->GetPriority() < b->GetPriority();
+		});
 
 	for (auto& obj : objects_)
-		obj->Draw();
+		obj->Draw2D();
+}
+
+// 3D描画(全オブジェクト)
+void ObjectManager::Draw3D(void)
+{
+	// 描画フェーズの最初で、プライオリティが低い順（奥から手前）に並び替える
+	std::sort(objects_.begin(), objects_.end(), [](const std::unique_ptr<Object>& a, const std::unique_ptr<Object>& b) {
+		return a->GetPriority() < b->GetPriority();
+		});
+
+	for (auto& obj : objects_)
+		obj->Draw3D();
 }
 
 Object* ObjectManager::FindWithTag(Tag tag)

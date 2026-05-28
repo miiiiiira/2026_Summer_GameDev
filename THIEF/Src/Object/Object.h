@@ -46,7 +46,8 @@ public:
 	void Init() { for (auto& c : components_)c->Init(); }		// 全コンポ―ネント初期化
 	void Update() { for (auto& c : components_)c->Update(); }	// 全コンポーネント更新
 	void PreDraw() { for (auto& c : components_)c->PreDraw(); }	// 全コンポーネント描画前
-	void Draw() { for (auto& c : components_)c->Draw(); }		// 全コンポーネント描画
+	void Draw2D() { for (auto& c : components_)c->Draw2D(); }		// 全コンポーネント2D描画
+	void Draw3D() { for (auto& c : components_)c->Draw3D(); }		// 全コンポーネント3D描画
 
 	// タグと優先度をセット
 	void SetTagAndPriority(Tag tag) { tag_ = tag, priority_ = static_cast<int>(tag); }

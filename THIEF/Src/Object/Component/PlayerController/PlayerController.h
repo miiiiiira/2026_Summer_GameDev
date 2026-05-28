@@ -34,6 +34,9 @@ public:
 	static constexpr float MIN_RENGE = 50.0f;
 
 private:
+	// HP
+	static constexpr float DEFAULT_HP = 100.0f;
+
 	// 通常時移動速度
 	static constexpr float DEFAULT_SPEED = 7.0f;
 
@@ -70,7 +73,7 @@ private:
 public:
 	void Init() override;		// 初期化
 	void Update() override;		// 更新
-	void Draw() override;		// 描画
+	void Draw2D() override;		// 2D描画
 
 	// Transformを返す
 	Transform* GetTransform();
@@ -159,6 +162,10 @@ private:
 
 	// 移動方向
 	VECTOR moveDir_;
+
+	// HP
+	float hp_;
+	float hpMax_;
 
 	// 移動速度
 	float moveSpeed_;

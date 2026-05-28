@@ -29,6 +29,9 @@ void PlayerController::Init()
 	// プレイヤーの状態
 	state_ = PlayerState::IDLE;
 
+	// HPの初期化
+	hp_ = hpMax_ = DEFAULT_HP;
+
 	// プレイヤーの移動速度の初期化
 	moveSpeed_ = baseMoveSpeed_ = DEFAULT_SPEED;
 
@@ -83,13 +86,9 @@ void PlayerController::Update()
 	}
 }
 
-void PlayerController::Draw()
+void PlayerController::Draw2D()
 {
-#ifdef _DEBUG
-
 	DebugDraw();
-
-#endif // _DEBUG
 }
 
 Transform* PlayerController::GetTransform()
@@ -513,8 +512,13 @@ bool PlayerController::RangeUpdate(void)
 
 void PlayerController::DebugDraw(void)
 {
+	// HPの表示
+	DrawFormatString(10, 50, 0x00fa9a,
+		"HP : %.0f / %.0f",
+		hp_, hpMax_);
 
-	DrawFormatString(0, 200, 0xffc800,
+	// スタミナの表示
+	DrawFormatString(10, 100, 0xffc800,
 		"スタミナ : %.0f / %.0f",
 		stamina_, staminaMax_);
 }

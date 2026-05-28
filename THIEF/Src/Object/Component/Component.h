@@ -15,7 +15,8 @@ public:
 	virtual void Init(void) {}		// 初期化
 	virtual void Update(void) {}	// 更新
 	virtual void PreDraw(void){}	// 描画前
-	virtual void Draw(void) {}		// 描画
+	virtual void Draw2D(void) {}	// 2D描画
+	virtual void Draw3D(void) {}	// 3D描画
 
 	// 衝突イベント
 	virtual void OnCollision(Collider* other) {}

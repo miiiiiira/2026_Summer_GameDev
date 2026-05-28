@@ -161,11 +161,14 @@ void GameScene::Draw(void)
 
 	enemy_->Draw();
 
-	// オブジェクトの描画
-	objectManger_->Draw();
+	// オブジェクトの3D描画
+	objectManger_->Draw3D();
 
 	// クロスヘアの描画
 	crosshair_->Draw();
+
+	// オブジェクトの2D描画
+	objectManger_->Draw2D();
 
 	// 納品金額 / 目標金額の描画
 	ScoreManager::GetInstance().Draw();
@@ -316,39 +319,44 @@ void GameScene::EnemyCreate(void)
 
 void GameScene::ItemCreate(void)
 {
-	// アイテムの作成
-	auto item = objectManger_->CreateObject();
+	float posX = -100;
 
-	// タグを付与
-	item->SetTagAndPriority(Tag::Goblet);
+	for (int i = 0; i < 3; i++)
+	{
+		// アイテムの作成
+		auto item = objectManger_->CreateObject();
 
-	// 座標の設定
-	auto trans = item->AddComponent<Transform>();
-	trans->pos_ = { 0.0f,100.0f,0.0f };
+		// タグを付与
+		item->SetTagAndPriority(Tag::Goblet);
 
-	// 描画
-	auto render = item->AddComponent<Render3D>();
-	render->SetModel("Data/Model/Item/Goblet.mv1");
+		// 座標の設定
+		auto trans = item->AddComponent<Transform>();
+		trans->pos_ = { posX + (100.0f * i),50.0f,0.0f };
 
-	// アイテム機能
-	auto goblet = item->AddComponent<Goblet>();
+		// 描画
+		auto render = item->AddComponent<Render3D>();
+		render->SetModel("Data/Model/Item/Goblet.mv1");
 
-	// プレイヤー取得
-	auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
+		// アイテム機能
+		auto goblet = item->AddComponent<Goblet>();
 
-	// ステージ取得
-	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+		// プレイヤー取得
+		auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
 
-	// アイテムの当たり判定
-	auto itemCol = item->AddComponent<ItemCollider>();
-	// プレイヤーを渡す
-	itemCol->SetPlayer(playerController);
-	// ステージを渡す
-	itemCol->SetStage(stage);
-	// クロスヘアを渡す
-	itemCol->SetCrosshair(crosshair_);
+		// ステージ取得
+		auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 
-	// ステージにアイテムを渡す
-	stage->SetItem(goblet);
+		// アイテムの当たり判定
+		auto itemCol = item->AddComponent<ItemCollider>();
+		// プレイヤーを渡す
+		itemCol->SetPlayer(playerController);
+		// ステージを渡す
+		itemCol->SetStage(stage);
+		// クロスヘアを渡す
+		itemCol->SetCrosshair(crosshair_);
+
+		// ステージにアイテムを渡す
+		stage->SetItem(goblet);
+	}
 
 }

@@ -28,7 +28,8 @@ public:
 	// XVˆ—
 	void Update(void)override;
 	// •`‰æˆ—
-	void Draw(void)override;
+	void Draw2D(void)override;
+	void Draw3D(void)override;
 
 public:
 

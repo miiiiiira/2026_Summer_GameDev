@@ -38,7 +38,7 @@ void Stage::Init()
 	doneSwitchPos_ = VAdd(doneSwitchPos_, DONE_SWITCH_LOCAL_POS);
 }
 
-void Stage::Draw(void)
+void Stage::Draw3D(void)
 {
 	DrawDebug();
 }
@@ -97,5 +97,5 @@ void Stage::DrawDebug(void)
 	DrawCube3D(startPos, endPos, 0x0000ff, 0x0000ff, false);
 
 	// 納品完了スイッチの当たり判定視覚化
-	DrawSphere3D(doneSwitchPos_, DONE_SWITCH_RAD, 10.0f, 0x00ff00, 0x00ff00, true);
+	DrawSphere3D(doneSwitchPos_, DONE_SWITCH_RAD, 10, 0x00ff00, 0x00ff00, true);
 }

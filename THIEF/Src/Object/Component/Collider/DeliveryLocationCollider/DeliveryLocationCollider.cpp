@@ -30,7 +30,7 @@ void DeliveryLocationCollider::Update(void)
 	DoneSwitchToPlayerGrabbingCollision();
 }
 
-void DeliveryLocationCollider::Draw(void)
+void DeliveryLocationCollider::Draw2D(void)
 {
 	if (!stage_)return;
 	if (!player_)return;

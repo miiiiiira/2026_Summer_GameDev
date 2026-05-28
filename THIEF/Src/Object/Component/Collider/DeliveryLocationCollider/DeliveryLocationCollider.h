@@ -13,7 +13,7 @@ public:
 
 	void Init(void) override;		// 初期化
 	void Update(void) override;		// 更新
-	void Draw(void) override;		// 更新
+	void Draw2D(void) override;		// 更新
 
 	// プレイヤー設定
 	void SetPlayer(PlayerController* player) { player_ = player; }

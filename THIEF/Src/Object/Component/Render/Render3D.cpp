@@ -21,7 +21,7 @@ void Render3D::Update(void)
 	MV1SetPosition(handle_, transform_->pos_);
 }
 
-void Render3D::Draw()
+void Render3D::Draw3D()
 {
 	// ƒ[ƒh‚³‚ê‚Ä‚¢‚È‚¢‚È‚çˆ—‚µ‚È‚¢
 	if (handle_ == -1) return;

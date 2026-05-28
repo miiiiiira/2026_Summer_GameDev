@@ -9,7 +9,8 @@ public:
 	virtual ~Render() override = default;
 
 	// •`‰æ
-	virtual void Draw(void) override {};
+	virtual void Draw2D(void) override {};
+	virtual void Draw3D(void) override {};
 	
 	// ‰ð•ú
 	virtual void Release() {};

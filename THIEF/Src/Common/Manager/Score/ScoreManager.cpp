@@ -28,8 +28,8 @@ void ScoreManager::Update(void)
 
 	for (Item* item : items_)
 	{
-		// 生存していなかったら処理を行わない
-		if (!item->GetInfo().isAlive_)return;
+		// 生存していなかったら次のアイテムへ
+		if (!item->GetInfo().isAlive_)continue;
 
 		totalMoney += item->GetInfo().money_;
 	}

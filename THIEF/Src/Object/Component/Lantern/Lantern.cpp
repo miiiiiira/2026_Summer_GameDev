@@ -56,13 +56,10 @@ void Lantern::Update(void)
 	UpdatePos();
 }
 
-void Lantern::Draw(void)
+void Lantern::Draw3D(void)
 {
-#ifdef _DEBUG
 	// デバッグ用の描画処理
 	DebugDraw();
-#endif // _DEBUG
-
 }
 
 void Lantern::SetLight(bool lightFlg)

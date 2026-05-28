@@ -13,7 +13,7 @@ public:
 
 	void Init(void) override;		// 初期化
 	void Update(void)override;		// 更新
-	void Draw(void) override;		// 描画
+	void Draw3D(void) override;		// 描画
 	void Release(void) override;	// 解放
 
 	// 外部からモデルを設定

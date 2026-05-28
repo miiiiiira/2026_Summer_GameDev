@@ -12,7 +12,7 @@ public:
 	~Render2D() override { Release(); }
 
 	void Init(void) override;		// ‰Šú‰»
-	void Draw(void)	override;		// •`‰æ
+	void Draw2D(void)	override;		// •`‰æ
 	void Release(void) override;	// ‰ğ•ú
 
 	// ŠO•”‚©‚çƒ‚ƒfƒ‹‚ğİ’è
