@@ -45,9 +45,11 @@ void EnemyBase::Release(void)
 
 std::vector<EnemyBase::Edge> EnemyBase::FindPath(int startNodeId, int goalNodeId)
 {
+	path_.clear();
+
 	// 全て同じ値で埋め尽くす
-	std::fill(minCosts_.begin(), minCosts_.end(), FLT_MAX);
-	std::fill(parentNodes_.begin(), parentNodes_.end(),-1);
+	minCosts_.assign(way_.size(), FLT_MAX);
+	parentNodes_.assign(way_.size(), -1);
 
 	// スタート地点のコストは0にする
 	minCosts_[startNodeId] = 0.0f;
@@ -57,6 +59,58 @@ std::vector<EnemyBase::Edge> EnemyBase::FindPath(int startNodeId, int goalNodeId
 						std::greater<std::pair<float, int>>> que;
 
 	que.push({ 0.0f, startNodeId });
+
+	while (!que.empty())
+	{
+		// 先頭を取得
+		float currentCost = que.top().first;	// Queに入っているCost
+		int currentNodeId = que.top().second;	// Queに入っているID
+
+		// 取り出したら、削除
+		que.pop();
+
+		// もし取り出したIDがゴールと一緒なら抜ける
+		if (currentNodeId == goalNodeId) break;
+
+		// ③ 取り出したコストが、すでに minCosts_ にある最小コストより大きければスキップ
+		if (currentCost > minCosts_[currentNodeId]) continue;
+
+		// つながっているエッジ
+		for (const auto& edge : edgeList_[currentNodeId])
+		{
+			// 隣接しているノードIDを取得
+			int nextNodeId = edge.way.id;
+
+			// 現在のコスト+エッジのコストから新しいコストを計算する
+			float newCost = currentCost + edge.cost;
+
+			//　新しいコストが最小コストよりも小さかったら
+			if (newCost < minCosts_[nextNodeId])
+			{
+				// minCosts_とparentNodes_を更新
+				minCosts_[nextNodeId] = newCost;
+				parentNodes_[nextNodeId] = currentNodeId;
+
+				// 新しいコストと隣のノードIDをペアにしてqueにプッシュする
+				que.push({ newCost, nextNodeId });
+			}
+		}
+	}
+
+	// ゴールの最小コストがFLT_MAXのままなら、空のまま返す
+	if (minCosts_[goalNodeId] == FLT_MAX) return path_;
+
+	for (int i = goalNodeId; parentNodes_[i] != -1; i = parentNodes_[i])
+	{
+		Edge path;
+		path.way.id = parentNodes_[i];
+		path.cost = minCosts_[i];
+
+		path_.push_back(path);
+	}
+
+	// 
+	std::reverse(path_.begin(), path_.end());
 
 	return path_;
 }
