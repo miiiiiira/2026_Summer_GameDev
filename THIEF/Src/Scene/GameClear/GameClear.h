@@ -16,9 +16,11 @@ public:
 	void Draw(void)		override;	// •`‰æ
 	void Release(void)	override;	// ‰ð•ú
 
+	static constexpr int TITLE_POS_X = 512;
+	static constexpr int TITLE_POS_Y = 520;
+
 private:
 
 	int handle_;
-
+	int tiHandle_;
 };
-
