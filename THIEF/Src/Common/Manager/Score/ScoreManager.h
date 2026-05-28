@@ -1,5 +1,7 @@
 #pragma once
 
+#include<vector>
+
 class Item;
 
 class ScoreManager
@@ -14,11 +16,19 @@ public:
 	// 静的インスタンスの取得
 	static ScoreManager& GetInstance(void);
 
+	// 更新処理
+	void Update(void);
+	// 描画処理
+	void Draw(void);
+
 	// 解放処理
 	void Destroy(void);
 
 	//リセット
 	void ResetGame(void);
+
+	// アイテム設定
+	void SetItems(std::vector<Item*> items) { items_ = items; }
 
 	// 納品金額に加算
 	void AddDeliveryPrice(const int price) { deliveryPrice_ += price; }
@@ -38,15 +48,13 @@ public:
 	// ゲームクリア後のショップで使える金額を返す
 	const int GetTotalPrice(void) const { return totalPrice_; }
 
-	void SetItem(Item* item) { item_ = item; }
-
 private:
 
 	// 静的インスタンス
 	static ScoreManager* instance_;
 
 	// アイテム
-	Item* item_ = nullptr;
+	std::vector<Item*> items_;
 
 	// 納品金額
 	int deliveryPrice_;

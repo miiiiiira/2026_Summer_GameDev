@@ -82,6 +82,14 @@ void SceneManager::Init3D(void)
 	// ディフューズカラー
 	SetLightDifColor(DIF_COLOR);
 
+	// フォグ設定
+	SetFogEnable(true);
+	// フォグの色
+	SetFogColor(0, 0, 0);
+	// フォグを発生させる奥行きの最小、最大距離
+	SetFogStartEnd(FOG_START, FOG_END);
+	// フォグの密度を設定
+	SetFogDensity(0.5f);
 }
 
 // 更新

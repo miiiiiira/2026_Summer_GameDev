@@ -2,6 +2,7 @@
 #include "../Component.h"
 
 #include <string>
+#include <vector>
 #include <DxLib.h>
 
 // 前方宣言
@@ -27,10 +28,12 @@ public:
 	// ステージと納品完了スイッチまでの相対座標
 	static constexpr VECTOR DONE_SWITCH_LOCAL_POS = { 110.0f,100.0f,375.0f };
 
+	~Stage(void)override;
+
 	// 初期化
 	void Init(void) override;
 	void Draw(void) override;
-
+	
 	// モデルIDを返す
 	int GetModelId() const { return modelId_; }
 
@@ -43,10 +46,10 @@ public:
 	// 納品完了スイッチの座標を返す
 	VECTOR GetDoneSwitchPos(void);
 
-	Item* GetItem(void);
+	std::vector<Item*> GetItems(void);
 
 	// アイテム設定
-	void SetItem(Item* item);
+	void SetItem(Item* items);
 
 	// ワールド座標に変換
 	VECTOR ToWorldPos(VECTOR local);
@@ -58,7 +61,7 @@ private:
 	// モデルID
 	int modelId_ = -1;
 
-	Item* item_ = nullptr;
+	std::vector<Item*> items_;
 
 	// 納品場所の座標
 	VECTOR deliveryPos_;

@@ -6,6 +6,11 @@
 #include "../Collider/DeliveryLocationCollider/DeliveryLocationCollider.h"
 #include "../../Object.h"
 
+Stage::~Stage(void)
+{
+	items_.clear();
+}
+
 void Stage::Init()
 {
 	// オーナーから3D描画コンポーネントを取得
@@ -31,7 +36,6 @@ void Stage::Init()
 	// 納品完了スイッチの座標
 	doneSwitchPos_ = trans->pos_;
 	doneSwitchPos_ = VAdd(doneSwitchPos_, DONE_SWITCH_LOCAL_POS);
-
 }
 
 void Stage::Draw(void)
@@ -44,9 +48,9 @@ Transform* Stage::GetTransform()
 	return owner_->GetComponent<Transform>();
 }
 
-void Stage::SetItem(Item* item)
+void Stage::SetItem(Item* items)
 {
-	item_ = item;
+	items_.push_back(items);
 }
 
 VECTOR Stage::GetDeliveryPos(void)
@@ -59,9 +63,9 @@ VECTOR Stage::GetDoneSwitchPos(void)
 	return doneSwitchPos_;
 }
 
-Item* Stage::GetItem(void)
+std::vector<Item*> Stage::GetItems(void)
 {
-	return item_;
+	return items_;
 }
 
 VECTOR Stage::ToWorldPos(VECTOR local)

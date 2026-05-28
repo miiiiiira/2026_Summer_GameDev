@@ -19,7 +19,7 @@ void DeliveryLocationCollider::Init(void)
 void DeliveryLocationCollider::Update(void)
 {
 	if (!stage_)return;
-	if (!stage_->GetItem())return;
+	if (stage_->GetItems().empty())return;
 
 	// アイテムと納品場所の当たり判定
 	ItemToDeliveryLocationCollision();
@@ -51,35 +51,40 @@ void DeliveryLocationCollider::ItemToDeliveryLocationCollision(void)
 		,Stage::DELIVERY_SIZE_WID_RAD };
 
 	// 判定をするアイテムのポインタ
-	Item* item = stage_->GetItem();
+	std::vector<Item*> items = stage_->GetItems();
 
-	// アイテムの座標
-	VECTOR itemPos = stage_->GetItem()->GetTransform()->pos_;
-
-	// アイテムのサイズ(中心から端までの半径)
-	VECTOR itemSize = { stage_->GetItem()->GetInfo().collisionRadiusX_
-		, stage_->GetItem()->GetInfo().collisionRadiusY_
-		,stage_->GetItem()->GetInfo().collisionRadiusX_ };
-
-	// 当たっているかつ、納品場所に入っていないフラグが立っていたら
-	if (Collision::HitAABBs(deliveryPos, deliverySize, itemPos, itemSize)
-		&& !item->GetInfo().hasTouchedDeliveryLocation_)
+	// アイテムの数分減らす
+	for (Item* item : items)
 	{
-		// アイテム事体に納品場所にはいっていることを伝える
-		item->SetHasTouchedDelivery(true);
 
-		// そのアイテム分納品金額に足す
-		ScoreManager::GetInstance().AddDeliveryPrice(item->GetInfo().money_);
-	}
-	// 当たっていないかつ、納品場所に入っているフラグが立っていたら
-	else if(!Collision::HitAABBs(deliveryPos, deliverySize, itemPos, itemSize)
-		&&item->GetInfo().hasTouchedDeliveryLocation_)
-	{
-		// アイテム事体に納品場所にはいっていないことを伝える
-		stage_->GetItem()->SetHasTouchedDelivery(false);
+		// アイテムの座標
+		VECTOR itemPos = item->GetTransform()->pos_;
 
-		// そのアイテム分納品金額から引く
-		ScoreManager::GetInstance().AddDeliveryPrice(-item->GetInfo().money_);
+		// アイテムのサイズ(中心から端までの半径)
+		VECTOR itemSize = { item->GetInfo().collisionRadiusX_
+			, item->GetInfo().collisionRadiusY_
+			,item->GetInfo().collisionRadiusX_ };
+
+		// 当たっているかつ、納品場所に入っていないフラグが立っていたら
+		if (Collision::HitAABBs(deliveryPos, deliverySize, itemPos, itemSize)
+			&& !item->GetInfo().hasTouchedDeliveryLocation_)
+		{
+			// アイテム事体に納品場所にはいっていることを伝える
+			item->SetHasTouchedDelivery(true);
+
+			// そのアイテム分納品金額に足す
+			ScoreManager::GetInstance().AddDeliveryPrice(item->GetInfo().money_);
+		}
+		// 当たっていないかつ、納品場所に入っているフラグが立っていたら
+		else if (!Collision::HitAABBs(deliveryPos, deliverySize, itemPos, itemSize)
+			&& item->GetInfo().hasTouchedDeliveryLocation_)
+		{
+			// アイテム事体に納品場所にはいっていないことを伝える
+			item->SetHasTouchedDelivery(false);
+
+			// そのアイテム分納品金額から引く
+			ScoreManager::GetInstance().AddDeliveryPrice(-item->GetInfo().money_);
+		}
 	}
 
 }
@@ -135,32 +140,39 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 void DeliveryLocationCollider::DebugDraw(void)
 {
 
+	// 判定をするアイテムのポインタ
+	std::vector<Item*> items = stage_->GetItems();
+
+	// アイテムの数分減らす
+	for (Item* item : items)
+	{
 #pragma region 納品場所
 
-	// 納品場所の座標
-	VECTOR deliveryPos = stage_->GetDeliveryPos();
+		// 納品場所の座標
+		VECTOR deliveryPos = stage_->GetDeliveryPos();
 
-	// 納品場所のサイズ
-	VECTOR deliverySize = { Stage::DELIVERY_SIZE_HIG_RAD
-		,Stage::DELIVERY_SIZE_HIG_RAD
-		,Stage::DELIVERY_SIZE_WID_RAD };
+		// 納品場所のサイズ
+		VECTOR deliverySize = { Stage::DELIVERY_SIZE_HIG_RAD
+			,Stage::DELIVERY_SIZE_HIG_RAD
+			,Stage::DELIVERY_SIZE_WID_RAD };
 
-	// アイテムの座標
-	VECTOR itemPos = stage_->GetItem()->GetTransform()->pos_;
+		// アイテムの座標
+		VECTOR itemPos = item->GetTransform()->pos_;
 
-	// アイテムのサイズ(中心から端までの半径)
-	VECTOR itemSize = { stage_->GetItem()->GetInfo().collisionRadiusX_
-		, stage_->GetItem()->GetInfo().collisionRadiusY_
-		,stage_->GetItem()->GetInfo().collisionRadiusX_ };
+		// アイテムのサイズ(中心から端までの半径)
+		VECTOR itemSize = { item->GetInfo().collisionRadiusX_
+			, item->GetInfo().collisionRadiusY_
+			,item->GetInfo().collisionRadiusX_ };
 
-	if (Collision::HitAABBs(deliveryPos, deliverySize, itemPos, itemSize))
-	{
-		DrawString(20, 400, "納品場所に入った！", 0xffffff);
-	}
-	else
-	{
-		DrawString(20, 400, "納品場所に入ってない…", 0xffffff);
-	}
+		if (Collision::HitAABBs(deliveryPos, deliverySize, itemPos, itemSize))
+		{
+			DrawString(20, 400, "納品場所に入った！", 0xffffff);
+		}
+		else
+		{
+			DrawString(20, 400, "納品場所に入ってない…", 0xffffff);
+		}
 
 #pragma endregion
+	}
 }

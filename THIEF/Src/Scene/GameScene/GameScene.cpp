@@ -93,6 +93,10 @@ void GameScene::Load(void)
 
 	// アイテムの作成
 	ItemCreate();
+
+	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+	// スコアマネージャーにアイテムたちを渡す
+	ScoreManager::GetInstance().SetItems(stage->GetItems());
 }
 
 void GameScene::LoadEnd(void)
@@ -126,6 +130,9 @@ void GameScene::Update(void)
 	// クロスヘアの更新
 	crosshair_->Update();
 
+	// スコアマネージャーの更新
+	ScoreManager::GetInstance().Update();
+
 	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_ESCAPE))
 	{
 		// ポーズモードへ
@@ -157,17 +164,11 @@ void GameScene::Draw(void)
 	// オブジェクトの描画
 	objectManger_->Draw();
 
-	// 納品済みの金額を確認
-	int deliveryPrice = ScoreManager::GetInstance().GetDeliveryPrice();
-
-	// 目標金額を確認
-	int targetPrice = ScoreManager::GetInstance().GetTargetPrice();
-
-	DrawFormatString(Application::SCREEN_SIZE_X - 200, 50, 0xffffff, "%d　／　%d", deliveryPrice, targetPrice);
-
 	// クロスヘアの描画
 	crosshair_->Draw();
 
+	// 納品金額 / 目標金額の描画
+	ScoreManager::GetInstance().Draw();
 }
 
 void GameScene::Release(void)

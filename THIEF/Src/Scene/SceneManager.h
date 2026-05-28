@@ -83,6 +83,10 @@ public:
 
 private:
 
+	// フォグのスタート位置終了位置
+	static constexpr float FOG_START = 0.0f;
+	static constexpr float FOG_END = 3000.0f;
+
 	// 各種シーン
 	std::list<std::shared_ptr<SceneBase>> scenes_;
 
