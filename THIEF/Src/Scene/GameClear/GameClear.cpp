@@ -19,8 +19,8 @@ GameClear::~GameClear(void)
 
 void GameClear::Init(void)
 {
-	handle_ = LoadGraph("Data/Image/ÉQÅ[ÉNÉäâÊ.png"); 
-	tiHandle_ = LoadGraph("Data/Image/Tit.png");
+	handle_ = LoadGraph("Data/Image/GC.png"); 
+	tiHandle_ = LoadGraph("Data/Image/TT.png");
 }
 
 void GameClear::Load(void)

@@ -18,7 +18,14 @@ public:
 
 private:
 
-	int handle_;
+	static constexpr int RE_POS_X = 512;
+	static constexpr int RE_POS_Y = 485;
 
+	static constexpr int TITLE_POS_X = 512;
+	static constexpr int TITLE_POS_Y = 550;
+
+	int handle_;
+	int reId_;
+	int tiId_;
 };
 
