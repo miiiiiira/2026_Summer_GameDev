@@ -252,9 +252,13 @@ void Item::DrawDebug(void)
 {
 	if (info_.isGrabbed)
 	{
+		VECTOR moneyPos = ConvWorldPosToScreenPos(trans_->pos_);
+
 		// お金表示
-		DrawFormatString(Application::SCREEN_SIZE_X / 2 - 20, 50, 0xff0000, "%d円", info_.money_);
+		DrawFormatString(moneyPos.x, moneyPos.y, 0xff0000, "%d円", info_.money_);
 	}
+
+#ifdef _DEBUG
 
 	VECTOR start = trans_->pos_;
 	start.y -= info_.collisionRadiusY_;
@@ -263,4 +267,6 @@ void Item::DrawDebug(void)
 
 	// 当たり判定用のカプセル大きさ確認
 	DrawCapsule3D(start, end, info_.collisionRadiusX_, 8, 0xff0000, 0xff0000, false);
+#endif // _DEBUG
+
 }

@@ -48,13 +48,19 @@ public:
 	void PreDraw() { for (auto& c : components_)c->PreDraw(); }	// 全コンポーネント描画前
 	void Draw() { for (auto& c : components_)c->Draw(); }		// 全コンポーネント描画
 
-	// タグ
-	void SetTag(Tag tag) { tag_ = tag; }
+	// タグと優先度をセット
+	void SetTagAndPriority(Tag tag) { tag_ = tag, priority_ = static_cast<int>(tag); }
+	// タグを渡す
 	Tag GetTag() const { return tag_; }
+
+	// 描画優先度を渡す
+	int GetPriority(void) { return priority_; }
 
 private:
 	// このオブジェクトが持つコンポーネント
 	std::vector<std::unique_ptr<Component>> components_;
+
+	int priority_ = 0;
 
 	Tag tag_ = Tag::None;
 };

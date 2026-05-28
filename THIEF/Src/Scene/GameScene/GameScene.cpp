@@ -190,7 +190,7 @@ void GameScene::CameraCreate(void)
 	auto cameraObj = objectManger_->CreateObject();
 
 	// タグの付与
-	cameraObj->SetTag(Tag::Camera);
+	cameraObj->SetTagAndPriority(Tag::Camera);
 
 	// 座標の設定
 	auto cameraTrans = cameraObj->AddComponent<Transform>();
@@ -208,7 +208,7 @@ void GameScene::StageCreate(void)
 	auto stage = objectManger_->CreateObject();
 
 	// タグを付与
-	stage->SetTag(Tag::Stage);
+	stage->SetTagAndPriority(Tag::Stage);
 
 	// 座標の設定
 	auto trans = stage->AddComponent<Transform>();
@@ -232,7 +232,7 @@ void GameScene::LanternCreate(void)
 	auto lantern = objectManger_->CreateObject();
 
 	// タグを付与
-	lantern->SetTag(Tag::Lantern);
+	lantern->SetTagAndPriority(Tag::Lantern);
 
 	// 描画
 	auto render = lantern->AddComponent<Render3D>();
@@ -252,7 +252,7 @@ void GameScene::PlayerCreate(void)
 	auto player = objectManger_->CreateObject();
 
 	// タグを付与
-	player->SetTag(Tag::Player);
+	player->SetTagAndPriority(Tag::Player);
 
 	// 座標の設定
 	auto trans = player->AddComponent<Transform>();
@@ -319,7 +319,7 @@ void GameScene::ItemCreate(void)
 	auto item = objectManger_->CreateObject();
 
 	// タグを付与
-	item->SetTag(Tag::Goblet);
+	item->SetTagAndPriority(Tag::Goblet);
 
 	// 座標の設定
 	auto trans = item->AddComponent<Transform>();
