@@ -28,9 +28,6 @@ struct ItemInfo
 	// 離された時の座標
 	VECTOR grabbedPos_;
 
-	// アイテムの種類
-	ITEM_TAG itemTag_;
-
 	// 金額(HP)
 	int money_;
 

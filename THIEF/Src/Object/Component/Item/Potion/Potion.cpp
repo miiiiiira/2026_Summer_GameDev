@@ -1,16 +1,15 @@
 #include<DxLib.h>
-#include "Goblet.h"
+#include "Potion.h"
 
-Goblet::Goblet()
-	:Item()
+Potion::Potion(void)
 {
 }
 
-Goblet::~Goblet(void)
+Potion::~Potion(void)
 {
 }
 
-void Goblet::SetParam(void)
+void Potion::SetParam(void)
 {
 	// ëÂÇ´Ç≥èâä˙âª
 	info_.scale_ = SCALE;

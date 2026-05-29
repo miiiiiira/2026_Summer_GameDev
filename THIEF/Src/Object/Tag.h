@@ -12,4 +12,5 @@ enum class Tag
 	Enemy,
 	Player,
 	Goblet,
+	Potion,
 };
