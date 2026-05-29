@@ -63,8 +63,8 @@ std::vector<EnemyBase::Edge> EnemyBase::FindPath(int startNodeId, int goalNodeId
 	while (!que.empty())
 	{
 		// 先頭を取得
-		float currentCost = que.top().first;	// Queに入っているCost
-		int currentNodeId = que.top().second;	// Queに入っているID
+		float currentCost = que.top().first;
+		int currentNodeId = que.top().second;
 
 		// 取り出したら、削除
 		que.pop();
@@ -109,7 +109,7 @@ std::vector<EnemyBase::Edge> EnemyBase::FindPath(int startNodeId, int goalNodeId
 		path_.push_back(path);
 	}
 
-	// 
+	// 逆にする
 	std::reverse(path_.begin(), path_.end());
 
 	return path_;
@@ -179,27 +179,27 @@ void EnemyBase::DelayRotate(void)
 
 void EnemyBase::LookPlayer(void)
 {
-	//// プレイヤー（相手）の座標を取得
-	//VECTOR playerPos = player_->GetPos();
+	// プレイヤー（相手）の座標を取得
+	VECTOR playerPos = *playerPos_;
 
-	//// 相手へのベクトルを計算
-	//VECTOR diff = VSub(playerPos, pos_);
-	//diff.y = 0.0f;
+	// 相手へのベクトルを計算
+	VECTOR diff = VSub(playerPos, pos_);
+	diff.y = 0.0f;
 
-	//// ベクトルの正規化で単位ベクトル（方向）を取得
-	//moveDir_ = VNorm(diff);
+	// ベクトルの正規化で単位ベクトル（方向）を取得
+	moveDir_ = VNorm(diff);
 
-	//// 方向から角度（ラジアン）に変換
-	//angle_.y = atan2(moveDir_.x, moveDir_.z);
+	// 方向から角度（ラジアン）に変換
+	angle_.y = atan2(moveDir_.x, moveDir_.z);
 
-	//// モデルの方向が正の負の方向を向いているので、補正
-	//angle_.y += Math::Deg2Rad(180.0f);
+	// モデルの方向が正の負の方向を向いているので、補正
+	angle_.y += Math::Deg2Rad(180.0f);
 
-	//// 回転はY軸のみ
-	//angle_.x = angle_.z = 0.0f;
+	// 回転はY軸のみ
+	angle_.x = angle_.z = 0.0f;
 
-	//// モデルに角度を設定
-	//MV1SetRotationXYZ(modelId_, angle_);
+	// モデルに角度を設定
+	MV1SetRotationXYZ(modelId_, angle_);
 }
 
 void EnemyBase::AddEdge(int fromId, int toId)

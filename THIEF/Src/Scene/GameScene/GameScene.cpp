@@ -45,7 +45,8 @@ void GameScene::Init(void)
 	objectManger_->Init();
 
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
-	enemy_->Init(stage->GetModelId());
+	auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
+	enemy_->Init(&(player->GetTransform()->pos_),stage->GetModelId());
 }
 
 void GameScene::Load(void)

@@ -30,7 +30,7 @@ public:
 	// 読み込み処理
 	virtual void Load(void);
 	// 初期化処理
-	virtual void Init(int id = -1) = 0;
+	virtual void Init(VECTOR* pos,int id = -1) = 0;
 	// 更新処理
 	virtual void Update(void) = 0;
 	// 描画処理
@@ -59,6 +59,7 @@ protected:
 	bool isJump_;
 
 	int stageId_ = -1;
+	VECTOR* playerPos_;
 
 	std::vector<Waypoint> way_;					// ウェイポイントを格納
 	std::vector<std::vector<Edge>> edgeList_;	// 行動可能な辺を格納

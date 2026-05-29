@@ -54,7 +54,7 @@ public:
 	// デストラクタ
 	~Yeti(void)override;
 	// 初期化
-	void Init(int id = -1) override;
+	void Init(VECTOR* pos, int id = -1) override;
 	// 読み込み処理
 	void Load(void) override;
 	void Update(void)override;

@@ -20,8 +20,10 @@ Yeti::~Yeti(void)
 {
 }
 
-void Yeti::Init(int id)
+void Yeti::Init(VECTOR* pos, int id)
 {
+	playerPos_ = pos;
+
 	scale_ = SCALE;
 	MV1SetScale(modelId_, scale_);
 
@@ -36,8 +38,8 @@ void Yeti::Init(int id)
 	pos_ = DEFAULT_POS;
 	MV1SetPosition(modelId_, pos_);
 
-	patrolRadius_ = 2000.0f;
-	viewRadius_ = 1000.0f;
+	patrolRadius_ = 1000.0f;
+	viewRadius_ = 500.0f;
 
 	// 初期アニメーション再生
 	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
@@ -88,6 +90,15 @@ void Yeti::Update(void)
 	MATRIX mat = Matrix::Multiplication(localAngle_, angle_);
 	// 回転行列をモデルに反映
 	MV1SetRotationMatrix(modelId_, mat);
+
+	//float distance = VSize(VSub(*playerPos_, pos_));
+
+	//// 敵の座標から半径以内に無いポイントは除外
+	//if (distance <= viewRadius_)
+	//{
+	//	ChangeState(STATE::CHASE);
+	//}
+
 
 	switch (state_)
 	{
@@ -270,7 +281,7 @@ void Yeti::ChangeThink(void)
 
 void Yeti::ChangeIdle(void)
 {
-	step_ = 3.0f;
+	step_ = 5.0f;
 	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
 }
 
@@ -293,7 +304,7 @@ void Yeti::ChangePatrol(void)
 	SetMoveDirPatrol();
 
 	// 移動スピード
-	moveSpeed_ = 5.0f;
+	moveSpeed_ = 2.0f;
 
 	animationController_->Play(static_cast<int>(ANIM_TYPE::WALK), true);
 
@@ -301,6 +312,8 @@ void Yeti::ChangePatrol(void)
 
 void Yeti::ChangeChase(void)
 {
+	moveSpeed_ = 6.0f;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::RUN), true);
 }
 
 void Yeti::ChangeAttack(void)
