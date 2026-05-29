@@ -42,7 +42,7 @@ private:
 public:
 
 	// 環境光のカラー値、アルファ値
-	static constexpr COLOR_F DIF_COLOR = { 0.7f, 0.7f, 0.7f, 1.0f };
+	static constexpr COLOR_F DIF_COLOR = { 0.8f, 0.8f, 0.8f, 1.0f };
 
 	void Init(void);	// 初期化
 	void Init3D(void);	// 3Dの初期化
@@ -85,7 +85,7 @@ private:
 
 	// フォグのスタート位置終了位置
 	static constexpr float FOG_START = 0.0f;
-	static constexpr float FOG_END = 3000.0f;
+	static constexpr float FOG_END = 5000.0f;
 
 	// 各種シーン
 	std::list<std::shared_ptr<SceneBase>> scenes_;
