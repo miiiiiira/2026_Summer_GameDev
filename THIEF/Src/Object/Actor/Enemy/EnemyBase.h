@@ -30,7 +30,7 @@ public:
 	// 読み込み処理
 	virtual void Load(void);
 	// 初期化処理
-	virtual void Init(int id = -1) = 0;
+	virtual void Init(VECTOR* pos,int id = -1) = 0;
 	// 更新処理
 	virtual void Update(void) = 0;
 	// 描画処理
@@ -38,7 +38,8 @@ public:
 	// 解放処理
 	void Release(void);
 
-	//std::vector<Edge> FindPath(int startNodeId, int goalNodeId);
+	// 始点から終点までの最短経路を計算し、エッジのリストとして返す
+	std::vector<Edge> FindPath(int startNodeId, int goalNodeId);
 
 protected:
 
@@ -58,16 +59,23 @@ protected:
 	bool isJump_;
 
 	int stageId_ = -1;
+	VECTOR* playerPos_;
 
-	std::vector<Waypoint> way_;
-	std::vector<std::vector<Edge>> edgeList_;
+	std::vector<Waypoint> way_;					// ウェイポイントを格納
+	std::vector<std::vector<Edge>> edgeList_;	// 行動可能な辺を格納
+	std::vector<float> minCosts_;				// ポイントへの最短経路合計
+	std::vector<int> parentNodes_;				// どこから来たかを記録
+	std::vector<Edge> path_;					// 探索された最短経路を格納
 
 	void AddEdge(int fromId, int toId);
 
 	// 移動方向に応じた遅延回転
 	void DelayRotate(void);
 
+	// プレイヤー追従処理
+	void LookPlayer(void);
+
+
 private:
 	void LoadCsvData(void);
-
 };

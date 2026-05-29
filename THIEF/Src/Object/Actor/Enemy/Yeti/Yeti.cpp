@@ -20,8 +20,10 @@ Yeti::~Yeti(void)
 {
 }
 
-void Yeti::Init(int id)
+void Yeti::Init(VECTOR* pos, int id)
 {
+	playerPos_ = pos;
+
 	scale_ = SCALE;
 	MV1SetScale(modelId_, scale_);
 
@@ -37,6 +39,7 @@ void Yeti::Init(int id)
 	MV1SetPosition(modelId_, pos_);
 
 	patrolRadius_ = 1000.0f;
+	viewRadius_ = 500.0f;
 
 	// 初期アニメーション再生
 	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
@@ -53,6 +56,7 @@ void Yeti::Init(int id)
 	{
 		for (int j = 0; j < static_cast<int>(way_.size()); j++)
 		{
+			// 同じノードならスキップ
 			if (i == j) continue;
 
 			AddEdge(i, j);
@@ -87,6 +91,15 @@ void Yeti::Update(void)
 	// 回転行列をモデルに反映
 	MV1SetRotationMatrix(modelId_, mat);
 
+	//float distance = VSize(VSub(*playerPos_, pos_));
+
+	//// 敵の座標から半径以内に無いポイントは除外
+	//if (distance <= viewRadius_)
+	//{
+	//	ChangeState(STATE::CHASE);
+	//}
+
+
 	switch (state_)
 	{
 	case Yeti::STATE::THINK: UpdateThink(); break;
@@ -114,6 +127,8 @@ void Yeti::Draw(void)
 	// 巡回ルート描画
 	for (const auto& point : way_)
 	{
+		float distance = VSize(VSub(point.pos, pos_));
+
 		unsigned int color = 0x0000ff;
 		if (point.id == nextNodeId_)
 		{
@@ -126,6 +141,10 @@ void Yeti::Draw(void)
 		else if (point.id == prevPrevNodeId_)
 		{
 			color = 0xfff5ee;
+		}
+		else if (distance > patrolRadius_)
+		{
+			color = 0xff0000;
 		}
 
 		DrawSphere3D(
@@ -148,6 +167,9 @@ void Yeti::SetMoveDirPatrol(void)
 
 int Yeti::SelectNextNode(void)
 {
+	// 有効ノードを探す前に空にする
+	candidates_.clear();
+
 	for (const auto& edge : edgeList_[currentNodeId_])
 	{
 		int nextId = edge.way.id;
@@ -196,6 +218,16 @@ void Yeti::ArriveNode(void)
 	nextWayPoint_ = way_[currentNodeId_].pos;
 }
 
+void Yeti::Move(void)
+{
+	// 移動量を計算する
+	movePow_ = VScale(moveDir_, moveSpeed_);
+	// 移動量処理
+	pos_ = VAdd(pos_, movePow_);
+	// モデルに座標を設定
+	MV1SetPosition(modelId_, pos_);
+}
+
 void Yeti::ChangeState(STATE state)
 {
 	state_ = state;
@@ -237,7 +269,7 @@ void Yeti::ChangeThink(void)
 	// ランダムに次の行動を決定
 	// 20%で待機、80%で徘徊
 	int rand = GetRand(100);
-	if (rand < 30)
+	if (rand < 20)
 	{
 		ChangeState(STATE::IDLE);
 	}
@@ -249,7 +281,7 @@ void Yeti::ChangeThink(void)
 
 void Yeti::ChangeIdle(void)
 {
-	step_ = 3.0f;
+	step_ = 5.0f;
 	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
 }
 
@@ -272,7 +304,7 @@ void Yeti::ChangePatrol(void)
 	SetMoveDirPatrol();
 
 	// 移動スピード
-	moveSpeed_ = 5.0f;
+	moveSpeed_ = 2.0f;
 
 	animationController_->Play(static_cast<int>(ANIM_TYPE::WALK), true);
 
@@ -280,6 +312,8 @@ void Yeti::ChangePatrol(void)
 
 void Yeti::ChangeChase(void)
 {
+	moveSpeed_ = 6.0f;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::RUN), true);
 }
 
 void Yeti::ChangeAttack(void)
@@ -329,15 +363,13 @@ void Yeti::UpdatePatrol(void)
 		return;
 	}
 
-	movePow_ = VScale(moveDir_, moveSpeed_);
-
-	pos_ = VAdd(pos_, movePow_);
-
-	MV1SetPosition(modelId_, pos_);
+	Move();
 }
 
 void Yeti::UpdateChase(void)
 {
+	LookPlayer();
+	Move();
 }
 
 void Yeti::UpdateAttack(void)

@@ -1,6 +1,8 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
+#include <queue>
 #include "../../Common/AnimationController.h"
 #include "../../../Common/Math/Math.h"
 #include "../../../Common/Transform/MatrixUtility.h"
@@ -18,6 +20,10 @@ EnemyBase::~EnemyBase(void)
 void EnemyBase::Load(void)
 {
 	LoadCsvData();
+
+	path_.reserve(way_.size());
+	minCosts_.reserve(way_.size());
+	parentNodes_.reserve(way_.size());
 }
 
 void EnemyBase::Draw(void)
@@ -37,15 +43,77 @@ void EnemyBase::Release(void)
 	}
 }
 
-//std::vector<EnemyBase::Edge> EnemyBase::FindPath(int startNodeId, int goalNodeId)
-//{
-//	int nodeCount = static_cast<int>(way_.size());
-//
-//
-//	std::vector<Edge> list;
-//
-//	return list;
-//}
+std::vector<EnemyBase::Edge> EnemyBase::FindPath(int startNodeId, int goalNodeId)
+{
+	path_.clear();
+
+	// 全て同じ値で埋め尽くす
+	minCosts_.assign(way_.size(), FLT_MAX);
+	parentNodes_.assign(way_.size(), -1);
+
+	// スタート地点のコストは0にする
+	minCosts_[startNodeId] = 0.0f;
+
+	std::priority_queue <std::pair<float, int>, 
+						std::vector<std::pair<float, int>>,
+						std::greater<std::pair<float, int>>> que;
+
+	que.push({ 0.0f, startNodeId });
+
+	while (!que.empty())
+	{
+		// 先頭を取得
+		float currentCost = que.top().first;
+		int currentNodeId = que.top().second;
+
+		// 取り出したら、削除
+		que.pop();
+
+		// もし取り出したIDがゴールと一緒なら抜ける
+		if (currentNodeId == goalNodeId) break;
+
+		// ③ 取り出したコストが、すでに minCosts_ にある最小コストより大きければスキップ
+		if (currentCost > minCosts_[currentNodeId]) continue;
+
+		// つながっているエッジ
+		for (const auto& edge : edgeList_[currentNodeId])
+		{
+			// 隣接しているノードIDを取得
+			int nextNodeId = edge.way.id;
+
+			// 現在のコスト+エッジのコストから新しいコストを計算する
+			float newCost = currentCost + edge.cost;
+
+			//　新しいコストが最小コストよりも小さかったら
+			if (newCost < minCosts_[nextNodeId])
+			{
+				// minCosts_とparentNodes_を更新
+				minCosts_[nextNodeId] = newCost;
+				parentNodes_[nextNodeId] = currentNodeId;
+
+				// 新しいコストと隣のノードIDをペアにしてqueにプッシュする
+				que.push({ newCost, nextNodeId });
+			}
+		}
+	}
+
+	// ゴールの最小コストがFLT_MAXのままなら、空のまま返す
+	if (minCosts_[goalNodeId] == FLT_MAX) return path_;
+
+	for (int i = goalNodeId; parentNodes_[i] != -1; i = parentNodes_[i])
+	{
+		Edge path;
+		path.way.id = parentNodes_[i];
+		path.cost = minCosts_[i];
+
+		path_.push_back(path);
+	}
+
+	// 逆にする
+	std::reverse(path_.begin(), path_.end());
+
+	return path_;
+}
 
 void EnemyBase::LoadCsvData(void)
 {
@@ -92,7 +160,7 @@ void EnemyBase::LoadCsvData(void)
 
 		VECTOR position = VGet(posX, posY, posZ);
 
-		Waypoint way;
+		Waypoint way = {};
 		way.id = pointId;
 		way.pos = position;
 
@@ -109,20 +177,57 @@ void EnemyBase::DelayRotate(void)
 	angle_.y = Math::LerpAngle(angle_.y, goal, 0.2f);
 }
 
+void EnemyBase::LookPlayer(void)
+{
+	// プレイヤー（相手）の座標を取得
+	VECTOR playerPos = *playerPos_;
+
+	// 相手へのベクトルを計算
+	VECTOR diff = VSub(playerPos, pos_);
+	diff.y = 0.0f;
+
+	// ベクトルの正規化で単位ベクトル（方向）を取得
+	moveDir_ = VNorm(diff);
+
+	// 方向から角度（ラジアン）に変換
+	angle_.y = atan2(moveDir_.x, moveDir_.z);
+
+	// モデルの方向が正の負の方向を向いているので、補正
+	angle_.y += Math::Deg2Rad(180.0f);
+
+	// 回転はY軸のみ
+	angle_.x = angle_.z = 0.0f;
+
+	// モデルに角度を設定
+	MV1SetRotationXYZ(modelId_, angle_);
+}
+
 void EnemyBase::AddEdge(int fromId, int toId)
 {
 	VECTOR posA = way_[fromId].pos;
 	VECTOR posB = way_[toId].pos;
 
-	// 線分とモデルの衝突判定
-	MV1_COLL_RESULT_POLY res = MV1CollCheck_Line(stageId_, -1, posA, posB);
+	float checkRadius = 10.0f;
 
-	if (res.HitFlag) return;
-	Edge edge;
+	// 線分とモデルの衝突判定
+	MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, posA, posB, checkRadius);
+
+	// 当たっていたら、省く
+	if (res.HitNum > 0)
+	{
+		// 後始末をする
+		MV1CollResultPolyDimTerminate(res);
+		return;
+	}
+
+	Edge edge = {};
 	edge.way.id = way_[toId].id;	// 行った先
 	edge.way.pos = way_[toId].pos;	// 行った先の座標
 	// 行った先から行った元を引いて、VSizeでfloat型に変換
 	edge.cost = VSize(VSub(posB, posA));
 
 	edgeList_[fromId].push_back(edge);
+
+	// 後始末をする
+	MV1CollResultPolyDimTerminate(res);
 }

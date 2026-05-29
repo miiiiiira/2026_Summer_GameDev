@@ -46,7 +46,7 @@ public:
 	static constexpr VECTOR DEFAULT_ANGLE = { 0.0f,0.0f,0.0f };
 
 	// 座標
-	static constexpr VECTOR DEFAULT_POS = { 0.0f,10.0f,500.0f };
+	static constexpr VECTOR DEFAULT_POS = { 1000.0f,10.0f,500.0f };
 
 	// コンストラクタ
 	Yeti(void);
@@ -54,7 +54,7 @@ public:
 	// デストラクタ
 	~Yeti(void)override;
 	// 初期化
-	void Init(int id = -1) override;
+	void Init(VECTOR* pos, int id = -1) override;
 	// 読み込み処理
 	void Load(void) override;
 	void Update(void)override;
@@ -69,13 +69,14 @@ private:
 
 	STATE state_;
 
-	std::vector<int> candidates_;
+	std::vector<int> candidates_;	// 候補のノードを格納する
 
 	int currentNodeId_;		// 今いるノード
 	int prevNodeId_;		// 前回のノード
 	int prevPrevNodeId_;	// 前々回のノード
 	int nextNodeId_;
 	float patrolRadius_;	// 巡回用の半径
+	float viewRadius_;		// 視野用の半径
 
 	void SetMoveDirPatrol(void);
 
@@ -84,10 +85,11 @@ private:
 	// ノード到着時
 	void ArriveNode(void);
 
-	// 状態遷移
-	void ChangeState(STATE state);
+	// 移動処理
+	void Move(void);
 
 	// 状態遷移
+	void ChangeState(STATE state);
 	void ChangeThink(void);
 	void ChangeIdle(void);
 	void ChangePatrol(void);
@@ -106,5 +108,4 @@ private:
 	void UpdateHit(void);
 	void UpdateDead(void);
 	void UpdateEnd(void);
-
 };

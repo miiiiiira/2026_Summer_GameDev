@@ -54,11 +54,12 @@ void GameScene::Init(void)
 	// オブジェクトマネージャー初期化
 	objectManger_->Init();
 
-	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
-	enemy_->Init(stage->GetModelId());
-
 	// クロスヘアの初期化処理
 	crosshair_->Init();
+
+	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+	auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
+	enemy_->Init(&(player->GetTransform()->pos_),stage->GetModelId());
 }
 
 void GameScene::Load(void)
