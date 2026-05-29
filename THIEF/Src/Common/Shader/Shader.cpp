@@ -5,7 +5,7 @@
 
 void Shader::Init(void)
 {
-	psCtr_ = LoadPixelShader("Src/Common/Shader/CtrShader.pso");
+	psCtr_ = LoadPixelShader("Data/CtrShader.pso");
 	psCtrConstBuf_ = CreateShaderConstantBuffer(sizeof(Ctr));
 	// É|ÉäÉSÉìê∂ê¨
 	MakeSquereVertex();
