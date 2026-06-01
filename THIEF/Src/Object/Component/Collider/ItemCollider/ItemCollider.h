@@ -31,6 +31,9 @@ public:
 	// 接地フラグを折る
 	void IsGroundFold(void) { isGround_ = false; }
 
+	// 無敵時間をリセットする
+	void ResetInvincibilityFrame(void) { invincibilityFrames_ = INVINCIBILITY_FRAMES; }
+
 private:
 
 	// プレイヤーの掴み機能との当たり判定
@@ -39,10 +42,19 @@ private:
 	// ステージとの当たり判定
 	void StageCollision(void);
 
+	// 無敵時間の更新処理
+	void UpdateInvincibility(void);
+
 private:
+
+	// 60フレームで大体1.5秒くらいの無敵時間
+	static constexpr int INVINCIBILITY_FRAMES = 60;
 
 	// 接地フラグ
 	bool isGround_ = false;
+
+	// 無敵時間
+	int invincibilityFrames_;
 
 	// アイテム
 	Item* item_ = nullptr;

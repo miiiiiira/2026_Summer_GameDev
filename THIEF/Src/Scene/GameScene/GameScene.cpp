@@ -28,6 +28,7 @@
 #include "../../Object/Component/Lantern/Lantern.h"
 #include "../../Object/Component/Item/Item.h"
 #include "../../Object/Component/Item/Goblet/Goblet.h"
+#include "../../Object/Component/Item/Potion/Potion.h"
 #include "../../Object/Component/Transform/Transform.h"
 #include "../../Common/Transform/MatrixUtility.h"
 #include "../../Common/CameraUtility/CameraUtility.h"
@@ -360,4 +361,38 @@ void GameScene::ItemCreate(void)
 		stage->SetItem(goblet);
 	}
 
+	// アイテムの作成
+	auto item = objectManger_->CreateObject();
+
+	// タグを付与
+	item->SetTagAndPriority(Tag::Potion);
+
+	// 座標の設定
+	auto trans = item->AddComponent<Transform>();
+	trans->pos_ = { 100.0f,50.0f,30.0f };
+
+	// 描画
+	auto render = item->AddComponent<Render3D>();
+	render->SetModel("Data/Model/Item/Potion_Blue.mv1");
+
+	// アイテム機能
+	auto potion = item->AddComponent<Potion>();
+
+	// プレイヤー取得
+	auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
+
+	// ステージ取得
+	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+
+	// アイテムの当たり判定
+	auto itemCol = item->AddComponent<ItemCollider>();
+	// プレイヤーを渡す
+	itemCol->SetPlayer(playerController);
+	// ステージを渡す
+	itemCol->SetStage(stage);
+	// クロスヘアを渡す
+	itemCol->SetCrosshair(crosshair_);
+
+	// ステージにアイテムを渡す
+	stage->SetItem(potion);
 }

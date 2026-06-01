@@ -10,6 +10,7 @@ void ItemCollider::Init(void)
 {
 	// アイテムの確保
 	item_ = owner_->GetComponent<Item>();
+	invincibilityFrames_ = INVINCIBILITY_FRAMES;
 }
 
 void ItemCollider::Update(void)
@@ -26,6 +27,9 @@ void ItemCollider::Update(void)
 
 	// ステージとの当たり判定
 	StageCollision();
+
+	// 無敵時間の更新
+	UpdateInvincibility();
 }
 
 void ItemCollider::PlayerGrabCollision(void)
@@ -227,14 +231,14 @@ void ItemCollider::StageCollision(void)
 	// 最終位置更新
 	item_->SetPos(testPos);
 
+	//　無敵時間があったら処理をしない
+	if (invincibilityFrames_ > 0)return;
+
 	// 空中にいるならダメージ処理しない
 	if (!isHitStage)return;
 
 	// 納品場所にはいっているなら処理をしない
 	if (item_->GetInfo().hasTouchedDeliveryLocation_)return;
-
-	//　持っていても空中判定になっていなければ、処理をしない
-	if (item_->GetInfo().isGrabbed && item_->GetInfo().hasTouchedStage_)return;
 
 	float hitSpeed = 0;
 
@@ -261,4 +265,25 @@ void ItemCollider::StageCollision(void)
 
 	// マイナス値になるのを防ぐ
 	item_->SetDamage(abs(damage));
+}
+
+void ItemCollider::UpdateInvincibility(void)
+{
+	// 掴まれていないかつ無敵時間が初期化されていなかったら
+	if (!item_->GetInfo().isGrabbed
+		&& invincibilityFrames_ <= 0)
+	{
+		// 無敵時間を初期化
+		invincibilityFrames_ = INVINCIBILITY_FRAMES;
+	}
+
+	// 最低値まで行ったら処理を行わない
+	if (invincibilityFrames_ < 0)return;
+
+	// フレーム数がデフォルトより小さければ持っていると判断する
+	if (invincibilityFrames_ > 0)
+	{
+		// 無敵時間を縮める
+		invincibilityFrames_--;
+	}
 }
