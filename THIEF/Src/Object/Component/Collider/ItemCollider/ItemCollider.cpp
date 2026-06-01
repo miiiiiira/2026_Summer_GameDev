@@ -35,7 +35,7 @@ void ItemCollider::Update(void)
 void ItemCollider::PlayerGrabCollision(void)
 {
 	// プレイヤーが何かを掴んでいる状態だったら処理を行わない
-	if (player_->GetGrabbingState() == GrasbbingState::IS_GRABBING) return;
+	if (player_->GetGrabbingState() == GRABBING_STATE::IS_GRABBING) return;
 
 	// アイテムのモデルIDを取得
 	int itemModelId = item_->GetModelID();
@@ -57,7 +57,7 @@ void ItemCollider::PlayerGrabCollision(void)
 		crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::CAN_GRABB);
 
 		// 掴もうとしていたら
-		if (player_->GetGrabbingState() == GrasbbingState::TRY_GRABBING)
+		if (player_->GetGrabbingState() == GRABBING_STATE::TRY_GRABBING)
 		{
 			// カメラと当たった場所の距離を求める
 			float distance = item_->GetCameraDistance(hitResult.HitPosition);

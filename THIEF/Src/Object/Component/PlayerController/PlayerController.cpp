@@ -27,13 +27,16 @@ void PlayerController::Init()
 	moveDir_ = { sinf(angle_.y), 0.0f, cosf(angle_.y) };
 
 	// プレイヤーの状態
-	state_ = PlayerState::IDLE;
+	state_ = PLAYER_STATE::IDLE;
+
+	// 掴み状態を表すステート
+	grabState_ = GRABBING_STATE::NOT_GRABBING;
 
 	// HPの初期化
 	hp_ = hpMax_ = DEFAULT_HP;
 
 	// プレイヤーの移動速度の初期化
-	moveSpeed_ = baseMoveSpeed_ = DEFAULT_SPEED;
+	moveSpeed_ = dashMoveSpeed_ = DEFAULT_SPEED;
 
 	// スライディング可能時間の初期化
 	slidingInputBufferTime = 0;
@@ -91,12 +94,82 @@ void PlayerController::Draw2D()
 	DebugDraw();
 }
 
+void PlayerController::Upgrade(PLAYER_UPGRADE_TYPE finalizeUpgrade, float UpNum)
+{
+	switch (finalizeUpgrade)
+	{
+	case PLAYER_UPGRADE_TYPE::HP_UP:
+
+		// HPの最大値を上げる
+		hp_ += UpNum;
+		hpMax_ += UpNum;
+
+		break;
+	case PLAYER_UPGRADE_TYPE::STAMINA_UP:
+
+		// スタミナの最大値を上げる
+		stamina_ += UpNum;
+		staminaMax_ += UpNum;
+
+		break;
+	case PLAYER_UPGRADE_TYPE::DASH_SPEED_UP:
+
+		// ダッシュ時のスピードを上げる
+		dashMoveSpeed_ += UpNum;
+
+		break;
+	case PLAYER_UPGRADE_TYPE::RANGE_UP:
+
+		// 掴みの範囲を大きくする
+		rangeMax_ += UpNum;
+
+		break;
+	case PLAYER_UPGRADE_TYPE::JUMP_NUM_UP:
+
+		// ジャンプの最大値を上げる
+		jumpNumMax_ += UpNum;
+
+		break;
+	case PLAYER_UPGRADE_TYPE::HEAL_HP_25:
+
+		// HPを回復する
+		hp_ += UpNum;
+
+		// HPの最大値を超えないようにする
+		if (hp_ > hpMax_)
+		{
+			hp_ = hpMax_;
+		}
+
+		break;
+	case PLAYER_UPGRADE_TYPE::HEAL_HP_50:
+
+		// HPを回復する
+		hp_ += UpNum;
+
+		// HPの最大値を超えないようにする
+		if (hp_ > hpMax_)
+		{
+			hp_ = hpMax_;
+		}
+
+		break;
+	default:
+		break;
+	}
+}
+
 Transform* PlayerController::GetTransform()
 {
 	return owner_->GetComponent<Transform>();
 }
 
-GrasbbingState PlayerController::GetGrabbingState(void)
+PLAYER_STATE PlayerController::GetState(void)
+{
+	return state_;
+}
+
+GRABBING_STATE PlayerController::GetGrabbingState(void)
 {
 	return grabState_;
 }
@@ -121,7 +194,7 @@ VECTOR PlayerController::GetLineEndPos(void)
 void PlayerController::StartGrabbing(float range)
 {
 	// 掴み状態を始める
-	grabState_ = GrasbbingState::IS_GRABBING;
+	grabState_ = GRABBING_STATE::IS_GRABBING;
 
 	range_ = range;
 }
@@ -202,10 +275,10 @@ void PlayerController::Move()
 		// 方向×スピードで移動量を作って、座標に足して移動
 		transform_->pos_ = VAdd(transform_->pos_, VScale(moveDir_, moveSpeed_));
 	}
-	else if (state_ != PlayerState::SLIDING)
+	else if (state_ != PLAYER_STATE::SLIDING)
 	{
 		// 待機状態にする
-		state_ = PlayerState::IDLE;
+		state_ = PLAYER_STATE::IDLE;
 		// 移動速度を初期化
 		moveSpeed_ = 0.0f;
 	}
@@ -253,11 +326,11 @@ void PlayerController::Dash(void)
 {
 	// もし走るボタンを押されたかつ、しゃがみ状態じゃないかつ、スタミナがあった場合
 	if (InputManager::GetInstance()->IsNew(KEY_INPUT_LSHIFT)
-		&& state_ != PlayerState::CROUCHING
+		&& state_ != PLAYER_STATE::CROUCHING
 		&& stamina_ >= 0.1f)
 	{
 		// プレイヤーの状態を走り状態にする
-		state_ = PlayerState::DASH;
+		state_ = PLAYER_STATE::DASH;
 
 		// スタミナを減らす
 		stamina_ -= 0.1f;
@@ -271,7 +344,7 @@ void PlayerController::Dash(void)
 		staminaCounter_ = 0;
 
 		// プレイヤーのデフォルト移動速度にダッシュ分の移動速度を加算
-		moveSpeed_ = baseMoveSpeed_ + DASH_SPEED;
+		moveSpeed_ = DEFAULT_SPEED + dashMoveSpeed_;
 
 		// スライディング可能時間(秒数)を設定
 		slidingInputBufferTime = SLIDING_INPUT_BUFFER_TIME;
@@ -279,11 +352,11 @@ void PlayerController::Dash(void)
 	else
 	{
 		// プレイヤーの状態を普通の移動状態にする
-		state_ = PlayerState::MOVE;
+		state_ = PLAYER_STATE::MOVE;
 
 		// 走るボタンを押されなかった場合
 		// 移動速度はデフォルトに設定
-		moveSpeed_ = baseMoveSpeed_;
+		moveSpeed_ = DEFAULT_SPEED;
 	}
 }
 
@@ -305,9 +378,9 @@ void PlayerController::InputSliding(void)
 	if (InputManager::GetInstance()->IsNew(KEY_INPUT_LCONTROL))
 	{
 		// スライディング状態にする
-		state_ = PlayerState::SLIDING;
+		state_ = PLAYER_STATE::SLIDING;
 		// プレイヤーのデフォルト移動速度にダッシュ分の移動速度を加算
-		moveSpeed_ = baseMoveSpeed_ + DASH_SPEED;
+		moveSpeed_ = DEFAULT_SPEED + dashMoveSpeed_;
 
 		// スライディング可能時間を初期化
 		slidingInputBufferTime = 0;
@@ -320,7 +393,7 @@ void PlayerController::InputSliding(void)
 bool PlayerController::SlidingToCrouching(void)
 {
 	// スライディング状態かつ移動速度が0より大きく移動している場合
-	if (state_ == PlayerState::SLIDING && moveSpeed_ > 0.0f)
+	if (state_ == PLAYER_STATE::SLIDING && moveSpeed_ > 0.0f)
 	{
 		// 移動速度を減算
 		moveSpeed_ -= 0.2f;
@@ -330,7 +403,7 @@ bool PlayerController::SlidingToCrouching(void)
 		{
 			moveSpeed_ = 0.0f;
 			// しゃがみ状態にする
-			state_ = PlayerState::CROUCHING;
+			state_ = PLAYER_STATE::CROUCHING;
 		}
 
 		// 方向×スピードで移動量を作って、座標に足して移動
@@ -346,10 +419,10 @@ void PlayerController::Crouching(void)
 {
 	// 左Ctrl押されたかつスライディング中じゃない場合
 	if (InputManager::GetInstance()->IsNew(KEY_INPUT_LCONTROL) &&
-		state_ != PlayerState::SLIDING)
+		state_ != PLAYER_STATE::SLIDING)
 	{
 		// しゃがみ状態にする
-		state_ = PlayerState::CROUCHING;
+		state_ = PLAYER_STATE::CROUCHING;
 
 		// ランタンの光を消す
 		lantern_->SetLight(false);
@@ -365,7 +438,7 @@ void PlayerController::HealStamina(void)
 	staminaCounter_++;
 
 	// しゃがみ状態だったら
-	if (state_ == PlayerState::CROUCHING)
+	if (state_ == PLAYER_STATE::CROUCHING)
 	{
 		// スタミナ回復させる
 		stamina_ += RECOVERY_STAMINA;
@@ -420,27 +493,27 @@ void PlayerController::Grasping(void)
 {
 	switch (grabState_)
 	{
-	case GrasbbingState::NOT_GRABBING:
+	case GRABBING_STATE::NOT_GRABBING:
 
 		// 掴もうとしていたら
 		if (InputManager::GetInstance()->IsTrgMouseLeft())
 		{
 			// 状態を変更
-			grabState_ = GrasbbingState::TRY_GRABBING;
+			grabState_ = GRABBING_STATE::TRY_GRABBING;
 		}
 
 		break;
-	case GrasbbingState::TRY_GRABBING:
+	case GRABBING_STATE::TRY_GRABBING:
 
 		// 掴もうとしていなくなったら
 		if (!InputManager::GetInstance()->IsClickMouseLeft())
 		{
 			// 状態を変更
-			grabState_ = GrasbbingState::NOT_GRABBING;
+			grabState_ = GRABBING_STATE::NOT_GRABBING;
 		}
 
 		break;
-	case GrasbbingState::IS_GRABBING:
+	case GRABBING_STATE::IS_GRABBING:
 
 		// アイテムの中身がなかったら
 		if (item_ == nullptr)return;
@@ -456,7 +529,7 @@ void PlayerController::Grasping(void)
 		if (InputManager::GetInstance()->IsTrgUpMouseLeft()||!InputManager::GetInstance()->IsClickMouseLeft())
 		{
 			// 掴み動作を終わる
-			grabState_ = GrasbbingState::NOT_GRABBING;
+			grabState_ = GRABBING_STATE::NOT_GRABBING;
 			// アイテムの追従を終わる
 			item_->EndGrabbed();
 			item_ = nullptr;

@@ -92,7 +92,7 @@ void DeliveryLocationCollider::ItemToDeliveryLocationCollision(void)
 void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 {
 	// プレイヤーが何かを掴んでいる状態だったら処理を行わない
-	if (player_->GetGrabbingState() == GrasbbingState::IS_GRABBING)return;
+	if (player_->GetGrabbingState() == GRABBING_STATE::IS_GRABBING)return;
 
 	// 納品完了スイッチの座標
 	VECTOR doneSwitchPos = stage_->GetDoneSwitchPos();
@@ -113,7 +113,7 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 		crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::CAN_GRABB);
 
 		// 掴もうとしていたら
-		if (player_->GetGrabbingState() == GrasbbingState::TRY_GRABBING)
+		if (player_->GetGrabbingState() == GRABBING_STATE::TRY_GRABBING)
 		{
 			// 納品済みの金額を確認
 			int deliveryPrice = ScoreManager::GetInstance().GetDeliveryPrice();

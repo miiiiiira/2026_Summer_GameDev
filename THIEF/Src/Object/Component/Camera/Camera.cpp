@@ -85,8 +85,8 @@ void Camera::SetBeforeDrawFollow()
 
 	// 相対座標からワールド座標に直して、カメラ座標とする
 	// しゃがみ状態かスライディング状態であれば、カメラの位置を下げる
-	if (playerController_->state_ == PlayerState::CROUCHING
-		|| playerController_->state_ == PlayerState::SLIDING)
+	if (playerController_->GetState() == PLAYER_STATE::CROUCHING
+		|| playerController_->GetState() == PLAYER_STATE::SLIDING)
 	{
 		// 相対座標をカメラの回転を反映
 		transform_->pos_ = VAdd(followPos, FOLLOW_CAMERA_LOCAL_POS_CROUCHING);

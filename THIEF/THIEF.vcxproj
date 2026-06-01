@@ -55,8 +55,7 @@
     <ClCompile Include="Src\Common\Transform\Quaternion.cpp" />
     <ClCompile Include="Src\Common\Manager\Input\InputManager.cpp" />
     <ClCompile Include="Src\main.cpp" />
-    <ClCompile Include="Src\Object\Actor\Upgrade\Upgrade.cpp" />
-    <ClCompile Include="Src\Object\Actor\Upgrade\UpgradeManager.cpp" />
+    <ClCompile Include="Src\Object\Component\PlayerController\Upgrade\Upgrade.cpp" />
     <ClCompile Include="Src\Object\Common\AnimationController.cpp" />
     <ClCompile Include="Src\Scene\GameClear\GameClear.cpp" />
     <ClCompile Include="Src\Scene\GameOver\GameOver.cpp" />
@@ -78,6 +77,7 @@
     <ClInclude Include="Src\Object\Component\Collider\DeliveryLocationCollider\DeliveryLocationCollider.h" />
     <ClInclude Include="Src\Object\Component\Item\Item.h" />
     <ClInclude Include="Src\Object\Component\Item\ItemInfo.h" />
+    <ClInclude Include="Src\Object\Component\PlayerController\Upgrade\UpgradeType.h" />
     <ClInclude Include="Src\Scene\DebugScene.h" />
     <ClInclude Include="Src\Object\Component\Collider\ItemCollider\ItemCollider.h" />
     <ClInclude Include="Src\Common\Shader\Shader.h" />
@@ -120,8 +120,7 @@
     <ClInclude Include="Src\Common\Transform\Quaternion.h" />
     <ClInclude Include="Src\Common\Manager\Input\InputManager.h" />
     <ClInclude Include="Src\main.h" />
-    <ClInclude Include="Src\Object\Actor\Upgrade\Upgrade.h" />
-    <ClInclude Include="Src\Object\Actor\Upgrade\UpgradeManager.h" />
+    <ClInclude Include="Src\Object\Component\PlayerController\Upgrade\Upgrade.h" />
     <ClInclude Include="Src\Object\Common\AnimationController.h" />
     <ClInclude Include="Src\Scene\GameClear\GameClear.h" />
     <ClInclude Include="Src\Scene\GameOver\GameOver.h" />

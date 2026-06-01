@@ -1,5 +1,6 @@
 #pragma once
 #include "../Component.h"
+#include "Upgrade/UpgradeType.h"
 #include <DxLib.h>
 
 // 前方宣言
@@ -9,7 +10,7 @@ class Item;
 class Lantern;
 
 // プレイヤーの状態
-enum class PlayerState
+enum class PLAYER_STATE
 {
 	IDLE,		// 待機
 	MOVE,		// 移動
@@ -18,7 +19,7 @@ enum class PlayerState
 	SLIDING,	// スライディング
 };
 
-enum class GrasbbingState
+enum class GRABBING_STATE
 {
 	NOT_GRABBING,	// 掴もうとしてない
 	TRY_GRABBING,	// 掴もうとしている
@@ -33,15 +34,18 @@ public:
 	// プレイヤーの掴み距離の最小値
 	static constexpr float MIN_RENGE = 50.0f;
 
+	// ダッシュ時の移動速度
+	static constexpr float DASH_SPEED = 10.0f;
+
+	// プレイヤーの掴み距離
+	static constexpr float DEFAULT_RENGE = 400.0f;
+
 private:
 	// HP
 	static constexpr float DEFAULT_HP = 100.0f;
 
 	// 通常時移動速度
 	static constexpr float DEFAULT_SPEED = 7.0f;
-
-	// ダッシュ時の移動速度
-	static constexpr float DASH_SPEED = 10.0f;
 
 	// スライディング可能時間(0.5秒数)
 	static constexpr int SLIDING_INPUT_BUFFER_TIME = 20;
@@ -58,9 +62,6 @@ private:
 	// ジャンプ可能数
 	static constexpr int DEFAULT_JUMP_NUM = 1;
 
-	// プレイヤーの掴み距離
-	static constexpr float DEFAULT_RENGE = 200.0f;
-
 	// 掴み距離を伸ばす時の速度
 	static constexpr float EXTEND_RENGE_MOVE = 10.0f;
 
@@ -75,11 +76,17 @@ public:
 	void Update() override;		// 更新
 	void Draw2D() override;		// 2D描画
 
+	// アップグレード処理
+	void Upgrade(PLAYER_UPGRADE_TYPE finalizeUpgrade, float UpNum);
+
 	// Transformを返す
 	Transform* GetTransform();
 
 	// 掴んでいるかの状態を取得
-	GrasbbingState GetGrabbingState(void);
+	PLAYER_STATE GetState(void);
+
+	// 掴んでいるかの状態を取得
+	GRABBING_STATE GetGrabbingState(void);
 
 	// 掴むときの線分の初め座標を渡す
 	VECTOR GetLineStartPos(void);
@@ -95,9 +102,6 @@ public:
 
 	// アイテムを取得
 	void SetItemPoint(Item* item);
-
-	// 現在の状態表すステート
-	PlayerState state_ = PlayerState::IDLE;
 
 private:
 	// 移動処理
@@ -169,7 +173,7 @@ private:
 
 	// 移動速度
 	float moveSpeed_;
-	float baseMoveSpeed_;
+	float dashMoveSpeed_;
 
 	// スライディング可能時間
 	int slidingInputBufferTime;
@@ -190,6 +194,9 @@ private:
 	float range_;
 	float rangeMax_;
 
+	// 現在の状態表すステート
+	PLAYER_STATE state_;
+
 	// 掴み状態を表すステート
-	GrasbbingState grabState_ = GrasbbingState::NOT_GRABBING;
+	GRABBING_STATE grabState_;
 };
