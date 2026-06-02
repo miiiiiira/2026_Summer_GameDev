@@ -1,6 +1,7 @@
 #include "PlayerController.h"
 
 #include "../../../Common/Manager/Input/InputManager.h"
+#include "../../../Common/Manager/System/SystemManager.h"
 #include "../../../Common/Math/Math.h"
 
 #include "../../Object.h"
@@ -230,7 +231,7 @@ void PlayerController::Move()
 	VECTOR dir = Math::VECTOR_ZERO;
 
 	// ゲームパッドが接続数で処理を分ける
-	if (GetJoypadNum() == 0)
+	if (SystemManager::GetInstance().GetIsDevice())
 	{
 		// WASDで移動する
 		if (InputManager::GetInstance()->IsNew(KEY_INPUT_W)) { dir = { 0.0f, 0.0f, 1.0f }; }
