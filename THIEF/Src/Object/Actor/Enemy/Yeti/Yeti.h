@@ -39,15 +39,6 @@ public:
 		MAX,
 	};
 
-	// 大きさ
-	static constexpr VECTOR SCALE = { 1.0f,1.0f,1.0f };
-
-	// 向き
-	static constexpr VECTOR DEFAULT_ANGLE = { 0.0f,0.0f,0.0f };
-
-	// 座標
-	static constexpr VECTOR DEFAULT_POS = { 1000.0f,10.0f,500.0f };
-
 	// コンストラクタ
 	Yeti(void);
 
@@ -61,6 +52,17 @@ public:
 	void Draw(void) override;
 
 private:
+
+	// 大きさ
+	static constexpr VECTOR SCALE = { 1.0f,1.0f,1.0f };
+
+	// 向き
+	static constexpr VECTOR DEFAULT_ANGLE = { 0.0f,0.0f,0.0f };
+
+	// 座標
+	static constexpr VECTOR DEFAULT_POS = { 1000.0f,10.0f,500.0f };
+	
+	static constexpr float CHASE_INTERVAL = 0.5f;
 
 	VECTOR nextWayPoint_;
 
@@ -77,6 +79,7 @@ private:
 	int nextNodeId_;
 	float patrolRadius_;	// 巡回用の半径
 	float viewRadius_;		// 視野用の半径
+	float chaseTimer_;
 
 	void SetMoveDirPatrol(void);
 
@@ -87,6 +90,14 @@ private:
 
 	// 移動処理
 	void Move(void);
+
+	// プレイヤーを見つけたかどうか
+	bool CheckPlayerDiscovery(void);
+
+	// ノードを経由して追従
+	void ChaseNode(void);
+	// 直接追従
+	void ChaseDirect(void);
 
 	// 状態遷移
 	void ChangeState(STATE state);

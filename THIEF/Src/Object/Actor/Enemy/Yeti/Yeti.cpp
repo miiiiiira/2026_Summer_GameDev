@@ -12,7 +12,9 @@ Yeti::Yeti(void)
 	prevNodeId_(-1),
 	prevPrevNodeId_(-1),
 	patrolRadius_(0.0f),
-	nextWayPoint_{0.0f, 0.0f, 0.0f}
+	nextWayPoint_{0.0f, 0.0f, 0.0f},
+	nextNodeId_(0),
+	chaseTimer_(0.0f)
 {
 }
 
@@ -38,8 +40,8 @@ void Yeti::Init(VECTOR* pos, int id)
 	pos_ = DEFAULT_POS;
 	MV1SetPosition(modelId_, pos_);
 
-	patrolRadius_ = 1000.0f;
-	viewRadius_ = 500.0f;
+	patrolRadius_ = 1500.0f;
+	viewRadius_ = 1000.0f;
 
 	// 初期アニメーション再生
 	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
@@ -83,22 +85,13 @@ void Yeti::Load(void)
 
 void Yeti::Update(void)
 {
-	// プレイヤーの遅延回転処理
+	// 遅延回転処理
 	DelayRotate();
 
 	// 行列の合成(子, 親と指定すると親⇒子の順に適用される)
 	MATRIX mat = Matrix::Multiplication(localAngle_, angle_);
 	// 回転行列をモデルに反映
 	MV1SetRotationMatrix(modelId_, mat);
-
-	//float distance = VSize(VSub(*playerPos_, pos_));
-
-	//// 敵の座標から半径以内に無いポイントは除外
-	//if (distance <= viewRadius_)
-	//{
-	//	ChangeState(STATE::CHASE);
-	//}
-
 
 	switch (state_)
 	{
@@ -130,11 +123,7 @@ void Yeti::Draw(void)
 		float distance = VSize(VSub(point.pos, pos_));
 
 		unsigned int color = 0x0000ff;
-		if (point.id == nextNodeId_)
-		{
-			color = 0x006400;
-		}
-		else if (point.id == prevNodeId_)
+		if (point.id == prevNodeId_)
 		{
 			color = 0xff8c00;
 		}
@@ -165,45 +154,6 @@ void Yeti::SetMoveDirPatrol(void)
 	moveDir_ = VNorm(VSub(tmpPos, pos));
 }
 
-int Yeti::SelectNextNode(void)
-{
-	// 有効ノードを探す前に空にする
-	candidates_.clear();
-
-	for (const auto& edge : edgeList_[currentNodeId_])
-	{
-		int nextId = edge.way.id;
-
-		float distance = VSize(VSub(edge.way.pos, pos_));
-
-		// 敵の座標から半径以内に無いポイントは除外
-		if (distance > patrolRadius_) continue;
-
-		// 前回、前々回のノードは除外する
-		if (nextId == prevNodeId_) continue;
-		if (nextId == prevPrevNodeId_) continue;
-
-		candidates_.push_back(nextId);
-	}
-
-	// 候補があった場合ランダムに選ぶ
-	if (!candidates_.empty())
-	{
-		int index = GetRand(static_cast<int>(candidates_.size() - 1));
-		nextNodeId_ = candidates_[index];
-		return candidates_[index];
-	}
-
-	if (prevNodeId_ != -1)
-	{
-		nextNodeId_ = prevNodeId_;
-		return prevNodeId_;
-	}
-
-	nextNodeId_ = currentNodeId_;
-	return currentNodeId_;
-}
-
 void Yeti::ArriveNode(void)
 {
 	// 次のノードを選ぶ
@@ -218,6 +168,42 @@ void Yeti::ArriveNode(void)
 	nextWayPoint_ = way_[currentNodeId_].pos;
 }
 
+int Yeti::SelectNextNode(void)
+{
+	// 有効ノードを探す前に空にする
+	candidates_.clear();
+
+	for (const auto& edge : edgeList_[currentNodeId_])
+	{
+		int nextId = edge.way.id;
+
+		float distance = VSquareSize(VSub(edge.way.pos, pos_));
+
+		// 敵の座標から半径以内に無いポイントは除外
+		if (distance > patrolRadius_ * patrolRadius_) continue;
+
+		// 前回、前々回のノードは除外する
+		if (nextId == prevNodeId_) continue;
+		if (nextId == prevPrevNodeId_) continue;
+
+		candidates_.push_back(nextId);
+	}
+
+	// 候補があった場合ランダムに選ぶ
+	if (!candidates_.empty())
+	{
+		int index = GetRand(static_cast<int>(candidates_.size() - 1));
+		return candidates_[index];
+	}
+
+	if (prevNodeId_ != -1)
+	{
+		return prevNodeId_;
+	}
+
+	return currentNodeId_;
+}
+
 void Yeti::Move(void)
 {
 	// 移動量を計算する
@@ -226,6 +212,53 @@ void Yeti::Move(void)
 	pos_ = VAdd(pos_, movePow_);
 	// モデルに座標を設定
 	MV1SetPosition(modelId_, pos_);
+}
+
+bool Yeti::CheckPlayerDiscovery(void)
+{
+	float distance = VSquareSize(VSub(*playerPos_, pos_));
+
+	if (distance <= viewRadius_ * viewRadius_)
+	{
+		ChangeState(STATE::CHASE);
+		return true;
+	}
+	return false;
+}
+
+void Yeti::ChaseNode(void)
+{
+	nextWayPoint_ = path_[nextNodeId_].way.pos;
+	// 移動方向を設定
+	SetMoveDirPatrol();
+
+	VECTOR enemyPos = pos_;
+	enemyPos.y = 0.0f;
+
+	VECTOR targetNode = path_[nextNodeId_].way.pos;
+	targetNode.y = 0.0f;
+
+	// 水平方向の純粋な距離を測る
+	float distance = VSquareSize(VSub(targetNode, enemyPos));
+
+	// 50.0fだと厳しすぎる場合（すり抜けて往復してしまう場合）は、少し判定を広げる（80.0fなど）とより安定します
+	if (distance < 60.0f * 60.0f)
+	{
+		nextNodeId_++;
+	}
+}
+
+void Yeti::ChaseDirect(void)
+{
+	LookPlayer();
+
+	// プレイヤーへの方向ベクトルを計算して正規化
+	VECTOR tmpPlayerPos = *playerPos_;
+	tmpPlayerPos.y = 0.0f;
+	VECTOR tmpEnemyPos = pos_;
+	tmpEnemyPos.y = 0.0f;
+
+	moveDir_ = VNorm(VSub(tmpPlayerPos, tmpEnemyPos));
 }
 
 void Yeti::ChangeState(STATE state)
@@ -313,6 +346,7 @@ void Yeti::ChangePatrol(void)
 void Yeti::ChangeChase(void)
 {
 	moveSpeed_ = 6.0f;
+	chaseTimer_ = 0.0f;
 	animationController_->Play(static_cast<int>(ANIM_TYPE::RUN), true);
 }
 
@@ -332,13 +366,15 @@ void Yeti::ChangeEnd(void)
 {
 }
 
-
 void Yeti::UpdateThink(void)
 {
+	if (CheckPlayerDiscovery()) return;
 }
 
 void Yeti::UpdateIdle(void)
 {
+	if (CheckPlayerDiscovery()) return;
+
 	step_ -= SceneManager::GetInstance()->GetDeltaTime();
 
 	if (step_ < 0.0f)
@@ -351,13 +387,16 @@ void Yeti::UpdateIdle(void)
 
 void Yeti::UpdatePatrol(void)
 {
+	if (CheckPlayerDiscovery()) return;
+
+
 	// 目的地までの距離を測る
 	VECTOR target = VSub(nextWayPoint_, pos_);
 	target.y = 0.0f;
-	float dist = VSize(target);
+	float dist = VSquareSize(target);
 
 	// ある程度近づいたら考えるステートに移る
-	if (dist < 50.0f)
+	if (dist < 50.0f * 50.0f)
 	{
 		ChangeState(STATE::THINK);
 		return;
@@ -368,7 +407,91 @@ void Yeti::UpdatePatrol(void)
 
 void Yeti::UpdateChase(void)
 {
-	LookPlayer();
+	// タイマーを進める
+	chaseTimer_ += SceneManager::GetInstance()->GetDeltaTime();
+
+	if (chaseTimer_ >= CHASE_INTERVAL)
+	{
+		VECTOR enemyPos = pos_;
+		VECTOR playerPos = *playerPos_;
+
+		enemyPos.y = playerPos.y = 10.0f;
+
+		float checkRadius = 0.2f;
+
+		// 線分とモデルの衝突判定
+		MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, playerPos, enemyPos, checkRadius);
+
+		// 当たっていたら、迂回して追従
+		if (res.HitNum > 0)
+		{
+			if (path_.empty())
+			{
+				int playerNearNodeId = 0;
+				float minCost = FLT_MAX;
+				for (const auto& way : way_)
+				{
+					// プレイヤーから一番近いノードを探す
+					float distance = VSquareSize(VSub(*playerPos_, way.pos));
+
+					if (distance < minCost)
+					{
+						minCost = distance;
+						playerNearNodeId = way.id;
+					}
+
+				}
+				int enemyNearNodeId = 0;
+				minCost = FLT_MAX;
+				for (const auto& way : way_)
+				{
+					// 敵からから一番近いノードを探す
+					float distance = VSquareSize(VSub(pos_, way.pos));
+
+					if (distance < minCost)
+					{
+						minCost = distance;
+						enemyNearNodeId = way.id;
+					}
+				}
+				FindPath(enemyNearNodeId, playerNearNodeId);
+				if (path_.size() > 1)
+				{
+					nextNodeId_ = 1;
+				}
+				else
+				{
+					nextNodeId_ = 0;
+				}
+			}
+		}
+
+		// 後始末をする
+		MV1CollResultPolyDimTerminate(res);
+		// 判定が終わったらタイマーをリセットする
+		chaseTimer_ = 0.0f;
+	}
+
+	// 
+	if (path_.empty())
+	{
+		// 直接追従
+		ChaseDirect();
+	}
+	else
+	{
+		// 範囲外チェック
+		if (nextNodeId_ > static_cast<int>(path_.size() - 1))
+		{
+			path_.clear();
+			nextNodeId_ = 0;
+		}
+		else
+		{
+			// ノードを辿る
+			ChaseNode();
+		}
+	}
 	Move();
 }
 

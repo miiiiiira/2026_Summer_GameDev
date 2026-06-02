@@ -100,13 +100,17 @@ std::vector<EnemyBase::Edge> EnemyBase::FindPath(int startNodeId, int goalNodeId
 	// ゴールの最小コストがFLT_MAXのままなら、空のまま返す
 	if (minCosts_[goalNodeId] == FLT_MAX) return path_;
 
-	for (int i = goalNodeId; parentNodes_[i] != -1; i = parentNodes_[i])
+	int i = goalNodeId;
+	while (i != -1)
 	{
 		Edge path;
-		path.way.id = parentNodes_[i];
+		path.way.id = way_[i].id;   // 「現在のノードID」を正しく登録する
+		path.way.pos = way_[i].pos; // ★座標の設定漏れもここで修正！
 		path.cost = minCosts_[i];
 
 		path_.push_back(path);
+
+		i = parentNodes_[i]; // 次の親ノードへ進む
 	}
 
 	// 逆にする
@@ -209,7 +213,7 @@ void EnemyBase::AddEdge(int fromId, int toId)
 
 	float checkRadius = 10.0f;
 
-	// 線分とモデルの衝突判定
+	// カプセルとモデルの衝突判定
 	MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, posA, posB, checkRadius);
 
 	// 当たっていたら、省く
