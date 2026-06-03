@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../Component.h"
-#include "../PlayerController.h"
+#include "../../../../Common/Manager/PlayerStatus/PlayerStatusManager.h"
 #include "UpgradeType.h"
 #include <string>
 #include <vector>
@@ -12,25 +12,6 @@ class TextureManager;
 class Upgrade : public Component
 {
 private:
-
-	// 最大HPの強化値
-	static constexpr float HP_UP_NUM = 20.0f;
-
-	// スタミナ最大値強化値
-	static constexpr float STAMINA_UP_NUM = 20.0f;
-
-	// ダッシュスピード強化値
-	static constexpr float DASHSPPED_UP_NUM = PlayerController::DASH_SPEED * 2.0f;
-
-	// 掴み範囲強化値
-	static constexpr float RANGE_UP_NUM = PlayerController::DEFAULT_RENGE * 1.5f;
-
-	// ジャンプ数強化値
-	static constexpr float JUMP_UP_NUM = 1.0f;
-
-	// HP回復値
-	static constexpr float HEAL_HP_25 = 20.0f;
-	static constexpr float HEAL_HP_50 = 50.0f;
 
 	// アルファ値
 	static constexpr int ALPHA = 128;
@@ -89,8 +70,6 @@ public:
 	void Update(void)override;
 	void Draw2D(void)override;
 
-	// 指定のアップグレードの強化値を確認
-	float GetUpNum(PLAYER_UPGRADE_TYPE upgradeType)const { return upNum_[static_cast<int>(upgradeType)]; }
 	// 最終的に選ばれたアップグレードの種類を返す
 	PLAYER_UPGRADE_TYPE GetFinalizeUpgrade(void)const { return finalizeUpgrade_; }
 	// ステートを渡す
@@ -112,9 +91,6 @@ private:
 	BUTTON_STATE buttonState_[static_cast<int>(PLAYER_UPGRADE_TYPE::MAX)];
 	// 今押されたか
 	bool isTrgDown_[static_cast<int>(PLAYER_UPGRADE_TYPE::MAX)];
-
-	// 強化数値
-	float upNum_[static_cast<int>(PLAYER_UPGRADE_TYPE::MAX)];
 
 	// 選択されたアップグレードの表示座標
 	int posX_[static_cast<int>(SHOP_SLOT::MAX)];

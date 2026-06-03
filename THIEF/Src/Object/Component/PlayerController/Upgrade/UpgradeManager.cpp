@@ -40,11 +40,9 @@ void UpgradeManager::Update(void)
 
 	upgrade_->Update();
 
-	if (upgrade_->GetState() == Upgrade::STATE::APPLY)
+	if (upgrade_->GetState() == Upgrade::UPGRADE_STATE::APPLY)
 	{
-		auto finalizeUpgrade = upgrade_->GetFinalizeUpgrade();
-
-		ApplyUpgrade(finalizeUpgrade);
+		ApplyUpgrade();
 		isUpgradeEnd_ = true;
 	}
 }
@@ -56,13 +54,12 @@ void UpgradeManager::Draw(void)
 		return;
 	}
 
-	upgrade_->Draw();
+	upgrade_->Draw2D();
 }
 
 void UpgradeManager::Destroy(void)
 {
 	// アップグレードクラスの削除
-	upgrade_->Release();
 	delete upgrade_;
 	upgrade_ = nullptr;
 
@@ -79,7 +76,7 @@ void UpgradeManager::StartIsUpgrade(void)
 	isUpgradeEnd_ = false;
 
 	// アップグレード内容を選択する
-	upgrade_->ChangeState(Upgrade::STATE::SELECT);
+	upgrade_->ChangeState(Upgrade::UPGRADE_STATE::SELECT);
 }
 
 void UpgradeManager::StopIsUpgrade(void)
@@ -87,24 +84,55 @@ void UpgradeManager::StopIsUpgrade(void)
 	isUpgradeEnd_ = true;
 
 	// アップグレード内容を強制適用
-	upgrade_->ChangeState(Upgrade::STATE::APPLY);
-}
-
-void UpgradeManager::SetPlayer(PlayerController* player)
-{
-	player_ = player;
+	upgrade_->ChangeState(Upgrade::UPGRADE_STATE::APPLY);
 }
 
 UpgradeManager::UpgradeManager(void)
 {
 }
 
-void UpgradeManager::ApplyUpgrade(PLAYER_UPGRADE finalizeUpgrade)
+void UpgradeManager::ApplyUpgrade(void)
 {
-	// プレイヤーの中身がなければ処理を行わない
-	if (player_ == nullptr)	return;
+	switch (upgrade_->GetFinalizeUpgrade())
+	{
+	case PLAYER_UPGRADE_TYPE::HP_UP:
 
-	// プレイヤーに強化指示を出し能力強化を反映する
-	player_->Upgrade(finalizeUpgrade, upgrade_->GetUpNum(finalizeUpgrade));
+		PlayerStatusManager::GetInstance().HpUp(HP_UP_NUM);
+
+		break;
+	case PLAYER_UPGRADE_TYPE::STAMINA_UP:
+
+		PlayerStatusManager::GetInstance().StaminaUp(STAMINA_UP_NUM);
+
+		break;
+	case PLAYER_UPGRADE_TYPE::DASH_SPEED_UP:
+
+		PlayerStatusManager::GetInstance().DashSpeedUp(DASHSPPED_UP_NUM);
+
+		break;
+	case PLAYER_UPGRADE_TYPE::RANGE_UP:
+
+		PlayerStatusManager::GetInstance().RangeUp(RANGE_UP_NUM);
+
+		break;
+	case PLAYER_UPGRADE_TYPE::JUMP_NUM_UP:
+
+		PlayerStatusManager::GetInstance().JumpNumUp(JUMP_UP_NUM);
+
+		break;
+	case PLAYER_UPGRADE_TYPE::HEAL_HP_25:
+
+		PlayerStatusManager::GetInstance().HealHp(HEAL_HP_25);
+
+		break;
+	case PLAYER_UPGRADE_TYPE::HEAL_HP_50:
+
+		PlayerStatusManager::GetInstance().HealHp(HEAL_HP_50);
+
+		break;
+	default:
+		break;
+	}
+	
 }
 

@@ -12,7 +12,7 @@ namespace
 		HEAL_HP_25,
 		HEAL_HP_50,
 
-		MAX,
+		MAX
 	};
 
 }

@@ -2,6 +2,7 @@
 
 #include "../../../Common/Manager/Input/InputManager.h"
 #include "../../../Common/Manager/System/SystemManager.h"
+#include "../../../Common/Manager/PlayerStatus/PlayerStatusManager.h"
 #include "../../../Common/Math/Math.h"
 
 #include "../../Object.h"
@@ -33,28 +34,29 @@ void PlayerController::Init()
 	// 掴み状態を表すステート
 	grabState_ = GRABBING_STATE::NOT_GRABBING;
 
+	// プレイヤーステータスマネージャー
+	auto status = PlayerStatusManager::GetInstance().GetPlayerStatus();
+
 	// HPの初期化
-	hp_ = hpMax_ = DEFAULT_HP;
+	hp_ = status.hp_;
 
 	// プレイヤーの移動速度の初期化
-	moveSpeed_ = dashMoveSpeed_ = DEFAULT_SPEED;
+	moveSpeed_ = DEFAULT_SPEED;
 
 	// スライディング可能時間の初期化
 	slidingInputBufferTime = 0;
 
 	// スタミナの初期化
-	stamina_ = staminaMax_ = DEFAULT_STAMINA;
+	stamina_ = status.staminaMax_;
 
 	// スタミナを回復させるまでの時間カウンタの初期化
 	staminaCounter_ = 0;
 
 	// ジャンプ数の初期化
 	jumpNum_ = 0;
-	// ジャンプ可能数の初期化
-	jumpNumMax_ = DEFAULT_JUMP_NUM;
 
 	// 掴み距離の初期化
-	range_ = rangeMax_ = DEFAULT_RENGE;
+	range_ = status.rangeMax_;
 }
 
 // 更新
@@ -95,71 +97,6 @@ void PlayerController::Draw2D()
 	DebugDraw();
 }
 
-void PlayerController::Upgrade(PLAYER_UPGRADE_TYPE finalizeUpgrade, float UpNum)
-{
-	switch (finalizeUpgrade)
-	{
-	case PLAYER_UPGRADE_TYPE::HP_UP:
-
-		// HPの最大値を上げる
-		hp_ += UpNum;
-		hpMax_ += UpNum;
-
-		break;
-	case PLAYER_UPGRADE_TYPE::STAMINA_UP:
-
-		// スタミナの最大値を上げる
-		stamina_ += UpNum;
-		staminaMax_ += UpNum;
-
-		break;
-	case PLAYER_UPGRADE_TYPE::DASH_SPEED_UP:
-
-		// ダッシュ時のスピードを上げる
-		dashMoveSpeed_ += UpNum;
-
-		break;
-	case PLAYER_UPGRADE_TYPE::RANGE_UP:
-
-		// 掴みの範囲を大きくする
-		rangeMax_ += UpNum;
-
-		break;
-	case PLAYER_UPGRADE_TYPE::JUMP_NUM_UP:
-
-		// ジャンプの最大値を上げる
-		jumpNumMax_ += UpNum;
-
-		break;
-	case PLAYER_UPGRADE_TYPE::HEAL_HP_25:
-
-		// HPを回復する
-		hp_ += UpNum;
-
-		// HPの最大値を超えないようにする
-		if (hp_ > hpMax_)
-		{
-			hp_ = hpMax_;
-		}
-
-		break;
-	case PLAYER_UPGRADE_TYPE::HEAL_HP_50:
-
-		// HPを回復する
-		hp_ += UpNum;
-
-		// HPの最大値を超えないようにする
-		if (hp_ > hpMax_)
-		{
-			hp_ = hpMax_;
-		}
-
-		break;
-	default:
-		break;
-	}
-}
-
 Transform* PlayerController::GetTransform()
 {
 	return owner_->GetComponent<Transform>();
@@ -178,7 +115,8 @@ GRABBING_STATE PlayerController::GetGrabbingState(void)
 VECTOR PlayerController::GetLineStartPos(void)
 {
 	// 相対座標
-	VECTOR LOCAL_POS = { 0.0f,0.0f,rangeMax_ };
+	VECTOR LOCAL_POS = 
+	{ 0.0f,0.0f, PlayerStatusManager::GetInstance().GetPlayerStatus().rangeMax_ };
 
 	// 座標に反映
 	VECTOR downPos = CameraUtility::AddCameraPosLocalPos(LOCAL_POS);
@@ -344,8 +282,8 @@ void PlayerController::Dash(void)
 		// カウンターリセット
 		staminaCounter_ = 0;
 
-		// プレイヤーのデフォルト移動速度にダッシュ分の移動速度を加算
-		moveSpeed_ = DEFAULT_SPEED + dashMoveSpeed_;
+		// プレイヤーの移動速度をダッシュの移動速度にする
+		moveSpeed_ = PlayerStatusManager::GetInstance().GetPlayerStatus().dashMoveSpeed_;
 
 		// スライディング可能時間(秒数)を設定
 		slidingInputBufferTime = SLIDING_INPUT_BUFFER_TIME;
@@ -380,8 +318,8 @@ void PlayerController::InputSliding(void)
 	{
 		// スライディング状態にする
 		state_ = PLAYER_STATE::SLIDING;
-		// プレイヤーのデフォルト移動速度にダッシュ分の移動速度を加算
-		moveSpeed_ = DEFAULT_SPEED + dashMoveSpeed_;
+		// プレイヤーのスライディングの移動速度とダッシュ移動速度を加算
+		moveSpeed_ = SLIDING_SPEED+PlayerStatusManager::GetInstance().GetPlayerStatus().dashMoveSpeed_;
 
 		// スライディング可能時間を初期化
 		slidingInputBufferTime = 0;
@@ -432,8 +370,10 @@ void PlayerController::Crouching(void)
 
 void PlayerController::HealStamina(void)
 {
+	float staminaMax = PlayerStatusManager::GetInstance().GetPlayerStatus().staminaMax_;
+
 	// スタミナがMaxだったら処理を飛ばす
-	if (stamina_ >= staminaMax_)return;
+	if (stamina_ >= staminaMax)return;
 
 	// カウンターを進める
 	staminaCounter_++;
@@ -444,10 +384,10 @@ void PlayerController::HealStamina(void)
 		// スタミナ回復させる
 		stamina_ += RECOVERY_STAMINA;
 
-		if (stamina_ > staminaMax_)
+		if (stamina_ > staminaMax)
 		{
 			// 最大スタミナを超えないようにする
-			stamina_ = staminaMax_;
+			stamina_ = staminaMax;
 		}
 
 		return;
@@ -459,10 +399,10 @@ void PlayerController::HealStamina(void)
 		// スタミナ回復させる
 		stamina_ += RECOVERY_STAMINA;
 
-		if (stamina_ > staminaMax_)
+		if (stamina_ > staminaMax)
 		{
 			// 最大スタミナを超えないようにする
-			stamina_ = staminaMax_;
+			stamina_ = staminaMax;
 		}
 	}
 }
@@ -477,7 +417,7 @@ void PlayerController::Jump(void)
 
 	// ジャンプボタンを押されたかつ、ジャンプ中では無いかつ、ジャンプ回数がMaxまで到達していなかったら
 	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_SPACE)
-		&& jumpNum_ < jumpNumMax_)
+		&& jumpNum_ < PlayerStatusManager::GetInstance().GetPlayerStatus().jumpNumMax_)
 	{
 		// ジャンプした回数を加算
 		++jumpNum_;
@@ -549,6 +489,8 @@ bool PlayerController::RangeUpdate(void)
 	// マウスホイールの回転量を取得
 	wheel = GetMouseWheelRotVol();
 
+	float rangeMax = PlayerStatusManager::GetInstance().GetPlayerStatus().rangeMax_;
+
 	// 回転量が0より大きかったら(ホイールを奥に回転させていたら)
 	if (wheel > 0)
 	{
@@ -556,9 +498,9 @@ bool PlayerController::RangeUpdate(void)
 		range_ += EXTEND_RENGE_MOVE;
 
 		// 最大値が超えないようにする
-		if (range_ > rangeMax_)
+		if (range_ > rangeMax)
 		{
-			range_ = rangeMax_;
+			range_ = rangeMax;
 		}
 
 		// 変更があったらtrueを返す
@@ -589,10 +531,10 @@ void PlayerController::DebugDraw(void)
 	// HPの表示
 	DrawFormatString(10, 50, 0x00fa9a,
 		"HP : %.0f / %.0f",
-		hp_, hpMax_);
+		hp_, PlayerStatusManager::GetInstance().GetPlayerStatus().hpMax_);
 
 	// スタミナの表示
 	DrawFormatString(10, 100, 0xffc800,
 		"スタミナ : %.0f / %.0f",
-		stamina_, staminaMax_);
+		stamina_, PlayerStatusManager::GetInstance().GetPlayerStatus().staminaMax_);
 }

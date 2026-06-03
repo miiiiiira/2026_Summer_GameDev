@@ -30,7 +30,7 @@ void ShopScene::Update(void)
 	if (InputManager::GetInstance()->PushAnyButton())
 	{
 		// ƒQ[ƒ€ƒV[ƒ“‚Ö
-		SceneManager::GetInstance()->PushScene(std::make_shared<GameScene>());
+		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameScene>());
 	}
 }
 

@@ -34,33 +34,20 @@ public:
 	// プレイヤーの掴み距離の最小値
 	static constexpr float MIN_RENGE = 50.0f;
 
-	// ダッシュ時の移動速度
-	static constexpr float DASH_SPEED = 10.0f;
-
-	// プレイヤーの掴み距離
-	static constexpr float DEFAULT_RENGE = 400.0f;
-
-private:
-	// HP
-	static constexpr float DEFAULT_HP = 100.0f;
-
 	// 通常時移動速度
 	static constexpr float DEFAULT_SPEED = 7.0f;
 
+	// スライディング時移動速度
+	static constexpr float SLIDING_SPEED = 7.0f;
+
 	// スライディング可能時間(0.5秒数)
 	static constexpr int SLIDING_INPUT_BUFFER_TIME = 20;
-
-	// スタミナ
-	static constexpr float DEFAULT_STAMINA = 40.0f;
 
 	// スタミナ回復量
 	static constexpr float RECOVERY_STAMINA = 0.05f;
 
 	// スタミナ回復を行うまでの時間(秒数)
 	static constexpr int RECOVERY_STAMINA_WAIT_TIME = 3 * 60;
-
-	// ジャンプ可能数
-	static constexpr int DEFAULT_JUMP_NUM = 1;
 
 	// 掴み距離を伸ばす時の速度
 	static constexpr float EXTEND_RENGE_MOVE = 10.0f;
@@ -75,9 +62,6 @@ public:
 	void Init() override;		// 初期化
 	void Update() override;		// 更新
 	void Draw2D() override;		// 2D描画
-
-	// アップグレード処理
-	void Upgrade(PLAYER_UPGRADE_TYPE finalizeUpgrade, float UpNum);
 
 	// Transformを返す
 	Transform* GetTransform();
@@ -167,32 +151,26 @@ private:
 	// 移動方向
 	VECTOR moveDir_;
 
-	// HP
+	// 今現在のHP
 	float hp_;
-	float hpMax_;
 
-	// 移動速度
+	// 実際に移動させる移動量
 	float moveSpeed_;
-	float dashMoveSpeed_;
 
 	// スライディング可能時間
 	int slidingInputBufferTime;
 
-	// スタミナ
+	// 今現在のスタミナ
 	float stamina_;
-	float staminaMax_;
 
 	// スタミナを回復させるまでの時間カウンタ
 	int staminaCounter_;
 
 	// ジャンプ数
 	int jumpNum_;
-	// ジャンプ可能回数
-	int jumpNumMax_;
 
-	// 掴み距離
+	// 実際に持っている掴み距離
 	float range_;
-	float rangeMax_;
 
 	// 現在の状態表すステート
 	PLAYER_STATE state_;

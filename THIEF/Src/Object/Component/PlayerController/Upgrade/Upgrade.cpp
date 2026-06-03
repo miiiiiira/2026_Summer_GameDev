@@ -4,8 +4,7 @@
 #include <random>
 #include <algorithm>
 
-//#include "../../../Utility/Collision/CollisionUtility.h"
-//#include "../../../Manager/SoundManager.h"
+#include "../../../../Common/Collision/Collision.h"
 #include "../../../../Common/Manager/System/SystemManager.h"
 #include "../../../../Application.h"
 
@@ -33,36 +32,6 @@ Upgrade::~Upgrade(void)
 
 void Upgrade::Init(void)
 {
-	for (int i = 0; i < static_cast<int>(PLAYER_UPGRADE_TYPE::MAX); i++)
-	{
-		switch (i)
-		{
-		case  static_cast<int>(PLAYER_UPGRADE_TYPE::HP_UP):
-			upNum_[i] = HP_UP_NUM;
-			break;
-		case static_cast<int>(PLAYER_UPGRADE_TYPE::STAMINA_UP):
-			upNum_[i] = STAMINA_UP_NUM;
-			break;
-		case static_cast<int>(PLAYER_UPGRADE_TYPE::DASH_SPEED_UP):
-			upNum_[i] = DASHSPPED_UP_NUM;
-			break;
-		case static_cast<int>(PLAYER_UPGRADE_TYPE::RANGE_UP):
-			upNum_[i] = RANGE_UP_NUM;
-			break;
-		case static_cast<int>(PLAYER_UPGRADE_TYPE::JUMP_NUM_UP):
-			upNum_[i] = JUMP_UP_NUM;
-			break;
-		case static_cast<int>(PLAYER_UPGRADE_TYPE::HEAL_HP_25):
-			upNum_[i] = HEAL_HP_25;
-			break;
-		case static_cast<int>(PLAYER_UPGRADE_TYPE::HEAL_HP_50):
-			upNum_[i] = HEAL_HP_50;
-			break;
-		default:
-			break;
-		}
-	}
-
 	// 全てのアップグレードの種類を保持するvector
 	allUpgrades_ = {
 		PLAYER_UPGRADE_TYPE::HP_UP, PLAYER_UPGRADE_TYPE::STAMINA_UP, PLAYER_UPGRADE_TYPE::DASH_SPEED_UP,
@@ -173,18 +142,18 @@ void Upgrade::ConfirmUpgrade(void)
 
 }
 
-//
+
 //void Upgrade::MouseSelect(void)
 //{
-//	auto prevPlace = place_;
+//	auto prevPlace = slot_;
 //
 //	// 当たり判定取る
-//	for (int i = 0; i < static_cast<int>(PLACE::MAX); i++)
+//	for (int i = 0; i < static_cast<int>(SHOP_SLOT::MAX); i++)
 //	{
 //		// 全て初期化する
 //		buttonState_[i] = BUTTON_STATE::DEFAULE;
 //
-//		if (CollisionUtility::RectangleAndMouse(pos_[i], COL_SIZE_X, COL_SIZE_Y))
+//		if (Collision::HitMouse2Box(pos_[i], COL_SIZE_X, COL_SIZE_Y))
 //		{
 //			ChangePlace(static_cast<PLACE>(i));
 //
@@ -221,12 +190,6 @@ void Upgrade::ConfirmUpgrade(void)
 //			ChangePlace(PLACE::MAX);
 //			isTrgDown_[i] = false;
 //		}
-//	}
-//
-//	if (place_ != prevPlace && place_ != PLACE::MAX)
-//	{
-//		// 何も選択されていない状態から選択されたらSEを流す
-//		SoundManager::GetInstance().Play(SoundManager::SE::SELECT);
 //	}
 //
 //}
