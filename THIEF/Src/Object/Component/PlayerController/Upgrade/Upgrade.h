@@ -3,6 +3,7 @@
 #include "../../Component.h"
 #include "../../../../Common/Manager/PlayerStatus/PlayerStatusManager.h"
 #include "UpgradeType.h"
+#include "../../../../Common/Math/Vector2.h"
 #include <string>
 #include <vector>
 
@@ -29,7 +30,27 @@ private:
 	static constexpr int SPACE_Y = COL_SIZE_Y + 50;
 
 	// 描画画像の縦横数
-	static constexpr int DRAW_NUM_XY = 2;
+	static constexpr int DRAW_NUM_X = 4;
+	static constexpr int DRAW_NUM_Y = 2;
+
+	// 最大HPの強化値
+	static constexpr float HP_UP_NUM = 20.0f;
+
+	// スタミナ最大値強化値
+	static constexpr float STAMINA_UP_NUM = 20.0f;
+
+	// ダッシュスピード強化値
+	static constexpr float DASHSPPED_UP_NUM = PlayerStatusManager::DASH_SPEED * 0.5f;
+
+	// 掴み範囲強化値
+	static constexpr float RANGE_UP_NUM = PlayerStatusManager::DEFAULT_RENGE * 0.5f;
+
+	// ジャンプ数強化値
+	static constexpr int JUMP_UP_NUM = 1;
+
+	// HP回復値
+	static constexpr float HEAL_HP_25 = 25.0f;
+	static constexpr float HEAL_HP_50 = 50.0f;
 
 public:
 	enum class SHOP_SLOT
@@ -48,7 +69,6 @@ public:
 	enum class UPGRADE_STATE
 	{
 		SELECT,
-		CONFIRM,
 		APPLY,
 		NON,
 	};
@@ -63,6 +83,12 @@ public:
 		MAX,		// 最大数
 	};
 
+	struct UpgradeData
+	{
+		PLAYER_UPGRADE_TYPE type; // タイプ
+		int price; // 金額
+	};
+
 	Upgrade(void);
 	~Upgrade(void);
 
@@ -71,7 +97,7 @@ public:
 	void Draw2D(void)override;
 
 	// 最終的に選ばれたアップグレードの種類を返す
-	PLAYER_UPGRADE_TYPE GetFinalizeUpgrade(void)const { return finalizeUpgrade_; }
+	UpgradeData GetFinalizeUpgrade(void)const { return finalizeUpgrade_; }
 	// ステートを渡す
 	UPGRADE_STATE GetState(void)const { return state_; }
 
@@ -83,32 +109,25 @@ public:
 
 private:
 
-	// 下地
-	int baseHandle_[static_cast<int>(BUTTON_STATE::MAX)];
-	// テキスト
-	int textHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::MAX)];
-	// ボタンの状態
-	BUTTON_STATE buttonState_[static_cast<int>(PLAYER_UPGRADE_TYPE::MAX)];
-	// 今押されたか
-	bool isTrgDown_[static_cast<int>(PLAYER_UPGRADE_TYPE::MAX)];
+	int imgHandle_[static_cast<int>(BUTTON_STATE::MAX)];
 
 	// 選択されたアップグレードの表示座標
-	int posX_[static_cast<int>(SHOP_SLOT::MAX)];
-	int posY_[static_cast<int>(SHOP_SLOT::MAX)];
+	Vector2 pos_[static_cast<int>(SHOP_SLOT::MAX)];
 
 	// 4つ選択する前のアップグレードの全種類
 	std::vector<PLAYER_UPGRADE_TYPE>allUpgrades_;
 	// 4つ選択した後のアップグレードの全種類
-	std::vector<PLAYER_UPGRADE_TYPE>selectUpgrades_;
+	std::vector<UpgradeData>selectUpgrades_;
 
-	PLAYER_UPGRADE_TYPE finalizeUpgrade_;
+	UpgradeData finalizeUpgrade_;
 
 	UPGRADE_STATE state_;
 	SHOP_SLOT slot_;
 
 	// どの能力をアップグレードするか選択を行う
 	void SelectUpgrade(void);
-	void ConfirmUpgrade(void);
+	// プレイヤーにアップグレードの指示を行う
+	void ApplyUpgrade(void);
 
 	// マウスの選択処理
 	void MouseSelect(void);
@@ -117,7 +136,6 @@ private:
 	void PadSelect(void);
 
 	void SelectInit(void);
-	void ConfirmInit(void);
-	void ApplyInit(void);
+
 };
 
