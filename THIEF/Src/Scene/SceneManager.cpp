@@ -2,7 +2,7 @@
 
 #include "Loading/Loading.h"
 #include "TitleScene/TitleScene.h"
-#include "GameScene/GameScene.h"
+#include "Shop/ShopScene.h"
 #include "../Application.h"
 
 #include "../Common/Manager/System/SystemManager.h"
@@ -54,6 +54,9 @@ void SceneManager::Init(void)
 	// ゲームオーバー判定用初期化
 	isOver_ = false;
 
+	// 現在のステージを初期化
+	currentStage_ = STAGE_NUM::STAGE_1;
+
 	// 最初はタイトル画面から
 	ChangeScene(std::make_shared<TitleScene>());
 
@@ -89,7 +92,7 @@ void SceneManager::Init3D(void)
 	// フォグを発生させる奥行きの最小、最大距離
 	SetFogStartEnd(FOG_START, FOG_END);
 	// フォグの密度を設定
-	SetFogDensity(0.5f);
+	SetFogDensity(0.3f);
 }
 
 // 更新
@@ -269,10 +272,18 @@ const float& SceneManager::GetDeltaTime(void)
 
 void SceneManager::TrueGameClear(void)
 {
+	// フラグを立てる
 	isClear_ = true;
+
+	// 現在のステージを初期化
+	currentStage_ = STAGE_NUM::STAGE_1;
 }
 
 void SceneManager::TrueGameOver(void)
 {
+	// フラグを立てる
 	isOver_ = true;
+
+	// 現在のステージを初期化
+	currentStage_ = STAGE_NUM::STAGE_1;
 }

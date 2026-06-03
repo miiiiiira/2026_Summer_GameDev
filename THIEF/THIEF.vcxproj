@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Scene\Shop\ShopScene.cpp" />
     <ClCompile Include="Src\Object\Component\Item\Potion\Potion.cpp" />
     <ClCompile Include="Src\Common\Crosshair\Crosshair.cpp" />
     <ClCompile Include="Src\Common\Manager\Score\ScoreManager.cpp" />
@@ -70,6 +71,7 @@
     <ClCompile Include="Src\Object\Actor\Enemy\Yeti\Yeti.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Scene\Shop\ShopScene.h" />
     <ClInclude Include="Src\Object\Component\Item\Potion\Potion.h" />
     <ClInclude Include="Src\Common\Crosshair\Crosshair.h" />
     <ClInclude Include="Src\Common\Manager\Score\ScoreManager.h" />

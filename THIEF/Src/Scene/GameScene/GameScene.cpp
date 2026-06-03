@@ -9,6 +9,7 @@
 #include "../SceneManager.h"
 #include "../GameClear/GameClear.h"
 #include "../GameOver/GameOver.h"
+#include "../Shop/ShopScene.h"
 #include "../Pause/Pause.h"
 
 #include "../../Object/Actor/Enemy/Yeti/Yeti.h"
@@ -81,20 +82,30 @@ void GameScene::Load(void)
 	// カメラユーティリティにカメラのポインタを渡す
 	CameraUtility::SetCameraPoint(objectManger_->FindComponentWithTag<Camera>(Tag::Camera));
 
-	// ステージの作成
-	StageCreate();
+	// 現在のステージ数を見て初期化処理を変更
+	switch (SceneManager::GetInstance()->GetCurrentStage())
+	{
+	case STAGE_NUM::STAGE_1:
 
-	// ランタンの作成
-	LanternCreate();
+		// ステージ1の初期化処理
+		Stage1Init();
 
-	// プレイヤーの作成
-	PlayerCreate();
+		break;
+	case STAGE_NUM::STAGE_2:
 
-	// 敵の作成
-	EnemyCreate();
+		// ステージ2の初期化処理
+		Stage2Init();
 
-	// アイテムの作成
-	ItemCreate();
+		break;
+	case STAGE_NUM::STAGE_3:
+		
+		// ステージ3の初期化処理
+		Stage3Init();
+
+		break;
+	default:
+		break;
+	}
 
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 	// スコアマネージャーにアイテムたちを渡す
@@ -109,11 +120,35 @@ void GameScene::LoadEnd(void)
 void GameScene::Update(void)
 {
 #ifdef _DEBUG
-
 	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_C))
 	{
-		// ゲームクリアにする
-		SceneManager::GetInstance()->TrueGameClear();
+		switch (SceneManager::GetInstance()->GetCurrentStage())
+		{
+		case STAGE_NUM::STAGE_1:
+
+			// 次のステージにする
+			SceneManager::GetInstance()->SetCurrentStage(STAGE_NUM::STAGE_2);
+			// ショップに遷移させる
+			SceneManager::GetInstance()->ChangeScene(std::make_shared<ShopScene>());
+
+			break;
+		case STAGE_NUM::STAGE_2:
+
+			// 次のステージにする
+			SceneManager::GetInstance()->SetCurrentStage(STAGE_NUM::STAGE_3);
+			// ショップに遷移させる
+			SceneManager::GetInstance()->ChangeScene(std::make_shared<ShopScene>());
+
+			break;
+		case STAGE_NUM::STAGE_3:
+			// ゲームクリアにする
+			SceneManager::GetInstance()->TrueGameClear();
+			break;
+		default:
+			break;
+		}
+
+		return;
 	}
 
 	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_O))
@@ -395,4 +430,58 @@ void GameScene::ItemCreate(void)
 
 	// ステージにアイテムを渡す
 	stage->SetItem(potion);
+}
+
+void GameScene::Stage1Init(void)
+{
+	// ステージの作成
+	StageCreate();
+
+	// ランタンの作成
+	LanternCreate();
+
+	// プレイヤーの作成
+	PlayerCreate();
+
+	// 敵の作成
+	EnemyCreate();
+
+	// アイテムの作成
+	ItemCreate();
+}
+
+void GameScene::Stage2Init(void)
+{
+	// ステージの作成
+	StageCreate();
+
+	// ランタンの作成
+	LanternCreate();
+
+	// プレイヤーの作成
+	PlayerCreate();
+
+	// 敵の作成
+	EnemyCreate();
+
+	// アイテムの作成
+	ItemCreate();
+}
+
+void GameScene::Stage3Init(void)
+{
+	// ステージの作成
+	StageCreate();
+
+	// ランタンの作成
+	LanternCreate();
+
+	// プレイヤーの作成
+	PlayerCreate();
+
+	// 敵の作成
+	EnemyCreate();
+
+	// アイテムの作成
+	ItemCreate();
 }

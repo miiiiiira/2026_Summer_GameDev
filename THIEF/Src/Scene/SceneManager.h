@@ -4,6 +4,7 @@
 #include <memory>
 #include <chrono>
 #include <DxLib.h>
+#include "GameScene/GameScene.h"
 
 class SceneBase;
 class Loading;
@@ -42,7 +43,7 @@ private:
 public:
 
 	// 環境光のカラー値、アルファ値
-	static constexpr COLOR_F DIF_COLOR = { 0.8f, 0.8f, 0.8f, 1.0f };
+	static constexpr COLOR_F DIF_COLOR = { 0.5f, 0.5f, 0.5f, 1.0f };
 
 	void Init(void);	// 初期化
 	void Init3D(void);	// 3Dの初期化
@@ -81,6 +82,12 @@ public:
 	// ゲームオーバーのフラグをたてる
 	void TrueGameOver(void);
 
+	// 現在のステージ数を渡す
+	const STAGE_NUM GetCurrentStage(void) { return currentStage_; }
+
+	// 現在のステージ数を指定のステージに設定する
+	void SetCurrentStage(const STAGE_NUM& stageNum) { currentStage_ = stageNum; }
+
 private:
 
 	// フォグのスタート位置終了位置
@@ -111,4 +118,7 @@ private:
 	bool isClear_;
 	// ゲームオーバー判定用
 	bool isOver_;
+
+	// 現在のステージを表す
+	STAGE_NUM currentStage_;
 };

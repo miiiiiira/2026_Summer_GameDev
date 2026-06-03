@@ -9,6 +9,13 @@ class Goblet;
 class Yeti;
 class Crosshair;
 
+enum STAGE_NUM
+{
+	STAGE_1,
+	STAGE_2,
+	STAGE_3,
+};
+
 class GameScene : public SceneBase
 {
 public:
@@ -37,4 +44,9 @@ private:
 
 	// クロスヘア
 	Crosshair* crosshair_;
+
+	// ステージ数別の初期化処理
+	void Stage1Init(void);
+	void Stage2Init(void);
+	void Stage3Init(void);
 };
