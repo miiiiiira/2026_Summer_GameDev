@@ -43,7 +43,7 @@ void EnemyBase::Release(void)
 	}
 }
 
-std::vector<EnemyBase::Edge> EnemyBase::FindPath(int startNodeId, int goalNodeId)
+void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 {
 	path_.clear();
 
@@ -97,9 +97,6 @@ std::vector<EnemyBase::Edge> EnemyBase::FindPath(int startNodeId, int goalNodeId
 		}
 	}
 
-	// ゴールの最小コストがFLT_MAXのままなら、空のまま返す
-	if (minCosts_[goalNodeId] == FLT_MAX) return path_;
-
 	int i = goalNodeId;
 	while (i != -1)
 	{
@@ -115,8 +112,6 @@ std::vector<EnemyBase::Edge> EnemyBase::FindPath(int startNodeId, int goalNodeId
 
 	// 逆にする
 	std::reverse(path_.begin(), path_.end());
-
-	return path_;
 }
 
 void EnemyBase::LoadCsvData(void)
@@ -196,14 +191,8 @@ void EnemyBase::LookPlayer(void)
 	// 方向から角度（ラジアン）に変換
 	angle_.y = atan2(moveDir_.x, moveDir_.z);
 
-	// モデルの方向が正の負の方向を向いているので、補正
-	angle_.y += Math::Deg2Rad(180.0f);
-
 	// 回転はY軸のみ
 	angle_.x = angle_.z = 0.0f;
-
-	// モデルに角度を設定
-	MV1SetRotationXYZ(modelId_, angle_);
 }
 
 void EnemyBase::AddEdge(int fromId, int toId)

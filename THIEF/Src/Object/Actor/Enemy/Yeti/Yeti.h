@@ -64,6 +64,8 @@ private:
 	
 	static constexpr float CHASE_INTERVAL = 0.5f;
 
+	static constexpr float LOST_LIMIT_TIME = 10.0f;
+
 	VECTOR nextWayPoint_;
 
 	// 更新ステップ
@@ -80,6 +82,7 @@ private:
 	float patrolRadius_;	// 巡回用の半径
 	float viewRadius_;		// 視野用の半径
 	float chaseTimer_;
+	float targetLostTimer_;
 
 	void SetMoveDirPatrol(void);
 
@@ -91,13 +94,21 @@ private:
 	// 移動処理
 	void Move(void);
 
+	float GetDistance(VECTOR pos1, VECTOR pos2);
+
 	// プレイヤーを見つけたかどうか
 	bool CheckPlayerDiscovery(void);
+
+	// 一番近いノードを探す
+	int FindNearestNode(VECTOR pos);
 
 	// ノードを経由して追従
 	void ChaseNode(void);
 	// 直接追従
 	void ChaseDirect(void);
+
+	// 追従用の線分かステージと当たっているかどうか
+	bool CheckChaseLineCollision(VECTOR pPos, VECTOR ePos);
 
 	// 状態遷移
 	void ChangeState(STATE state);
