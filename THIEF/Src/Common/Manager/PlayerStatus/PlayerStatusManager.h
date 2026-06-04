@@ -8,7 +8,7 @@ public:
 	static constexpr float DEFAULT_HP = 100.0f;
 
 	// ダッシュ時の移動速度
-	static constexpr float DASH_SPEED = 20.0f;
+	static constexpr float DASH_SPEED = 15.0f;
 
 	// プレイヤーの掴み距離
 	static constexpr float DEFAULT_RENGE = 400.0f;
@@ -25,11 +25,11 @@ public:
 		float hp_;
 		float hpMax_;
 
-		// 移動速度
-		float dashMoveSpeed_;
-
 		// スタミナ
 		float staminaMax_;
+
+		// 移動速度
+		float dashMoveSpeed_;
 
 		// ジャンプ可能回数
 		int jumpNumMax_;

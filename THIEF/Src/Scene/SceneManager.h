@@ -72,11 +72,15 @@ public:
 	const float& GetTotalTime(void);
 	const float& GetDeltaTime(void);
 
+	// ステージクリアかどうか取得
+	const bool GetIsStageClear(void) { return isStageClear_; }
 	// ゲームクリアかどうか取得
 	const bool GetIsClear(void) { return isClear_; }
 	// ゲームオーバーかどうか取得
 	const bool GetIsOver(void) { return isOver_; }
 
+	// ステージクリアのフラグをたてる
+	void TrueStageClear(void);
 	// ゲームクリアのフラグをたてる
 	void TrueGameClear(void);
 	// ゲームオーバーのフラグをたてる
@@ -114,6 +118,8 @@ private:
 	int mainScreen_;
 	bool isShader_;
 
+	// ステージクリア判定用
+	bool isStageClear_;
 	// ゲームクリア判定用
 	bool isClear_;
 	// ゲームオーバー判定用

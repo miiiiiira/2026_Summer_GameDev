@@ -122,37 +122,8 @@ void GameScene::Update(void)
 #ifdef _DEBUG
 	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_C))
 	{
-		switch (SceneManager::GetInstance()->GetCurrentStage())
-		{
-		case STAGE_NUM::STAGE_1:
-
-			// 次のステージにする
-			SceneManager::GetInstance()->SetCurrentStage(STAGE_NUM::STAGE_2);
-			// 納品した文の金額をショップで使える金額に加算
-			ScoreManager::GetInstance().AddTotalPrice(ScoreManager::GetInstance().GetDeliveryPrice());
-			// ショップに遷移させる
-			SceneManager::GetInstance()->ChangeScene(std::make_shared<ShopScene>());
-
-			break;
-		case STAGE_NUM::STAGE_2:
-
-			// 次のステージにする
-			SceneManager::GetInstance()->SetCurrentStage(STAGE_NUM::STAGE_3);
-			// 納品した文の金額をショップで使える金額に加算
-			ScoreManager::GetInstance().AddTotalPrice(ScoreManager::GetInstance().GetDeliveryPrice());
-			// ショップに遷移させる
-			SceneManager::GetInstance()->ChangeScene(std::make_shared<ShopScene>());
-
-			break;
-		case STAGE_NUM::STAGE_3:
-			// ゲームクリアにする
-			SceneManager::GetInstance()->TrueGameClear();
-			break;
-		default:
-			break;
-		}
-
-		return;
+		// ステージクリアにする
+		SceneManager::GetInstance()->TrueStageClear();
 	}
 
 	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_O))
@@ -183,13 +154,28 @@ void GameScene::Update(void)
 
 	if (SceneManager::GetInstance()->GetIsClear())
 	{
+		// トータルスコアを初期化
+		ScoreManager::GetInstance().ResetTotalPrice();
+		// ゲームクリアシーンへ
 		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameClear>());
 		return;
 	}
 
 	if (SceneManager::GetInstance()->GetIsOver())
 	{
+		// トータルスコアを初期化
+		ScoreManager::GetInstance().ResetTotalPrice();
+		// ゲームオーバーシーンへ
 		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameOver>());
+		return;
+	}
+
+	if (SceneManager::GetInstance()->GetIsStageClear())
+	{
+		// 納品した文の金額をショップで使える金額に加算
+		ScoreManager::GetInstance().AddTotalPrice(ScoreManager::GetInstance().GetDeliveryPrice());
+		// ショップシーンへ
+		SceneManager::GetInstance()->ChangeScene(std::make_shared<ShopScene>());
 		return;
 	}
 

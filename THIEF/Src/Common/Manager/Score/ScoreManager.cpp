@@ -56,12 +56,18 @@ void ScoreManager::Destroy()
 
 void ScoreManager::ResetGame()
 {
-	totalPrice_ = deliveryPrice_ = 0;
+	deliveryPrice_ = 0;
+}
+
+void ScoreManager::ResetTotalPrice(void)
+{
+	totalPrice_ = 0;
 }
 
 ScoreManager::ScoreManager(void)
 {
 	ResetGame();
+	ResetTotalPrice();
 
 	// –Ú•W‹àŠz‚ğ‰Šú‰»
 	targetPrice_ = TARGET_PRICE;

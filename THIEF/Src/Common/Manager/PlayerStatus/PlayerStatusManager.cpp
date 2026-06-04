@@ -48,6 +48,7 @@ void PlayerStatusManager::ResetStatus()
 void PlayerStatusManager::HpUp(float upNum)
 {
 	// HP‚ÌÅ‘å’l‚ğã‚°‚é
+	status_.hp_ += upNum;
 	status_.hpMax_ += upNum;
 }
 

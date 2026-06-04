@@ -27,6 +27,9 @@ public:
 	//リセット
 	void ResetGame(void);
 
+	// トータル金額をリセット
+	void ResetTotalPrice(void);
+
 	// アイテム設定
 	void SetItems(std::vector<Item*> items) { items_ = items; }
 
@@ -44,6 +47,9 @@ public:
 	
 	// ゲームクリア後のショップで使える金額に加算
 	void AddTotalPrice(const int deliveryPrice) { totalPrice_ += deliveryPrice; }
+	
+	// ゲームクリア後のショップで使える金額を減算
+	void SubTotalPrice(const int deliveryPrice) { totalPrice_ -= deliveryPrice; }
 
 	// ゲームクリア後のショップで使える金額を返す
 	const int GetTotalPrice(void) const { return totalPrice_; }

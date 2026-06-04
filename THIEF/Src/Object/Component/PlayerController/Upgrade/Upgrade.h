@@ -6,6 +6,7 @@
 #include "../../../../Common/Math/Vector2.h"
 #include <string>
 #include <vector>
+#include <utility>
 
 class UIManager;
 class TextureManager;
@@ -18,20 +19,24 @@ private:
 	static constexpr int ALPHA = 128;
 
 	// 基準座標
-	static constexpr int POS_X = 300;
-	static constexpr int POS_Y = 200;
+	static constexpr float POS_X = 40.0f;
+	static constexpr float POS_Y = 200.0f;
 
 	// 当たり判定を行うサイズ
-	static constexpr int COL_SIZE_X = 256;
-	static constexpr int COL_SIZE_Y = 128;
+	static constexpr float COL_SIZE_X = 200.0f;
+	static constexpr float COL_SIZE_Y = 100.0f;
 
 	// 画像間(余白)の大きさ
-	static constexpr int SPACE_X = COL_SIZE_X + 150;
-	static constexpr int SPACE_Y = COL_SIZE_Y + 50;
+	static constexpr float SPACE_X = COL_SIZE_X + 40.0f;
+	static constexpr float SPACE_Y = COL_SIZE_Y + 100.0f;
 
 	// 描画画像の縦横数
 	static constexpr int DRAW_NUM_X = 4;
 	static constexpr int DRAW_NUM_Y = 2;
+
+	// soldOutのオフセット
+	static constexpr float SOLDOUT_OFFSET_X = 11.5f;
+	static constexpr float SOLDOUT_OFFSET_Y = -9.5f;
 
 	// 最大HPの強化値
 	static constexpr float HP_UP_NUM = 20.0f;
@@ -40,10 +45,10 @@ private:
 	static constexpr float STAMINA_UP_NUM = 20.0f;
 
 	// ダッシュスピード強化値
-	static constexpr float DASHSPPED_UP_NUM = PlayerStatusManager::DASH_SPEED * 0.5f;
+	static constexpr float DASHSPPED_UP_NUM = PlayerStatusManager::DASH_SPEED * 0.2f;
 
 	// 掴み範囲強化値
-	static constexpr float RANGE_UP_NUM = PlayerStatusManager::DEFAULT_RENGE * 0.5f;
+	static constexpr float RANGE_UP_NUM = PlayerStatusManager::DEFAULT_RENGE * 0.2f;
 
 	// ジャンプ数強化値
 	static constexpr int JUMP_UP_NUM = 1;
@@ -108,16 +113,19 @@ public:
 	void ChangeShopSlot(SHOP_SLOT slot) { slot_ = slot; }
 
 private:
-
+	// 画像
 	int imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::MAX)];
+
+	// 売り切れ画像
+	int soldOutImg_;
 
 	// 選択されたアップグレードの表示座標
 	Vector2 pos_[static_cast<int>(SHOP_SLOT::MAX)];
 
-	// 4つ選択する前のアップグレードの全種類
+	// 選択する前のアップグレードの全種類
 	std::vector<PLAYER_UPGRADE_TYPE>allUpgrades_;
-	// 4つ選択した後のアップグレードの全種類
-	std::vector<UpgradeData>selectUpgrades_;
+	// 選択した後のアップグレード種類、決定した金額、買われたかどうか(true / 買われてない、false / 買われた)を入れる
+	std::vector<std::pair<UpgradeData, bool>> selectUpgrades_;
 
 	UpgradeData finalizeUpgrade_;
 

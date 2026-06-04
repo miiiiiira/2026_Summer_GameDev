@@ -123,8 +123,8 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 			// 目標金額を達成していたら
 			if (deliveryPrice >= targetPrice)
 			{
-				// ゲームクリアへ
-				SceneManager::GetInstance()->TrueGameClear();
+				// ステージクリアへ
+				SceneManager::GetInstance()->TrueStageClear();
 				return;
 			}
 

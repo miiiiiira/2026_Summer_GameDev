@@ -38,7 +38,7 @@ public:
 	static constexpr float DEFAULT_SPEED = 7.0f;
 
 	// スライディング時移動速度
-	static constexpr float SLIDING_SPEED = 7.0f;
+	static constexpr float SLIDING_SPEED = 3.0f;
 
 	// スライディング可能時間(0.5秒数)
 	static constexpr int SLIDING_INPUT_BUFFER_TIME = 20;

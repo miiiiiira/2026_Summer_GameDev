@@ -57,6 +57,8 @@ void SceneManager::Init(void)
 
 	isShader_ = true;
 
+	// ステージクリア判定用初期化
+	isStageClear_ = false;
 	// ゲームクリア判定用初期化
 	isClear_ = false;
 	// ゲームオーバー判定用初期化
@@ -223,6 +225,9 @@ void SceneManager::ChangeScene(std::shared_ptr<SceneBase>scene)
 		scenes_.back() = scene;
 	}
 
+
+	// ステージクリア判定用初期化
+	isStageClear_ = false;
 	// ゲームクリア判定用初期化
 	isClear_ = false;
 	// ゲームオーバー判定用初期化
@@ -284,6 +289,25 @@ const float& SceneManager::GetDeltaTime(void)
 	return mDeltaTime;
 }
 
+void SceneManager::TrueStageClear(void)
+{
+	// フラグを立てる
+	isStageClear_ = true;
+
+	int current = static_cast<int>(currentStage_);
+	current++;
+	if (current >= static_cast<int>(STAGE_MAX))
+	{
+		// ゲームクリアにする
+		TrueGameClear();
+	}
+	else
+	{
+		// 次のステージへ
+		currentStage_ = static_cast<STAGE_NUM>(current);
+	}
+}
+
 void SceneManager::TrueGameClear(void)
 {
 	// フラグを立てる
@@ -291,6 +315,9 @@ void SceneManager::TrueGameClear(void)
 
 	// 現在のステージを初期化
 	currentStage_ = STAGE_NUM::STAGE_1;
+
+	// プレイヤーのステータスを初期化
+	PlayerStatusManager::GetInstance().ResetStatus();
 }
 
 void SceneManager::TrueGameOver(void)
@@ -300,4 +327,7 @@ void SceneManager::TrueGameOver(void)
 
 	// 現在のステージを初期化
 	currentStage_ = STAGE_NUM::STAGE_1;
+
+	// プレイヤーのステータスを初期化
+	PlayerStatusManager::GetInstance().ResetStatus();
 }
