@@ -109,7 +109,7 @@ public:
 
 private:
 
-	int imgHandle_[static_cast<int>(BUTTON_STATE::MAX)];
+	int imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::MAX)];
 
 	// 選択されたアップグレードの表示座標
 	Vector2 pos_[static_cast<int>(SHOP_SLOT::MAX)];

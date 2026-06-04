@@ -128,6 +128,8 @@ void GameScene::Update(void)
 
 			// 次のステージにする
 			SceneManager::GetInstance()->SetCurrentStage(STAGE_NUM::STAGE_2);
+			// 納品した文の金額をショップで使える金額に加算
+			ScoreManager::GetInstance().AddTotalPrice(ScoreManager::GetInstance().GetDeliveryPrice());
 			// ショップに遷移させる
 			SceneManager::GetInstance()->ChangeScene(std::make_shared<ShopScene>());
 
@@ -136,6 +138,8 @@ void GameScene::Update(void)
 
 			// 次のステージにする
 			SceneManager::GetInstance()->SetCurrentStage(STAGE_NUM::STAGE_3);
+			// 納品した文の金額をショップで使える金額に加算
+			ScoreManager::GetInstance().AddTotalPrice(ScoreManager::GetInstance().GetDeliveryPrice());
 			// ショップに遷移させる
 			SceneManager::GetInstance()->ChangeScene(std::make_shared<ShopScene>());
 

@@ -19,6 +19,8 @@ public:
 	void Update(void);
 	// •`‰æ
 	void Draw(void);
+	// ‰ğ•úˆ—
+	void Release(void);
 
 	// ‰ğ•úˆ—
 	void Destroy(void);

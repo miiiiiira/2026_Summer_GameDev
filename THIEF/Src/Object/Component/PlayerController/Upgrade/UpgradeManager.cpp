@@ -51,12 +51,15 @@ void UpgradeManager::Draw(void)
 	upgrade_->Draw2D();
 }
 
-void UpgradeManager::Destroy(void)
+void UpgradeManager::Release(void)
 {
 	// アップグレードクラスの削除
 	delete upgrade_;
 	upgrade_ = nullptr;
+}
 
+void UpgradeManager::Destroy(void)
+{
 	if (instance_ != nullptr)
 	{
 		// インスタンスのメモリ解放

@@ -184,6 +184,9 @@ public:
 	// タイトル遷移
 	bool PushAnyButton(void);
 
+	// 確定ボタン
+	bool ConfirmButton(void);
+
 private:
 
 	// キー情報

@@ -27,6 +27,7 @@ Upgrade::~Upgrade(void)
 
 void Upgrade::Init(void)
 {
+	//imgHandle_ = LoadGraph();
 
 	// 全てのアップグレードの種類を保持するvector
 	allUpgrades_ = {
@@ -54,7 +55,7 @@ void Upgrade::Init(void)
 
 	// スロットの数分回
 	for (int i = 0; i < static_cast<int>(SHOP_SLOT::MAX); ++i) {
-		size_t randomIndex = dist(gen); // ランダムなインデックスを生成
+		int randomIndex = dist(gen); // ランダムなインデックスを生成
 		int price = priceDist(gen);     // ランダムな金額（数値）を生成
 
 		// 構造体に「アップグレードのタイプ」と「決定した金額」をセットして追加
@@ -106,16 +107,17 @@ void Upgrade::Update(void)
 
 void Upgrade::Draw2D(void)
 {
-	// 背景
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, ALPHA);
-	DrawBox(0, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, 0xa9a9a9, true);
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-
+	// 画像描画
 	for (int i = 0; i < selectUpgrades_.size(); ++i)
 	{
-		DrawGraph(pos_[i].x, pos_[i].y,
-			imgHandle_[static_cast<int>(selectUpgrades_[i].type)], true);
+		DrawBox(pos_[i].x, pos_[i].y,
+			pos_[i].x+COL_SIZE_X, pos_[i].y+COL_SIZE_Y,0xff0000, true);
 	}
+	//for (int i = 0; i < selectUpgrades_.size(); ++i)
+	//{
+	//	DrawGraph(pos_[i].x, pos_[i].y,
+	//		imgHandle_[static_cast<int>(selectUpgrades_[i].type)], true);
+	//}
 }
 
 void Upgrade::SelectUpgrade(void)
@@ -191,15 +193,17 @@ void Upgrade::MouseSelect(void)
 			ChangeShopSlot(static_cast<SHOP_SLOT>(i));
 
 			// 確定ボタンが押されたら処理を行う
-			//if(InputManager::GetInstance()->ConfirmUp())
-			//{
-			//	// 決定したアップグレードの種類を保存
-			//	finalizeUpgrade_.type = selectUpgrades_[static_cast<int>(slot_)].type;
-			//	finalizeUpgrade_.price = selectUpgrades_[static_cast<int>(slot_)].price;
+			if(InputManager::GetInstance()->ConfirmButton())
+			{
+				// ここで持ってるお金が足りるかどうか確認
 
-			//	// 確定に移行
-			//	ChangeState(UPGRADE_STATE::APPLY);
-			//}
+				// 決定したアップグレードの種類を保存
+				finalizeUpgrade_.type = selectUpgrades_[static_cast<int>(slot_)].type;
+				finalizeUpgrade_.price = selectUpgrades_[static_cast<int>(slot_)].price;
+
+				// 確定に移行
+				ChangeState(UPGRADE_STATE::APPLY);
+			}
 
 			break;
 		}
@@ -332,8 +336,5 @@ void Upgrade::SelectInit(void)
 	// 初期化
 	finalizeUpgrade_.type = PLAYER_UPGRADE_TYPE::MAX;
 	finalizeUpgrade_.price = 0;
-
-	// マウスを表示させる
-	SetMouseDispFlag(true);
 }
 

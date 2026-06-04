@@ -212,6 +212,12 @@ bool InputManager::PushAnyButton(void)
 		|| IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::X) || IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::Y);
 }
 
+bool InputManager::ConfirmButton(void)
+{
+	return   FindMouse(MOUSE_INPUT_LEFT).keyTrgDown
+		|| IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::A);
+}
+
 InputManager::InputManager(void)
 {
 	mouseInput_ = -1;

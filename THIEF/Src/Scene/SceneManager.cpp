@@ -9,6 +9,7 @@
 #include "../Common/Manager/Score/ScoreManager.h"
 #include "../Common/Manager/Input/InputManager.h"
 #include "../Common/Manager/PlayerStatus/PlayerStatusManager.h"
+#include "../Object/Component/PlayerController/Upgrade/UpgradeManager.h"
 #include "../Common/Shader/Shader.h"
 
 SceneManager* SceneManager::instance_ = nullptr;
@@ -39,6 +40,9 @@ void SceneManager::Init(void)
 
 	//プレイヤーのステータス管理生成
 	PlayerStatusManager::CreateInstance();
+
+	//アップグレード管理生成
+	UpgradeManager::CreateInstance();
 
 	// 3D情報の初期化
 	Init3D();
@@ -191,6 +195,9 @@ void SceneManager::Delete(void)
 
 	// プレイヤーのステータス管理解放
 	PlayerStatusManager::GetInstance().Destroy();
+
+	// アップグレード管理解放
+	UpgradeManager::GetInstance().Destroy();
 
 	// ロード画面の削除
 	load_->Release();
