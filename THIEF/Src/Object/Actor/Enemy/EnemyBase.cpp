@@ -195,6 +195,22 @@ void EnemyBase::LookPlayer(void)
 	angle_.x = angle_.z = 0.0f;
 }
 
+float EnemyBase::GetDistance(VECTOR pos1, VECTOR pos2)
+{
+	return VSquareSize(VSub(pos1, pos2));
+}
+
+bool EnemyBase::CheckPlayerDiscovery(float radius)
+{
+	float distance = GetDistance(*playerPos_, pos_);
+
+	if (distance <= radius * radius)
+	{
+		return true;
+	}
+	return false;
+}
+
 void EnemyBase::AddEdge(int fromId, int toId)
 {
 	VECTOR posA = way_[fromId].pos;

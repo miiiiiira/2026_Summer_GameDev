@@ -94,11 +94,6 @@ private:
 	// 移動処理
 	void Move(void);
 
-	float GetDistance(VECTOR pos1, VECTOR pos2);
-
-	// プレイヤーを見つけたかどうか
-	bool CheckPlayerDiscovery(void);
-
 	// 一番近いノードを探す
 	int FindNearestNode(VECTOR pos);
 

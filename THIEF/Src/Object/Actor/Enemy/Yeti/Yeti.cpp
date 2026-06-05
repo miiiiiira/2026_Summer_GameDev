@@ -217,22 +217,6 @@ void Yeti::Move(void)
 	MV1SetPosition(modelId_, pos_);
 }
 
-float Yeti::GetDistance(VECTOR pos1, VECTOR pos2)
-{
-	return VSquareSize(VSub(pos1, pos2));
-}
-
-bool Yeti::CheckPlayerDiscovery(void)
-{
-	float distance = GetDistance(*playerPos_, pos_);
-
-	if (distance <= viewRadius_ * viewRadius_)
-	{
-		return true;
-	}
-	return false;
-}
-
 int Yeti::FindNearestNode(VECTOR pos)
 {
 	int nearNodeId = 0;
@@ -422,7 +406,7 @@ void Yeti::ChangeEnd(void)
 
 void Yeti::UpdateThink(void)
 {
-	if (CheckPlayerDiscovery())
+	if (CheckPlayerDiscovery(viewRadius_))
 	{
 		ChangeState(STATE::CHASE);
 		return;
@@ -431,7 +415,7 @@ void Yeti::UpdateThink(void)
 
 void Yeti::UpdateIdle(void)
 {
-	if (CheckPlayerDiscovery())
+	if (CheckPlayerDiscovery(viewRadius_))
 	{
 		ChangeState(STATE::CHASE);
 		return;
@@ -449,7 +433,7 @@ void Yeti::UpdateIdle(void)
 
 void Yeti::UpdatePatrol(void)
 {
-	if (CheckPlayerDiscovery())
+	if (CheckPlayerDiscovery(viewRadius_))
 	{
 		ChangeState(STATE::CHASE);
 		return;

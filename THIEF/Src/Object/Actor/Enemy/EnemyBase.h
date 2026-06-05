@@ -75,6 +75,10 @@ protected:
 	// プレイヤー追従処理
 	void LookPlayer(void);
 
+	float GetDistance(VECTOR pos1, VECTOR pos2);
+
+	// プレイヤーを見つけたかどうか
+	bool CheckPlayerDiscovery(float radius);
 
 private:
 	void LoadCsvData(void);
