@@ -7,12 +7,13 @@
 #include "../SceneManager.h"
 #include "../../Common/Collision/Collision.h"
 #include "../MainMenu/MainMenu.h"
+#include "../../Object/Component/PlayerController/Upgrade/UpgradeManager.h"
+#include "../../Object/Component/PlayerController/Upgrade/Upgrade.h"
 
 Confirm::Confirm(void)
 {
 	confirmImg_ = -1;
-	quitImg_ = -1;
-	mainMenuImg_ = -1;
+	buyUpgradeImg_ = -1;
 	frameImg_ = -1;
 }
 
@@ -23,23 +24,54 @@ Confirm::~Confirm(void)
 void Confirm::Init(void)
 {
 	ChangeSelect(SELECT::NONE);
-
-	switch (confirmType_)
-	{
-	case TYPE::QUIT:
-		confirmImg_ = quitImg_;
-		break;
-	case TYPE::MAIN_MENU:
-		confirmImg_ = mainMenuImg_;
-		break;
-	}
 }
 
 void Confirm::Load(void)
 {
-	quitImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmQuit.png").c_str());			// QUITの時の確認画面
-	mainMenuImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmMainMenu.png").c_str());	// MAIN MENUの時の確認画面
+
+	switch (confirmType_)
+	{
+	case TYPE::QUIT:
+		confirmImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmQuit.png").c_str());			// QUITの時の確認画面;
+		break;
+	case TYPE::MAIN_MENU:
+		confirmImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmMainMenu.png").c_str());	// MAIN MENUの時の確認画面
+		break;
+	case TYPE::BUY_UPGRADE:
+
+		PLAYER_UPGRADE_TYPE type = UpgradeManager::GetInstance().GetUpgrade()->GetFinalizeUpgrade().type;
+
+		switch (type)
+		{
+		case PLAYER_UPGRADE_TYPE::HP_UP:
+			buyUpgradeImg_ = LoadGraph("Data/Image/ConfirmBuyHpUp.png");
+			break;
+		case PLAYER_UPGRADE_TYPE::STAMINA_UP:
+			buyUpgradeImg_= LoadGraph("Data/Image/ConfirmBuyStaminaUp.png");
+			break;
+		case PLAYER_UPGRADE_TYPE::DASH_SPEED_UP:
+			buyUpgradeImg_ = LoadGraph("Data/Image/ConfirmBuyDashSpeedUp.png");
+			break;
+		case PLAYER_UPGRADE_TYPE::RANGE_UP:
+			buyUpgradeImg_ = LoadGraph("Data/Image/ConfirmBuyRangeUp.png");
+			break;
+		case PLAYER_UPGRADE_TYPE::JUMP_NUM_UP:
+			buyUpgradeImg_ = LoadGraph("Data/Image/ConfirmBuyJumpNumUp.png");
+			break;
+		case PLAYER_UPGRADE_TYPE::HEAL_HP_25:
+			buyUpgradeImg_ = LoadGraph("Data/Image/ConfirmBuyHealHp25.png");
+			break;
+		case PLAYER_UPGRADE_TYPE::HEAL_HP_50:
+			buyUpgradeImg_ = LoadGraph("Data/Image/ConfirmBuyHealHp50.png");
+			break;
+		default:
+			break;
+		}
+		break;
+	}
+
 	frameImg_ = LoadGraph((Application::PATH_IMAGE + "frame.png").c_str());					// フレーム画像
+
 	// 配列をクリアにしてから、画像を追加
 	selectButtons_.clear();
 	// YES画像
@@ -115,10 +147,8 @@ void Confirm::Release(void)
 
 	DeleteGraph(frameImg_);
 	frameImg_ = -1;
-	DeleteGraph(mainMenuImg_);
-	mainMenuImg_ = -1;
-	DeleteGraph(quitImg_);
-	quitImg_ = -1;
+	DeleteGraph(buyUpgradeImg_);
+	buyUpgradeImg_ = -1;
 	confirmImg_ = -1;
 
 }

@@ -8,6 +8,8 @@
 #include "../../../../Common/Manager/System/SystemManager.h"
 #include "../../../../Common/Manager/Input/InputManager.h"
 #include "../../../../Common/Manager/Score/ScoreManager.h"
+#include "../../../../Scene/Confirm/Confirm.h"
+#include "../../../../Scene/SceneManager.h"
 #include "../../../../Application.h"
 
 Upgrade::Upgrade(void)
@@ -38,6 +40,7 @@ Upgrade::~Upgrade(void)
 
 void Upgrade::Init(void)
 {
+
 	// 画像のロード
 	imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::HP_UP)] = LoadGraph("Data/Image/hpUp.png");
 	imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::STAMINA_UP)] = LoadGraph("Data/Image/staminaUp.png");
@@ -68,7 +71,14 @@ void Upgrade::Init(void)
 
 
 	// ランダムの範囲(ステージ数によってランダムの範囲を高めにする)でお金を決める
-	std::uniform_int_distribution<size_t> priceDist(500, 1500);
+	std::uniform_int_distribution<size_t> priceDist;
+
+	// TODO ステージ数によってお金の範囲変える
+	//switch (scenemanager)
+	//{
+	//default:
+	//	break;
+	//}
 
 	// HP回復の出現数の最高値を決めておく(最大2つ)
 	int healNum = 2;
@@ -247,7 +257,6 @@ void Upgrade::MouseSelect(void)
 	// 当たり判定取る
 	for (int i = 0; i < static_cast<int>(SHOP_SLOT::MAX); i++)
 	{
-
 		// 買われていてないなら次の処理へ
 		if (!selectUpgrades_[i].second)continue;
 
@@ -255,7 +264,6 @@ void Upgrade::MouseSelect(void)
 		if (Collision::HitMouse2Box(pos_[i], COL_SIZE_X, COL_SIZE_Y))
 		{
 			ChangeShopSlot(static_cast<SHOP_SLOT>(i));
-
 
 			// 確定ボタンが押されているかつ、お金が足りているなら
 			if (InputManager::GetInstance()->ConfirmButton()
@@ -407,5 +415,9 @@ void Upgrade::SelectInit(void)
 	// 初期化
 	finalizeUpgrade_.type = PLAYER_UPGRADE_TYPE::MAX;
 	finalizeUpgrade_.price = 0;
+}
+
+void Upgrade::Confirm(void)
+{
 }
 

@@ -25,6 +25,9 @@ public:
 	// 解放処理
 	void Destroy(void);
 
+	// アップデートを渡す
+	Upgrade* GetUpgrade(void) { return upgrade_; }
+
 	// アップグレードを終わらせる
 	void TrueIsUpgradeEnd(void) { isUpgradeEnd_ = true; }
 

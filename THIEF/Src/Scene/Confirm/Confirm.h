@@ -3,6 +3,7 @@
 #include "../SceneBase.h"
 #include <DxLib.h>
 #include "../../Application.h"
+#include "../../Object/Component/PlayerController/Upgrade/UpgradeType.h"
 
 
 class Confirm : public SceneBase
@@ -14,6 +15,7 @@ public:
 		NONE,
 		QUIT,
 		MAIN_MENU,
+		BUY_UPGRADE,
 	};
 
 	enum class SELECT
@@ -78,8 +80,7 @@ private:
 	TYPE confirmType_;					// どの確認画面化
 
 	int confirmImg_;					// 画像ハンドル
-	int quitImg_;						// QUIT画像ハンドル
-	int mainMenuImg_;					// MAIN MENU画像ハンドル
+	int buyUpgradeImg_;					// BUY UPGRADE画像ハンドル
 	int frameImg_;						// フレーム画像ハンドル
 };
 

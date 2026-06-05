@@ -7,9 +7,11 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <memory>
 
 class UIManager;
 class TextureManager;
+class Confirm;
 
 class Upgrade : public Component
 {
@@ -74,6 +76,7 @@ public:
 	enum class UPGRADE_STATE
 	{
 		SELECT,
+		CONFIRM,
 		APPLY,
 		NON,
 	};
@@ -112,7 +115,9 @@ public:
 	// 指定のショップスロットへ変更する
 	void ChangeShopSlot(SHOP_SLOT slot) { slot_ = slot; }
 
+
 private:
+
 	// 画像
 	int imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::MAX)];
 
@@ -145,5 +150,6 @@ private:
 
 	void SelectInit(void);
 
+	void Confirm(void);
 };
 
