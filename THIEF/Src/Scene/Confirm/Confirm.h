@@ -80,7 +80,6 @@ private:
 	TYPE confirmType_;					// どの確認画面化
 
 	int confirmImg_;					// 画像ハンドル
-	int buyUpgradeImg_;					// BUY UPGRADE画像ハンドル
 	int frameImg_;						// フレーム画像ハンドル
 };
 

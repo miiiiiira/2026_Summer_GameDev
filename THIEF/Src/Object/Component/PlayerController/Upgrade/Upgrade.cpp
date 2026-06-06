@@ -10,6 +10,7 @@
 #include "../../../../Common/Manager/Score/ScoreManager.h"
 #include "../../../../Scene/Confirm/Confirm.h"
 #include "../../../../Scene/SceneManager.h"
+#include "../../../../Scene/Confirm/Confirm.h"
 #include "../../../../Application.h"
 
 Upgrade::Upgrade(void)
@@ -21,6 +22,7 @@ Upgrade::Upgrade(void)
 	slot_ = SHOP_SLOT::MAX;
 
 	soldOutImg_ = -1;
+	confirm_ = nullptr;
 }
 
 Upgrade::~Upgrade(void)
@@ -40,6 +42,7 @@ Upgrade::~Upgrade(void)
 
 void Upgrade::Init(void)
 {
+	confirm_ = std::make_shared<Confirm>();
 
 	// 画像のロード
 	imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::HP_UP)] = LoadGraph("Data/Image/hpUp.png");
@@ -70,15 +73,39 @@ void Upgrade::Init(void)
 	std::uniform_int_distribution<size_t> dist(0, allUpgrades_.size() - 1);
 
 
-	// ランダムの範囲(ステージ数によってランダムの範囲を高めにする)でお金を決める
+	// デフォルト状態
 	std::uniform_int_distribution<size_t> priceDist;
 
-	// TODO ステージ数によってお金の範囲変える
-	//switch (scenemanager)
-	//{
-	//default:
-	//	break;
-	//}
+	// ステージ数によってお金の範囲（最小値、最大値）を決める
+	size_t minPrice = 0;
+	size_t maxPrice = 0;
+
+	switch (SceneManager::GetInstance()->GetPrevStage())
+	{
+	case STAGE_1:
+
+		minPrice = 1000;
+		maxPrice = 1500;
+
+		break; 
+	case STAGE_2:
+
+		minPrice = 2000;
+		maxPrice = 3000;
+
+		break;
+	case STAGE_3:
+
+		minPrice = 3500;
+		maxPrice = 5000;
+
+		break;
+	default:
+		break;
+	}
+
+	// 決まった範囲を分配器にセットする
+	priceDist.param(std::uniform_int_distribution<size_t>::param_type(minPrice, maxPrice));
 
 	// HP回復の出現数の最高値を決めておく(最大2つ)
 	int healNum = 2;
@@ -208,6 +235,11 @@ void Upgrade::SelectUpgrade(void)
 
 void Upgrade::ApplyUpgrade(void)
 {
+	// 本当に買うならお金を減らす
+	ScoreManager::GetInstance().SubTotalPrice(finalizeUpgrade_.price);
+	// 買われたことにする
+	selectUpgrades_[finalizeUpgradeNum_].second = false;
+
 	switch (finalizeUpgrade_.type)
 	{
 	case PLAYER_UPGRADE_TYPE::HP_UP:
@@ -272,16 +304,10 @@ void Upgrade::MouseSelect(void)
 				// 決定したアップグレードの種類を保存
 				finalizeUpgrade_.type = selectUpgrades_[i].first.type;
 				finalizeUpgrade_.price = selectUpgrades_[i].first.price;
-				// ここでfinalizeUpgrade_の情報を使って、それを本当に買うか確認画面を出す
+				finalizeUpgradeNum_ = i;
 
-				// 本当に買うならお金を減らす
-				ScoreManager::GetInstance().SubTotalPrice(selectUpgrades_[i].first.price);
-				// 買われたことにする
-				selectUpgrades_[i].second = false;
-
-
-				// 確定に移行
-				ChangeState(UPGRADE_STATE::APPLY);
+				UpdateConfirm();
+				
 			}
 
 			break;
@@ -417,7 +443,9 @@ void Upgrade::SelectInit(void)
 	finalizeUpgrade_.price = 0;
 }
 
-void Upgrade::Confirm(void)
+void Upgrade::UpdateConfirm(void)
 {
+	confirm_->ChangeType(Confirm::TYPE::BUY_UPGRADE);
+	SceneManager::GetInstance()->PushScene(confirm_);
 }
 

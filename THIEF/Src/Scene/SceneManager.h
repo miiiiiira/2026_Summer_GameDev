@@ -86,6 +86,9 @@ public:
 	// ゲームオーバーのフラグをたてる
 	void TrueGameOver(void);
 
+	// 前のステージ数を渡す
+	const STAGE_NUM GetPrevStage(void) { return prevStage_; }
+
 	// 現在のステージ数を渡す
 	const STAGE_NUM GetCurrentStage(void) { return currentStage_; }
 
@@ -125,6 +128,8 @@ private:
 	// ゲームオーバー判定用
 	bool isOver_;
 
+	// 前のステージを表す
+	STAGE_NUM prevStage_;
 	// 現在のステージを表す
 	STAGE_NUM currentStage_;
 };

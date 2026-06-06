@@ -13,7 +13,6 @@
 Confirm::Confirm(void)
 {
 	confirmImg_ = -1;
-	buyUpgradeImg_ = -1;
 	frameImg_ = -1;
 }
 
@@ -44,25 +43,25 @@ void Confirm::Load(void)
 		switch (type)
 		{
 		case PLAYER_UPGRADE_TYPE::HP_UP:
-			buyUpgradeImg_ = LoadGraph("Data/Image/ConfirmBuyHpUp.png");
+			confirmImg_ = LoadGraph("Data/Image/ConfirmBuyHpUp.png");
 			break;
 		case PLAYER_UPGRADE_TYPE::STAMINA_UP:
-			buyUpgradeImg_= LoadGraph("Data/Image/ConfirmBuyStaminaUp.png");
+			confirmImg_ = LoadGraph("Data/Image/ConfirmBuyStaminaUp.png");
 			break;
 		case PLAYER_UPGRADE_TYPE::DASH_SPEED_UP:
-			buyUpgradeImg_ = LoadGraph("Data/Image/ConfirmBuyDashSpeedUp.png");
+			confirmImg_ = LoadGraph("Data/Image/ConfirmBuyDashSpeedUp.png");
 			break;
 		case PLAYER_UPGRADE_TYPE::RANGE_UP:
-			buyUpgradeImg_ = LoadGraph("Data/Image/ConfirmBuyRangeUp.png");
+			confirmImg_ = LoadGraph("Data/Image/ConfirmBuyRangeUp.png");
 			break;
 		case PLAYER_UPGRADE_TYPE::JUMP_NUM_UP:
-			buyUpgradeImg_ = LoadGraph("Data/Image/ConfirmBuyJumpNumUp.png");
+			confirmImg_ = LoadGraph("Data/Image/ConfirmBuyJumpNumUp.png");
 			break;
 		case PLAYER_UPGRADE_TYPE::HEAL_HP_25:
-			buyUpgradeImg_ = LoadGraph("Data/Image/ConfirmBuyHealHp25.png");
+			confirmImg_ = LoadGraph("Data/Image/ConfirmBuyHealHp25.png");
 			break;
 		case PLAYER_UPGRADE_TYPE::HEAL_HP_50:
-			buyUpgradeImg_ = LoadGraph("Data/Image/ConfirmBuyHealHp50.png");
+			confirmImg_ = LoadGraph("Data/Image/ConfirmBuyHealHp50.png");
 			break;
 		default:
 			break;
@@ -147,8 +146,7 @@ void Confirm::Release(void)
 
 	DeleteGraph(frameImg_);
 	frameImg_ = -1;
-	DeleteGraph(buyUpgradeImg_);
-	buyUpgradeImg_ = -1;
+	DeleteGraph(confirmImg_);
 	confirmImg_ = -1;
 
 }
@@ -172,6 +170,11 @@ void Confirm::UpdateYes(void)
 		break;
 	case TYPE::MAIN_MENU:
 		SceneManager::GetInstance()->JumpScene(std::make_shared<MainMenu>());
+		break;
+	case TYPE::BUY_UPGRADE:
+		UpgradeManager::GetInstance().GetUpgrade()->ChangeState(Upgrade::UPGRADE_STATE::APPLY);
+		// 確認シーンを閉じる（ポーズシーンへ）
+		SceneManager::GetInstance()->PopScene();
 		break;
 	default:
 		break;

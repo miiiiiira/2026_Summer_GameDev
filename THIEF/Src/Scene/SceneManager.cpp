@@ -65,7 +65,7 @@ void SceneManager::Init(void)
 	isOver_ = false;
 
 	// 現在のステージを初期化
-	currentStage_ = STAGE_NUM::STAGE_1;
+	prevStage_ = currentStage_ = STAGE_NUM::STAGE_1;
 
 	// 最初はタイトル画面から
 	ChangeScene(std::make_shared<TitleScene>());
@@ -303,6 +303,8 @@ void SceneManager::TrueStageClear(void)
 	}
 	else
 	{
+		// 前のステージを保持しておく
+		prevStage_ = currentStage_;
 		// 次のステージへ
 		currentStage_ = static_cast<STAGE_NUM>(current);
 	}
@@ -314,7 +316,7 @@ void SceneManager::TrueGameClear(void)
 	isClear_ = true;
 
 	// 現在のステージを初期化
-	currentStage_ = STAGE_NUM::STAGE_1;
+	prevStage_ = currentStage_ = STAGE_NUM::STAGE_1;
 
 	// プレイヤーのステータスを初期化
 	PlayerStatusManager::GetInstance().ResetStatus();
@@ -326,7 +328,7 @@ void SceneManager::TrueGameOver(void)
 	isOver_ = true;
 
 	// 現在のステージを初期化
-	currentStage_ = STAGE_NUM::STAGE_1;
+	prevStage_ = currentStage_ = STAGE_NUM::STAGE_1;
 
 	// プレイヤーのステータスを初期化
 	PlayerStatusManager::GetInstance().ResetStatus();

@@ -76,7 +76,6 @@ public:
 	enum class UPGRADE_STATE
 	{
 		SELECT,
-		CONFIRM,
 		APPLY,
 		NON,
 	};
@@ -117,6 +116,8 @@ public:
 
 
 private:
+	
+	std::shared_ptr<Confirm> confirm_;
 
 	// 画像
 	int imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::MAX)];
@@ -133,12 +134,14 @@ private:
 	std::vector<std::pair<UpgradeData, bool>> selectUpgrades_;
 
 	UpgradeData finalizeUpgrade_;
+	int finalizeUpgradeNum_;
 
 	UPGRADE_STATE state_;
 	SHOP_SLOT slot_;
 
 	// どの能力をアップグレードするか選択を行う
 	void SelectUpgrade(void);
+
 	// プレイヤーにアップグレードの指示を行う
 	void ApplyUpgrade(void);
 
@@ -150,6 +153,7 @@ private:
 
 	void SelectInit(void);
 
-	void Confirm(void);
+	// 確認画面を出す
+	void UpdateConfirm(void);
 };
 
