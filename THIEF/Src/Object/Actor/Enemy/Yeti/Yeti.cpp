@@ -101,6 +101,7 @@ void Yeti::Update(void)
 	case Yeti::STATE::THINK: UpdateThink(); break;
 	case Yeti::STATE::IDLE: UpdateIdle(); break;
 	case Yeti::STATE::PATROL: UpdatePatrol(); break;
+	case Yeti::STATE::SURPRISE: UpdateSurprise(); break;
 	case Yeti::STATE::CHASE: UpdateChase(); break;
 	case Yeti::STATE::ATTACK: UpdateAttack(); break;
 	case Yeti::STATE::HIT_REACT: UpdateHit(); break;
@@ -304,30 +305,15 @@ void Yeti::ChangeState(STATE state)
 
 	switch (state_)
 	{
-	case Yeti::STATE::THINK:
-		ChangeThink();
-		break;
-	case Yeti::STATE::IDLE:
-		ChangeIdle();
-		break;
-	case Yeti::STATE::PATROL:
-		ChangePatrol();
-		break;
-	case Yeti::STATE::CHASE:
-		ChangeChase();
-		break;
-	case Yeti::STATE::ATTACK:
-		ChangeAttack();
-		break;
-	case Yeti::STATE::HIT_REACT:
-		ChangeHit();
-		break;
-	case Yeti::STATE::DEAD:
-		ChangeDead();
-		break;
-	case Yeti::STATE::END:
-		ChangeEnd();
-		break;
+	case Yeti::STATE::THINK: ChangeThink(); break;
+	case Yeti::STATE::IDLE: ChangeIdle(); break;
+	case Yeti::STATE::PATROL: ChangePatrol(); break;
+	case Yeti::STATE::SURPRISE: ChangeSurprise(); break;
+	case Yeti::STATE::CHASE: ChangeChase(); break;
+	case Yeti::STATE::ATTACK: ChangeAttack(); break;
+	case Yeti::STATE::HIT_REACT: ChangeHit(); break;
+	case Yeti::STATE::DEAD: ChangeDead(); break;
+	case Yeti::STATE::END: ChangeEnd(); break;
 	default:
 		break;
 	}
@@ -377,6 +363,12 @@ void Yeti::ChangePatrol(void)
 	moveSpeed_ = 2.0f;
 
 	animationController_->Play(static_cast<int>(ANIM_TYPE::WALK), true);
+}
+
+void Yeti::ChangeSurprise(void)
+{
+	step_ = 2.0f;
+	animationController_->Play(static_cast<int>(ANIM_TYPE::HIT_REACT), false);
 
 }
 
@@ -408,7 +400,7 @@ void Yeti::UpdateThink(void)
 {
 	if (CheckPlayerDiscovery(viewRadius_))
 	{
-		ChangeState(STATE::CHASE);
+		ChangeState(STATE::SURPRISE);
 		return;
 	}
 }
@@ -417,7 +409,7 @@ void Yeti::UpdateIdle(void)
 {
 	if (CheckPlayerDiscovery(viewRadius_))
 	{
-		ChangeState(STATE::CHASE);
+		ChangeState(STATE::SURPRISE);
 		return;
 	}
 
@@ -435,7 +427,7 @@ void Yeti::UpdatePatrol(void)
 {
 	if (CheckPlayerDiscovery(viewRadius_))
 	{
-		ChangeState(STATE::CHASE);
+		ChangeState(STATE::SURPRISE);
 		return;
 	}
 
@@ -452,6 +444,18 @@ void Yeti::UpdatePatrol(void)
 	}
 
 	Move();
+}
+
+void Yeti::UpdateSurprise(void)
+{
+	step_ -= SceneManager::GetInstance()->GetDeltaTime();
+	LookPlayer();
+	if (step_ < 0.0f)
+	{
+		// ‘Ò‹@I—¹
+		ChangeState(STATE::CHASE);
+		return;
+	}
 }
 
 void Yeti::UpdateChase(void)

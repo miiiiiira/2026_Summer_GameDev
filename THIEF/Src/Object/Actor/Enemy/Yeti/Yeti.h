@@ -13,6 +13,7 @@ public:
 		THINK,		// 考える
 		IDLE,		// 待機
 		PATROL,		// 徘徊
+		SURPRISE,	// 見つける
 		CHASE,		// 追いかける
 		ATTACK,		// 攻撃
 		HIT_REACT,	// ダメージ
@@ -110,6 +111,7 @@ private:
 	void ChangeThink(void);
 	void ChangeIdle(void);
 	void ChangePatrol(void);
+	void ChangeSurprise(void);
 	void ChangeChase(void);
 	void ChangeAttack(void);
 	void ChangeHit(void);
@@ -120,6 +122,7 @@ private:
 	void UpdateThink(void);
 	void UpdateIdle(void);
 	void UpdatePatrol(void);
+	void UpdateSurprise(void);
 	void UpdateChase(void);
 	void UpdateAttack(void);
 	void UpdateHit(void);

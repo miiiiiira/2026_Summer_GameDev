@@ -188,9 +188,6 @@ void EnemyBase::LookPlayer(void)
 	// ベクトルの正規化で単位ベクトル（方向）を取得
 	moveDir_ = VNorm(diff);
 
-	// 方向から角度（ラジアン）に変換
-	angle_.y = atan2(moveDir_.x, moveDir_.z);
-
 	// 回転はY軸のみ
 	angle_.x = angle_.z = 0.0f;
 }
