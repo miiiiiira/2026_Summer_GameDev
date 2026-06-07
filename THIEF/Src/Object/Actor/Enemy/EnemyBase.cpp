@@ -203,8 +203,13 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 
 	if (distance > radius * radius) return false;
 
+	if (fabsf(playerPos_->y - pos_.y) > 20.0f) return false;
+
 	VECTOR dirEnemy = VNorm(moveDir_);
 	VECTOR diff = VSub(*playerPos_, pos_);
+	dirEnemy.y = 0.0f;
+	diff.y = 0.0f;
+	dirEnemy = VNorm(dirEnemy);
 	VECTOR dirPlayerForEnemy = VNorm(diff);
 
 	// 内積を使ってベクトルの比較
