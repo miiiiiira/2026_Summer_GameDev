@@ -206,7 +206,7 @@ void Camera::RotGamePad(bool isLimit)
 	angle_.y += dir.x * rotPow;
 
 	// 右スティック上下の傾き
-	angle_.x += dir.z * rotPow;
+	angle_.x -= dir.z * rotPow;
 
 	// 角度制限
 	if (!isLimit)return;

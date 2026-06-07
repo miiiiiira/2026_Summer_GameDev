@@ -28,7 +28,7 @@ public:
 
 	// カメラのX回転上限度角
 	static constexpr float LIMIT_X_UP_RAD = -80.0f * (DX_PI_F / 180.0f);
-	static constexpr float LIMIT_X_DW_RAD = 50.0f * (DX_PI_F / 180.0f);
+	static constexpr float LIMIT_X_DW_RAD = 70.0f * (DX_PI_F / 180.0f);
 
 	// 視点のしきい値(マウス)
 	static constexpr float THRESHOLD = 1.5f;

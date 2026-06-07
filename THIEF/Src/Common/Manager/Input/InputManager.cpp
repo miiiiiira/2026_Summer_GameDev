@@ -251,11 +251,6 @@ const InputManager::MouseInfo& InputManager::FindMouse(int key) const
 	return mouseInfoEmpty_;
 }
 
-InputManager::JOYPAD_TYPE InputManager::GetJPadType(JOYPAD_NO no)
-{
-	return static_cast<InputManager::JOYPAD_TYPE>(GetJoypadType(static_cast<int>(no)));
-}
-
 DINPUT_JOYSTATE InputManager::GetJPadDInputState(JOYPAD_NO no)
 {
 	// コントローラ情報
@@ -306,17 +301,10 @@ InputManager::JOYPAD_IN_STATE InputManager::GetJPadInputState(JOYPAD_NO no)
 
 	JOYPAD_IN_STATE ret = JOYPAD_IN_STATE();
 
-	auto type = GetJPadType(no);
-	
-	switch (type)
+	switch (GetJoypadType(static_cast<int>(no)))
 	{
-	case InputManager::JOYPAD_TYPE::OTHER:
-		break;
-	case InputManager::JOYPAD_TYPE::XBOX_360:
-	{
-	}
-		break;
-	case InputManager::JOYPAD_TYPE::XBOX_ONE:
+
+	case DX_PADTYPE_XBOX_ONE:
 	{
 		auto d = GetJPadDInputState(no);
 		auto x = GetJPadXInputState(no);
@@ -376,47 +364,18 @@ InputManager::JOYPAD_IN_STATE InputManager::GetJPadInputState(JOYPAD_NO no)
 
 	}
 		break;
-	case InputManager::JOYPAD_TYPE::DUAL_SHOCK_4:
+	case DX_PADTYPE_OTHER:
+	case DX_PADTYPE_XBOX_360:
+	case DX_PADTYPE_DUAL_SHOCK_3:
+	case DX_PADTYPE_DUAL_SHOCK_4:
+	case DX_PADTYPE_DUAL_SENSE:
+	case DX_PADTYPE_SWITCH_JOY_CON_L:
+	case DX_PADTYPE_SWITCH_JOY_CON_R:
+	case DX_PADTYPE_SWITCH_PRO_CTRL:
+	case DX_PADTYPE_SWITCH_HORI_PAD:
+	case DX_PADTYPE_NUM:
 		break;
-	case InputManager::JOYPAD_TYPE::DUAL_SENSE:
-	{
-		
-		auto d = GetJPadDInputState(no);
-		int idx;
-
-		//   △
-		// □  〇
-		//   ×
-
-		idx = static_cast<int>(JOYPAD_BTN::Y);
-		ret.ButtonsNew[idx] = d.Buttons[3];// △
-
-		idx = static_cast<int>(JOYPAD_BTN::X);
-		ret.ButtonsNew[idx] = d.Buttons[0];// □
-
-		idx = static_cast<int>(JOYPAD_BTN::B);
-		ret.ButtonsNew[idx] = d.Buttons[2];// 〇
-
-		idx = static_cast<int>(JOYPAD_BTN::A);
-		ret.ButtonsNew[idx] = d.Buttons[1];// ×
-
-		// 左スティック
-		ret.AKeyLX = d.X;
-		ret.AKeyLY = d.Y;
-		
-		// 右スティック
-		ret.AKeyRX = d.Z;
-		ret.AKeyRY = d.Rz;
-
-	}
-		break;
-	case InputManager::JOYPAD_TYPE::SWITCH_JOY_CON_L:
-		break;
-	case InputManager::JOYPAD_TYPE::SWITCH_JOY_CON_R:
-		break;
-	case InputManager::JOYPAD_TYPE::SWITCH_PRO_CTRL:
-		break;
-	case InputManager::JOYPAD_TYPE::MAX:
+	default:
 		break;
 	}
 

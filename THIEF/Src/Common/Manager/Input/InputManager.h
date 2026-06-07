@@ -29,21 +29,6 @@ public:
 		INPUT_KEY = 4096	// キー入力
 	};
 
-	// ゲームコントローラータイプ
-	// DxLib定数、DX_OTHER等に対応
-	enum class JOYPAD_TYPE
-	{
-		OTHER = 0,
-		XBOX_360,
-		XBOX_ONE,
-		DUAL_SHOCK_4,
-		DUAL_SENSE,
-		SWITCH_JOY_CON_L,
-		SWITCH_JOY_CON_R,
-		SWITCH_PRO_CTRL,
-		MAX
-	};
-
 	// ゲームコントローラーボタン
 	enum class JOYPAD_BTN
 	{
@@ -240,9 +225,6 @@ private:
 
 	// 配列の中からマウス情報を取得する
 	const InputManager::MouseInfo& FindMouse(int key) const;
-
-	// 接続されたコントローラの種別を取得する
-	JOYPAD_TYPE GetJPadType(JOYPAD_NO no);
 
 	// コントローラの入力情報を取得する
 	DINPUT_JOYSTATE GetJPadDInputState(JOYPAD_NO no);
