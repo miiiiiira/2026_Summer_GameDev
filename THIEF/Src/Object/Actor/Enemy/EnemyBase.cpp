@@ -201,10 +201,29 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 {
 	float distance = GetDistance(*playerPos_, pos_);
 
-	if (distance <= radius * radius)
+	if (distance > radius * radius) return false;
+
+	VECTOR dirEnemy = VNorm(moveDir_);
+	VECTOR diff = VSub(*playerPos_, pos_);
+	VECTOR dirPlayerForEnemy = VNorm(diff);
+
+	// 内積を使ってベクトルの比較
+	float dot = VDot(dirEnemy, dirPlayerForEnemy);
+	float angle = acosf(dot);
+
+	const float viweRad = Math::Deg2Rad(40.0f);
+
+	// 視野内にいるか確認
+	if (angle <= viweRad)
 	{
-		return true;
+		MV1_COLL_RESULT_POLY hit = MV1CollCheck_Line(stageId_, -1, pos_, *playerPos_);
+
+		if (!hit.HitFlag)
+		{
+			return true;
+		}
 	}
+
 	return false;
 }
 

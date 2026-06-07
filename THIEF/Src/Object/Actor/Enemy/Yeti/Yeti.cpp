@@ -368,6 +368,7 @@ void Yeti::ChangePatrol(void)
 void Yeti::ChangeSurprise(void)
 {
 	step_ = 2.0f;
+	LookPlayer();
 	animationController_->Play(static_cast<int>(ANIM_TYPE::HIT_REACT), false);
 
 }
@@ -449,7 +450,6 @@ void Yeti::UpdatePatrol(void)
 void Yeti::UpdateSurprise(void)
 {
 	step_ -= SceneManager::GetInstance()->GetDeltaTime();
-	LookPlayer();
 	if (step_ < 0.0f)
 	{
 		// ‘Ò‹@I—¹
