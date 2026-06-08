@@ -145,9 +145,6 @@ private:
 	// Transformコンポーネント
 	Transform* transform_ = nullptr;
 
-	// 向き
-	VECTOR angle_;
-
 	// 移動方向
 	VECTOR moveDir_;
 

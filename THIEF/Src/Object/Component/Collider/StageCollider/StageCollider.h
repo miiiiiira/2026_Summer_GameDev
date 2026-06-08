@@ -16,12 +16,6 @@ public:
 	// ステージ設定
 	void SetStage(Stage* stage) { stage_ = stage; }
 
-	// 通常移動
-	VECTOR ResolveMove(VECTOR move);
-
-	// 段差対応移動
-	VECTOR ResolveStepMove(VECTOR move);
-
 	// 接地判定
 	bool IsGround() const { return isGround_; }
 
@@ -30,11 +24,14 @@ public:
 
 private:
 
-	// 地面との当たり判定
-	void FieldCollision();
+	// ステージとの当たり判定
+	void StageCollision(void);
 
-	// 壁との当たり判定
-	void WallCollision();
+	//// 地面との当たり判定
+	//void FieldCollision();
+
+	//// 壁との当たり判定
+	//void WallCollision();
 
 private:
 	// 登れる最大傾斜角

@@ -30,7 +30,7 @@ void Item::Init(void)
 	MV1SetupCollInfo(info_.modelId_, -1);
 
 	// 前回座標初期化
-	info_.prevPos_ = trans_->pos_;
+	trans_->prevPos_ = trans_->pos_;
 
 	// 離された時の座標を初期化
 	info_.grabbedPos_ = trans_->pos_;
@@ -57,7 +57,7 @@ void Item::Update(void)
 	if (!info_.isAlive_)return;
 
 	// 前回座標を更新
-	info_.prevPos_ = trans_->pos_;
+	trans_->prevPos_ = trans_->pos_;
 
 	// 掴まれていたら
 	if (info_.isGrabbed)

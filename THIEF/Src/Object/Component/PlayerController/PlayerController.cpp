@@ -22,11 +22,8 @@ void PlayerController::Init()
 	// オーナーからTransform取得
 	transform_ = owner_->GetComponent<Transform>();
 
-	// モデルの角度
-	angle_ = { 0.0f, 0.0f, 0.0f };
-
 	// 角度から方向に変換する
-	moveDir_ = { sinf(angle_.y), 0.0f, cosf(angle_.y) };
+	moveDir_ = { 0.0f, 0.0f,0.0f };
 
 	// プレイヤーの状態
 	state_ = PLAYER_STATE::IDLE;
@@ -62,11 +59,8 @@ void PlayerController::Init()
 // 更新
 void PlayerController::Update()
 {
-	// 移動方向から角度に変換する
-	float goal = atan2f(moveDir_.x, moveDir_.z);
-
-	// 常に最短経路で補間
-	angle_.y = Math::LerpAngle(angle_.y, goal, COEFFICIENT);
+	// 前回座標を更新
+	transform_->prevPos_ = transform_->pos_;
 
 	// 移動処理
 	Move();

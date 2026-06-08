@@ -22,9 +22,6 @@ struct ItemInfo
 	// Œü‚«
 	VECTOR angle_;
 
-	// ‘O‰ñÀ•W
-	VECTOR prevPos_;
-
 	// —£‚³‚ê‚½‚ÌÀ•W
 	VECTOR grabbedPos_;
 

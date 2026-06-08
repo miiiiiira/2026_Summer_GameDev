@@ -8,4 +8,5 @@ class Transform : public Component
 public:
 	// ç¿ïW
 	VECTOR pos_;
+	VECTOR prevPos_;
 };

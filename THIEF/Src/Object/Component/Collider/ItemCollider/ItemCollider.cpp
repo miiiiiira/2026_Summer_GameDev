@@ -87,7 +87,7 @@ void ItemCollider::StageCollision(void)
 	VECTOR currentPos = item_->GetTransform()->pos_;
 
 	// 前回の座標取得
-	VECTOR prevPos = item_->GetInfo().prevPos_;
+	VECTOR prevPos = item_->GetTransform()->prevPos_;
 
 	// 移動量(前回の座標と現在の座標の差分)
 	VECTOR move = VSub(currentPos, prevPos);
