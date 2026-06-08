@@ -57,6 +57,7 @@ protected:
 	VECTOR jumpPow_;
 	float stepJump_;
 	bool isJump_;
+	bool isNotice_;
 
 	int stageId_ = -1;
 	VECTOR* playerPos_;

@@ -40,6 +40,8 @@ void Yeti::Init(VECTOR* pos, int id)
 	pos_ = DEFAULT_POS;
 	MV1SetPosition(modelId_, pos_);
 
+	moveDir_ = { 0.0f, 0.0f, 0.0f };
+
 	patrolRadius_ = 1500.0f;
 	viewRadius_ = 1000.0f;
 
@@ -53,6 +55,8 @@ void Yeti::Init(VECTOR* pos, int id)
 
 	edgeList_.clear();
 	edgeList_.resize(way_.size());
+
+	isNotice_ = false;
 
 	for (int i = 0; i < static_cast<int>(way_.size()); i++)
 	{
@@ -375,6 +379,7 @@ void Yeti::ChangeChase(void)
 	moveSpeed_ = 6.0f;
 	chaseTimer_ = 0.0f;
 	targetLostTimer_ = 0.0f;
+	isNotice_ = false;
 	animationController_->Play(static_cast<int>(ANIM_TYPE::RUN), true);
 }
 

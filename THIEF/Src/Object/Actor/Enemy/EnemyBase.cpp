@@ -29,6 +29,49 @@ void EnemyBase::Load(void)
 void EnemyBase::Draw(void)
 {
 	MV1DrawModel(modelId_);
+
+#ifdef _DEBUG
+	MATRIX mat = MGetIdent();
+	mat = Matrix::GetMatrixRotateXYZ(angle_);
+
+	const VECTOR dirForwardBase = VGet(0.0f, 0.0f, 1.0f);
+
+	// 前方方向
+	VECTOR forward = VTransform(dirForwardBase, mat);
+
+	// 右
+	MATRIX rightMat = MMult(mat, MGetRotY(Math::Deg2Rad(30.0f)));
+	VECTOR right = VTransform(dirForwardBase, rightMat);
+	// 左
+	MATRIX leftMat = MMult(mat, MGetRotY(Math::Deg2Rad(-30.0f)));
+	VECTOR left = VTransform(dirForwardBase, leftMat);
+
+	VECTOR pos0 = pos_;
+
+	VECTOR pos1 = VAdd(pos0, VScale(forward, 1000.0f));
+	VECTOR pos2 = VAdd(pos0, VScale(left, 1000.0f));
+	VECTOR pos3 = VAdd(pos0, VScale(right, 1000.0f));
+
+	pos0.y = pos1.y = pos2.y = pos3.y = 10.0f;
+
+	if (isNotice_)
+	{
+		DrawTriangle3D(pos0, pos2, pos1,
+			0xcc44cc, true);
+
+		DrawTriangle3D(pos0, pos1, pos3,
+			0xcc44cc, true);
+	}
+	else
+	{
+		DrawTriangle3D(pos0, pos2, pos1,
+			0x00ff00, true);
+
+		DrawTriangle3D(pos0, pos1, pos3,
+			0x00ff00, true);
+	}
+
+#endif //_DEBUG
 }
 
 void EnemyBase::Release(void)
@@ -202,10 +245,19 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 	float distance = GetDistance(*playerPos_, pos_);
 
 	if (distance > radius * radius) return false;
-
 	if (fabsf(playerPos_->y - pos_.y) > 20.0f) return false;
 
-	VECTOR dirEnemy = VNorm(moveDir_);
+	VECTOR dirEnemy = VECTOR();
+	if (VSize(moveDir_) < 0.001f)
+	{
+		dirEnemy.x = sinf(angle_.y);
+		dirEnemy.y = 0.0f;
+		dirEnemy.z = cosf(angle_.y);
+	}
+	else
+	{
+		dirEnemy = VNorm(moveDir_);
+	}
 	VECTOR diff = VSub(*playerPos_, pos_);
 	dirEnemy.y = 0.0f;
 	diff.y = 0.0f;
@@ -216,7 +268,7 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 	float dot = VDot(dirEnemy, dirPlayerForEnemy);
 	float angle = acosf(dot);
 
-	const float viweRad = Math::Deg2Rad(40.0f);
+	const float viweRad = Math::Deg2Rad(30.0f);
 
 	// 視野内にいるか確認
 	if (angle <= viweRad)
@@ -225,11 +277,11 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 
 		if (!hit.HitFlag)
 		{
-			return true;
+			isNotice_ = true;
 		}
 	}
 
-	return false;
+	return isNotice_;
 }
 
 void EnemyBase::AddEdge(int fromId, int toId)
