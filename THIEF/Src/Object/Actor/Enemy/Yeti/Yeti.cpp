@@ -82,12 +82,10 @@ void Yeti::Load(void)
 	{
 		animationController_->AddInFbx(i, 0.5f, i);
 	}
-
 }
 
 void Yeti::Update(void)
 {
-
 	// ’x‰„‰ñ“]ˆ—
 	DelayRotate();
 	
@@ -370,7 +368,6 @@ void Yeti::ChangeSurprise(void)
 	step_ = 2.0f;
 	LookPlayer();
 	animationController_->Play(static_cast<int>(ANIM_TYPE::HIT_REACT), false);
-
 }
 
 void Yeti::ChangeChase(void)
@@ -383,6 +380,8 @@ void Yeti::ChangeChase(void)
 
 void Yeti::ChangeAttack(void)
 {
+	LookPlayer();
+	animationController_->Play(static_cast<int>(ANIM_TYPE::PUNCH), true);
 }
 
 void Yeti::ChangeHit(void)
@@ -464,6 +463,12 @@ void Yeti::UpdateChase(void)
 	VECTOR playerPos = *playerPos_;
 	float distance = VSize(VSub(playerPos, enemyPos));
 
+	if (distance <= 300)
+	{
+		ChangeState(STATE::ATTACK);
+		return;
+	}
+
 	if (distance > viewRadius_)
 	{
 		targetLostTimer_ += SceneManager::GetInstance()->GetDeltaTime();
@@ -544,6 +549,20 @@ void Yeti::UpdateChase(void)
 
 void Yeti::UpdateAttack(void)
 {
+	VECTOR enemyPos = pos_;
+	VECTOR playerPos = *playerPos_;
+	float distance = VSize(VSub(playerPos, enemyPos));
+
+	if (distance > 300)
+	{
+		animationController_->SetLoop(false);
+	}
+
+	if (animationController_->IsEnd())
+	{
+		ChangeState(STATE::CHASE);
+		return;
+	}
 }
 
 void Yeti::UpdateHit(void)

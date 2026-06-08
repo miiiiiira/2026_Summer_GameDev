@@ -143,6 +143,11 @@ bool AnimationController::IsEnd(void) const
 
 }
 
+void AnimationController::SetLoop(bool isLoop)
+{
+	isLoop_ = isLoop;
+}
+
 const AnimationController::Animation& AnimationController::GetPlayAnim(void) const
 {
 	return playAnim_;
