@@ -172,6 +172,39 @@ public:
 	// 確定ボタン
 	bool ConfirmButton(void);
 
+	// 選択ボタン(上)
+	bool SelectUp(void);
+	// 選択ボタン(下)
+	bool SelectDown(void);
+	// 選択ボタン(左)
+	bool SelectLeft(void);
+	// 選択ボタン(右)
+	bool SelectRight(void);
+
+	// ポーズボタン
+	bool PauseButtons(void);
+
+	// プレイヤー操作
+	// ダッシュ
+	bool DashButtons(void);
+	// しゃがみ
+	bool CrouchingButtons(void);
+	// ジャンプ
+	bool JumpButtons(void);
+
+	// 掴む
+	bool IsTrgDownGrabbingButtons(void);
+	bool IsNewGrabbingButtons(void);
+	bool IsUpGrabbingButtons(void);
+
+	// 物との距離を伸ばす
+	bool PushItemButtons(void);
+	// 物との距離を縮ませる
+	bool PullItemButtons(void);
+
+	// ライトとの距離を伸ばす
+	bool PushLightButtons(void);
+
 private:
 
 	// キー情報

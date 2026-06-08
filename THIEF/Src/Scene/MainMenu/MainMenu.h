@@ -10,7 +10,7 @@ class MainMenu : public SceneBase
 {
 public:
 
-	enum class Menu
+	enum class MENU
 	{
 		NONE,
 		PLAY,
@@ -20,7 +20,7 @@ public:
 
 	struct Item
 	{
-		Menu type;
+		MENU type;
 		int graphHandle;
 		int x, y;
 		int sizeX, sizeY;
@@ -57,7 +57,7 @@ private:
 	static constexpr int QUIT_POS_X = 80;
 	static constexpr int QUIT_POS_Y = 550;
 
-	void ChangeSelect(Menu menu);
+	void ChangeSelect(MENU menu);
 
 	// メニュー選択時の処理
 	void UpdatePlay(void);
@@ -72,6 +72,14 @@ private:
 	int frameImg_;						// フレーム画像
 	std::vector<Item> menuButtons_;		// メニューボタンの情報を格納する配列
 
-	Menu currentMenu_;					// 現在選択しているメニュー
+	MENU currentMenu_;					// 現在選択しているメニュー
 
+	// 選択処理
+	void SelectUpgrade(void);
+
+	// マウス選択
+	void MouseSelect(void);
+
+	// パッド選択
+	void PadSelect(void);
 };

@@ -206,16 +206,101 @@ bool InputManager::ChangeDevicePad(void)
 
 bool InputManager::PushAnyButton(void)
 {
-	return  FindMouse(MOUSE_INPUT_LEFT).keyTrgDown 
+	return  FindMouse(MOUSE_INPUT_LEFT).keyTrgDown
 		|| IsTrgDown(KEY_INPUT_SPACE) || IsTrgDown(KEY_INPUT_RETURN)
-		|| IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::A) || IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::B)
-		|| IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::X) || IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::Y);
+		|| IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::A);
 }
 
 bool InputManager::ConfirmButton(void)
 {
 	return   FindMouse(MOUSE_INPUT_LEFT).keyTrgDown
 		|| IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::A);
+}
+
+bool InputManager::SelectUp(void)
+{
+	return IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::UP) || IsPadLStickTrgDown(JOYPAD_NO::PAD1, JOYPAD_STICK::UP);
+}
+
+bool InputManager::SelectDown(void)
+{
+	return IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::DOWN) || IsPadLStickTrgDown(JOYPAD_NO::PAD1, JOYPAD_STICK::DOWN);
+}
+
+bool InputManager::SelectLeft(void)
+{
+	return IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::LEFT) || IsPadLStickTrgDown(JOYPAD_NO::PAD1, JOYPAD_STICK::LEFT);
+}
+
+bool InputManager::SelectRight(void)
+{
+	return IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::RIGHT) || IsPadLStickTrgDown(JOYPAD_NO::PAD1, JOYPAD_STICK::RIGHT);
+}
+
+bool InputManager::PauseButtons(void)
+{
+	return IsTrgDown(KEY_INPUT_ESCAPE) || IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::START);
+}
+
+bool InputManager::DashButtons(void)
+{
+	return IsNew(KEY_INPUT_LSHIFT) || IsPadBtnNew(JOYPAD_NO::PAD1, JOYPAD_BTN::B);
+}
+
+bool InputManager::CrouchingButtons(void)
+{
+	return IsNew(KEY_INPUT_LCONTROL) || IsPadBtnNew(JOYPAD_NO::PAD1, JOYPAD_BTN::LB);
+}
+
+bool InputManager::JumpButtons(void)
+{
+	return IsTrgDown(KEY_INPUT_SPACE) || IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::Y);
+}
+
+bool InputManager::IsTrgDownGrabbingButtons(void)
+{
+	return IsTrgMouseLeft()|| IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::R_TRIGGER);
+}
+
+bool InputManager::IsNewGrabbingButtons(void)
+{
+	return IsClickMouseLeft() || IsPadBtnNew(JOYPAD_NO::PAD1, JOYPAD_BTN::R_TRIGGER);
+}
+
+bool InputManager::IsUpGrabbingButtons(void)
+{
+	return IsTrgUpMouseLeft() || IsPadBtnTrgUp(JOYPAD_NO::PAD1, JOYPAD_BTN::R_TRIGGER);
+}
+
+bool InputManager::PushItemButtons(void)
+{
+	int wheel;
+
+	// マウスホイールの回転量を取得
+	wheel = GetMouseWheelRotVol();
+
+	// 回転量が0より大きかったら(ホイールを奥に回転させていたら)
+	if (wheel > 0 || IsPadBtnNew(JOYPAD_NO::PAD1, JOYPAD_BTN::UP))return true;
+
+	return false;
+}
+
+bool InputManager::PullItemButtons(void)
+{
+	int wheel;
+
+	// マウスホイールの回転量を取得
+	wheel = GetMouseWheelRotVol();
+
+	// 回転量が0より小さかったら(ホイールを手前に回転させていたら)
+	if(wheel < 0 || IsPadBtnNew(JOYPAD_NO::PAD1, JOYPAD_BTN::DOWN))return true;
+
+	return false;
+}
+
+bool InputManager::PushLightButtons(void)
+{
+	return IsNew(KEY_INPUT_Q)||IsPadBtnNew(JOYPAD_NO::PAD1, JOYPAD_BTN::L_TRIGGER);
 }
 
 InputManager::InputManager(void)

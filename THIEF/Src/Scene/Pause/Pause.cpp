@@ -5,6 +5,7 @@
 
 #include "../../Common/Manager/Input/InputManager.h"
 #include "../../Common/Manager/Audio/AudioManager.h"
+#include "../../Common/Manager/System/SystemManager.h"
 #include "../SceneManager.h"
 #include "../../Common/Collision/Collision.h"
 #include "../../Application.h"
@@ -26,7 +27,7 @@ Pause::~Pause(void)
 
 void Pause::Init(void)
 {
-	ChangeSelect(Menu::NONE);
+	ChangeSelect(MENU::NONE);
 
 	confirm_ = std::make_shared<Confirm>();
 }
@@ -39,16 +40,16 @@ void Pause::Load(void)
 	menuButtons_.clear();
 
 	// CONTINUE画像
-	menuButtons_.push_back({ Menu::CONTINUE, LoadGraph((Application::PATH_IMAGE + "continue.png").c_str()),
+	menuButtons_.push_back({ MENU::CONTINUE, LoadGraph((Application::PATH_IMAGE + "continue.png").c_str()),
 								CONTINUE_POS_X, CONTINUE_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
 	// OPTION画像
-	menuButtons_.push_back({ Menu::OPTION, LoadGraph((Application::PATH_IMAGE + "option.png").c_str()),
+	menuButtons_.push_back({ MENU::OPTION, LoadGraph((Application::PATH_IMAGE + "option.png").c_str()),
 								OPTION_POS_X, OPTION_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
 	// MAIN MENU画像
-	menuButtons_.push_back({ Menu::MAINMENU,  LoadGraph((Application::PATH_IMAGE + "mainMenu.png").c_str()),
+	menuButtons_.push_back({ MENU::MAINMENU,  LoadGraph((Application::PATH_IMAGE + "mainMenu.png").c_str()),
 								MAINMENU_POS_X, MAINMENU_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
 	// QUIT画像
-	menuButtons_.push_back({ Menu::QUIT, LoadGraph((Application::PATH_IMAGE + "quit.png").c_str()),
+	menuButtons_.push_back({ MENU::QUIT, LoadGraph((Application::PATH_IMAGE + "quit.png").c_str()),
 								QUIT_POS_X, QUIT_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
 
 }
@@ -60,55 +61,44 @@ void Pause::LoadEnd(void)
 
 void Pause::Update(void)
 {
-
-	// Escape押されると次のシーンへ
-	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_ESCAPE))
+	// Escape押したら
+	if (InputManager::GetInstance()->PauseButtons())
 	{
-		// ゲームシーンへ
+		// ゲームシーンへ戻る(ポーズモードを終了する)
 		SceneManager::GetInstance()->PopScene();
 	}
 
-	Menu nextSelect = Menu::NONE;
-
-	// 衝突判定
-	for (const auto& button : menuButtons_)
-	{
-		if (Collision::HitMouse2Box({ static_cast<float>(button.x), static_cast<float>(button.y) }, 
-										static_cast<float>(button.sizeX), static_cast<float>(button.sizeY)))
-		{
-			nextSelect = button.type;
-			break;
-		}
-	}
-
-	// 最後に一回だけ状態を更新する
-	ChangeSelect(nextSelect);
+	// 選択処理
+	SelectUpgrade();
 
 	// マウスを左クリックされていなかったら、ここで終了
-	if (!InputManager::GetInstance()->IsClickMouseLeft()) return;
+	if (!InputManager::GetInstance()->ConfirmButton()) return;
 
 	// 選択されているメニューがない場合も、ここで終了
-	if (currentMenu_ == Menu::NONE) return;
+	if (currentMenu_ == MENU::NONE) return;
 
 	// クリックされていて、かつメニューが選ばれている場合
 	switch (currentMenu_)
 	{
-	case Menu::CONTINUE:
+	case MENU::CONTINUE:
 		UpdateContinue();
 		break;
 
-	case Menu::OPTION:
+	case MENU::OPTION:
 		UpdateOption();
 		break;
 
-	case Menu::MAINMENU:
+	case MENU::MAINMENU:
 		UpdateMainMenu();
 		break;
 
-	case Menu::QUIT:
+	case MENU::QUIT:
 		UpdateQuit();
 		break;
 	}
+
+	// TODO　決定SEを流す
+
 }
 
 void Pause::Draw(void)
@@ -147,7 +137,7 @@ void Pause::Release(void)
 	handle_ = -1;
 }
 
-void Pause::ChangeSelect(Menu menu)
+void Pause::ChangeSelect(MENU menu)
 {
 	currentMenu_ = menu;
 }
@@ -182,3 +172,104 @@ void Pause::UpdateQuit(void)
 	confirm_->ChangeType(Confirm::TYPE::QUIT);
 	SceneManager::GetInstance()->PushScene(confirm_);
 }
+
+void Pause::SelectUpgrade(void)
+{
+	// 前回の選択物を入れておく
+	MENU prevSelect = currentMenu_;
+
+	if (SystemManager::GetInstance().GetIsDevice())
+	{
+		// マウス選択
+		MouseSelect();
+	}
+	else
+	{
+		// パッド選択
+		PadSelect();
+	}
+
+	// 中身がNONじゃないかつ、選択物が変わっていたら
+	if (currentMenu_ != MENU::NONE
+		&& currentMenu_ != prevSelect)
+	{
+		// TODO　選択SEを流す
+
+	}
+}
+
+void Pause::MouseSelect(void)
+{
+	MENU nextSelect = MENU::NONE;
+
+	// 衝突判定
+	for (const auto& button : menuButtons_)
+	{
+		if (Collision::HitMouse2Box({ static_cast<float>(button.x), static_cast<float>(button.y) },
+			static_cast<float>(button.sizeX), static_cast<float>(button.sizeY)))
+		{
+			nextSelect = button.type;
+			break;
+		}
+	}
+
+	// 最後に一回だけ状態を更新する
+	ChangeSelect(nextSelect);
+}
+
+void Pause::PadSelect(void)
+{
+	auto prevMenu = currentMenu_;
+
+	switch (currentMenu_)
+	{
+	case Pause::MENU::NONE:
+
+		ChangeSelect(MENU::CONTINUE);
+
+		break;
+	case Pause::MENU::CONTINUE:
+		if (InputManager::GetInstance()->SelectDown())
+		{
+			ChangeSelect(MENU::OPTION);
+		}
+		break;
+	case Pause::MENU::OPTION:
+
+		if (InputManager::GetInstance()->SelectUp())
+		{
+			ChangeSelect(MENU::CONTINUE);
+		}
+
+		if (InputManager::GetInstance()->SelectDown())
+		{
+			ChangeSelect(MENU::MAINMENU);
+		}
+
+		break;
+	case Pause::MENU::MAINMENU:
+
+		if (InputManager::GetInstance()->SelectUp())
+		{
+			ChangeSelect(MENU::OPTION);
+		}
+
+		if (InputManager::GetInstance()->SelectDown())
+		{
+			ChangeSelect(MENU::QUIT);
+		}
+
+		break;
+	case Pause::MENU::QUIT:
+
+		if (InputManager::GetInstance()->SelectUp())
+		{
+			ChangeSelect(MENU::MAINMENU);
+		}
+
+		break;
+	default:
+		break;
+	}
+}
+

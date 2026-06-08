@@ -145,8 +145,10 @@ void GameScene::Update(void)
 	// スコアマネージャーの更新
 	ScoreManager::GetInstance().Update();
 
-	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_ESCAPE))
+	if (InputManager::GetInstance()->PauseButtons())
 	{
+		// TODO ポーズモードに入る際のSE
+
 		// ポーズモードへ
 		SceneManager::GetInstance()->PushScene(std::make_shared<Pause>());
 		return;

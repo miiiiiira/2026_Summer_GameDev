@@ -114,7 +114,7 @@ private:
 	void Jump(void);
 
 	// ’Í‚İ”»’èˆ—
-	void Grasping(void);
+	void Grabbing(void);
 
 	// ‚Â‚©‚ß‚é”ÍˆÍ‚Ìİ’è
 	bool RangeUpdate(void);

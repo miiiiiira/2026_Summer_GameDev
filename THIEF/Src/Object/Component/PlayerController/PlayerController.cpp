@@ -81,7 +81,7 @@ void PlayerController::Update()
 	ApplyGravity();
 
 	// 掴み動作処理
-	Grasping();
+	Grabbing();
 
 	// 一定の座標いったら
 	if (transform_->pos_.y < DEAD_POS_Y)
@@ -264,7 +264,7 @@ void PlayerController::ApplyGravity()
 void PlayerController::Dash(void)
 {
 	// もし走るボタンを押されたかつ、しゃがみ状態じゃないかつ、スタミナがあった場合
-	if (InputManager::GetInstance()->IsNew(KEY_INPUT_LSHIFT)
+	if (InputManager::GetInstance()->DashButtons()
 		&& state_ != PLAYER_STATE::CROUCHING
 		&& stamina_ >= 0.1f)
 	{
@@ -314,7 +314,7 @@ void PlayerController::InputSliding(void)
 	}
 
 	// しゃがみボタン押されたら
-	if (InputManager::GetInstance()->IsNew(KEY_INPUT_LCONTROL))
+	if (InputManager::GetInstance()->CrouchingButtons())
 	{
 		// スライディング状態にする
 		state_ = PLAYER_STATE::SLIDING;
@@ -357,7 +357,7 @@ bool PlayerController::SlidingToCrouching(void)
 void PlayerController::Crouching(void)
 {
 	// 左Ctrl押されたかつスライディング中じゃない場合
-	if (InputManager::GetInstance()->IsNew(KEY_INPUT_LCONTROL) &&
+	if (InputManager::GetInstance()->CrouchingButtons() &&
 		state_ != PLAYER_STATE::SLIDING)
 	{
 		// しゃがみ状態にする
@@ -416,7 +416,7 @@ void PlayerController::Jump(void)
 	if (!stageCol) return;
 
 	// ジャンプボタンを押されたかつ、ジャンプ中では無いかつ、ジャンプ回数がMaxまで到達していなかったら
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_SPACE)
+	if (InputManager::GetInstance()->JumpButtons()
 		&& jumpNum_ < PlayerStatusManager::GetInstance().GetPlayerStatus().jumpNumMax_)
 	{
 		// ジャンプした回数を加算
@@ -430,14 +430,14 @@ void PlayerController::Jump(void)
 	}
 }
 
-void PlayerController::Grasping(void)
+void PlayerController::Grabbing(void)
 {
 	switch (grabState_)
 	{
 	case GRABBING_STATE::NOT_GRABBING:
 
 		// 掴もうとしていたら
-		if (InputManager::GetInstance()->IsTrgMouseLeft())
+		if (InputManager::GetInstance()->IsTrgDownGrabbingButtons())
 		{
 			// 状態を変更
 			grabState_ = GRABBING_STATE::TRY_GRABBING;
@@ -447,7 +447,7 @@ void PlayerController::Grasping(void)
 	case GRABBING_STATE::TRY_GRABBING:
 
 		// 掴もうとしていなくなったら
-		if (!InputManager::GetInstance()->IsClickMouseLeft())
+		if (!InputManager::GetInstance()->IsNewGrabbingButtons())
 		{
 			// 状態を変更
 			grabState_ = GRABBING_STATE::NOT_GRABBING;
@@ -467,7 +467,8 @@ void PlayerController::Grasping(void)
 		}
 
 		// マウスの左クリックが今離されたか、マウスの左クリックを押されていなかったら
-		if (InputManager::GetInstance()->IsTrgUpMouseLeft()||!InputManager::GetInstance()->IsClickMouseLeft())
+		if (InputManager::GetInstance()->IsUpGrabbingButtons()
+			||!InputManager::GetInstance()->IsNewGrabbingButtons())
 		{
 			// 掴み動作を終わる
 			grabState_ = GRABBING_STATE::NOT_GRABBING;
@@ -485,16 +486,12 @@ void PlayerController::Grasping(void)
 
 bool PlayerController::RangeUpdate(void)
 {
-	int wheel;
-	// マウスホイールの回転量を取得
-	wheel = GetMouseWheelRotVol();
-
 	float rangeMax = PlayerStatusManager::GetInstance().GetPlayerStatus().rangeMax_;
 
-	// 回転量が0より大きかったら(ホイールを奥に回転させていたら)
-	if (wheel > 0)
+	// 物との距離を大きくする操作が行われていたら
+	if (InputManager::GetInstance()->PushItemButtons())
 	{
-		// 掴める範囲を奥にする
+		// 物との距離を大きくする
 		range_ += EXTEND_RENGE_MOVE;
 
 		// 最大値が超えないようにする
@@ -506,10 +503,10 @@ bool PlayerController::RangeUpdate(void)
 		// 変更があったらtrueを返す
 		return true;
 	}
-	// 回転量が0より小さかったら(ホイールを手前に回転させていたら)
-	else if (wheel < 0)
+	// 物との距離を小さくする操作が行われていたら
+	else if (InputManager::GetInstance()->PullItemButtons())
 	{
-		// 掴める範囲を手前にする
+		// 物との距離を小さくする
 		range_ -= EXTEND_RENGE_MOVE;
 
 		// 最小値が超えないようにする

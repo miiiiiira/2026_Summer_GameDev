@@ -89,7 +89,7 @@ void Lantern::UpdatePos(void)
 
 	// 座標
 	// 方向と同じ要領で、相対座標を回転
-	if (InputManager::GetInstance()->IsNew(KEY_INPUT_Q))
+	if (InputManager::GetInstance()->PushLightButtons())
 	{
 		// ランタンの座標に反映
 		trans->pos_ = CameraUtility::AddCameraPosLocalPos(REACH_MAX_LIGHT);

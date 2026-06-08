@@ -10,19 +10,23 @@
 #include "../../../../Common/Manager/Score/ScoreManager.h"
 #include "../../../../Scene/Confirm/Confirm.h"
 #include "../../../../Scene/SceneManager.h"
-#include "../../../../Scene/Confirm/Confirm.h"
-#include "../../../../Application.h"
+#include "UpgradeManager.h"
 
 Upgrade::Upgrade(void)
 {
+	confirm_ = nullptr;
+
 	finalizeUpgrade_.type = PLAYER_UPGRADE_TYPE::MAX;
 	finalizeUpgrade_.price = 0;
+	upgradeNum_ = -1;
 
 	state_ = UPGRADE_STATE::NON;
-	slot_ = SHOP_SLOT::MAX;
+	slot_ = SHOP_SLOT::NON;
 
 	soldOutImg_ = -1;
-	confirm_ = nullptr;
+	frameImg_ = -1;
+
+	endButtonImg_ = -1;
 }
 
 Upgrade::~Upgrade(void)
@@ -34,6 +38,11 @@ Upgrade::~Upgrade(void)
 	}
 
 	DeleteGraph(soldOutImg_);
+	soldOutImg_ = -1;
+	DeleteGraph(frameImg_);
+	frameImg_ = -1;
+	DeleteGraph(endButtonImg_);
+	endButtonImg_ = -1;
 
 	// 使い終わったらクリア
 	allUpgrades_.clear();
@@ -42,6 +51,7 @@ Upgrade::~Upgrade(void)
 
 void Upgrade::Init(void)
 {
+	// 確認画面
 	confirm_ = std::make_shared<Confirm>();
 
 	// 画像のロード
@@ -53,7 +63,24 @@ void Upgrade::Init(void)
 	imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::HEAL_HP_25)] = LoadGraph("Data/Image/healHp25.png");
 	imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::HEAL_HP_50)] = LoadGraph("Data/Image/healHp50.png");
 
+	// SoldOut画像
 	soldOutImg_ = LoadGraph("Data/Image/SoldOut.png");
+
+	// フレーム画像
+	frameImg_ = LoadGraph("Data/Image/frame.png");
+
+	// 終了ボタン画像
+	endButtonImg_ = LoadGraph("Data/Image/endButton.png");
+
+	// 座標初期化
+	for (int y = 0; y < DRAW_NUM_Y; y++)
+	{
+		for (int x = 0; x < DRAW_NUM_X; x++)
+		{
+			pos_.push_back({ POS_X + x * SPACE_X
+						, POS_Y + y * SPACE_Y });
+		}
+	}
 
 	// 全てのアップグレードの種類を保持するvector
 	allUpgrades_ = {
@@ -62,91 +89,13 @@ void Upgrade::Init(void)
 		PLAYER_UPGRADE_TYPE::HEAL_HP_25,PLAYER_UPGRADE_TYPE::HEAL_HP_50
 	};
 
-	selectUpgrades_.clear();
+	// ランダムでアップグレードの種類と金額を決める
+	UpgradesInit();
 
-	// 乱数生成器のセットアップ
-	std::random_device rd;   // ハードウェア乱数からシードを生成
-	std::mt19937 gen(rd());  // メルセンヌ・ツイスタ乱数生成器
-
-	// 0 から (全アップグレード数 - 1) までのインデックスを等確率で生成するディストリビューション
-	// ※allUpgrades_ が空でないことを前提としています
-	std::uniform_int_distribution<size_t> dist(0, allUpgrades_.size() - 1);
-
-
-	// デフォルト状態
-	std::uniform_int_distribution<size_t> priceDist;
-
-	// ステージ数によってお金の範囲（最小値、最大値）を決める
-	size_t minPrice = 0;
-	size_t maxPrice = 0;
-
-	switch (SceneManager::GetInstance()->GetPrevStage())
-	{
-	case STAGE_1:
-
-		minPrice = 1000;
-		maxPrice = 1500;
-
-		break; 
-	case STAGE_2:
-
-		minPrice = 2000;
-		maxPrice = 3000;
-
-		break;
-	case STAGE_3:
-
-		minPrice = 3500;
-		maxPrice = 5000;
-
-		break;
-	default:
-		break;
-	}
-
-	// 決まった範囲を分配器にセットする
-	priceDist.param(std::uniform_int_distribution<size_t>::param_type(minPrice, maxPrice));
-
-	// HP回復の出現数の最高値を決めておく(最大2つ)
-	int healNum = 2;
-
-	// スロットの数分回
-	while (selectUpgrades_.size() < static_cast<int>(SHOP_SLOT::MAX))
-	{
-		int randomIndex = static_cast<int>(dist(gen)); // ランダムなインデックスを生成
-		int price = static_cast<int>(priceDist(gen));     // ランダムな金額（数値）を生成
-
-		// 構造体に「アップグレードの種類」と「決定した金額」と「買われたか」をセットして追加
-		if (allUpgrades_[randomIndex] == PLAYER_UPGRADE_TYPE::HEAL_HP_25
-			|| allUpgrades_[randomIndex] == PLAYER_UPGRADE_TYPE::HEAL_HP_50)
-		{
-			if (healNum > 0)
-			{
-				selectUpgrades_.push_back({ {allUpgrades_[randomIndex], price}, true });
-				--healNum;
-			}
-		}
-		else
-		{
-			selectUpgrades_.push_back({ {allUpgrades_[randomIndex], price}, true });
-		}
-	}
-
-	// 座標初期化
-	int i = static_cast<int>(SHOP_SLOT::SHOP_SLOT_0);
-	for (int y = 0; y < DRAW_NUM_Y; y++)
-	{
-		for (int x = 0; x < DRAW_NUM_X; x++)
-		{
-			pos_[i].x = POS_X + x * SPACE_X;
-			pos_[i].y = POS_Y + y * SPACE_Y;
-			i++;
-		}
-	}
-
+	// ショップスロットの初期化
 	ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_0);
 
-	// アップグレード内容を選択する
+	// ステートの初期化(選択処理にする)
 	ChangeState(Upgrade::UPGRADE_STATE::SELECT);
 }
 
@@ -158,6 +107,9 @@ void Upgrade::Update(void)
 
 		// 選択処理を行う
 		SelectUpgrade();
+
+		// 決定処理
+		ConfirmUpgrade();
 
 		break;
 	case Upgrade::UPGRADE_STATE::APPLY:
@@ -183,20 +135,65 @@ void Upgrade::Draw2D(void)
 		DrawGraphF(pos_[i].x, pos_[i].y,
 			imgHandle_[static_cast<int>(selectUpgrades_[i].first.type)], true);
 		// 金額
-		DrawFormatString(pos_[i].x + 10, pos_[i].y,
+		DrawFormatStringF(pos_[i].x + OFFSET, pos_[i].y,
 			0x000000, "%d", selectUpgrades_[i].first.price, true);
 
 		if (!selectUpgrades_[i].second)
 		{
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
-			DrawBox(pos_[i].x, pos_[i].y,
-				pos_[i].x + COL_SIZE_X, pos_[i].y + COL_SIZE_Y, 0x000000, true);
+
+			DrawBox(static_cast<int>(pos_[i].x)
+				, static_cast<int>(pos_[i].y),
+				static_cast<int>(pos_[i].x + COL_SIZE_X)
+				, static_cast<int>(pos_[i].y + COL_SIZE_Y)
+				, 0x000000, true);
+
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 			// 売り切れ画像描画
 			DrawGraphF(pos_[i].x + SOLDOUT_OFFSET_X, pos_[i].y + SOLDOUT_OFFSET_Y, soldOutImg_, true);
 		}
+
+
+		// フレームの表示
+		// 終了ボタンの場合
+		if (slot_ == SHOP_SLOT::END)
+		{
+			float framePosXSt = END_BUTTON_POS_X - OFFSET;
+			float framePosYSt = END_BUTTON_POS_Y - OFFSET;
+			float framePosXEn = END_BUTTON_POS_X + OFFSET + ENDBUTOON_COL_SIZE_X;
+			float framePosYEn = END_BUTTON_POS_Y + OFFSET + ENDBUTOON_COL_SIZE_Y;
+
+			DrawExtendGraphF(framePosXSt,
+				framePosYSt,
+				framePosXEn,
+				framePosYEn,
+				frameImg_, true);
+			continue;
+		}
+
+		// 終了ボタン以外のアップグレードの場合
+		if (slot_ != SHOP_SLOT::NON && static_cast<int>(slot_) == i)
+		{
+			float framePosXSt = pos_[i].x - OFFSET;
+			float framePosYSt = pos_[i].y - OFFSET;
+			float framePosXEn = pos_[i].x + OFFSET + COL_SIZE_X;
+			float framePosYEn = pos_[i].y + OFFSET + COL_SIZE_Y;
+
+			DrawExtendGraphF(framePosXSt,
+				framePosYSt,
+				framePosXEn,
+				framePosYEn,
+				frameImg_, true);
+		}
 	}
+
+	// 終了ボタンの描画
+	DrawGraphF(END_BUTTON_POS_X, END_BUTTON_POS_Y, endButtonImg_, true);
+
+	// 持っている金額
+	int price = ScoreManager::GetInstance().GetTotalPrice();
+	DrawFormatString(Application::SCREEN_SIZE_X - 150, 50, 0xffffff, "%d", price);
 
 #ifdef _DEBUG
 	auto status = PlayerStatusManager::GetInstance().GetPlayerStatus();
@@ -218,18 +215,313 @@ void Upgrade::Draw2D(void)
 #endif // _DEBUG
 }
 
+void Upgrade::UpgradesInit(void)
+{
+	selectUpgrades_.clear();
+
+	// 乱数生成器のセットアップ
+	std::random_device rd;   // ハードウェア乱数からシードを生成
+	std::mt19937 gen(rd());  // メルセンヌ・ツイスタ乱数生成器
+
+	// 0 から (全アップグレード数 - 1) までのインデックスを等確率で生成するディストリビューション
+	// ※allUpgrades_ が空でないことを前提としています
+	std::uniform_int_distribution<size_t> dist(0, allUpgrades_.size() - 1);
+
+	// デフォルト状態
+	std::uniform_int_distribution<size_t> priceDist;
+
+	// ステージ数によってお金の範囲（最小値、最大値）を決める
+	size_t minPrice = 0;
+	size_t maxPrice = 0;
+
+	switch (SceneManager::GetInstance()->GetPrevStage())
+	{
+	case STAGE_1:
+
+		minPrice = 1000;
+		maxPrice = 1500;
+
+		break;
+	case STAGE_2:
+
+		minPrice = 2000;
+		maxPrice = 3000;
+
+		break;
+	case STAGE_3:
+
+		minPrice = 3500;
+		maxPrice = 5000;
+
+		break;
+	default:
+		break;
+	}
+
+	// 決まった範囲を分配器にセットする
+	priceDist.param(std::uniform_int_distribution<size_t>::param_type(minPrice, maxPrice));
+
+	// HP回復の出現数の最高値を決めておく(最大2つ)
+	int healNum = 2;
+
+	// スロットの数分回
+	while (selectUpgrades_.size() < static_cast<int>(SHOP_SLOT::NON))
+	{
+		int randomIndex = static_cast<int>(dist(gen)); // ランダムなインデックスを生成
+		int price = static_cast<int>(priceDist(gen));     // ランダムな金額（数値）を生成
+
+		// 構造体に「アップグレードの種類」と「決定した金額」と「買われたか」をセットして追加
+		if (allUpgrades_[randomIndex] == PLAYER_UPGRADE_TYPE::HEAL_HP_25
+			|| allUpgrades_[randomIndex] == PLAYER_UPGRADE_TYPE::HEAL_HP_50)
+		{
+			if (healNum > 0)
+			{
+				selectUpgrades_.push_back({ {allUpgrades_[randomIndex], price}, true });
+				--healNum;
+			}
+		}
+		else
+		{
+			selectUpgrades_.push_back({ {allUpgrades_[randomIndex], price}, true });
+		}
+	}
+}
+
 void Upgrade::SelectUpgrade(void)
 {
+	// 前回の選択物を入れておく
+	SHOP_SLOT prevSlot = slot_;
 
 	if (SystemManager::GetInstance().GetIsDevice())
 	{
-		// 引数の座標によって選択中のものを変化させる
+		// マウス選択
 		MouseSelect();
 	}
 	else
 	{
-		// 選択処理
-		//PadSelect();
+		// パッド選択
+		PadSelect();
+	}
+
+	// 中身がNONじゃないかつ、選択物が変わっていたら
+	if (slot_ != SHOP_SLOT::NON
+		&& slot_ != prevSlot)
+	{
+		// TODO　選択SEを流す
+
+	}
+}
+
+void Upgrade::MouseSelect(void)
+{
+	slot_ = SHOP_SLOT::NON;
+
+	// 当たり判定取る
+	for (int i = 0; i < selectUpgrades_.size(); i++)
+	{
+		// 当たっていなかったら次の処理へ
+		if (!Collision::HitMouse2Box(pos_[i], COL_SIZE_X, COL_SIZE_Y))continue;
+
+		// スロットの変更
+		ChangeShopSlot(static_cast<SHOP_SLOT>(i));
+
+		// 選択されたアップグレードの添え字を保存
+		upgradeNum_ = i;
+	}
+
+	// 終了ボタンに当たっていたら
+	if (Collision::HitMouse2Box({ END_BUTTON_POS_X ,END_BUTTON_POS_Y }, COL_SIZE_X, COL_SIZE_Y))
+	{
+		ChangeShopSlot(SHOP_SLOT::END);
+	}
+}
+
+void Upgrade::PadSelect(void)
+{
+	switch (slot_)
+	{
+	case Upgrade::SHOP_SLOT::SHOP_SLOT_0:
+
+		if (InputManager::GetInstance()->SelectDown())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_4);
+		}
+
+		if (InputManager::GetInstance()->SelectRight())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_1);
+		}
+
+		break;
+	case Upgrade::SHOP_SLOT::SHOP_SLOT_1:
+
+		if (InputManager::GetInstance()->SelectDown())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_5);
+		}
+
+		if (InputManager::GetInstance()->SelectLeft())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_0);
+		}
+
+		if (InputManager::GetInstance()->SelectRight())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_2);
+		}
+
+		break;
+	case Upgrade::SHOP_SLOT::SHOP_SLOT_2:
+
+		if (InputManager::GetInstance()->SelectDown())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_6);
+		}
+
+		if (InputManager::GetInstance()->SelectLeft())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_1);
+		}
+
+		if (InputManager::GetInstance()->SelectRight())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_3);
+		}
+
+		break;
+	case Upgrade::SHOP_SLOT::SHOP_SLOT_3:
+
+		if (InputManager::GetInstance()->SelectDown())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_7);
+		}
+
+		if (InputManager::GetInstance()->SelectLeft())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_2);
+		}
+
+		break;
+	case Upgrade::SHOP_SLOT::SHOP_SLOT_4:
+
+		if (InputManager::GetInstance()->SelectUp())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_0);
+		}
+
+		if (InputManager::GetInstance()->SelectRight())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_5);
+		}
+
+		break;
+	case Upgrade::SHOP_SLOT::SHOP_SLOT_5:
+
+		if (InputManager::GetInstance()->SelectUp())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_1);
+		}
+
+		if (InputManager::GetInstance()->SelectRight())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_6);
+		}
+		
+
+		if (InputManager::GetInstance()->SelectLeft())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_4);
+		}
+
+		break;
+	case Upgrade::SHOP_SLOT::SHOP_SLOT_6:
+
+		if (InputManager::GetInstance()->SelectUp())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_2);
+		}
+
+		if (InputManager::GetInstance()->SelectRight())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_7);
+		}
+
+
+		if (InputManager::GetInstance()->SelectLeft())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_5);
+		}
+
+		break;
+	case Upgrade::SHOP_SLOT::SHOP_SLOT_7:
+
+		if (InputManager::GetInstance()->SelectUp())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_3);
+		}
+
+		if (InputManager::GetInstance()->SelectLeft())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_6);
+		}
+
+		if (InputManager::GetInstance()->SelectDown())
+		{
+			ChangeShopSlot(SHOP_SLOT::END);
+		}
+
+		break;
+	case Upgrade::SHOP_SLOT::NON:
+
+		ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_0);
+
+		break;
+	case Upgrade::SHOP_SLOT::END:
+
+		if (InputManager::GetInstance()->SelectUp())
+		{
+			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_7);
+		}
+
+		break;
+	default:
+		break;
+	}
+
+	upgradeNum_ = static_cast<int>(slot_);
+}
+
+void Upgrade::ConfirmUpgrade(void)
+{
+	// 決定ボタンが押されていなかったら処理を行わない
+	if (!InputManager::GetInstance()->ConfirmButton())return;
+
+	// 何も選択されていないなら処理を行わない
+	if (slot_ == SHOP_SLOT::NON)return;
+
+	// 終了ボタンが選択されていたら
+	if (slot_ == SHOP_SLOT::END)
+	{
+		// アップグレードを終了させる
+		UpgradeManager::GetInstance().TrueIsUpgradeEnd();
+		// ゲームシーンへ
+		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameScene>());
+
+		return;
+	}
+
+	// 買われていたら処理を行わない
+	if (!selectUpgrades_[upgradeNum_].second)return;
+
+	// お金が足りているなら
+	if (ScoreManager::GetInstance().GetTotalPrice() >= selectUpgrades_[upgradeNum_].first.price)
+	{
+		// 決定したアップグレードの種類を保存
+		finalizeUpgrade_.type = selectUpgrades_[upgradeNum_].first.type;
+		finalizeUpgrade_.price = selectUpgrades_[upgradeNum_].first.price;
+
+		// 確認画面を表示
+		UpdateConfirm();
 	}
 }
 
@@ -238,7 +530,7 @@ void Upgrade::ApplyUpgrade(void)
 	// 本当に買うならお金を減らす
 	ScoreManager::GetInstance().SubTotalPrice(finalizeUpgrade_.price);
 	// 買われたことにする
-	selectUpgrades_[finalizeUpgradeNum_].second = false;
+	selectUpgrades_[upgradeNum_].second = false;
 
 	switch (finalizeUpgrade_.type)
 	{
@@ -282,141 +574,6 @@ void Upgrade::ApplyUpgrade(void)
 	}
 }
 
-void Upgrade::MouseSelect(void)
-{
-	auto prevPlace = slot_;
-
-	// 当たり判定取る
-	for (int i = 0; i < static_cast<int>(SHOP_SLOT::MAX); i++)
-	{
-		// 買われていてないなら次の処理へ
-		if (!selectUpgrades_[i].second)continue;
-
-		// 当たっていたら何かを選択しているとする
-		if (Collision::HitMouse2Box(pos_[i], COL_SIZE_X, COL_SIZE_Y))
-		{
-			ChangeShopSlot(static_cast<SHOP_SLOT>(i));
-
-			// 確定ボタンが押されているかつ、お金が足りているなら
-			if (InputManager::GetInstance()->ConfirmButton()
-				&& ScoreManager::GetInstance().GetTotalPrice() >= selectUpgrades_[i].first.price)
-			{
-				// 決定したアップグレードの種類を保存
-				finalizeUpgrade_.type = selectUpgrades_[i].first.type;
-				finalizeUpgrade_.price = selectUpgrades_[i].first.price;
-				finalizeUpgradeNum_ = i;
-
-				UpdateConfirm();
-				
-			}
-
-			break;
-		}
-		else
-		{
-			ChangeShopSlot(SHOP_SLOT::MAX);
-		}
-	}
-
-}
-
-//void Upgrade::PadSelect(void)
-//{
-//	auto& ins = InputManager::GetInstance();
-//
-//	auto prevPlace = place_;
-//
-//	for (int i = 0; i < static_cast<int>(PLACE::MAX); i++)
-//	{
-//		// 全て初期化する
-//		buttonState_[i] = BUTTON_STATE::DEFAULE;
-//	}
-//
-//	switch (place_)
-//	{
-//	case Upgrade::PLACE::TOP_LEFT:
-//
-//		if (ins.SelectDown())
-//		{
-//			ChangePlace(PLACE::BOTTOM_LEFT);
-//		}
-//
-//		if (ins.SelectRightIsTrgDown())
-//		{
-//			ChangePlace(PLACE::TOP_RIGHT);
-//		}
-//
-//		break;
-//	case Upgrade::PLACE::TOP_RIGHT:
-//
-//		if (ins.SelectDown())
-//		{
-//			ChangePlace(PLACE::BOTTOM_RIGHT);
-//		}
-//
-//		if (ins.SelectLeftIsTrgDown())
-//		{
-//			ChangePlace(PLACE::TOP_LEFT);
-//		}
-//
-//		break;
-//	case Upgrade::PLACE::BOTTOM_LEFT:
-//
-//		if (ins.SelectUp())
-//		{
-//			ChangePlace(PLACE::TOP_LEFT);
-//		}
-//
-//		if (ins.SelectRightIsTrgDown())
-//		{
-//			ChangePlace(PLACE::BOTTOM_RIGHT);
-//		}
-//
-//		break;
-//	case Upgrade::PLACE::BOTTOM_RIGHT:
-//
-//		if (ins.SelectUp())
-//		{
-//			ChangePlace(PLACE::TOP_RIGHT);
-//		}
-//
-//		if (ins.SelectLeftIsTrgDown())
-//		{
-//			ChangePlace(PLACE::BOTTOM_LEFT);
-//		}
-//
-//		break;
-//	case Upgrade::PLACE::MAX:
-//
-//		ChangePlace(PLACE::TOP_LEFT);
-//		break;
-//	default:
-//		break;
-//	}
-//
-//	// 見た目を選択中にする
-//	buttonState_[static_cast<int>(place_)] = BUTTON_STATE::HOVER;
-//
-//	if (place_ != prevPlace && place_ != PLACE::MAX)
-//	{
-//		// 何も選択されていない状態から選択されたらSEを流す
-//		SoundManager::GetInstance().Play(SoundManager::SE::SELECT);
-//	}
-//
-//	// 何か選択していて、確定ボタンが押されたら処理を行う
-//	if (ins.Confirm() && place_ != PLACE::MAX)
-//	{
-//		finalizeUpgrade_ = selectUpgrades_[static_cast<int>(place_)];
-//
-//		// 確定
-//		ChangeState(STATE::APPLY);
-//
-//		// 決定SEをながす
-//		SoundManager::GetInstance().Play(SoundManager::SE::DECIDE);
-//
-//	}
-//}
-
 void Upgrade::ChangeState(UPGRADE_STATE state)
 {
 	state_ = state;
@@ -441,6 +598,7 @@ void Upgrade::SelectInit(void)
 	// 初期化
 	finalizeUpgrade_.type = PLAYER_UPGRADE_TYPE::MAX;
 	finalizeUpgrade_.price = 0;
+	upgradeNum_ = -1;
 }
 
 void Upgrade::UpdateConfirm(void)

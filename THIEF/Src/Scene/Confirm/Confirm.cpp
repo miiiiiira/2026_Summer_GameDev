@@ -4,6 +4,7 @@
 
 #include "../../Common/Manager/Input/InputManager.h"
 #include "../../Common/Manager/Audio/AudioManager.h"
+#include "../../Common/Manager/System/SystemManager.h"
 #include "../SceneManager.h"
 #include "../../Common/Collision/Collision.h"
 #include "../MainMenu/MainMenu.h"
@@ -88,23 +89,11 @@ void Confirm::LoadEnd(void)
 
 void Confirm::Update(void)
 {
-	// 衝突判定
-	SELECT nextSelect = SELECT::NONE;
-
-	for (const auto& button : selectButtons_)
-	{
-		if (Collision::HitMouse2Box({ static_cast<float>(button.x), static_cast<float>(button.y) },
-			static_cast<float>(button.sizeX), static_cast<float>(button.sizeY)))
-		{
-			nextSelect = button.type;
-			break;
-		}
-	}
-
-	ChangeSelect(nextSelect);
+	// 選択処理
+	SelectUpgrade();
 
 	// マウスを左クリックされなかったら、処理しない
-	if (!InputManager::GetInstance()->IsClickMouseLeft()) return;
+	if (!InputManager::GetInstance()->ConfirmButton()) return;
 	// どの選択肢も選ばれていない場合は処理しない
 	if (currentSelect_ == SELECT::NONE) return;
 
@@ -117,6 +106,9 @@ void Confirm::Update(void)
 		UpdateNo();
 		break;
 	}
+
+	// TODO　決定SEを流す
+
 }
 
 void Confirm::Draw(void)
@@ -185,4 +177,77 @@ void Confirm::UpdateNo(void)
 {
 	// 確認シーンを閉じる（ポーズシーンへ）
 	SceneManager::GetInstance()->PopScene();
+}
+
+void Confirm::SelectUpgrade(void)
+{
+	// 前回の選択物を入れておく
+	SELECT prevSelect = currentSelect_;
+
+	if (SystemManager::GetInstance().GetIsDevice())
+	{
+		// マウス選択
+		MouseSelect();
+	}
+	else
+	{
+		// パッド選択
+		PadSelect();
+	}
+
+	// 中身がNONじゃないかつ、選択物が変わっていたら
+	if (currentSelect_ != SELECT::NONE
+		&& currentSelect_ != prevSelect)
+	{
+		// TODO　選択SEを流す
+
+	}
+}
+
+void Confirm::MouseSelect(void)
+{
+	// 衝突判定
+	SELECT nextSelect = SELECT::NONE;
+
+	for (const auto& button : selectButtons_)
+	{
+		if (Collision::HitMouse2Box({ static_cast<float>(button.x), static_cast<float>(button.y) },
+			static_cast<float>(button.sizeX), static_cast<float>(button.sizeY)))
+		{
+			nextSelect = button.type;
+			break;
+		}
+	}
+
+	ChangeSelect(nextSelect);
+}
+
+void Confirm::PadSelect(void)
+{
+	switch (currentSelect_)
+	{
+	case Confirm::SELECT::NONE:
+
+		ChangeSelect(SELECT::NO);
+
+		break;
+	case Confirm::SELECT::YES:
+
+		if (InputManager::GetInstance()->SelectRight())
+		{
+			ChangeSelect(SELECT::NO);
+		}
+
+		break;
+	case Confirm::SELECT::NO:
+
+		if (InputManager::GetInstance()->SelectLeft())
+		{
+			ChangeSelect(SELECT::YES);
+		}
+
+		break;
+	default:
+		break;
+	}
 }

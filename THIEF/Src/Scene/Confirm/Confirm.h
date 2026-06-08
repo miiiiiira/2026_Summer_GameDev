@@ -81,5 +81,15 @@ private:
 
 	int confirmImg_;					// 画像ハンドル
 	int frameImg_;						// フレーム画像ハンドル
+
+	// 選択処理
+	void SelectUpgrade(void);
+
+	// マウス選択
+	void MouseSelect(void);
+
+	// パッド選択
+	void PadSelect(void);
+
 };
 
