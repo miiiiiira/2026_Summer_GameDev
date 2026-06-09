@@ -69,7 +69,6 @@ private:
 	std::shared_ptr<Confirm> confirm_;
 
 	int handle_;
-	int frameImg_;						// フレーム画像
 	std::vector<Item> menuButtons_;		// メニューボタンの情報を格納する配列
 
 	MENU currentMenu_;					// 現在選択しているメニュー

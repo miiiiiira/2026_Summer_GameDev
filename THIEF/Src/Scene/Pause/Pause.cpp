@@ -6,6 +6,7 @@
 #include "../../Common/Manager/Input/InputManager.h"
 #include "../../Common/Manager/Audio/AudioManager.h"
 #include "../../Common/Manager/System/SystemManager.h"
+#include "../../Common/FrameRenderer/FrameRenderer.h"
 #include "../SceneManager.h"
 #include "../../Common/Collision/Collision.h"
 #include "../../Application.h"
@@ -14,7 +15,6 @@
 Pause::Pause(void)
 {
 	handle_ = -1;
-	frameImg_ = -1;
 	confirm_ = nullptr;
 
 	// マウスの表示する
@@ -35,7 +35,6 @@ void Pause::Init(void)
 void Pause::Load(void)
 {
 	handle_ = LoadGraph((Application::PATH_IMAGE + "pause.png").c_str());		// PAUSEの文字画像
-	frameImg_ = LoadGraph((Application::PATH_IMAGE + "frame.png").c_str());		// フレーム画像
 
 	menuButtons_.clear();
 
@@ -115,7 +114,7 @@ void Pause::Draw(void)
 	{
 		if (button.type == currentMenu_)
 		{
-			DrawGraph(button.x, button.y, frameImg_, true);				// フレームを表示
+			FrameRenderer::Draw(button.x,button.y);
 		}
 
 		DrawGraph(button.x, button.y, button.graphHandle, true);		// メニューの文字を表示
@@ -129,9 +128,6 @@ void Pause::Release(void)
 		DeleteGraph(button.graphHandle);
 	}
 	menuButtons_.clear();
-
-	DeleteGraph(frameImg_);
-	frameImg_ = -1;
 
 	DeleteGraph(handle_);
 	handle_ = -1;

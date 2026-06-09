@@ -4,8 +4,10 @@
 
 #include "../../Common/Manager/Input/InputManager.h"
 #include "../../Common/Manager/Audio/AudioManager.h"
-#include "../../Application.h"
+#include "../../Common/Manager/System/SystemManager.h"
+#include "../../Common/FrameRenderer/FrameRenderer.h"
 #include "../SceneManager.h"
+#include "../../Common/Collision/Collision.h"
 #include "../GameScene/GameScene.h"
 #include "../TitleScene/TitleScene.h"
 
@@ -14,8 +16,7 @@ GameOver::GameOver(void)
 	handle_ = -1;
 	// マウスの表示する
 	SetMouseDispFlag(true);
-	reId_ = -1;
-	tiId_ = -1;
+	currentType_ = NONE;
 }
 
 GameOver::~GameOver(void)
@@ -24,9 +25,14 @@ GameOver::~GameOver(void)
 
 void GameOver::Init(void)
 {
-	handle_ = LoadGraph("Data/Image/GV.png");
-	reId_ = LoadGraph("Data/Image/Try.png");
-	tiId_ = LoadGraph("Data/Image/TT.png");
+	handle_ = LoadGraph("Data/Image/GameOver/GameOver.png");
+
+	// RETRY画像
+	buttons_.push_back({ TYPE::RETRY, LoadGraph("Data/Image/GameOver/Retry.png"),
+								RETRY_POS_X, RETRY_POS_Y, RETRY_SIZE_X, RETRY_SIZE_Y });
+	// RETURN_TITLE画像
+	buttons_.push_back({ TYPE::RETURN_TITLE, LoadGraph( "Data/Image/GameOver/ReturnTitle.png"),
+							RETURN_TITLE_POS_X, RETURN_TITLE_POS_Y, RETURN_TITLE_SIZE_X, RETURN_TITLE_SIZE_Y });
 }
 
 void GameOver::Load(void)
@@ -40,17 +46,37 @@ void GameOver::LoadEnd(void)
 
 void GameOver::Update(void)
 {
-	// ボタンが押されると次のシーンへ
-	if (InputManager::GetInstance()->PushAnyButton())
+	// 選択処理
+	SelectUpgrade();
+
+	// マウスを左クリックしなかったら、処理を行わない
+	if (!InputManager::GetInstance()->ConfirmButton()) return;
+
+	// 種類が選択されていない場合、処理を行わない
+	if (currentType_ == TYPE::NONE) return;
+
+	switch (currentType_)
 	{
+	case GameOver::RETRY:
+
 		// ゲームシーンへ
+		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameScene>());
+		return;
+
+		break;
+	case GameOver::RETURN_TITLE:
+
+		// タイトルシーンへ
 		SceneManager::GetInstance()->ChangeScene(std::make_shared<TitleScene>());
+		return;
+
+		break;
+	default:
+		break;
 	}
 
-	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_C))
-	{
-		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameScene>());
-	}
+	// TODO　決定SEを流す
+
 }
 
 void GameOver::Draw(void)
@@ -61,16 +87,99 @@ void GameOver::Draw(void)
 
 #endif // _DEBUG
 
-	DrawRotaGraph(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2 - 100, 1.0, 0.0, handle_, true);
+	// 画像の描画
+	DrawGraph(GAMEOVER_POS_X, GAMEOVER_POS_Y, handle_, true);
 
-	DrawRotaGraph(RE_POS_X, RE_POS_Y, 1.0, 0.0, reId_, true);
+	for (const auto& button : buttons_)
+	{
+		if (button.type == currentType_)
+		{
+			FrameRenderer::Draw(button.x, button.y, button.sizeX, button.sizeY, FRAME_OFFSET);
+		}
+		DrawGraph(button.x, button.y,button.graphHandle, true);
+	}
 
-	DrawRotaGraph(TITLE_POS_X, TITLE_POS_Y, 1.0, 0.0, tiId_, true);
 }
 
 void GameOver::Release(void)
 {
 	DeleteGraph(handle_);
-	DeleteGraph(reId_);
-	DeleteGraph(tiId_);
+	for (const auto& button : buttons_)
+	{
+		DeleteGraph(button.graphHandle);
+	}
+	buttons_.clear();
+}
+
+void GameOver::SelectUpgrade(void)
+{
+	// 前回の選択物を入れておく
+	TYPE prevType = currentType_;
+
+	if (SystemManager::GetInstance().GetIsDevice())
+	{
+		// マウス選択
+		MouseSelect();
+	}
+	else
+	{
+		// パッド選択
+		PadSelect();
+	}
+
+	// 中身がNONじゃないかつ、選択物が変わっていたら
+	if (currentType_ != TYPE::NONE
+		&& currentType_ != prevType)
+	{
+		// TODO　選択SEを流す
+
+	}
+}
+
+void GameOver::MouseSelect(void)
+{
+	TYPE nextType = TYPE::NONE;
+
+	// 衝突判定
+	for (const auto& button : buttons_)
+	{
+		if (Collision::HitMouse2Box({ static_cast<float>(button.x), static_cast<float>(button.y) },
+			static_cast<float>(button.sizeX), static_cast<float>(button.sizeY)))
+		{
+			nextType = button.type;
+			break;
+		}
+	}
+
+	currentType_ = nextType;
+}
+
+void GameOver::PadSelect(void)
+{
+	switch (currentType_)
+	{
+	case GameOver::RETRY:
+
+		if (InputManager::GetInstance()->SelectDown())
+		{
+			currentType_ = RETURN_TITLE;
+		}
+
+		break;
+	case GameOver::RETURN_TITLE:
+
+		if (InputManager::GetInstance()->SelectUp())
+		{
+			currentType_ = RETRY;
+		}
+
+		break;
+	case GameOver::NONE:
+
+		currentType_ = RETRY;
+
+		break;
+	default:
+		break;
+	}
 }

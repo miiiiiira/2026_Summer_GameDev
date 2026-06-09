@@ -65,6 +65,9 @@ private:
 	static constexpr int NO_POS_X = (Application::SCREEN_SIZE_X - IMAGE_SIZE_X) / 2 + 150;
 	static constexpr int NO_POS_Y = YES_POS_Y;
 
+	// フレームのオフセット
+	static constexpr int FRAME_OFFSET = 10;
+
 	void ChangeSelect(SELECT select);
 
 	// メニュー選択時の処理
@@ -80,7 +83,6 @@ private:
 	TYPE confirmType_;					// どの確認画面化
 
 	int confirmImg_;					// 画像ハンドル
-	int frameImg_;						// フレーム画像ハンドル
 
 	// 選択処理
 	void SelectUpgrade(void);

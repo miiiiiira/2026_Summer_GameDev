@@ -6,6 +6,7 @@
 #include "../../Common/Manager/Input/InputManager.h"
 #include "../../Common/Manager/Audio/AudioManager.h"
 #include "../../Common/Manager/System/SystemManager.h"
+#include "../../Common/FrameRenderer/FrameRenderer.h"
 #include "../SceneManager.h"
 #include "../../Common/Collision/Collision.h"
 #include "../../Application.h"
@@ -33,7 +34,6 @@ void MainMenu::Init(void)
 void MainMenu::Load(void)
 {
 	handle_ = LoadGraph((Application::PATH_IMAGE + "Title.png").c_str());
-	frameImg_ = LoadGraph((Application::PATH_IMAGE + "frame.png").c_str());
 
 	menuButtons_.clear();
 
@@ -46,6 +46,7 @@ void MainMenu::Load(void)
 	// QUIT画像
 	menuButtons_.push_back({ MENU::QUIT, LoadGraph((Application::PATH_IMAGE + "quit.png").c_str()),
 						QUIT_POS_X, QUIT_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
+
 }
 
 void MainMenu::LoadEnd(void)
@@ -101,7 +102,7 @@ void MainMenu::Draw(void)
 	{
 		if (button.type == currentMenu_)
 		{
-			DrawGraph(button.x, button.y, frameImg_, true);				 // フレーム画像
+			FrameRenderer::Draw(button.x, button.y);
 		}
 		DrawGraph(button.x, button.y, button.graphHandle, true);		// メニューボタンの画像
 	}
@@ -118,8 +119,6 @@ void MainMenu::Release(void)
 	DeleteGraph(handle_);
 	handle_ = -1;
 
-	DeleteGraph(frameImg_);
-	frameImg_ = -1;
 }
 
 void MainMenu::ChangeSelect(MENU menu)

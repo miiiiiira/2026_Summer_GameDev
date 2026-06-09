@@ -8,6 +8,7 @@
 #include "../../../../Common/Manager/System/SystemManager.h"
 #include "../../../../Common/Manager/Input/InputManager.h"
 #include "../../../../Common/Manager/Score/ScoreManager.h"
+#include "../../../../Common/FrameRenderer/FrameRenderer.h"
 #include "../../../../Scene/Confirm/Confirm.h"
 #include "../../../../Scene/SceneManager.h"
 #include "UpgradeManager.h"
@@ -24,7 +25,6 @@ Upgrade::Upgrade(void)
 	slot_ = SHOP_SLOT::NON;
 
 	soldOutImg_ = -1;
-	frameImg_ = -1;
 
 	endButtonImg_ = -1;
 }
@@ -39,8 +39,6 @@ Upgrade::~Upgrade(void)
 
 	DeleteGraph(soldOutImg_);
 	soldOutImg_ = -1;
-	DeleteGraph(frameImg_);
-	frameImg_ = -1;
 	DeleteGraph(endButtonImg_);
 	endButtonImg_ = -1;
 
@@ -65,9 +63,6 @@ void Upgrade::Init(void)
 
 	// SoldOut画像
 	soldOutImg_ = LoadGraph("Data/Image/SoldOut.png");
-
-	// フレーム画像
-	frameImg_ = LoadGraph("Data/Image/frame.png");
 
 	// 終了ボタン画像
 	endButtonImg_ = LoadGraph("Data/Image/endButton.png");
@@ -159,32 +154,24 @@ void Upgrade::Draw2D(void)
 		// 終了ボタンの場合
 		if (slot_ == SHOP_SLOT::END)
 		{
-			float framePosXSt = END_BUTTON_POS_X - OFFSET;
-			float framePosYSt = END_BUTTON_POS_Y - OFFSET;
-			float framePosXEn = END_BUTTON_POS_X + OFFSET + ENDBUTOON_COL_SIZE_X;
-			float framePosYEn = END_BUTTON_POS_Y + OFFSET + ENDBUTOON_COL_SIZE_Y;
-
-			DrawExtendGraphF(framePosXSt,
-				framePosYSt,
-				framePosXEn,
-				framePosYEn,
-				frameImg_, true);
+			FrameRenderer::DrawF(
+				END_BUTTON_POS_X,
+				END_BUTTON_POS_Y,
+				ENDBUTOON_COL_SIZE_X,
+				ENDBUTOON_COL_SIZE_Y,
+				OFFSET);
 			continue;
 		}
 
 		// 終了ボタン以外のアップグレードの場合
 		if (slot_ != SHOP_SLOT::NON && static_cast<int>(slot_) == i)
 		{
-			float framePosXSt = pos_[i].x - OFFSET;
-			float framePosYSt = pos_[i].y - OFFSET;
-			float framePosXEn = pos_[i].x + OFFSET + COL_SIZE_X;
-			float framePosYEn = pos_[i].y + OFFSET + COL_SIZE_Y;
-
-			DrawExtendGraphF(framePosXSt,
-				framePosYSt,
-				framePosXEn,
-				framePosYEn,
-				frameImg_, true);
+			FrameRenderer::DrawF(
+				pos_[i].x,
+				pos_[i].y,
+				COL_SIZE_X,
+				COL_SIZE_Y,
+				OFFSET);
 		}
 	}
 

@@ -9,6 +9,7 @@
 #include "../Common/Manager/Score/ScoreManager.h"
 #include "../Common/Manager/Input/InputManager.h"
 #include "../Common/Manager/PlayerStatus/PlayerStatusManager.h"
+#include "../Common/FrameRenderer/FrameRenderer.h"
 #include "../Object/Component/PlayerController/Upgrade/UpgradeManager.h"
 #include "../Common/Shader/Shader.h"
 
@@ -43,6 +44,9 @@ void SceneManager::Init(void)
 
 	//アップグレード管理生成
 	UpgradeManager::CreateInstance();
+
+	// フレーム画像のロード
+	FrameRenderer::Load();
 
 	// 3D情報の初期化
 	Init3D();
@@ -135,12 +139,12 @@ void SceneManager::Update(void)
 	// 通常の更新処理
 	else
 	{
-		// デバイス切り替え処理
-		SystemManager::GetInstance().Update();
-
 		// 現在のシーンの更新
 		scenes_.back()->Update();
 	}
+
+	// デバイス切り替え処理
+	SystemManager::GetInstance().Update();
 }
 
 void SceneManager::Draw(void)
@@ -188,6 +192,8 @@ void SceneManager::Delete(void)
 	// 全てのシーンの解放・削除
 	for (auto& scene : scenes_) { scene->Release(); }
 	scenes_.clear();
+
+	FrameRenderer::Release();
 
 	// システム管理解放
 	SystemManager::GetInstance().Destroy();
