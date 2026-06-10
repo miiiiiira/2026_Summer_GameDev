@@ -128,8 +128,6 @@ private:
 	int imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::MAX)];
 	// 売り切れ画像
 	int soldOutImg_;
-	// フレーム画像
-	int frameImg_;						
 
 	// 終了ボタン画像
 	int endButtonImg_;

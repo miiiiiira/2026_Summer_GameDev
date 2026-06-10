@@ -1,10 +1,27 @@
 #pragma once
 
 #include "../SceneBase.h"
+#include "../../Application.h"
+#include <vector>
 
 class GameOver : public SceneBase
 {
 public:
+
+	enum TYPE
+	{
+		RETRY,
+		RETURN_TITLE,
+		NONE,
+	};
+
+	struct IMG_INFO
+	{
+		TYPE type;
+		int graphHandle;
+		int x, y;
+		int sizeX, sizeY;
+	};
 
 	GameOver(void);				// コンストラクタ
 	~GameOver(void) override;		// デストラクタ
@@ -18,14 +35,49 @@ public:
 
 private:
 
-	static constexpr int RE_POS_X = 512;
-	static constexpr int RE_POS_Y = 485;
+	// GAMEOVER画像サイズ
+	static constexpr int GAMEOVER_SIZE_X = 765;
+	static constexpr int GAMEOVER_SIZE_Y = 105;
 
-	static constexpr int TITLE_POS_X = 512;
-	static constexpr int TITLE_POS_Y = 550;
+	// GAMEOVER
+	static constexpr int GAMEOVER_POS_X = Application::SCREEN_SIZE_X / 2 - GAMEOVER_SIZE_X/2;
+	static constexpr int GAMEOVER_POS_Y = Application::SCREEN_SIZE_Y / 2 - 100;
 
+	// RETRY画像サイズ
+	static constexpr int RETRY_SIZE_X = 230;
+	static constexpr int RETRY_SIZE_Y = 55;
+
+	// RETRY
+	static constexpr int RETRY_POS_X = Application::SCREEN_SIZE_X / 2 - RETRY_SIZE_X / 2;
+	static constexpr int RETRY_POS_Y = 485;
+
+	// RETURN_TITLE画像サイズ
+	static constexpr int RETURN_TITLE_SIZE_X = 230;
+	static constexpr int RETURN_TITLE_SIZE_Y = 55;
+
+	// RETURN_TITLE
+	static constexpr int RETURN_TITLE_POS_X = Application::SCREEN_SIZE_X / 2 - RETURN_TITLE_SIZE_X / 2;
+	static constexpr int RETURN_TITLE_POS_Y = 550;
+
+	// フレームのオフセット
+	static constexpr int FRAME_OFFSET = 10;
+
+	// 画像ハンドル
 	int handle_;
-	int reId_;
-	int tiId_;
+
+	// ボタンの情報を格納する配列
+	std::vector<IMG_INFO> buttons_;		
+
+	// 現在選択しているメニュー
+	TYPE currentType_;					
+
+	// 選択処理
+	void SelectUpgrade(void);
+
+	// マウス選択
+	void MouseSelect(void);
+
+	// パッド選択
+	void PadSelect(void);
 };
 

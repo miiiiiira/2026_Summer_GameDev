@@ -10,11 +10,11 @@
 #include "../MainMenu/MainMenu.h"
 #include "../../Object/Component/PlayerController/Upgrade/UpgradeManager.h"
 #include "../../Object/Component/PlayerController/Upgrade/Upgrade.h"
+#include "../../Common/FrameRenderer/FrameRenderer.h"
 
 Confirm::Confirm(void)
 {
 	confirmImg_ = -1;
-	frameImg_ = -1;
 }
 
 Confirm::~Confirm(void)
@@ -70,7 +70,6 @@ void Confirm::Load(void)
 		break;
 	}
 
-	frameImg_ = LoadGraph((Application::PATH_IMAGE + "frame.png").c_str());					// フレーム画像
 
 	// 配列をクリアにしてから、画像を追加
 	selectButtons_.clear();
@@ -119,10 +118,11 @@ void Confirm::Draw(void)
 	{
 		if (button.type == currentSelect_)
 		{
-			DrawExtendGraph(button.x, button.y,
-				button.x + button.sizeX,
-				button.y + button.sizeY,
-				frameImg_, true);
+			FrameRenderer::Draw(button.x,
+				button.y,
+				button.sizeX,
+				button.sizeY,
+				FRAME_OFFSET);
 		}
 		DrawGraph(button.x, button.y, button.graphHandle, true);
 	}
@@ -136,8 +136,6 @@ void Confirm::Release(void)
 	}
 	selectButtons_.clear();
 
-	DeleteGraph(frameImg_);
-	frameImg_ = -1;
 	DeleteGraph(confirmImg_);
 	confirmImg_ = -1;
 

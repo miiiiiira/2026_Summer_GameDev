@@ -76,7 +76,6 @@ private:
 	std::shared_ptr<Confirm> confirm_;
 
 	int handle_;			// PAUSEの文字画像
-	int frameImg_;			// フレームの画像
 
 	std::vector<Item>  menuButtons_;	// メニューボタンの情報を格納する配列
 

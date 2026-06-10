@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Common\FrameRenderer\FrameRenderer.cpp" />
     <ClCompile Include="Src\Common\Manager\PlayerStatus\PlayerStatusManager.cpp" />
     <ClCompile Include="Src\Object\Component\PlayerController\Upgrade\UpgradeManager.cpp" />
     <ClCompile Include="Src\Scene\Shop\ShopScene.cpp" />
@@ -73,6 +74,7 @@
     <ClCompile Include="Src\Object\Actor\Enemy\Yeti\Yeti.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Common\FrameRenderer\FrameRenderer.h" />
     <ClInclude Include="Src\Common\Manager\PlayerStatus\PlayerStatusManager.h" />
     <ClInclude Include="Src\Object\Component\PlayerController\Upgrade\UpgradeManager.h" />
     <ClInclude Include="Src\Scene\Shop\ShopScene.h" />
