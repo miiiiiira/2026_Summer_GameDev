@@ -45,7 +45,11 @@ void ScoreManager::Update(void)
 void ScoreManager::Draw(void)
 {
 	// î[ïiã‡äz / ñ⁄ïWã‡äzÇÃï`âÊ
-	DrawFormatString(Application::SCREEN_SIZE_X - 150, 50, 0xffffff, "%dÅ@Å^Å@%d", deliveryPrice_, targetPrice_);
+	int font = Application::GetInstance()->GetFont();
+	int strWidth = GetDrawFormatStringWidthToHandle(font, "%dÅ@/Å@%d", deliveryPrice_, targetPrice_);
+	DrawFormatStringToHandle(Application::SCREEN_SIZE_X - strWidth , 50, 0xffffff, font,
+		"%dÅ@/Å@%d",
+		deliveryPrice_, targetPrice_);
 }
 
 void ScoreManager::Destroy()

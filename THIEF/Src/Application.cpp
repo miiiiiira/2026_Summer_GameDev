@@ -59,6 +59,7 @@ void Application::Init(void)
 	// サウンド
 	AudioManager::CreateInstance();
 	AudioManager::GetInstance()->Init();
+	AudioManager::GetInstance()->LoadSceneSound(LoadScene::SYSTEM);
 
 	// シーン管理初期化
 	SceneManager::CreateInstance();
@@ -67,6 +68,9 @@ void Application::Init(void)
 	// FPS初期化
 	fps_ = new FpsControl;
 	fps_->Init();
+
+	// フォントの追加
+		font_ = CreateFontToHandle("Shikakufuto_Free", 20, 1, DX_FONTTYPE_ANTIALIASING);
 }
 
 // ゲームループ
@@ -103,11 +107,15 @@ void Application::Delete(void)
 	SceneManager::DeleteInstance();
 
 	// サウンド削除
+	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::SYSTEM);
 	AudioManager::GetInstance()->DeleteAll();
 	AudioManager::DeleteInstance();
 
 	// フレームレート解放
 	delete fps_;
+
+	// フォントの削除
+	DeleteFontToHandle(font_);
 
 	// DxLib終了
 	if (DxLib_End() == -1)
@@ -129,4 +137,9 @@ bool Application::IsReleaseFail(void) const
 void Application::SetEnd(bool isEnd)
 {
 	isEnd_ = isEnd;
+}
+
+int Application::GetFont(void)
+{
+	return font_;
 }

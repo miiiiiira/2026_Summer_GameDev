@@ -61,6 +61,9 @@ public:
 	// 終了フラグの設定
 	void SetEnd(bool isEnd);
 
+	// ゲッター
+	int GetFont(void);
+
 private:
 
 	// 初期化失敗
@@ -74,4 +77,6 @@ private:
 
 	// 終了フラグ
 	bool isEnd_;
+
+	int font_;
 };
