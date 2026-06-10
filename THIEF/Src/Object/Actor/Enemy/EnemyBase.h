@@ -39,7 +39,7 @@ public:
 	void Release(void);
 
 	// 始点から終点までの最短経路を計算し、エッジのリストとして返す
-	std::vector<Edge> FindPath(int startNodeId, int goalNodeId);
+	void FindPath(int startNodeId, int goalNodeId);
 
 protected:
 
@@ -57,6 +57,7 @@ protected:
 	VECTOR jumpPow_;
 	float stepJump_;
 	bool isJump_;
+	bool isNotice_;
 
 	int stageId_ = -1;
 	VECTOR* playerPos_;
@@ -75,6 +76,10 @@ protected:
 	// プレイヤー追従処理
 	void LookPlayer(void);
 
+	float GetDistance(VECTOR pos1, VECTOR pos2);
+
+	// プレイヤーを見つけたかどうか
+	bool CheckPlayerDiscovery(float radius);
 
 private:
 	void LoadCsvData(void);
