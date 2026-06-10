@@ -58,6 +58,10 @@ public:
 	// プレイヤーが死ぬ座標
 	static constexpr float DEAD_POS_Y = -1000.0f;
 
+	// プレイヤーの足音のインターバル
+	static constexpr int MOVE_SOUND_INTERVAL = 40;
+	static constexpr float MOVE_SPEED_UP_MULTI = 1.2f;
+
 public:
 	void Init() override;		// 初期化
 	void Update() override;		// 更新
@@ -174,4 +178,8 @@ private:
 
 	// 掴み状態を表すステート
 	GRABBING_STATE grabState_;
+
+	// 足音を連続再生するインターバル
+	int moveSoundInterval_;
+
 };

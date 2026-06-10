@@ -6,6 +6,7 @@
 
 #include "../../../../Application.h"
 #include "../../../../Common/Collision/Collision.h"
+#include "../../../../Common/Manager/Audio/AudioManager.h"
 #include "../../../../Common/Manager/System/SystemManager.h"
 #include "../../../../Common/Manager/Input/InputManager.h"
 #include "../../../../Common/Manager/Score/ScoreManager.h"
@@ -299,8 +300,8 @@ void Upgrade::SelectUpgrade(void)
 	if (slot_ != SHOP_SLOT::NON
 		&& slot_ != prevSlot)
 	{
-		// TODO　選択SEを流す
-
+		// ボタンに乗ったサウンドを出す
+		AudioManager::GetInstance()->PlaySE(SoundID::SYS_SELECT_ON);
 	}
 }
 
@@ -512,8 +513,16 @@ void Upgrade::ConfirmUpgrade(void)
 		finalizeUpgrade_.type = selectUpgrades_[upgradeNum_].first.type;
 		finalizeUpgrade_.price = selectUpgrades_[upgradeNum_].first.price;
 
+		// 選択サウンド
+		AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_1);
+
 		// 確認画面を表示
 		UpdateConfirm();
+	}
+	else
+	{
+		// お金が足りないサウンド
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_SHOP_NOT_MONEY);
 	}
 }
 
@@ -528,36 +537,43 @@ void Upgrade::ApplyUpgrade(void)
 	{
 	case PLAYER_UPGRADE_TYPE::HP_UP:
 
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_SHOP_BUY_HP_UP);
 		PlayerStatusManager::GetInstance().HpUp(HP_UP_NUM);
 
 		break;
 	case PLAYER_UPGRADE_TYPE::STAMINA_UP:
 
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_SHOP_BUY_STAMINA_UP);
 		PlayerStatusManager::GetInstance().StaminaUp(STAMINA_UP_NUM);
 
 		break;
 	case PLAYER_UPGRADE_TYPE::DASH_SPEED_UP:
 
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_SHOP_BUY_DASH_UP);
 		PlayerStatusManager::GetInstance().DashSpeedUp(DASHSPPED_UP_NUM);
 
 		break;
 	case PLAYER_UPGRADE_TYPE::RANGE_UP:
 
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_SHOP_BUY_RANGE_UP);
 		PlayerStatusManager::GetInstance().RangeUp(RANGE_UP_NUM);
 
 		break;
 	case PLAYER_UPGRADE_TYPE::JUMP_NUM_UP:
 
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_SHOP_BUY_JUMP_UP);
 		PlayerStatusManager::GetInstance().JumpNumUp(JUMP_UP_NUM);
 
 		break;
 	case PLAYER_UPGRADE_TYPE::HEAL_HP_25:
 
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_SHOP_BUY_HEAL_25);
 		PlayerStatusManager::GetInstance().HealHp(HEAL_HP_25);
 
 		break;
 	case PLAYER_UPGRADE_TYPE::HEAL_HP_50:
 
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_SHOP_BUY_HEAL_50);
 		PlayerStatusManager::GetInstance().HealHp(HEAL_HP_50);
 
 		break;

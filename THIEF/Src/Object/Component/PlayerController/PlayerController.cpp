@@ -17,6 +17,7 @@
 #include "../../../Scene/SceneManager.h"
 
 #include "../Collider/StageCollider/StageCollider.h"
+#include "../../../Common/Manager/Audio/AudioManager.h"
 
 // 初期化
 void PlayerController::Init()
@@ -56,6 +57,10 @@ void PlayerController::Init()
 
 	// 掴み距離の初期化
 	range_ = status.rangeMax_;
+
+	// 足音のサウンドインターバル
+	moveSoundInterval_ = MOVE_SOUND_INTERVAL;
+
 }
 
 // 更新
@@ -125,6 +130,9 @@ VECTOR PlayerController::GetLineEndPos(void)
 
 void PlayerController::StartGrabbing(float range)
 {
+	// 掴んだ音
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_GRAB);
+
 	// 掴み状態を始める
 	grabState_ = GRABBING_STATE::IS_GRABBING;
 
@@ -181,13 +189,6 @@ void PlayerController::Move()
 
 	}
 
-	// 光がついてなかったら付ける
-	if (!lantern_->GetLight())
-	{
-		// ランタンの光をつける
-		lantern_->SetLight(true);
-	}
-
 	if (!Math::EqualsVZero(dir))
 	{
 		// 走ったかどうかの判定
@@ -207,7 +208,7 @@ void PlayerController::Move()
 		// 方向×スピードで移動量を作って、座標に足して移動
 		transform_->pos_ = VAdd(transform_->pos_, VScale(moveDir_, moveSpeed_));
 	}
-	else if (state_ != PLAYER_STATE::SLIDING)
+	else if (state_ != PLAYER_STATE::SLIDING && state_ != PLAYER_STATE::CROUCHING)
 	{
 		// 待機状態にする
 		state_ = PLAYER_STATE::IDLE;
@@ -218,6 +219,31 @@ void PlayerController::Move()
 	// しゃがみ処理
 	Crouching();
 
+	// 足音のサウンドを鳴らす
+	if (!Math::EqualsVZero(dir))
+	{
+		auto stageCol = owner_->GetComponent<StageCollider>();
+
+		if (!stageCol) return;
+
+		// 通常移動かつ接地している時のみ
+		if ((state_ == PLAYER_STATE::MOVE || state_ == PLAYER_STATE::DASH)
+			&&
+			stageCol->IsGround())
+		{
+			// 足音がなる間隔
+			if (moveSoundInterval_ > MOVE_SOUND_INTERVAL - (moveSpeed_ * MOVE_SPEED_UP_MULTI))
+			{
+				// 移動サウンドの再生
+				AudioManager::GetInstance()->PlaySE(SoundID::SE_MOVE);
+				moveSoundInterval_ = 0;
+			}
+			else
+			{
+				moveSoundInterval_++;
+			}
+		}
+	}
 }
 
 // 重力処理
@@ -349,15 +375,35 @@ bool PlayerController::SlidingToCrouching(void)
 
 void PlayerController::Crouching(void)
 {
-	// 左Ctrl押されたかつスライディング中じゃない場合
+	// しゃがみボタンを押されたかつスライディング中じゃない場合
 	if (InputManager::GetInstance()->CrouchingButtons() &&
-		state_ != PLAYER_STATE::SLIDING)
+		state_ != PLAYER_STATE::SLIDING && 
+		state_ != PLAYER_STATE::CROUCHING)
 	{
 		// しゃがみ状態にする
 		state_ = PLAYER_STATE::CROUCHING;
 
 		// ランタンの光を消す
 		lantern_->SetLight(false);
+
+		// しゃがみサウンド
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_CROUCH);
+
+		// ランタンOFFサウンド
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_OFF);
+
+	}
+	else if (!InputManager::GetInstance()->CrouchingButtons() &&
+		state_ == PLAYER_STATE::CROUCHING)
+	{
+		// 普通状態にする
+		state_ = PLAYER_STATE::IDLE;
+
+		// ランタンの光をつける
+		lantern_->SetLight(true);
+
+		// ランタンONサウンド
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_ON);
 	}
 }
 
@@ -412,6 +458,9 @@ void PlayerController::Jump(void)
 	if (InputManager::GetInstance()->JumpButtons()
 		&& jumpNum_ < PlayerStatusManager::GetInstance().GetPlayerStatus().jumpNumMax_)
 	{
+		// ジャンプ音
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_JUMP);
+
 		// ジャンプした回数を加算
 		++jumpNum_;
 
