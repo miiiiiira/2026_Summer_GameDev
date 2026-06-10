@@ -17,6 +17,9 @@ int WINAPI WinMain(
 	// メモリリーク検出
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
+	// フォントの生成
+	AddFontResourceExA("Data/Font/Shikakufuto_Free.ttf", FR_PRIVATE, NULL);
+
 	// インスタンスの生成
 	Application::CreateInstance();
 	Application::GetInstance()->Init();
@@ -40,6 +43,9 @@ int WINAPI WinMain(
 	}
 
 	Application::GetInstance()->DeleteInstance();
+
+	// Windowsに一時的に保持していたフォントデータを削除
+	RemoveFontResourceExA("Data/Font/Shikakufuto_Free.ttf", FR_PRIVATE, NULL);
 
 	return 0;
 
