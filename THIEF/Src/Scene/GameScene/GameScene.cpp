@@ -304,7 +304,7 @@ void GameScene::PlayerCreate(void)
 	auto col = player->AddComponent<CapsuleCollider>();
 	col->startOffset_ = { 0.0f,150.0f,0.0f };
 	col->endOffset_ = { 0.0f,30.0f,0.0f };
-	col->radius_ = 25.0f;
+	col->radius_ = 40.0f;
 
 	// ステージの取得
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);

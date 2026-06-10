@@ -24,14 +24,11 @@ public:
 
 private:
 
-	// ステージとの当たり判定
-	void StageCollision(void);
+	// 地面との当たり判定
+	void FieldCollision();
 
-	//// 地面との当たり判定
-	//void FieldCollision();
-
-	//// 壁との当たり判定
-	//void WallCollision();
+	// 壁との当たり判定
+	void WallCollision();
 
 private:
 	// 登れる最大傾斜角

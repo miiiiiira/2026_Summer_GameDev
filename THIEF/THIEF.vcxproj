@@ -22,6 +22,7 @@
     <ClCompile Include="Src\Common\FrameRenderer\FrameRenderer.cpp" />
     <ClCompile Include="Src\Common\Manager\PlayerStatus\PlayerStatusManager.cpp" />
     <ClCompile Include="Src\Object\Component\PlayerController\Upgrade\UpgradeManager.cpp" />
+    <ClCompile Include="Src\Object\Component\Transform\Transform.cpp" />
     <ClCompile Include="Src\Scene\Shop\ShopScene.cpp" />
     <ClCompile Include="Src\Object\Component\Item\Potion\Potion.cpp" />
     <ClCompile Include="Src\Common\Crosshair\Crosshair.cpp" />
@@ -32,7 +33,6 @@
     <ClCompile Include="Src\Scene\DebugScene.cpp" />
     <ClCompile Include="Src\Object\Component\Collider\ItemCollider\ItemCollider.cpp" />
     <ClCompile Include="Src\Common\Shader\Shader.cpp" />
-    <ClCompile Include="Src\Common\Transform\Transform.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\EnemyBase.cpp" />
     <ClCompile Include="Src\Object\Component\Item\Goblet\Goblet.cpp" />
     <ClCompile Include="Src\Object\Component\Lantern\Lantern.cpp" />
@@ -89,7 +89,6 @@
     <ClInclude Include="Src\Scene\DebugScene.h" />
     <ClInclude Include="Src\Object\Component\Collider\ItemCollider\ItemCollider.h" />
     <ClInclude Include="Src\Common\Shader\Shader.h" />
-    <ClInclude Include="Src\Common\Transform\Transform.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\EnemyBase.h" />
     <ClInclude Include="Src\Object\Component\Item\Goblet\Goblet.h" />
     <ClInclude Include="Src\Object\Component\Lantern\Lantern.h" />

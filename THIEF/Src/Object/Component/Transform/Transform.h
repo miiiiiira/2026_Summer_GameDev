@@ -5,8 +5,9 @@
 // 3D位置コンポーネント
 class Transform : public Component
 {
+	void Update() override;
 public:
 	// 座標
-	VECTOR pos_;
-	VECTOR prevPos_;
+	VECTOR pos_ = { 0.0f,0.0f,0.0f };
+	VECTOR prevPos_ = { 0.0f,0.0f,0.0f };
 };

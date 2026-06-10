@@ -59,9 +59,6 @@ void PlayerController::Init()
 // 更新
 void PlayerController::Update()
 {
-	// 前回座標を更新
-	transform_->prevPos_ = transform_->pos_;
-
 	// 移動処理
 	Move();
 
