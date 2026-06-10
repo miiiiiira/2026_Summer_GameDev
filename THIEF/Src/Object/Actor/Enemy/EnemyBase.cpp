@@ -29,6 +29,49 @@ void EnemyBase::Load(void)
 void EnemyBase::Draw(void)
 {
 	MV1DrawModel(modelId_);
+
+#ifdef _DEBUG
+	MATRIX mat = MGetIdent();
+	mat = Matrix::GetMatrixRotateXYZ(angle_);
+
+	const VECTOR dirForwardBase = VGet(0.0f, 0.0f, 1.0f);
+
+	// 前方方向
+	VECTOR forward = VTransform(dirForwardBase, mat);
+
+	// 右
+	MATRIX rightMat = MMult(mat, MGetRotY(Math::Deg2Rad(30.0f)));
+	VECTOR right = VTransform(dirForwardBase, rightMat);
+	// 左
+	MATRIX leftMat = MMult(mat, MGetRotY(Math::Deg2Rad(-30.0f)));
+	VECTOR left = VTransform(dirForwardBase, leftMat);
+
+	VECTOR pos0 = pos_;
+
+	VECTOR pos1 = VAdd(pos0, VScale(forward, 1000.0f));
+	VECTOR pos2 = VAdd(pos0, VScale(left, 1000.0f));
+	VECTOR pos3 = VAdd(pos0, VScale(right, 1000.0f));
+
+	pos0.y = pos1.y = pos2.y = pos3.y = 10.0f;
+
+	if (isNotice_)
+	{
+		DrawTriangle3D(pos0, pos2, pos1,
+			0xcc44cc, true);
+
+		DrawTriangle3D(pos0, pos1, pos3,
+			0xcc44cc, true);
+	}
+	else
+	{
+		DrawTriangle3D(pos0, pos2, pos1,
+			0x00ff00, true);
+
+		DrawTriangle3D(pos0, pos1, pos3,
+			0x00ff00, true);
+	}
+
+#endif //_DEBUG
 }
 
 void EnemyBase::Release(void)
@@ -43,7 +86,7 @@ void EnemyBase::Release(void)
 	}
 }
 
-std::vector<EnemyBase::Edge> EnemyBase::FindPath(int startNodeId, int goalNodeId)
+void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 {
 	path_.clear();
 
@@ -97,22 +140,21 @@ std::vector<EnemyBase::Edge> EnemyBase::FindPath(int startNodeId, int goalNodeId
 		}
 	}
 
-	// ゴールの最小コストがFLT_MAXのままなら、空のまま返す
-	if (minCosts_[goalNodeId] == FLT_MAX) return path_;
-
-	for (int i = goalNodeId; parentNodes_[i] != -1; i = parentNodes_[i])
+	int i = goalNodeId;
+	while (i != -1)
 	{
 		Edge path;
-		path.way.id = parentNodes_[i];
+		path.way.id = way_[i].id;   // 「現在のノードID」を正しく登録する
+		path.way.pos = way_[i].pos; // ★座標の設定漏れもここで修正！
 		path.cost = minCosts_[i];
 
 		path_.push_back(path);
+
+		i = parentNodes_[i]; // 次の親ノードへ進む
 	}
 
 	// 逆にする
 	std::reverse(path_.begin(), path_.end());
-
-	return path_;
 }
 
 void EnemyBase::LoadCsvData(void)
@@ -189,17 +231,57 @@ void EnemyBase::LookPlayer(void)
 	// ベクトルの正規化で単位ベクトル（方向）を取得
 	moveDir_ = VNorm(diff);
 
-	// 方向から角度（ラジアン）に変換
-	angle_.y = atan2(moveDir_.x, moveDir_.z);
-
-	// モデルの方向が正の負の方向を向いているので、補正
-	angle_.y += Math::Deg2Rad(180.0f);
-
 	// 回転はY軸のみ
 	angle_.x = angle_.z = 0.0f;
+}
 
-	// モデルに角度を設定
-	MV1SetRotationXYZ(modelId_, angle_);
+float EnemyBase::GetDistance(VECTOR pos1, VECTOR pos2)
+{
+	return VSquareSize(VSub(pos1, pos2));
+}
+
+bool EnemyBase::CheckPlayerDiscovery(float radius)
+{
+	float distance = GetDistance(*playerPos_, pos_);
+
+	if (distance > radius * radius) return false;
+	if (fabsf(playerPos_->y - pos_.y) > 20.0f) return false;
+
+	VECTOR dirEnemy = VECTOR();
+	if (VSize(moveDir_) < 0.001f)
+	{
+		dirEnemy.x = sinf(angle_.y);
+		dirEnemy.y = 0.0f;
+		dirEnemy.z = cosf(angle_.y);
+	}
+	else
+	{
+		dirEnemy = VNorm(moveDir_);
+	}
+	VECTOR diff = VSub(*playerPos_, pos_);
+	dirEnemy.y = 0.0f;
+	diff.y = 0.0f;
+	dirEnemy = VNorm(dirEnemy);
+	VECTOR dirPlayerForEnemy = VNorm(diff);
+
+	// 内積を使ってベクトルの比較
+	float dot = VDot(dirEnemy, dirPlayerForEnemy);
+	float angle = acosf(dot);
+
+	const float viweRad = Math::Deg2Rad(30.0f);
+
+	// 視野内にいるか確認
+	if (angle <= viweRad)
+	{
+		MV1_COLL_RESULT_POLY hit = MV1CollCheck_Line(stageId_, -1, pos_, *playerPos_);
+
+		if (!hit.HitFlag)
+		{
+			isNotice_ = true;
+		}
+	}
+
+	return isNotice_;
 }
 
 void EnemyBase::AddEdge(int fromId, int toId)
@@ -209,7 +291,7 @@ void EnemyBase::AddEdge(int fromId, int toId)
 
 	float checkRadius = 10.0f;
 
-	// 線分とモデルの衝突判定
+	// カプセルとモデルの衝突判定
 	MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, posA, posB, checkRadius);
 
 	// 当たっていたら、省く

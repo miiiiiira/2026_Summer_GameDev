@@ -249,7 +249,7 @@ void GameScene::StageCreate(void)
 
 	// 描画
 	auto render = stage->AddComponent<Render3D>();
-	render->SetModel("Data/Model/Stage/Dummy.mv1");
+	render->SetModel("Data/Model/Stage/Dummy2.mv1");
 
 	// ステージ機能
 	stage->AddComponent<Stage>();
@@ -302,7 +302,9 @@ void GameScene::PlayerCreate(void)
 
 	// 当たり判定の設定
 	auto col = player->AddComponent<CapsuleCollider>();
-	col->radius_ = 20.0f;
+	col->startOffset_ = { 0.0f,150.0f,0.0f };
+	col->endOffset_ = { 0.0f,30.0f,0.0f };
+	col->radius_ = 25.0f;
 
 	// ステージの取得
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);

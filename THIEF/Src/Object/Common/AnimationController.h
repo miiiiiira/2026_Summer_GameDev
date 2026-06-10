@@ -42,6 +42,8 @@ public:
 	// 再生終了
 	bool IsEnd(void) const;
 
+	void SetLoop(bool isLoop);
+
 	// 再生中のアニメーション情報を取得
 	const Animation& GetPlayAnim(void) const;
 
