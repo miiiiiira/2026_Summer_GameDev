@@ -4,6 +4,7 @@
 #include <random>
 #include <algorithm>
 
+#include "../../../../Application.h"
 #include "../../../../Common/Collision/Collision.h"
 #include "../../../../Common/Manager/System/SystemManager.h"
 #include "../../../../Common/Manager/Input/InputManager.h"
@@ -180,7 +181,11 @@ void Upgrade::Draw2D(void)
 
 	// Ž‚Á‚Ä‚¢‚é‹àŠz
 	int price = ScoreManager::GetInstance().GetTotalPrice();
-	DrawFormatString(Application::SCREEN_SIZE_X - 150, 50, 0xffffff, "%d", price);
+	int font = Application::GetInstance()->GetFont();
+	int strWidth = GetDrawFormatStringWidthToHandle(font, "%d", price);
+	DrawFormatStringToHandle((Application::SCREEN_SIZE_X - strWidth) / 2, 50, 0xffffff, font,
+		"%d", price);
+	//DrawFormatString(Application::SCREEN_SIZE_X - 150, 50, 0xffffff, "%d", price);
 
 #ifdef _DEBUG
 	auto status = PlayerStatusManager::GetInstance().GetPlayerStatus();

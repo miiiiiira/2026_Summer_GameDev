@@ -1,5 +1,7 @@
 #include "PlayerController.h"
 
+#include "../../../Application.h"
+
 #include "../../../Common/Manager/Input/InputManager.h"
 #include "../../../Common/Manager/System/SystemManager.h"
 #include "../../../Common/Manager/PlayerStatus/PlayerStatusManager.h"
@@ -517,12 +519,12 @@ bool PlayerController::RangeUpdate(void)
 void PlayerController::DebugDraw(void)
 {
 	// HPの表示
-	DrawFormatString(10, 50, 0x00fa9a,
-		"HP : %.0f / %.0f",
+	DrawFormatStringToHandle(10, 50, 0x00fa9a, Application::GetInstance()->GetFont(),
+		"HP : %.0f / %.0f", 
 		hp_, PlayerStatusManager::GetInstance().GetPlayerStatus().hpMax_);
 
 	// スタミナの表示
-	DrawFormatString(10, 100, 0xffc800,
-		"スタミナ : %.0f / %.0f",
+	DrawFormatStringToHandle(10, 90, 0xffc800, Application::GetInstance()->GetFont(),
+		"STAMINA : %.0f / %.0f",
 		stamina_, PlayerStatusManager::GetInstance().GetPlayerStatus().staminaMax_);
 }
