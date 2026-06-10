@@ -5,12 +5,66 @@
 enum class SoundID
 {
 	NON = -1,
-	
+
+	SYS_BUTTON_1,
+	SYS_BUTTON_2,
+	SYS_SELECT_ON,
+	SYS_SELECT_CLICK,
+	SYS_ENTER,
+	SYS_CANCEL,
+	SYS_PAUSE_ON,
+	SYS_PAUSE_OFF,
+
 	BGM_TITLE,
-	BGM_BATTLE,
-	SE_BUTTON,
-	SE_RUN,
-	SE_ATTACK,
+	BGM_MAINMENU,
+	BGM_GAME_1,
+	BGM_GAME_2,
+	BGM_GAME_3,
+	BGM_SHOP,
+
+	AMBIENT_SOUND_1,
+	AMBIENT_SOUND_2,
+	AMBIENT_SOUND_3,
+	AMBIENT_SOUND_4,
+
+	SE_JUMP,
+	SE_SLIDING,
+	SE_CROUCH,
+	SE_LANTERN_ON,
+	SE_LANTERN_OFF,
+	SE_GRAB,
+	SE_DAMAGE,
+	SE_MOVE,
+	SE_DASH,
+
+	SE_DELIVERY_ITEM_ON,
+	SE_DELIVERY_BUTTON_SUC,
+	SE_DELIVERY_BUTTON_FAI,
+
+	SE_ITEM_DAMAGE_1,
+	SE_ITEM_DAMAGE_2,
+	SE_ITEM_DAMAGE_3,
+	SE_ITEM_DAMAGE_4,
+
+	SE_ITEM_BREAK_1,
+	SE_ITEM_BREAK_2,
+	SE_ITEM_BREAK_3,
+	SE_ITEM_BREAK_4,
+
+	SE_ENEMY_SPAWN_1,
+	SE_ENEMY_SPAWN_2,
+	SE_ENEMY_SPAWN_3,
+	SE_ENEMY_SPAWN_4,
+
+	SE_SHOP_BUY_HP_UP,
+	SE_SHOP_BUY_STAMINA_UP,
+	SE_SHOP_BUY_DASH_UP,
+	SE_SHOP_BUY_JUMP_UP,
+	SE_SHOP_BUY_RANGE_UP,
+	SE_SHOP_BUY_HEAL_25,
+	SE_SHOP_BUY_HEAL_50,
+	SE_SHOP_NOT_MONEY,
+
 };
 
 // 読み込むシーン
@@ -18,11 +72,21 @@ enum class LoadScene
 {
 	SYSTEM,		// システム
 	TITLE,		// タイトル
+	MAIN_MENU,	// メインメニュー
 	GAME,		// ゲーム
+	SHOP,		// ゲーム
 };
 
 // サウンド属性
 struct SoundData
 {
 	std::string path;	// サウンドのパス
+	int volume;			// 音量 (0～255)
+};
+
+// サウンドの情報
+struct SoundResource
+{
+	int handle;
+	int volume;
 };

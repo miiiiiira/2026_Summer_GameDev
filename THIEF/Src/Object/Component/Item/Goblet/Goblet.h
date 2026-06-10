@@ -32,5 +32,8 @@ public:
 
 	// ‰Šú‰»ˆ—
 	void SetParam(void) override;
+
+	// ”j‰ó‚Ìˆ—
+	void Break(void) override;
 };
 

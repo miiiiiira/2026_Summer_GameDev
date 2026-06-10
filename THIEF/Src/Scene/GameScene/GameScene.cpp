@@ -62,10 +62,16 @@ void GameScene::Init(void)
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 	auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
 	enemy_->Init(&(player->GetTransform()->pos_),stage->GetModelId());
+
+	// BGM再生
+	AudioManager::GetInstance()->PlayBGM(SoundID::BGM_GAME_1);
 }
 
 void GameScene::Load(void)
 {
+	// サウンド読みこみ
+	AudioManager::GetInstance()->LoadSceneSound(LoadScene::GAME);
+
 	// オブジェクトマネージャーの生成
 	objectManger_ = new ObjectManager();
 
@@ -147,8 +153,8 @@ void GameScene::Update(void)
 
 	if (InputManager::GetInstance()->PauseButtons())
 	{
-		// TODO ポーズモードに入る際のSE
-
+		// ポーズ画面を開いたサウンド
+		AudioManager::GetInstance()->PlaySE(SoundID::SYS_PAUSE_ON);
 		// ポーズモードへ
 		SceneManager::GetInstance()->PushScene(std::make_shared<Pause>());
 		return;
@@ -215,6 +221,8 @@ void GameScene::Release(void)
 	crosshair_->Release();
 	delete crosshair_;
 	crosshair_ = nullptr;
+
+	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::GAME);
 }
 
 void GameScene::CameraCreate(void)

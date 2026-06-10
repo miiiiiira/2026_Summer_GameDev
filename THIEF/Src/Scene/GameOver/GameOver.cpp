@@ -75,8 +75,8 @@ void GameOver::Update(void)
 		break;
 	}
 
-	// TODO　決定SEを流す
-
+	// ボタン押下のSEを流す
+	AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_1);
 }
 
 void GameOver::Draw(void)
@@ -131,8 +131,8 @@ void GameOver::SelectUpgrade(void)
 	if (currentType_ != TYPE::NONE
 		&& currentType_ != prevType)
 	{
-		// TODO　選択SEを流す
-
+		// ボタンに乗ったサウンドを出す
+		AudioManager::GetInstance()->PlaySE(SoundID::SYS_SELECT_ON);
 	}
 }
 

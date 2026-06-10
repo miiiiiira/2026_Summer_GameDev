@@ -9,9 +9,9 @@ AudioManager* AudioManager::instance_ = nullptr;
 AudioManager::AudioManager(void)
 {
 	currentBgm_ = SoundID::NON;
-	bgmVolume_ = 255;	
-	seVolume_ = 255;
-	masterVolume_ = 255;
+	bgmVolume_ = 127;
+	seVolume_ = 127;
+	masterVolume_ = 127;
 }
 
 AudioManager::~AudioManager()
@@ -25,54 +25,63 @@ void AudioManager::Init(void)
 	// 現在再生されているBGM
 	currentBgm_ = SoundID::NON;
 
-	bgmVolume_ = 255;		// bgm音量
-	seVolume_ = 255;		// se音量
-	masterVolume_ = 255;	// master音量
+	bgmVolume_ = 127;		// bgm音量
+	seVolume_ = 127;		// se音量
+	masterVolume_ = 127;	// master音量
 }
 
 void AudioManager::LoadSceneSound(LoadScene scene)
 {
 	// 空のテーブルを用意
-	const std::unordered_map<SoundID, std::string>* table = nullptr;
+	const std::unordered_map<SoundID, SoundData>* table = nullptr;
 
 	// シーンで読み込みたいテーブルを切り替える
 	switch (scene)
 	{
 	case LoadScene::SYSTEM: table = &SoundTable_System::Table; break;
 	case LoadScene::TITLE: table = &SoundTable_Title::Table; break;
+	case LoadScene::MAIN_MENU:  table = &SoundTable_MainMenu::Table; break;
 	case LoadScene::GAME:  table = &SoundTable_Game::Table; break;
+	case LoadScene::SHOP:  table = &SoundTable_Shop::Table; break;
 	}
 
 	// 存在しないテーブルを選んでいたら処理しない
 	if (!table) return;
 
 	// 指定したテーブルのサウンドを全て読み込む
-	for (auto& [id, path] : *table) 
+	for (auto& [id, data] : *table)
 	{
 		// 既に読み込まれていたら削除
 		auto it = handles_.find(id);
 		if (it != handles_.end())
 		{
-			DeleteSoundMem(it->second);
+			DeleteSoundMem(it->second.handle);
 			handles_.erase(it);
 		}
 
 		// サウンドを読み込む
-		handles_[id] = LoadSoundMem(path.c_str());
+		SoundResource res;
+
+		res.handle = LoadSoundMem(data.path.c_str());
+		res.volume = data.volume;
+
+		handles_[id] = res;
 	}
 }
 
 void AudioManager::DeleteSceneSound(LoadScene scene)
 {
 	// 空のテーブルを用意
-	const std::unordered_map<SoundID, std::string>* table = nullptr;
+	const std::unordered_map<SoundID, SoundData>* table = nullptr;
 
 	// シーンで削除したいテーブルを切り替える
 	switch (scene)
 	{
 	case LoadScene::SYSTEM: table = &SoundTable_System::Table; break;
 	case LoadScene::TITLE: table = &SoundTable_Title::Table; break;
+	case LoadScene::MAIN_MENU:  table = &SoundTable_MainMenu::Table; break;
 	case LoadScene::GAME:  table = &SoundTable_Game::Table; break;
+	case LoadScene::SHOP:  table = &SoundTable_Shop::Table; break;
 	}
 
 	// 存在しないテーブルを選んでいたら処理しない
@@ -88,7 +97,8 @@ void AudioManager::DeleteSceneSound(LoadScene scene)
 		if (it != handles_.end())
 		{
 			// 削除する
-			DeleteSoundMem(it->second);
+			DeleteSoundMem(it->second.handle);
+
 			// 配列からも削除
 			handles_.erase(it);
 		}
@@ -106,7 +116,7 @@ void AudioManager::PlayBGM(SoundID id)
 		return;
 
 	// 現在のBGMが同じならスキップ
-	if (currentBgm_ == id && CheckSoundMem(it->second))
+	if (currentBgm_ == id && CheckSoundMem(it->second.handle))
 		return;
 
 	// 別のBGMが再生中なら停止
@@ -117,13 +127,14 @@ void AudioManager::PlayBGM(SoundID id)
 	currentBgm_ = id;
 
 	// 実音量を計算
-	int volume = static_cast<int>(bgmVolume_ * (masterVolume_ / 255.0f));
+	auto& sound = it->second;
+	int volume = static_cast<int>(sound.volume * (bgmVolume_ / 255.0f) * (masterVolume_ / 255.0f));
 
 	// 音量を変更
-	ChangeVolumeSoundMem(volume, it->second);
+	ChangeVolumeSoundMem(volume, sound.handle);
 
 	// BGMなのでループ再生
-	PlaySoundMem(it->second, DX_PLAYTYPE_LOOP, true);
+	PlaySoundMem(sound.handle, DX_PLAYTYPE_LOOP, true);
 }
 
 void AudioManager::StopBGM()
@@ -138,7 +149,7 @@ void AudioManager::StopBGM()
 	// サウンドが読み込まれているか？
 	if (it != handles_.end())
 		// 読み込まれているのでサウンドを止める
-		StopSoundMem(it->second);
+		StopSoundMem(it->second.handle);
 
 	// 現在のBGMを再生していない状態に更新
 	currentBgm_ = SoundID::NON;
@@ -155,29 +166,30 @@ void AudioManager::PlaySE(SoundID id)
 		return;
 
 	// 実音量を計算
-	int volume = static_cast<int>(seVolume_ * (masterVolume_ / 255.0f));
+	auto sound = it->second;
+	int volume = static_cast<int>(sound.volume * (seVolume_ / 255.0f) * (masterVolume_ / 255.0f));
 
 	// 音量を変更
-	ChangeVolumeSoundMem(volume, it->second);
+	ChangeVolumeSoundMem(volume, sound.handle);
 
 	// SEは複数同時再生を許可
-	PlaySoundMem(it->second, DX_PLAYTYPE_BACK, true);
+	PlaySoundMem(sound.handle, DX_PLAYTYPE_BACK, true);
 }
 
 void AudioManager::DeleteAll(void)
 {
 	// サウンドが1つも読み込まれてないなら処理しない
-	if (handles_.empty()) 
+	if (handles_.empty())
 		return;
 
 	// 全てのサウンドを検索
-	for (auto& [id, handle] : handles_)
+	for (auto& [id, data] : handles_)
 	{
 		// エラーサウンドかをチェック
-		if (CheckSoundMem(handle) != -1)
+		if (CheckSoundMem(data.handle) != -1)
 		{
 			// 削除する
-			DeleteSoundMem(handle);
+			DeleteSoundMem(data.handle);
 		}
 	}
 
@@ -200,10 +212,11 @@ void AudioManager::SetBgmVolume(int volume)
 		if (it != handles_.end())
 		{
 			// 実音量を計算
-			int volume = static_cast<int>(bgmVolume_ * (masterVolume_ / 255.0f));
+			auto& sound = it->second;
+			int volume = static_cast<int>(sound.volume * (bgmVolume_ / 255.0f) * (masterVolume_ / 255.0f));
 
 			// 音量を変更
-			ChangeVolumeSoundMem(volume, it->second);
+			ChangeVolumeSoundMem(volume, sound.handle);
 		}
 	}
 }
@@ -229,10 +242,11 @@ void AudioManager::SetMasterVolume(int volume)
 		if (it != handles_.end())
 		{
 			// 実音量を計算
-			int volume = static_cast<int>(bgmVolume_ * (masterVolume_ / 255.0f));
+			auto& sound = it->second;
+			int volume = static_cast<int>(sound.volume * (bgmVolume_ / 255.0f) * (masterVolume_ / 255.0f));
 
 			// 音量を変更
-			ChangeVolumeSoundMem(volume, it->second);
+			ChangeVolumeSoundMem(volume, sound.handle);
 		}
 	}
 }

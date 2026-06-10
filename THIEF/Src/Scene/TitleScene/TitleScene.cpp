@@ -47,6 +47,9 @@ void TitleScene::Update(void)
 	// ボタンが押されると次のシーンへ
 	if (InputManager::GetInstance()->PushAnyButton())
 	{
+		// ボタン音
+		AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_2);
+
 		// ゲームシーンへ
 		SceneManager::GetInstance()->PushScene(std::make_shared<MainMenu>());
 	}
@@ -88,6 +91,8 @@ void TitleScene::Draw(void)
 
 void TitleScene::Release(void)
 {
+	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::TITLE);
+
 	DeleteGraph(handle_);
 	DeleteGraph(buttonHandle_);
 }

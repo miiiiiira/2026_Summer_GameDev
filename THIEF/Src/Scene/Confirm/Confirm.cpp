@@ -106,8 +106,8 @@ void Confirm::Update(void)
 		break;
 	}
 
-	// TODO　決定SEを流す
-
+	// ボタン押下のSEを流す
+	AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_1);
 }
 
 void Confirm::Draw(void)
@@ -197,8 +197,8 @@ void Confirm::SelectUpgrade(void)
 	if (currentSelect_ != SELECT::NONE
 		&& currentSelect_ != prevSelect)
 	{
-		// TODO　選択SEを流す
-
+		// ボタンに乗ったサウンドを出す
+		AudioManager::GetInstance()->PlaySE(SoundID::SYS_SELECT_ON);
 	}
 }
 

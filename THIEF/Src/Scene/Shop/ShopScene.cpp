@@ -1,6 +1,7 @@
 #include <DxLib.h>
 #include "ShopScene.h"
 #include "../../Common/Manager/Input/InputManager.h"
+#include "../../Common/Manager/Audio/AudioManager.h"
 #include "../../Common/Manager/Score/ScoreManager.h"
 #include "../SceneManager.h"
 #include "../../Object/Component/PlayerController/Upgrade/UpgradeManager.h"
@@ -19,11 +20,14 @@ ShopScene::~ShopScene(void)
 
 void ShopScene::Init(void)
 {
+	AudioManager::GetInstance()->PlayBGM(SoundID::BGM_SHOP);
 }
 
 void ShopScene::Load(void)
 {
 	UpgradeManager::GetInstance().Load();
+
+	AudioManager::GetInstance()->LoadSceneSound(LoadScene::SHOP);
 }
 
 void ShopScene::LoadEnd(void)
@@ -49,5 +53,6 @@ void ShopScene::Draw(void)
 
 void ShopScene::Release(void)
 {
+	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::SHOP);
 	UpgradeManager::GetInstance().Release();
 }

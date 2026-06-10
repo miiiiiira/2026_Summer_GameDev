@@ -5,6 +5,7 @@
 #include "../../Item/Item.h"
 #include "../../PlayerController/PlayerController.h"
 #include "../../../../Common/Manager/Score/ScoreManager.h"
+#include "../../../../Common/Manager/Audio/AudioManager.h"
 #include "../../../../Common/Collision/Collision.h"
 #include "../../../../Common/Crosshair/Crosshair.h"
 #include "../../../../Application.h"
@@ -69,6 +70,9 @@ void DeliveryLocationCollider::ItemToDeliveryLocationCollision(void)
 		if (Collision::HitAABBs(deliveryPos, deliverySize, itemPos, itemSize)
 			&& !item->GetInfo().hasTouchedDeliveryLocation_)
 		{
+			// アイテムが範囲内に入ったサウンド
+			AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_ITEM_ON);
+
 			// アイテム事体に納品場所にはいっていることを伝える
 			item->SetHasTouchedDelivery(true);
 
@@ -123,11 +127,18 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 			// 目標金額を達成していたら
 			if (deliveryPrice >= targetPrice)
 			{
+				// 納品完了音
+				AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_SUC);
+
 				// ステージクリアへ
 				SceneManager::GetInstance()->TrueStageClear();
 				return;
 			}
-
+			else
+			{
+				// 納品失敗音
+				AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_FAI);
+			}
 		}
 	}
 	else

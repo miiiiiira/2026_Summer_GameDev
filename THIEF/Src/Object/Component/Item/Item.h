@@ -89,6 +89,9 @@ protected:
 	// 個々のパラメータを設定する
 	virtual void SetParam(void) = 0;
 
+	// 個々の破壊時の処理
+	virtual void Break(void) = 0;
+
 	// デバッグ用の描画
 	void DrawDebug(void);
 };

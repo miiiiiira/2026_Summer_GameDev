@@ -30,7 +30,7 @@ public:
 	// サウンド制御
 	// 指定したシーンのサウンドテーブルを読み込む
 	void LoadSceneSound(LoadScene scene);
-	
+
 	// 指定したシーンのサウンドテーブルを削除する
 	void DeleteSceneSound(LoadScene scene);
 
@@ -49,7 +49,7 @@ public:
 	int GetMasterVolume(int volume) const { return masterVolume_; }
 
 private:
-	std::unordered_map<SoundID, int> handles_;	// ハンドル管理用
+	std::unordered_map<SoundID, SoundResource> handles_;	// ハンドル管理用
 
 	// 現在再生されているBGM
 	SoundID currentBgm_;

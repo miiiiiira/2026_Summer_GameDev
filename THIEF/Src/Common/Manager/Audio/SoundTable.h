@@ -6,15 +6,25 @@
 // シーン別サウンドテーブルを宣言しておく
 namespace SoundTable_System
 {
-	extern const std::unordered_map<SoundID, std::string> Table;
+	extern const std::unordered_map<SoundID, SoundData> Table;
 }
 
 namespace SoundTable_Title
 {
-	extern const std::unordered_map<SoundID, std::string> Table;
+	extern const std::unordered_map<SoundID, SoundData> Table;
+}
+
+namespace SoundTable_MainMenu
+{
+	extern const std::unordered_map<SoundID, SoundData> Table;
 }
 
 namespace SoundTable_Game
 {
-	extern const std::unordered_map<SoundID, std::string> Table;
+	extern const std::unordered_map<SoundID, SoundData> Table;
+}
+
+namespace SoundTable_Shop
+{
+	extern const std::unordered_map<SoundID, SoundData> Table;
 }

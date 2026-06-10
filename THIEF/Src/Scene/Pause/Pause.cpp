@@ -64,6 +64,7 @@ void Pause::Update(void)
 	if (InputManager::GetInstance()->PauseButtons())
 	{
 		// ゲームシーンへ戻る(ポーズモードを終了する)
+		AudioManager::GetInstance()->PlaySE(SoundID::SYS_PAUSE_OFF);
 		SceneManager::GetInstance()->PopScene();
 	}
 
@@ -96,8 +97,8 @@ void Pause::Update(void)
 		break;
 	}
 
-	// TODO　決定SEを流す
-
+	// ボタン押下のSEを流す
+	AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_1);
 }
 
 void Pause::Draw(void)
@@ -189,8 +190,8 @@ void Pause::SelectUpgrade(void)
 	if (currentMenu_ != MENU::NONE
 		&& currentMenu_ != prevSelect)
 	{
-		// TODO　選択SEを流す
-
+		// ボタンに乗ったサウンドを出す
+		AudioManager::GetInstance()->PlaySE(SoundID::SYS_SELECT_ON);
 	}
 }
 

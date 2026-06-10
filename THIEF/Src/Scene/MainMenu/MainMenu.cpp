@@ -29,10 +29,15 @@ void MainMenu::Init(void)
 	ChangeSelect(MENU::NONE);
 
 	confirm_ = std::make_shared<Confirm>();
+
+	AudioManager::GetInstance()->PlayBGM(SoundID::BGM_MAINMENU);
 }
 
 void MainMenu::Load(void)
 {
+	// メインメニューサウンド読みこみ
+	AudioManager::GetInstance()->LoadSceneSound(LoadScene::MAIN_MENU);
+
 	handle_ = LoadGraph((Application::PATH_IMAGE + "Title.png").c_str());
 
 	menuButtons_.clear();
@@ -89,7 +94,8 @@ void MainMenu::Update(void)
 		break;
 	}
 
-	// TODO　決定SEを流す
+	// ボタン押下のSEを流す
+	AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_1);
 
 }
 
@@ -119,6 +125,7 @@ void MainMenu::Release(void)
 	DeleteGraph(handle_);
 	handle_ = -1;
 
+	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::MAIN_MENU);
 }
 
 void MainMenu::ChangeSelect(MENU menu)
@@ -164,8 +171,8 @@ void MainMenu::SelectUpgrade(void)
 	if (currentMenu_ != MENU::NONE
 		&& currentMenu_ != prevMenu)
 	{
-		// TODO　選択SEを流す
-
+		// ボタンに乗ったサウンドを出す
+		AudioManager::GetInstance()->PlaySE(SoundID::SYS_SELECT_ON);
 	}
 }
 

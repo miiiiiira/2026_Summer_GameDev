@@ -1,6 +1,8 @@
 #include<DxLib.h>
 #include "Goblet.h"
 
+#include "../../../../Common/Manager/Audio/AudioManager.h"
+
 Goblet::Goblet()
 	:Item()
 {
@@ -35,4 +37,9 @@ void Goblet::SetParam(void)
 
 	// ¶‘¶’†‚É‚·‚é
 	info_.isAlive_ = true;
+}
+
+void Goblet::Break(void)
+{
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_1);
 }

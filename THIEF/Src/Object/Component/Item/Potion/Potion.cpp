@@ -1,6 +1,8 @@
 #include<DxLib.h>
 #include "Potion.h"
 
+#include "../../../../Common/Manager/Audio/AudioManager.h"
+
 Potion::Potion(void)
 {
 }
@@ -34,4 +36,9 @@ void Potion::SetParam(void)
 
 	// ¶‘¶’†‚É‚·‚é
 	info_.isAlive_ = true;
+}
+
+void Potion::Break(void)
+{
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_2);
 }
