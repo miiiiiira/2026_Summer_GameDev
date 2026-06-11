@@ -193,6 +193,9 @@ private:
 	// 足音を連続再生するインターバル
 	int moveSoundInterval_;
 
+	// 前回しゃがんでいたか
+	bool prevCrouching_;
+
 	// 動いてない状態での、初期化処理
 	void IdleInit(void);
 

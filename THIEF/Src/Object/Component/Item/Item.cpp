@@ -50,6 +50,9 @@ void Item::Init(void)
 
 void Item::Update(void)
 {
+	// ダメージ表記用のカウントを進める
+	CountUpdate();
+
 	// 生存していなかったら描画しない
 	if (!info_.isAlive_)return;
 
@@ -89,6 +92,20 @@ void Item::Draw2D(void)
 		// お金表示
 		DrawFormatStringF(moneyPos.x, moneyPos.y, 0xff0000, "%d円", info_.money_);
 	}
+
+	for (const DamageInfo damage : damageDrawList_)
+	{
+		VECTOR pos = ConvWorldPosToScreenPos(damage.pos);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, damage.count % 255);
+		DrawFormatStringToHandle(
+			pos.x,
+			pos.y, 
+			0xff0000, 
+			Application::GetInstance()->GetFont(), 
+			"-%d",
+			damage.damage);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
 }
 
 void Item::Draw3D(void)
@@ -115,7 +132,7 @@ float Item::GetCameraDistance(VECTOR pos)
 	return VSize(VSub(pos, CameraUtility::GetCameraPos()));
 }
 
-void Item::SetDamage(int damage)
+void Item::SetDamage(int damage,VECTOR pos)
 {
 	// 指定のダメージから頑丈さ分引いた数値を実際に与えるダメージとする
 	int dmg = damage - info_.hardness_;
@@ -123,7 +140,12 @@ void Item::SetDamage(int damage)
 	// ダメージがマイナス値だったらHPに変更を行わない(回復してしまうため)
 	if (dmg < 0)return;
 
+	// ダメージ表記用に情報を保持しておく
+	damageDrawList_.push_back({ pos,damage,DAMAGE_DRAW_COUNT });
+
+	// 残高にダメージを反映させる
 	info_.money_ -= dmg;
+
 	// お金が0以下になったら
 	if (info_.money_ <= 0)
 	{
@@ -254,6 +276,26 @@ void Item::TrackingPlayer(void)
 
 	// 当たり判定情報を最新の状態に更新
 	MV1RefreshCollInfo(info_.modelId_, -1);
+}
+
+void Item::CountUpdate(void)
+{
+	for (auto it = damageDrawList_.begin(); it != damageDrawList_.end();)
+	{
+		// カウントを減らす
+		--it->count;
+
+		if (it->count < 0)
+		{
+			// eraseは削除した次の要素のイテレータを返すので、それをitに代入する
+			it = damageDrawList_.erase(it);
+		}
+		else
+		{
+			// 削除しなかった場合だけ、次の要素へ進める
+			++it;
+		}
+	}
 }
 
 void Item::DrawDebug(void)

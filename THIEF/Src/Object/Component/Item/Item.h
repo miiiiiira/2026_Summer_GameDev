@@ -2,6 +2,7 @@
 
 #include "../Component.h"
 #include "ItemInfo.h"
+#include <vector>
 
 // 前方宣言
 class Transform;
@@ -18,6 +19,9 @@ protected:
 
 	// 線形補間の係数
 	static constexpr float COEFFICIENT = 0.3f;
+
+	// ダメージ表記用のカウント
+	static constexpr int DAMAGE_DRAW_COUNT = 60 * 1;
 
 public:
 	// デストラクタ
@@ -47,8 +51,8 @@ public:
 
 public:
 
-	// アイテムにダメージを与える
-	void SetDamage(int damage);
+	// アイテムにダメージを与える(ダメージ数、当たった場所)
+	void SetDamage(int damage, VECTOR pos);
 
 	// 指定された座標をアイテムの座標に反映
 	void SetPos(const VECTOR& pos);
@@ -71,11 +75,21 @@ public:
 
 protected:
 
+	struct DamageInfo
+	{
+		VECTOR pos = {};
+		int damage = 0;
+		int count = 0;
+	};
+
 	// アイテムの情報
 	ItemInfo info_;
 
 	// Transform
 	Transform* trans_;
+
+	// ダメージ数
+	std::vector<DamageInfo> damageDrawList_;
 
 	// 重力をかける
 	void Gravity(void);
@@ -91,6 +105,9 @@ protected:
 
 	// 個々の破壊時の処理
 	virtual void Break(void) = 0;
+
+	// ダメージ表記用のカウントを更新
+	void CountUpdate(void);
 
 	// デバッグ用の描画
 	void DrawDebug(void);

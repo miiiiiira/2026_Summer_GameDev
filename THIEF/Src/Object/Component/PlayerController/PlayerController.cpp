@@ -61,6 +61,8 @@ void PlayerController::Init()
 	// 足音のサウンドインターバル
 	moveSoundInterval_ = MOVE_SOUND_INTERVAL;
 
+	// 前回しゃがみ状態かのフラグ
+	prevCrouching_ = false;
 }
 
 // 更新
@@ -369,6 +371,8 @@ bool PlayerController::SlidingToCrouching(void)
 			moveSpeed_ = 0.0f;
 			// しゃがみ状態にする
 			CrouchingInit();
+			// 前回しゃがみフラグon
+			prevCrouching_ = true;
 		}
 
 		// 方向×スピードで移動量を作って、座標に足して移動
@@ -384,8 +388,7 @@ void PlayerController::Crouching(void)
 {
 	// しゃがみボタンを押されたかつスライディング中じゃない場合
 	if (InputManager::GetInstance()->CrouchingButtons() &&
-		state_ != PLAYER_STATE::SLIDING && 
-		state_ != PLAYER_STATE::CROUCHING)
+		state_ != PLAYER_STATE::SLIDING)
 	{
 		// しゃがみ状態にする
 		CrouchingInit();
@@ -393,21 +396,33 @@ void PlayerController::Crouching(void)
 		// ランタンの光を消す
 		lantern_->SetLight(false);
 
-		// しゃがみサウンド
-		AudioManager::GetInstance()->PlaySE(SoundID::SE_CROUCH);
+		if (!prevCrouching_)
+		{
+			// しゃがみサウンド
+			AudioManager::GetInstance()->PlaySE(SoundID::SE_CROUCH);
 
-		// ランタンOFFサウンド
-		AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_OFF);
+			// ランタンOFFサウンド
+			AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_OFF);
 
+			// 前回しゃがみフラグon
+			prevCrouching_ = true;
+		}
 	}
-	else if (!InputManager::GetInstance()->CrouchingButtons() &&
-		state_ == PLAYER_STATE::CROUCHING)
+	else
 	{
+		// しゃがみ復帰時
+		if (prevCrouching_)
+		{
+			// ランタンONサウンド
+			AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_ON);
+		}
+
 		IdleInit();
 
-		// ランタンONサウンド
-		AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_ON);
+		// 前回しゃがみフラグoff
+		prevCrouching_ = false;
 	}
+
 }
 
 void PlayerController::HealStamina(void)

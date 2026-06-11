@@ -19,7 +19,7 @@ public:
 	static constexpr float COLLISION_RADIUS_Y = 5.0f;
 
 	// äÊè‰Ç≥
-	static constexpr int HARDNESS = 0;
+	static constexpr int HARDNESS = 10;
 
 	// èdÇ≥
 	static constexpr float WEIGHT = -3.0f;

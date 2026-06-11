@@ -263,8 +263,8 @@ void ItemCollider::StageCollision(void)
 	// スピードをそのままダメージに変換
 	int damage = static_cast<int>(hitSpeed);
 
-	// マイナス値になるのを防ぐ
-	item_->SetDamage(abs(damage));
+	// マイナス値になるのを防ぐ、ダメージをアイテムに渡す
+	item_->SetDamage(abs(damage), testPos);
 }
 
 void ItemCollider::UpdateInvincibility(void)
