@@ -62,6 +62,17 @@ public:
 	static constexpr int MOVE_SOUND_INTERVAL = 40;
 	static constexpr float MOVE_SPEED_UP_MULTI = 1.2f;
 
+	// プレイヤーのカプセルオフセット
+	// 立ち状態
+	// スタート位置
+	static constexpr VECTOR STANDING_CAP_START_OFFSET = { 0.0f,150.0f,0.0f };
+	// エンド位置
+	static constexpr VECTOR STANDING_CAP_END_OFFSET = { 0.0f,30.0f,0.0f };
+
+	// しゃがみ状態
+	// スタート位置
+	static constexpr VECTOR CROUCHING_CAP_START_OFFSET = { 0.0f,60.0f,0.0f };
+
 public:
 	void Init() override;		// 初期化
 	void Update() override;		// 更新
@@ -182,4 +193,9 @@ private:
 	// 足音を連続再生するインターバル
 	int moveSoundInterval_;
 
+	// 動いてない状態での、初期化処理
+	void IdleInit(void);
+
+	// しゃがみ状態での、初期化処理
+	void CrouchingInit(void);
 };

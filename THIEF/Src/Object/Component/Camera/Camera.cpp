@@ -88,13 +88,15 @@ void Camera::SetBeforeDrawFollow()
 	if (playerController_->GetState() == PLAYER_STATE::CROUCHING
 		|| playerController_->GetState() == PLAYER_STATE::SLIDING)
 	{
+		VECTOR followCameraPos = VAdd(PlayerController::CROUCHING_CAP_START_OFFSET, PlayerController::STANDING_CAP_END_OFFSET);
 		// 相対座標をカメラの回転を反映
-		transform_->pos_ = VAdd(followPos, FOLLOW_CAMERA_LOCAL_POS_CROUCHING);
+		transform_->pos_ = VAdd(followPos, followCameraPos);
 	}
 	// しゃがみ状態でなければ、カメラの位置は立ち状態のまま
 	else
 	{
-		transform_->pos_ = VAdd(followPos, FOLLOW_CAMERA_LOCAL_POS_STANDING);
+		VECTOR followCameraPos = VAdd(PlayerController::STANDING_CAP_START_OFFSET, PlayerController::STANDING_CAP_END_OFFSET);
+		transform_->pos_ = VAdd(followPos, followCameraPos);
 	}
 
 	// 線形補間で滑らかにする

@@ -297,7 +297,7 @@ void GameScene::PlayerCreate(void)
 
 	// 座標の設定
 	auto trans = player->AddComponent<Transform>();
-	trans->pos_ = { 0.0f,0.0f,0.0f };
+	trans->pos_ = { 0.0f,100.0f,0.0f };
 
 	// 移動の設定
 	auto cont = player->AddComponent<PlayerController>();
@@ -310,8 +310,8 @@ void GameScene::PlayerCreate(void)
 
 	// 当たり判定の設定
 	auto col = player->AddComponent<CapsuleCollider>();
-	col->startOffset_ = { 0.0f,150.0f,0.0f };
-	col->endOffset_ = { 0.0f,30.0f,0.0f };
+	col->startOffset_ = PlayerController::STANDING_CAP_START_OFFSET;
+	col->endOffset_ = PlayerController::STANDING_CAP_END_OFFSET;
 	col->radius_ = 40.0f;
 
 	// ステージの取得

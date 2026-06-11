@@ -10,8 +10,8 @@ class Stage;
 class StageCollider : public Component
 {
 public:
-	void Init() override;		// 初期化
-	void Update() override;		// 更新
+	// 初期化
+	void Init() override;
 
 	// ステージ設定
 	void SetStage(Stage* stage) { stage_ = stage; }
@@ -22,17 +22,10 @@ public:
 	// 接地フラグを折る
 	void IsGroundFold(void) { isGround_ = false; }
 
-private:
-
-	// 地面との当たり判定
-	void FieldCollision();
-
-	// 壁との当たり判定
-	void WallCollision();
+	// 当たり判定
+	void StageColl(float& velocityY);
 
 private:
-	// 登れる最大傾斜角
-	float slopeLimit_ = 45.0f;
 
 	// 接地フラグ
 	bool isGround_ = false;
@@ -45,7 +38,4 @@ private:
 
 	// ステージ
 	Stage* stage_ = nullptr;
-
-	// ステージTransform
-	Transform* stageTransform_ = nullptr;
 };

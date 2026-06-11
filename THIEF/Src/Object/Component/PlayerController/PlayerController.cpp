@@ -78,6 +78,16 @@ void PlayerController::Update()
 	// 重力処理
 	ApplyGravity();
 
+	// ステージコライダー取得
+	auto stageCol = owner_->GetComponent<StageCollider>();
+
+	// ステージコライダーがあれば
+	if (stageCol)
+	{
+		// ステージの当たり判定の計算処理
+		stageCol->StageColl(velocityY_);
+	}
+
 	// 掴み動作処理
 	Grabbing();
 
@@ -210,10 +220,7 @@ void PlayerController::Move()
 	}
 	else if (state_ != PLAYER_STATE::SLIDING && state_ != PLAYER_STATE::CROUCHING)
 	{
-		// 待機状態にする
-		state_ = PLAYER_STATE::IDLE;
-		// 移動速度を初期化
-		moveSpeed_ = 0.0f;
+		IdleInit();
 	}
 
 	// しゃがみ処理
@@ -361,7 +368,7 @@ bool PlayerController::SlidingToCrouching(void)
 		{
 			moveSpeed_ = 0.0f;
 			// しゃがみ状態にする
-			state_ = PLAYER_STATE::CROUCHING;
+			CrouchingInit();
 		}
 
 		// 方向×スピードで移動量を作って、座標に足して移動
@@ -381,7 +388,7 @@ void PlayerController::Crouching(void)
 		state_ != PLAYER_STATE::CROUCHING)
 	{
 		// しゃがみ状態にする
-		state_ = PLAYER_STATE::CROUCHING;
+		CrouchingInit();
 
 		// ランタンの光を消す
 		lantern_->SetLight(false);
@@ -396,11 +403,7 @@ void PlayerController::Crouching(void)
 	else if (!InputManager::GetInstance()->CrouchingButtons() &&
 		state_ == PLAYER_STATE::CROUCHING)
 	{
-		// 普通状態にする
-		state_ = PLAYER_STATE::IDLE;
-
-		// ランタンの光をつける
-		lantern_->SetLight(true);
+		IdleInit();
 
 		// ランタンONサウンド
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_ON);
@@ -576,4 +579,39 @@ void PlayerController::DebugDraw(void)
 	DrawFormatStringToHandle(10, 90, 0xffc800, Application::GetInstance()->GetFont(),
 		"STAMINA : %.0f / %.0f",
 		stamina_, PlayerStatusManager::GetInstance().GetPlayerStatus().staminaMax_);
+}
+
+void PlayerController::IdleInit(void)
+{
+	// 普通状態にする
+	state_ = PLAYER_STATE::IDLE;
+
+	// 移動速度を初期化
+	moveSpeed_ = 0.0f;
+
+	// カプセルのオフセットを初期化する
+	auto cap = owner_->GetComponent<CapsuleCollider>();
+	if (cap != nullptr)
+	{
+		cap->startOffset_ = STANDING_CAP_START_OFFSET;
+	}
+
+	if (!lantern_->GetLight())
+	{
+		// ランタンの光をつける
+		lantern_->SetLight(true);
+	}
+}
+
+void PlayerController::CrouchingInit(void)
+{
+	// しゃがみ状態にする
+	state_ = PLAYER_STATE::CROUCHING;
+
+	// カプセルのオフセットを初期化する
+	auto cap = owner_->GetComponent<CapsuleCollider>();
+	if (cap != nullptr)
+	{
+		cap->startOffset_ = CROUCHING_CAP_START_OFFSET;
+	}
 }
