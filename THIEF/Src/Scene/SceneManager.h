@@ -43,7 +43,7 @@ private:
 public:
 
 	// 環境光のカラー値、アルファ値
-	static constexpr COLOR_F DIF_COLOR = { 0.5f, 0.5f, 0.5f, 1.0f };
+	static constexpr COLOR_F DIF_COLOR = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	void Init(void);	// 初期化
 	void Init3D(void);	// 3Dの初期化

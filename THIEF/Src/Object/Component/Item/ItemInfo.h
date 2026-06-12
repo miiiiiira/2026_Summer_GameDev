@@ -48,11 +48,14 @@ struct ItemInfo
 	bool isAlive_;
 
 	// 掴まれているか　true / 掴まれている, false / 掴まれていない
-	bool isGrabbed;
+	bool isGrabbed_;
 
 	// 空中から1度でもステージに接触したかどうか　true / 接触した , false / 接触していない
 	bool hasTouchedStage_;
 
 	// 納品場所に入っているかどうか		true / 入っている , false / 入っていない
 	bool hasTouchedDeliveryLocation_;
+
+	// 無敵時間
+	int invincibilityFrames_;
 };

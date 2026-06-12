@@ -36,13 +36,16 @@ void Item::Init(void)
 	info_.velocity_ = VGet(0.0f, 0.0f, 0.0f);
 
 	// 初めは掴まれていない状態にする
-	info_.isGrabbed = false;
+	info_.isGrabbed_ = false;
 
 	// 地面に接触していることにする
 	info_.hasTouchedStage_ = true;
 
 	// 納品場所に入っていない状態にする
 	info_.hasTouchedDeliveryLocation_ = false;
+
+	// 無敵時間を初期化しておく
+	info_.invincibilityFrames_ = INVINCIBILITY_FRAMES;
 
 	// 個々のパラメータを設定
 	SetParam();
@@ -56,8 +59,11 @@ void Item::Update(void)
 	// 生存していなかったら描画しない
 	if (!info_.isAlive_)return;
 
+	// 無敵時間の更新処理
+	UpdateInvincibility();
+
 	// 掴まれていたら
-	if (info_.isGrabbed)
+	if (info_.isGrabbed_)
 	{
 		if (info_.hasTouchedStage_)
 		{
@@ -85,7 +91,7 @@ void Item::Draw2D(void)
 	// 生存していなかったら描画しない
 	if (!info_.isAlive_)return;
 
-	if (info_.isGrabbed)
+	if (info_.isGrabbed_)
 	{
 		VECTOR moneyPos = ConvWorldPosToScreenPos(trans_->pos_);
 
@@ -146,6 +152,9 @@ void Item::SetDamage(int damage,VECTOR pos)
 	// 残高にダメージを反映させる
 	info_.money_ -= dmg;
 
+	// 無敵時間を初期化
+	info_.invincibilityFrames_ = INVINCIBILITY_FRAMES_ISGRABB;
+
 	// お金が0以下になったら
 	if (info_.money_ <= 0)
 	{
@@ -182,7 +191,7 @@ void Item::SetLocalPosZ(float localPosZ)
 void Item::StartGrabbing(VECTOR localPos)
 {
 	// 掴まれた状態にする
-	info_.isGrabbed = true;
+	info_.isGrabbed_ = true;
 
 	// プレイヤーとの相対座標をセット
 	info_.localPos_ = localPos;
@@ -192,7 +201,7 @@ void Item::StartGrabbing(VECTOR localPos)
 void Item::EndGrabbed(void)
 {
 	// 掴まれていない状態にする
-	info_.isGrabbed = false;
+	info_.isGrabbed_ = false;
 
 	// 離された瞬間の座標を取っておく
 	info_.grabbedPos_ = trans_->pos_;
@@ -276,6 +285,27 @@ void Item::TrackingPlayer(void)
 
 	// 当たり判定情報を最新の状態に更新
 	MV1RefreshCollInfo(info_.modelId_, -1);
+}
+
+void Item::UpdateInvincibility(void)
+{
+	// 掴まれていないかつ無敵時間が初期化されていなかったら
+	if (!info_.isGrabbed_
+		&& info_.invincibilityFrames_ <= 0)
+	{
+		// 無敵時間を初期化
+		info_.invincibilityFrames_ = INVINCIBILITY_FRAMES;
+	}
+
+	// 最低値まで行ったら処理を行わない
+	if (info_.invincibilityFrames_ < 0)return;
+
+	// フレーム数がデフォルトより小さければ持っていると判断する
+	if (info_.invincibilityFrames_ > 0)
+	{
+		// 無敵時間を縮める
+		info_.invincibilityFrames_--;
+	}
 }
 
 void Item::CountUpdate(void)

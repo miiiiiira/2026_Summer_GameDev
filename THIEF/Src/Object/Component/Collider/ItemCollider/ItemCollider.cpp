@@ -10,7 +10,6 @@ void ItemCollider::Init(void)
 {
 	// アイテムの確保
 	item_ = owner_->GetComponent<Item>();
-	invincibilityFrames_ = INVINCIBILITY_FRAMES;
 }
 
 void ItemCollider::Update(void)
@@ -27,9 +26,6 @@ void ItemCollider::Update(void)
 
 	// ステージとの当たり判定
 	StageCollision();
-
-	// 無敵時間の更新
-	UpdateInvincibility();
 }
 
 void ItemCollider::PlayerGrabCollision(void)
@@ -232,7 +228,7 @@ void ItemCollider::StageCollision(void)
 	item_->SetPos(testPos);
 
 	//　無敵時間があったら処理をしない
-	if (invincibilityFrames_ > 0)return;
+	if (item_->GetInfo().invincibilityFrames_ > 0)return;
 
 	// 空中にいるならダメージ処理しない
 	if (!isHitStage)return;
@@ -243,14 +239,14 @@ void ItemCollider::StageCollision(void)
 	float hitSpeed = 0;
 
 	// アイテムが掴まれていたら
-	if (item_->GetInfo().isGrabbed)
+	if (item_->GetInfo().isGrabbed_)
 	{
 		hitSpeed = VSize(VSub(currentPos, prevPos));
 		// 重力分を引いておく(重力でお金が削れるのを防ぐため)
 		hitSpeed -= VSize(item_->GetInfo().velocity_);
 	}
 	// 掴まれていないかつ、空中状態から1度も設置していなかったら
-	else if (!item_->GetInfo().isGrabbed && !item_->GetInfo().hasTouchedStage_)
+	else if (!item_->GetInfo().isGrabbed_ && !item_->GetInfo().hasTouchedStage_)
 	{
 		hitSpeed = VSize(VSub(item_->GetInfo().grabbedPos_, testPos));
 		// 重力分を引いておく(重力でお金が削れるのを防ぐため)
@@ -267,23 +263,3 @@ void ItemCollider::StageCollision(void)
 	item_->SetDamage(abs(damage), testPos);
 }
 
-void ItemCollider::UpdateInvincibility(void)
-{
-	// 掴まれていないかつ無敵時間が初期化されていなかったら
-	if (!item_->GetInfo().isGrabbed
-		&& invincibilityFrames_ <= 0)
-	{
-		// 無敵時間を初期化
-		invincibilityFrames_ = INVINCIBILITY_FRAMES;
-	}
-
-	// 最低値まで行ったら処理を行わない
-	if (invincibilityFrames_ < 0)return;
-
-	// フレーム数がデフォルトより小さければ持っていると判断する
-	if (invincibilityFrames_ > 0)
-	{
-		// 無敵時間を縮める
-		invincibilityFrames_--;
-	}
-}
