@@ -37,7 +37,6 @@ void PlayerController::Init()
 	// プレイヤーステータスマネージャー
 	auto status = PlayerStatusManager::GetInstance().GetPlayerStatus();
 
-	// HPの初期化
 	hp_ = status.hp_;
 
 	// プレイヤーの移動速度の初期化
@@ -161,6 +160,21 @@ void PlayerController::SetItemPoint(Item* item)
 {
 	// アイテムクラスのポインタを設定
 	item_ = item;
+}
+
+void PlayerController::SetDamage(int damage)
+{
+	hp_ -= damage;
+
+	if (hp_ <= 0)
+	{
+		hp_ = 0;
+		// ゲームオーバーにする
+		SceneManager::GetInstance()->TrueGameOver();
+	}
+
+	// プレイヤーステータスに反映
+	PlayerStatusManager::GetInstance().SetHp(hp_);
 }
 
 // 移動処理

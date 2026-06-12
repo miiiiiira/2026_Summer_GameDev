@@ -42,7 +42,7 @@ private:
 	static constexpr float SOLDOUT_OFFSET_Y = -9.5f;
 
 	// 最大HPの強化値
-	static constexpr float HP_UP_NUM = 20.0f;
+	static constexpr int HP_UP_NUM = 20;
 
 	// スタミナ最大値強化値
 	static constexpr float STAMINA_UP_NUM = 20.0f;
@@ -57,8 +57,8 @@ private:
 	static constexpr int JUMP_UP_NUM = 1;
 
 	// HP回復値
-	static constexpr float HEAL_HP_25 = 25.0f;
-	static constexpr float HEAL_HP_50 = 50.0f;
+	static constexpr int HEAL_HP_25 = 25;
+	static constexpr int HEAL_HP_50 = 50;
 
 	// オフセット
 	static constexpr float OFFSET = 10.0f;

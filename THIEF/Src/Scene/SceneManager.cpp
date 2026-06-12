@@ -101,7 +101,7 @@ void SceneManager::Init3D(void)
 	// 追加ディレクショナルライト
 	dirLightHandle_ = CreateDirLightHandle(VGet(-0.5f, -0.3f, -1.0f));
 	// ディレクショナルライトのカラー値を設定
-	SetLightDifColorHandle(dirLightHandle_, GetColorF(1.0f, 1.0f, 1.0f, 1.0f));
+	SetLightDifColorHandle(dirLightHandle_, GetColorF(0.6f, 0.6f, 0.6f, 1.0f));
 	
 	// フォグ設定
 	SetFogEnable(true);

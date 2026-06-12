@@ -5,7 +5,7 @@ class PlayerStatusManager
 public:
 
 	// HP
-	static constexpr float DEFAULT_HP = 100.0f;
+	static constexpr int DEFAULT_HP = 100;
 
 	// ダッシュ時の移動速度
 	static constexpr float DASH_SPEED = 15.0f;
@@ -22,8 +22,8 @@ public:
 	struct Status {
 
 		// HP
-		float hp_;
-		float hpMax_;
+		int hp_;
+		int hpMax_;
 
 		// スタミナ
 		float staminaMax_;
@@ -57,7 +57,7 @@ public:
 	const Status& GetPlayerStatus(void) { return status_; }
 
 	// 最大HPを上げる
-	void HpUp(float upNum);
+	void HpUp(int upNum);
 
 	// 最大スタミナを上げる
 	void StaminaUp(float upNum);
@@ -72,7 +72,10 @@ public:
 	void JumpNumUp(int upNum);
 
 	// HPを回復する
-	void HealHp(float upNum);
+	void HealHp(int upNum);
+
+	// ダメージを与える
+	void SetHp(int hp);
 
 private:
 

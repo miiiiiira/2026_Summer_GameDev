@@ -102,6 +102,9 @@ public:
 	// アイテムを取得
 	void SetItemPoint(Item* item);
 
+	// ダメージを与える
+	void SetDamage(int damage);
+
 private:
 	// 移動処理
 	void Move();
@@ -164,7 +167,7 @@ private:
 	VECTOR moveDir_;
 
 	// 今現在のHP
-	float hp_;
+	int hp_;
 
 	// 実際に移動させる移動量
 	float moveSpeed_;

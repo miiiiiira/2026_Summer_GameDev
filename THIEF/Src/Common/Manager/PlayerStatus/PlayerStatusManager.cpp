@@ -45,7 +45,7 @@ void PlayerStatusManager::ResetStatus()
 	status_.rangeMax_ = DEFAULT_RENGE;
 }
 
-void PlayerStatusManager::HpUp(float upNum)
+void PlayerStatusManager::HpUp(int upNum)
 {
 	// HP‚ÌÅ‘å’l‚ğã‚°‚é
 	status_.hp_ += upNum;
@@ -76,7 +76,7 @@ void PlayerStatusManager::JumpNumUp(int upNum)
 	status_.jumpNumMax_ += upNum;
 }
 
-void PlayerStatusManager::HealHp(float upNum)
+void PlayerStatusManager::HealHp(int upNum)
 {
 	// HP‚ğ‰ñ•œ‚·‚é
 	status_.hp_ += upNum;
@@ -86,6 +86,11 @@ void PlayerStatusManager::HealHp(float upNum)
 	{
 		status_.hp_ = status_.hpMax_;
 	}
+}
+
+void PlayerStatusManager::SetHp(int hp)
+{
+	status_.hp_ = hp;
 }
 
 PlayerStatusManager::PlayerStatusManager(void)
