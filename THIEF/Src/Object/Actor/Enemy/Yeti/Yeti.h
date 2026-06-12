@@ -52,6 +52,8 @@ public:
 	void Update(void)override;
 	void Draw(void) override;
 
+	STATE GetState(void);
+
 private:
 
 	// ‘å‚«‚³

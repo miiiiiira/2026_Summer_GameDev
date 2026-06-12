@@ -6,6 +6,7 @@
 #include "../../Common/AnimationController.h"
 #include "../../../Common/Math/Math.h"
 #include "../../../Common/Transform/MatrixUtility.h"
+#include "Weapon/WeaponPunch.h"
 #include "EnemyBase.h"
 
 EnemyBase::EnemyBase(void)
@@ -84,6 +85,18 @@ void EnemyBase::Release(void)
 		delete animationController_;
 		animationController_ = nullptr;
 	}
+
+	if (weaponPunch_ != nullptr)
+	{
+		weaponPunch_->Release();
+		delete weaponPunch_;
+		weaponPunch_ = nullptr;
+	}
+
+	if (useWeapon_ != nullptr)
+	{
+		useWeapon_ = nullptr;
+	}
 }
 
 void EnemyBase::FindPath(int startNodeId, int goalNodeId)
@@ -155,6 +168,11 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 
 	// ãtÇ…Ç∑ÇÈ
 	std::reverse(path_.begin(), path_.end());
+}
+
+WeaponBase* EnemyBase::GetUseWeapon(void)
+{
+	return useWeapon_;
 }
 
 void EnemyBase::LoadCsvData(void)
@@ -275,13 +293,15 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 	{
 		MV1_COLL_RESULT_POLY hit = MV1CollCheck_Line(stageId_, -1, pos_, *playerPos_);
 
+		// è·äQï®Çã≤ÇÒÇæÇÁÅAämîFÇµÇ»Ç¢ÇÊÇ§Ç…Ç∑ÇÈ
 		if (!hit.HitFlag)
 		{
 			isNotice_ = true;
+			return true;
 		}
 	}
-
-	return isNotice_;
+	isNotice_ = false;
+	return false;
 }
 
 void EnemyBase::AddEdge(int fromId, int toId)

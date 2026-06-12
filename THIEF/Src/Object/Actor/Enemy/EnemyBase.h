@@ -3,6 +3,8 @@
 #include <DxLib.h>
 
 class AnimationController;
+class WeaponBase;
+class WeaponPunch;
 
 class EnemyBase
 {
@@ -41,9 +43,16 @@ public:
 	// 始点から終点までの最短経路を計算し、エッジのリストとして返す
 	void FindPath(int startNodeId, int goalNodeId);
 
+	// 武器クラスを取得
+	WeaponBase* GetUseWeapon(void);
+
 protected:
 
 	AnimationController* animationController_;
+
+	// 武器
+	WeaponBase* useWeapon_;
+	WeaponPunch* weaponPunch_;
 
 	int modelId_;
 	VECTOR scale_;

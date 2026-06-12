@@ -3,6 +3,7 @@
 #include "../../../../Common/Math/Math.h"
 #include "../../../../Common/Transform/MatrixUtility.h"
 #include "../../../Common/AnimationController.h"
+#include "../Weapon/WeaponPunch.h"
 #include "Yeti.h"
 
 
@@ -44,6 +45,13 @@ void Yeti::Init(VECTOR* pos, int id)
 
 	patrolRadius_ = 1500.0f;
 	viewRadius_ = 1000.0f;
+
+	// 武器の初期化
+	weaponPunch_ = new WeaponPunch();
+	weaponPunch_->Init(WeaponBase::TYPE::PUNCH);
+
+	// Yetiの攻撃ははパンチ
+	useWeapon_ = weaponPunch_;
 
 	// 初期アニメーション再生
 	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
@@ -112,7 +120,7 @@ void Yeti::Update(void)
 	default:
 		break;
 	}
-
+	// アニメーションの更新
 	animationController_->Update();
 }
 
@@ -146,7 +154,14 @@ void Yeti::Draw(void)
 			point.pos, 50.0f, 10,
 			color, color, false);
 	}
+
+	useWeapon_->Draw();
 #endif
+}
+
+Yeti::STATE Yeti::GetState(void)
+{
+	return state_;
 }
 
 void Yeti::SetMoveDirPatrol(void)
@@ -386,6 +401,7 @@ void Yeti::ChangeChase(void)
 void Yeti::ChangeAttack(void)
 {
 	LookPlayer();
+	useWeapon_->Use(pos_, moveDir_);
 	animationController_->Play(static_cast<int>(ANIM_TYPE::PUNCH), true);
 }
 
@@ -554,11 +570,21 @@ void Yeti::UpdateChase(void)
 
 void Yeti::UpdateAttack(void)
 {
-	VECTOR enemyPos = pos_;
-	VECTOR playerPos = *playerPos_;
-	float distance = VSize(VSub(playerPos, enemyPos));
+	if (animationController_->GetPlayAnim().step >= animationController_->GetPlayAnim().totalTime)
+	{
+		useWeapon_->SetAlive(false);
+	}
 
-	if (distance > 300)
+	if (!useWeapon_->IsAlive() && 
+		animationController_->GetPlayAnim().step >= 0.1f)
+	{
+		useWeapon_->Use(pos_, moveDir_);
+	}
+	// 攻撃処理の更新
+	useWeapon_->Update();
+
+	// 攻撃範囲内にいなかったらアニメーションのループを終了する
+	if (!CheckPlayerDiscovery(300.0f))
 	{
 		animationController_->SetLoop(false);
 	}

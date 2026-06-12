@@ -12,7 +12,9 @@
 #include "../Shop/ShopScene.h"
 #include "../Pause/Pause.h"
 
+#include "../../Object/Actor/Enemy/EnemyBase.h"
 #include "../../Object/Actor/Enemy/Yeti/Yeti.h"
+#include "../../Object/Actor/Enemy/Weapon/WeaponBase.h"
 #include "../../Common/Crosshair/Crosshair.h"
 #include "../../Object/ObjectManager/ObjectManager.h"
 #include "../../Object/Tag.h"
@@ -147,6 +149,8 @@ void GameScene::Update(void)
 
 	// クロスヘアの更新
 	crosshair_->Update();
+
+	CheckEnemyAttack();
 
 	// スコアマネージャーの更新
 	ScoreManager::GetInstance().Update();
@@ -486,4 +490,45 @@ void GameScene::Stage3Init(void)
 
 	// アイテムの作成
 	ItemCreate();
+}
+
+void GameScene::CheckEnemyAttack(void)
+{
+	// 武器の情報
+	WeaponBase* useWeapon = enemy_->GetUseWeapon();
+
+	// 攻撃中（描画されている）なら
+	if (useWeapon->IsAlive())
+	{
+
+		// プレイヤーと敵の攻撃の当たり判定
+		auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
+		VECTOR startPos = player->GetOwner()->GetComponent<CapsuleCollider>()->startOffset_;
+		VECTOR endPos = player->GetOwner()->GetComponent<CapsuleCollider>()->endOffset_;
+		float radius = player->GetOwner()->GetComponent<CapsuleCollider>()->radius_;
+
+		if (Collision::HitSphereCapsule(useWeapon->GetPos(), useWeapon->GetCollisionRadius(),
+			startPos, endPos, radius))
+		{
+			//player->SetDamage(1);
+			useWeapon->SetAlive(false);
+		}
+
+
+		auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+		// 武器とステージのの当たり判定
+		MV1_COLL_RESULT_POLY_DIM hits = MV1CollCheck_Sphere
+		(
+			stage->GetModelId(),
+			-1,
+			useWeapon->GetPos(),
+			useWeapon->GetCollisionRadius()
+		);
+
+		if (hits.HitNum > 0)
+		{
+			useWeapon->SetAlive(false);
+		}
+		MV1CollResultPolyDimTerminate(hits);
+	}
 }
