@@ -67,6 +67,12 @@ void PlayerController::Init()
 // 更新
 void PlayerController::Update()
 {
+	if (hp_ <= 0)
+	{
+		SceneManager::GetInstance()->TrueGameOver();
+		return;
+	}
+
 	// 移動処理
 	Move();
 
@@ -169,8 +175,6 @@ void PlayerController::SetDamage(int damage)
 	if (hp_ <= 0)
 	{
 		hp_ = 0;
-		// ゲームオーバーにする
-		SceneManager::GetInstance()->TrueGameOver();
 	}
 
 	// プレイヤーステータスに反映
@@ -601,7 +605,7 @@ void PlayerController::DebugDraw(void)
 {
 	// HPの表示
 	DrawFormatStringToHandle(10, 50, 0x00fa9a, Application::GetInstance()->GetFont(),
-		"HP : %.0f / %.0f", 
+		"HP : %d / %d", 
 		hp_, PlayerStatusManager::GetInstance().GetPlayerStatus().hpMax_);
 
 	// スタミナの表示

@@ -503,14 +503,14 @@ void GameScene::CheckEnemyAttack(void)
 
 		// ƒvƒŒƒCƒ„[‚Æ“G‚ÌUŒ‚‚Ì“–‚½‚è”»’è
 		auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
-		VECTOR startPos = player->GetOwner()->GetComponent<CapsuleCollider>()->startOffset_;
-		VECTOR endPos = player->GetOwner()->GetComponent<CapsuleCollider>()->endOffset_;
+		VECTOR startPos = player->GetOwner()->GetComponent<CapsuleCollider>()->GetStart();
+		VECTOR endPos = player->GetOwner()->GetComponent<CapsuleCollider>()->GetEnd();
 		float radius = player->GetOwner()->GetComponent<CapsuleCollider>()->radius_;
 
 		if (Collision::HitSphereCapsule(useWeapon->GetPos(), useWeapon->GetCollisionRadius(),
 			startPos, endPos, radius))
 		{
-			//player->SetDamage(1);
+			player->SetDamage(10);
 			useWeapon->SetAlive(false);
 		}
 
