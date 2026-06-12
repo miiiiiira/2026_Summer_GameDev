@@ -14,6 +14,13 @@ void Camera::Init(void)
 
 	transform_->pos_ = DERFAULT_POS;
 	angle_ = DERFAULT_ANGLES;
+
+	SetCameraPositionAndAngle(
+		transform_->pos_,
+		angle_.x,
+		angle_.y,
+		angle_.z
+	);
 }
 
 void Camera::Update(void)

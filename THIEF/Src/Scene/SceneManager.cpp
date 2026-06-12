@@ -93,12 +93,16 @@ void SceneManager::Init3D(void)
 	// ライトの設定
 	SetUseLighting(true);
 
-	// Y軸のマイナス方向のディレクショナルライトに変更
-	ChangeLightTypeDir({ 0.00f, -1.00f, 0.00f });
+	// 標準ライトをオン(デフォルトは環境光）
+	SetLightEnable(true);
+	// 環境光を少し強めにして、影を薄くする
+	SetLightAmbColor(GetColorF(0.4f, 0.4f, 0.4f, 1.0f));
 
-	// ディフューズカラー
-	SetLightDifColor(DIF_COLOR);
-
+	// 追加ディレクショナルライト
+	dirLightHandle_ = CreateDirLightHandle(VGet(-0.5f, -0.3f, -1.0f));
+	// ディレクショナルライトのカラー値を設定
+	SetLightDifColorHandle(dirLightHandle_, GetColorF(1.0f, 1.0f, 1.0f, 1.0f));
+	
 	// フォグ設定
 	SetFogEnable(true);
 	// フォグの色
@@ -189,6 +193,9 @@ void SceneManager::Draw(void)
 
 void SceneManager::Delete(void)
 {
+	// ポイントライトのハンドルを解放
+	DeleteLightHandle(dirLightHandle_);
+
 	// 全てのシーンの解放・削除
 	for (auto& scene : scenes_) { scene->Release(); }
 	scenes_.clear();

@@ -132,4 +132,7 @@ private:
 	STAGE_NUM prevStage_;
 	// 現在のステージを表す
 	STAGE_NUM currentStage_;
+
+	// 追加のディレクショナルライトハンドル
+	int dirLightHandle_ = -1;
 };
