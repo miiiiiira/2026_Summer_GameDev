@@ -17,6 +17,7 @@ enum class PLAYER_STATE
 	DASH,		// ダッシュ	
 	CROUCHING,	// しゃがみ
 	SLIDING,	// スライディング
+	HIT_REACT	// ダメージ時のリアクション
 };
 
 enum class GRABBING_STATE
@@ -105,6 +106,9 @@ public:
 	// ダメージを与える
 	void SetDamage(int damage);
 
+	// 吹っ飛びリアクションをさせる
+	void SetHitReact(VECTOR moveDir,float moveSpeed);
+
 private:
 	// 移動処理
 	void Move();
@@ -120,10 +124,13 @@ private:
 	void InputSliding(void);
 
 	// スライディングからしゃがみ処理
-	bool SlidingToCrouching(void);
+	void SlidingToCrouching(void);
 	
 	// しゃがみ処理
 	void Crouching(void);
+
+	// ダメージ時のリアクション処理
+	void HitReactUpdate(void);
 
 	// スタミナ回復処理
 	void HealStamina(void);

@@ -261,7 +261,7 @@ void GameScene::StageCreate(void)
 
 	// 描画
 	auto render = stage->AddComponent<Render3D>();
-	render->SetModel("Data/Model/Stage/Dummy2.mv1");
+	render->SetModel("Data/Model/Stage/Dummy3.mv1");
 
 	// ステージ機能
 	stage->AddComponent<Stage>();
@@ -511,6 +511,11 @@ void GameScene::CheckEnemyAttack(void)
 			startPos, endPos, radius))
 		{
 			player->SetDamage(10);
+
+			VECTOR moveDir = VNorm(VSub(startPos, useWeapon->GetPos()));
+			moveDir.y = 0.0f;
+
+			player->SetHitReact(moveDir,30.0f);
 			useWeapon->SetAlive(false);
 		}
 

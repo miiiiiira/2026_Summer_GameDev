@@ -181,6 +181,25 @@ void PlayerController::SetDamage(int damage)
 	PlayerStatusManager::GetInstance().SetHp(hp_);
 }
 
+void PlayerController::SetHitReact(VECTOR moveDir, float moveSpeed)
+{
+	moveDir_ = moveDir;
+
+	moveSpeed_ = moveSpeed;
+
+	// ジャンプ力を設定
+	velocityY_ = 40.0f;
+
+	auto stageCol = owner_->GetComponent<StageCollider>();
+
+	if (!stageCol) return;
+
+	// 接地フラグを折る
+	stageCol->IsGroundFold();
+
+	state_ = PLAYER_STATE::HIT_REACT;
+}
+
 // 移動処理
 void PlayerController::Move()
 {
@@ -190,11 +209,33 @@ void PlayerController::Move()
 	// ランタンがなければ処理しない
 	if (!lantern_) return;
 
+	switch (state_)
+	{
+	case PLAYER_STATE::IDLE:
+		break;
+	case PLAYER_STATE::MOVE:
+		break;
+	case PLAYER_STATE::DASH:
+		break;
+	case PLAYER_STATE::CROUCHING:
+		break;
+	case PLAYER_STATE::SLIDING:
+		// スライディングからしゃがみ処理
+		SlidingToCrouching();
+		return;
+		break;
+	case PLAYER_STATE::HIT_REACT:
+		HitReactUpdate();
+		return;
+		break;
+	default:
+		break;
+	}
+
 	// スライディング処理
 	InputSliding();
 
-	// スライディングからしゃがみ処理
-	if (SlidingToCrouching())return;
+	if (state_ == PLAYER_STATE::SLIDING)return;
 
 	// 移動量
 	VECTOR dir = Math::VECTOR_ZERO;
@@ -238,7 +279,7 @@ void PlayerController::Move()
 		// 方向×スピードで移動量を作って、座標に足して移動
 		transform_->pos_ = VAdd(transform_->pos_, VScale(moveDir_, moveSpeed_));
 	}
-	else if (state_ != PLAYER_STATE::SLIDING && state_ != PLAYER_STATE::CROUCHING)
+	else if (state_ != PLAYER_STATE::CROUCHING)
 	{
 		IdleInit();
 	}
@@ -364,6 +405,14 @@ void PlayerController::InputSliding(void)
 	{
 		// スライディング状態にする
 		state_ = PLAYER_STATE::SLIDING;
+
+		// カプセルのオフセットを初期化する
+		auto cap = owner_->GetComponent<CapsuleCollider>();
+		if (cap != nullptr)
+		{
+			cap->startOffset_ = CROUCHING_CAP_START_OFFSET;
+		}
+
 		// プレイヤーのスライディングの移動速度とダッシュ移動速度を加算
 		moveSpeed_ = SLIDING_SPEED+PlayerStatusManager::GetInstance().GetPlayerStatus().dashMoveSpeed_;
 
@@ -375,10 +424,10 @@ void PlayerController::InputSliding(void)
 	}
 }
 
-bool PlayerController::SlidingToCrouching(void)
+void PlayerController::SlidingToCrouching(void)
 {
 	// スライディング状態かつ移動速度が0より大きく移動している場合
-	if (state_ == PLAYER_STATE::SLIDING && moveSpeed_ > 0.0f)
+	if ( moveSpeed_ > 0.0f)
 	{
 		// 移動速度を減算
 		moveSpeed_ -= 0.2f;
@@ -395,18 +444,13 @@ bool PlayerController::SlidingToCrouching(void)
 
 		// 方向×スピードで移動量を作って、座標に足して移動
 		transform_->pos_ = VAdd(transform_->pos_, VScale(moveDir_, moveSpeed_));
-
-		return true;
 	}
-
-	return false;
 }
 
 void PlayerController::Crouching(void)
 {
 	// しゃがみボタンを押されたかつスライディング中じゃない場合
-	if (InputManager::GetInstance()->CrouchingButtons() &&
-		state_ != PLAYER_STATE::SLIDING)
+	if (InputManager::GetInstance()->CrouchingButtons())
 	{
 		// しゃがみ状態にする
 		CrouchingInit();
@@ -441,6 +485,33 @@ void PlayerController::Crouching(void)
 		prevCrouching_ = false;
 	}
 
+}
+
+void PlayerController::HitReactUpdate(void)
+{
+	// スライディング状態かつ移動速度が0より大きく移動している場合
+	if (moveSpeed_ > 0.0f)
+	{
+		// 移動速度を減算
+		moveSpeed_ -= 0.5f;
+		auto stageCol = owner_->GetComponent<StageCollider>();
+		if (!stageCol) return;
+
+		// スピードがゼロになるか、接地していたら
+		if (moveSpeed_ <= 0.0f || stageCol->IsGround())
+		{
+			moveSpeed_ = 0.0f;
+
+			// しゃがみ状態にする
+			CrouchingInit();
+			// 前回しゃがみフラグon
+			prevCrouching_ = true;
+			return;
+		}
+
+		// 方向×スピードで移動量を作って、座標に足して移動
+		transform_->pos_ = VAdd(transform_->pos_, VScale(moveDir_, moveSpeed_));
+	}
 }
 
 void PlayerController::HealStamina(void)
@@ -484,6 +555,7 @@ void PlayerController::HealStamina(void)
 
 void PlayerController::Jump(void)
 {
+	if (state_ == PLAYER_STATE::HIT_REACT)return;
 
 	// StageCollider取得
 	auto stageCol = owner_->GetComponent<StageCollider>();
