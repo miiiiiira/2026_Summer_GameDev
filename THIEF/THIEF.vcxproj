@@ -72,6 +72,8 @@
     <ClCompile Include="Src\Scene\TitleScene\TitleScene.cpp" />
     <ClCompile Include="Src\Common\Manager\System\SystemManager.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\Yeti\Yeti.cpp" />
+    <ClCompile Include="Src\Object\Actor\Enemy\Weapon\WeaponBase.cpp" />
+    <ClCompile Include="Src\Object\Actor\Enemy\Weapon\WeaponPunch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Common\FrameRenderer\FrameRenderer.h" />
@@ -140,6 +142,8 @@
     <ClInclude Include="Src\Scene\TitleScene\TitleScene.h" />
     <ClInclude Include="Src\Common\Manager\System\SystemManager.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\Yeti\Yeti.h" />
+    <ClInclude Include="Src\Object\Actor\Enemy\Weapon\WeaponBase.h" />
+    <ClInclude Include="Src\Object\Actor\Enemy\Weapon\WeaponPunch.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Src\Common\Shader\CtrShader.hlsl">

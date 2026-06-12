@@ -51,4 +51,7 @@ private:
 	void Stage1Init(void);
 	void Stage2Init(void);
 	void Stage3Init(void);
+
+	// “G‚ÌUŒ‚“–‚½‚è”»’èˆ—
+	void CheckEnemyAttack(void);
 };
