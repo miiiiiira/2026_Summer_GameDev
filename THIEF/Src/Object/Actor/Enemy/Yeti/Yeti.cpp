@@ -73,6 +73,10 @@ void Yeti::Init(VECTOR* pos, int id)
 			// 同じノードならスキップ
 			if (i == j) continue;
 
+			// 離れすぎているノードもスキップする
+			float nodeDistance = GetDistance(way_[j].pos, way_[i].pos);
+			if (nodeDistance > NODE_CONNECT_MAX_DISTANCE_SQ) continue;
+
 			AddEdge(i, j);
 		}
 	}
@@ -298,21 +302,18 @@ void Yeti::ChaseDirect(void)
 bool Yeti::CheckChaseLineCollision(VECTOR pPos, VECTOR ePos)
 {
 	ePos.y = pPos.y = 10.0f;
-	VECTOR enemyLeftPos = ePos;
-	enemyLeftPos.x -= 10.0f;
-	VECTOR enemyRightPos = pPos;
-	enemyRightPos.x += 10.0f;
+	float checkRadius = 5.0f;
 
 	// 線分とモデルの衝突判定
-	MV1_COLL_RESULT_POLY res = MV1CollCheck_Line(stageId_, -1, pPos, ePos);
-	MV1_COLL_RESULT_POLY res2 = MV1CollCheck_Line(stageId_, -1, pPos, enemyLeftPos);
-	MV1_COLL_RESULT_POLY res3 = MV1CollCheck_Line(stageId_, -1, pPos, enemyRightPos);
+	MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, pPos, ePos, checkRadius);
 
-	// どれか一つでも当たっていたら、trueを返す
-	if (res.HitFlag || res2.HitFlag || res3.HitFlag)
+	/// 当たっていたら、trueを返す
+	if (res.HitNum > 0)
 	{
+		MV1CollResultPolyDimTerminate(res);
 		return true;
 	}
+	MV1CollResultPolyDimTerminate(res);
 	return false;
 }
 

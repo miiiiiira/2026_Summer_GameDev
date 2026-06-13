@@ -32,7 +32,7 @@ void FpsControl::Init(void)
 // フレームレート更新
 bool FpsControl::UpdateFrameRate(void)
 {
-	Sleep(1);	// システムに処理を返す
+	//Sleep(1);	// システムに処理を返す
 
 	// 現在の時刻を取得
 	currentTime = GetNowCount();
@@ -51,6 +51,7 @@ bool FpsControl::UpdateFrameRate(void)
 		return true;
 	}
 
+	WaitTimer(1);
 	return false;
 }
 
