@@ -46,9 +46,28 @@ public:
 	// 武器クラスを取得
 	WeaponBase* GetUseWeapon(void);
 
+	VECTOR GetPos(void);
+	void SetPos(VECTOR pos);
+	float GetRadius(void);
+	VECTOR GetPrevPos(void);
+	VECTOR GetStart(void);
+	VECTOR GetEnd(void);
+	void SetGround(bool isGround);
+	float GetVelocity(void);
+	void SetVelocity(float velocityY);
+
 protected:
 
 	const float NODE_CONNECT_MAX_DISTANCE_SQ = 1500.0f * 1500.0f;
+
+	// ジャンプ力
+	const float JUMP_POW = 25.0f;
+
+	// 重力加速度
+	const float GRAVITY = -1.98f;
+
+	// 最大落下速度
+	const float MAX_FALL = -40.0f;
 
 	AnimationController* animationController_;
 
@@ -61,6 +80,7 @@ protected:
 	VECTOR angle_;
 	VECTOR localAngle_;
 	VECTOR pos_;
+	float radius_;
 	VECTOR moveDir_;
 	float moveSpeed_;
 	VECTOR movePow_;
@@ -69,6 +89,14 @@ protected:
 	float stepJump_;
 	bool isJump_;
 	bool isNotice_;
+	bool isGround_;	
+	float velocityY_ = 0.0f;	// 現在の落下速度
+
+	// 開始位置
+	VECTOR startOffset_;
+
+	// 終了位置
+	VECTOR endOffset_;
 
 	int stageId_ = -1;
 	VECTOR* playerPos_;
@@ -91,6 +119,12 @@ protected:
 
 	// プレイヤーを見つけたかどうか
 	bool CheckPlayerDiscovery(float radius);
+
+	// ジャンプ処理
+	void Jump(void);
+
+	// 重力処理
+	void ApplyGravity();
 
 private:
 	void LoadCsvData(void);

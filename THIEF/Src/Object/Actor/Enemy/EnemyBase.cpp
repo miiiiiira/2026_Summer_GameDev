@@ -175,6 +175,51 @@ WeaponBase* EnemyBase::GetUseWeapon(void)
 	return useWeapon_;
 }
 
+VECTOR EnemyBase::GetPos(void)
+{
+	return pos_;
+}
+
+void EnemyBase::SetPos(VECTOR pos)
+{
+	pos_ = pos;
+}
+
+float EnemyBase::GetRadius(void)
+{
+	return radius_;
+}
+
+VECTOR EnemyBase::GetPrevPos(void)
+{
+	return prevPos_;
+}
+
+VECTOR EnemyBase::GetStart(void)
+{
+	return startOffset_;
+}
+
+VECTOR EnemyBase::GetEnd(void)
+{
+	return endOffset_;
+}
+
+void EnemyBase::SetGround(bool isGround)
+{
+	isGround_ = isGround;
+}
+
+float EnemyBase::GetVelocity(void)
+{
+	return velocityY_;
+}
+
+void EnemyBase::SetVelocity(float velocityY)
+{
+	velocityY_ = velocityY;
+}
+
 void EnemyBase::LoadCsvData(void)
 {
 	// 初期化
@@ -263,7 +308,8 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 	float distance = GetDistance(*playerPos_, pos_);
 
 	if (distance > radius * radius) return false;
-	if (fabsf(playerPos_->y - pos_.y) > 20.0f) return false;
+	float pos = fabsf(playerPos_->y - pos_.y);
+	if (pos > 20.0f) return false;
 
 	VECTOR dirEnemy = VECTOR();
 	if (VSize(moveDir_) < 0.001f)
@@ -302,6 +348,42 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 	}
 	isNotice_ = false;
 	return false;
+}
+
+void EnemyBase::Jump(void)
+{
+	if (!stageId_) return;
+
+	// ジャンプ音
+	//AudioManager::GetInstance()->PlaySE(SoundID::SE_JUMP);
+
+	// ジャンプ力を設定
+	velocityY_ = JUMP_POW;
+
+	// 接地フラグを折る
+	isGround_ = false;
+}
+
+void EnemyBase::ApplyGravity()
+{
+	if (stageId_ == -1) return;
+
+	// Y座標へ反映
+	pos_.y += velocityY_;
+
+	if (!isGround_)
+	{
+		// 重力加算
+		velocityY_ += GRAVITY;
+
+		// 最大落下速度
+		if (velocityY_ < MAX_FALL)
+			velocityY_ = MAX_FALL;
+	}
+	else
+	{
+		velocityY_ = -0.1f;
+	}
 }
 
 void EnemyBase::AddEdge(int fromId, int toId)

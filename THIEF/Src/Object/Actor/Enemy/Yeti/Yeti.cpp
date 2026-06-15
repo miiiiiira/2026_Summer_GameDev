@@ -40,11 +40,18 @@ void Yeti::Init(VECTOR* pos, int id)
 
 	pos_ = DEFAULT_POS;
 	MV1SetPosition(modelId_, pos_);
+	prevPos_ = pos_;
 
 	moveDir_ = { 0.0f, 0.0f, 0.0f };
 
+	startOffset_ = { 0.0f,150.0f,0.0f };
+	endOffset_ = { 0.0f,0.0f,0.0f };
+	radius_ = 50.0f;
+
 	patrolRadius_ = 1500.0f;
 	viewRadius_ = 1000.0f;
+
+	isGround_ = false;
 
 	// 武器の初期化
 	weaponPunch_ = new WeaponPunch();
@@ -73,7 +80,8 @@ void Yeti::Init(VECTOR* pos, int id)
 			// 同じノードならスキップ
 			if (i == j) continue;
 
-			// 離れすぎているノードもスキップする
+
+			// 遠すぎるノードも除外する
 			float nodeDistance = GetDistance(way_[j].pos, way_[i].pos);
 			if (nodeDistance > NODE_CONNECT_MAX_DISTANCE_SQ) continue;
 
@@ -102,6 +110,7 @@ void Yeti::Load(void)
 
 void Yeti::Update(void)
 {
+	prevPos_ = pos_;
 	// 遅延回転処理
 	DelayRotate();
 	
@@ -124,6 +133,10 @@ void Yeti::Update(void)
 	default:
 		break;
 	}
+
+	// 重力処理
+	ApplyGravity();
+
 	// アニメーションの更新
 	animationController_->Update();
 }
@@ -131,9 +144,13 @@ void Yeti::Update(void)
 void Yeti::Draw(void)
 {
 	EnemyBase::Draw();
-
+	
 #ifdef _DEBUG
 	DrawSphere3D(pos_, patrolRadius_, 8, GetColor(0, 255, 0), GetColor(0, 0, 0), FALSE);
+
+	VECTOR startPos = VAdd(pos_, startOffset_);
+	VECTOR endPos = VAdd(pos_, endOffset_);
+	DrawCapsule3D(startPos, endPos, radius_, 8, 0xff00ff, 0xff00ff, false);
 
 	// 巡回ルート描画
 	for (const auto& point : way_)
@@ -158,7 +175,6 @@ void Yeti::Draw(void)
 			point.pos, 50.0f, 10,
 			color, color, false);
 	}
-
 	useWeapon_->Draw();
 #endif
 }
@@ -272,15 +288,7 @@ void Yeti::ChaseNode(void)
 	// 水平方向の純粋な距離を測る
 	float nodeDistance = VSize(VSub(targetNode, enemyPos));
 
-	VECTOR playerPos = *playerPos_;
-	float playerDistance = VSize(VSub(playerPos, enemyPos));
-
-	if (playerDistance < nodeDistance)
-	{
-		path_.clear();
-		nextNodeId_ = 0;
-	}
-	else if (nodeDistance < 60.0f)
+	if (nodeDistance < 60.0f)
 	{
 		nextNodeId_++;
 	}
@@ -307,7 +315,7 @@ bool Yeti::CheckChaseLineCollision(VECTOR pPos, VECTOR ePos)
 	// 線分とモデルの衝突判定
 	MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, pPos, ePos, checkRadius);
 
-	/// 当たっていたら、trueを返す
+	// 当たっていたら、trueを返す
 	if (res.HitNum > 0)
 	{
 		MV1CollResultPolyDimTerminate(res);
@@ -522,25 +530,29 @@ void Yeti::UpdateChase(void)
 	{
 		bool isHit = CheckChaseLineCollision(playerPos, enemyPos);
 
-		// 当たっていたら、迂回して追従
-		if (isHit)
+		// 当たっていなかったら、直接追従
+		if (!isHit && !path_.empty())
 		{
-			if (path_.empty())
+			path_.clear();
+			nextNodeId_ = 0;
+		}
+		// 当たっていたら、迂回して追従
+		else if (isHit && path_.empty())
+		{
+
+			// プレイヤーから一番近いノードを探す
+			int playerNearNodeId = FindNearestNode(playerPos);
+			// 敵から一番近いノードを探す
+			int enemyNearNodeId = FindNearestNode(enemyPos);
+			// 敵の位置とプレイヤーの位置を繋ぐルートを探す
+			FindPath(enemyNearNodeId, playerNearNodeId);
+			if (path_.size() > 1)
 			{
-				// プレイヤーから一番近いノードを探す
-				int playerNearNodeId = FindNearestNode(playerPos);
-				// 敵から一番近いノードを探す
-				int enemyNearNodeId = FindNearestNode(enemyPos);
-				// 敵の位置とプレイヤーの位置を繋ぐルートを探す
-				FindPath(enemyNearNodeId, playerNearNodeId);
-				if (path_.size() > 1)
-				{
-					nextNodeId_ = 1;
-				}
-				else
-				{
-					nextNodeId_ = 0;
-				}
+				nextNodeId_ = 1;
+			}
+			else
+			{
+				nextNodeId_ = 0;
 			}
 		}
 		// 判定が終わったらタイマーをリセットする
