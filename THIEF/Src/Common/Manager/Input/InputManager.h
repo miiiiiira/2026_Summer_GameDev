@@ -198,9 +198,9 @@ public:
 	bool IsUpGrabbingButtons(void);
 
 	// •¨‚Æ‚Ì‹——£‚ğL‚Î‚·
-	bool PushItemButtons(void);
+	bool PushItemButtons(int wheel);
 	// •¨‚Æ‚Ì‹——£‚ğk‚Ü‚¹‚é
-	bool PullItemButtons(void);
+	bool PullItemButtons(int wheel);
 
 	// ƒ‰ƒCƒg‚Æ‚Ì‹——£‚ğL‚Î‚·
 	bool PushLightButtons(void);

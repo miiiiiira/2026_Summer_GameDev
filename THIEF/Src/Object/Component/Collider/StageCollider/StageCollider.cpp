@@ -2,6 +2,7 @@
 #include <DxLib.h>
 #include <algorithm>
 #include "../../../Object.h"
+#include "../../PlayerController/PlayerController.h"
 #include "../../Stage/Stage.h"
 
 // 初期化
@@ -198,4 +199,49 @@ void StageCollider::StageColl(float& velocityY)
 
 	// 最終位置を反映
 	transform_->pos_ = pos;
+}
+
+bool StageCollider::CeilingColl(void)
+{
+	// 必要なコンポーネントが存在しないなら処理しない
+	if (!capsule_ || !stage_) return false;
+
+	// 現在座標
+	const VECTOR currentPos = transform_->pos_;
+
+	// 立っている場合としゃがんでいる場合のカプセルの始点（頭の座標）
+	const VECTOR standingPos = VAdd(currentPos, PlayerController::STANDING_CAP_START_OFFSET);
+	const VECTOR crouchingPos = VAdd(currentPos, PlayerController::CROUCHING_CAP_START_OFFSET);
+
+	// 半径を取得
+	const float capsuleRadius = capsule_->radius_;
+
+	// 天井に当たっているかどうかのフラグ
+	bool isCeiling = false;
+
+	// 念のため、始点と終点が完全に一致している場合は判定をスキップ（安全対策）
+	if (standingPos.x == crouchingPos.x && standingPos.y == crouchingPos.y && standingPos.z == crouchingPos.z)
+	{
+		return false;
+	}
+
+	// 立っている場合としゃがんでいる場合の頭座標同士でのカプセルがステージと衝突するかチェック
+	MV1_COLL_RESULT_POLY_DIM hitResult = MV1CollCheck_Capsule(
+		stage_->GetModelId(),
+		-1,
+		standingPos,
+		crouchingPos,
+		capsuleRadius
+	);
+
+	// ヒットしたポリゴン数が0より大きかったら天井がある
+	if (hitResult.HitNum > 0)
+	{
+		isCeiling = true;
+	}
+
+	// DXライブラリの衝突結果リソースを解放
+	MV1CollResultPolyDimTerminate(hitResult);
+
+	return isCeiling;
 }

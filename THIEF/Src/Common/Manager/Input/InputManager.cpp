@@ -272,26 +272,16 @@ bool InputManager::IsUpGrabbingButtons(void)
 	return IsTrgUpMouseLeft() || IsPadBtnTrgUp(JOYPAD_NO::PAD1, JOYPAD_BTN::R_TRIGGER);
 }
 
-bool InputManager::PushItemButtons(void)
+bool InputManager::PushItemButtons(int wheel)
 {
-	int wheel;
-
-	// マウスホイールの回転量を取得
-	wheel = GetMouseWheelRotVol();
-
 	// 回転量が0より大きかったら(ホイールを奥に回転させていたら)
 	if (wheel > 0 || IsPadBtnNew(JOYPAD_NO::PAD1, JOYPAD_BTN::UP))return true;
 
 	return false;
 }
 
-bool InputManager::PullItemButtons(void)
+bool InputManager::PullItemButtons(int wheel)
 {
-	int wheel;
-
-	// マウスホイールの回転量を取得
-	wheel = GetMouseWheelRotVol();
-
 	// 回転量が0より小さかったら(ホイールを手前に回転させていたら)
 	if(wheel < 0 || IsPadBtnNew(JOYPAD_NO::PAD1, JOYPAD_BTN::DOWN))return true;
 

@@ -217,7 +217,7 @@ void PlayerController::Move()
 		break;
 	case PLAYER_STATE::DASH:
 		break;
-	case PLAYER_STATE::CROUCHING:
+	case PLAYER_STATE::CROUCHING:;
 		break;
 	case PLAYER_STATE::SLIDING:
 		// スライディングからしゃがみ処理
@@ -225,6 +225,7 @@ void PlayerController::Move()
 		return;
 		break;
 	case PLAYER_STATE::HIT_REACT:
+		// 吹き飛び処理
 		HitReactUpdate();
 		return;
 		break;
@@ -262,6 +263,8 @@ void PlayerController::Move()
 
 	if (!Math::EqualsVZero(dir))
 	{
+		moveSpeed_ = DEFAULT_SPEED;
+
 		// 走ったかどうかの判定
 		Dash();
 
@@ -278,10 +281,6 @@ void PlayerController::Move()
 
 		// 方向×スピードで移動量を作って、座標に足して移動
 		transform_->pos_ = VAdd(transform_->pos_, VScale(moveDir_, moveSpeed_));
-	}
-	else if (state_ != PLAYER_STATE::CROUCHING)
-	{
-		IdleInit();
 	}
 
 	// しゃがみ処理
@@ -350,9 +349,11 @@ void PlayerController::ApplyGravity()
 
 void PlayerController::Dash(void)
 {
+	// しゃがみ状態なら処理を行わない
+	if (state_ == PLAYER_STATE::CROUCHING)return;
+
 	// もし走るボタンを押されたかつ、しゃがみ状態じゃないかつ、スタミナがあった場合
 	if (InputManager::GetInstance()->DashButtons()
-		&& state_ != PLAYER_STATE::CROUCHING
 		&& stamina_ >= 0.1f)
 	{
 		// プレイヤーの状態を走り状態にする
@@ -380,9 +381,6 @@ void PlayerController::Dash(void)
 		// プレイヤーの状態を普通の移動状態にする
 		state_ = PLAYER_STATE::MOVE;
 
-		// 走るボタンを押されなかった場合
-		// 移動速度はデフォルトに設定
-		moveSpeed_ = DEFAULT_SPEED;
 	}
 }
 
@@ -470,7 +468,18 @@ void PlayerController::Crouching(void)
 			prevCrouching_ = true;
 		}
 	}
-	else
+
+	UnCrouch();
+
+}
+
+void PlayerController::UnCrouch(void)
+{
+	auto stageCol = owner_->GetComponent<StageCollider>();
+
+	// しゃがみボタンを押されてないかつ、頭に障害物がなかった場合にしゃがみを解除
+	if (!InputManager::GetInstance()->CrouchingButtons()
+		&& !stageCol->CeilingColl())
 	{
 		// しゃがみ復帰時
 		if (prevCrouching_)
@@ -484,12 +493,11 @@ void PlayerController::Crouching(void)
 		// 前回しゃがみフラグoff
 		prevCrouching_ = false;
 	}
-
 }
 
 void PlayerController::HitReactUpdate(void)
 {
-	// スライディング状態かつ移動速度が0より大きく移動している場合
+	// 移動速度が0より大きく移動している場合
 	if (moveSpeed_ > 0.0f)
 	{
 		// 移動速度を減算
@@ -633,13 +641,14 @@ void PlayerController::Grabbing(void)
 	}
 }
 
-
 bool PlayerController::RangeUpdate(void)
 {
 	float rangeMax = PlayerStatusManager::GetInstance().GetPlayerStatus().rangeMax_;
+	// マウスホイールの回転量を取得
+	int wheel = GetMouseWheelRotVol();
 
 	// 物との距離を大きくする操作が行われていたら
-	if (InputManager::GetInstance()->PushItemButtons())
+	if (InputManager::GetInstance()->PushItemButtons(wheel))
 	{
 		// 物との距離を大きくする
 		range_ += EXTEND_RENGE_MOVE;
@@ -654,7 +663,7 @@ bool PlayerController::RangeUpdate(void)
 		return true;
 	}
 	// 物との距離を小さくする操作が行われていたら
-	else if (InputManager::GetInstance()->PullItemButtons())
+	else if (InputManager::GetInstance()->PullItemButtons(wheel))
 	{
 		// 物との距離を小さくする
 		range_ -= EXTEND_RENGE_MOVE;

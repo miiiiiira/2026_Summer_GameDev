@@ -128,6 +128,9 @@ private:
 	
 	// しゃがみ処理
 	void Crouching(void);
+	
+	// しゃがみ終了処理
+	void UnCrouch(void);
 
 	// ダメージ時のリアクション処理
 	void HitReactUpdate(void);

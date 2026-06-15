@@ -24,7 +24,8 @@ public:
 
 	// 当たり判定
 	void StageColl(float& velocityY);
-
+	// 天井に当たっているかどうか
+	bool CeilingColl(void);
 private:
 
 	// 接地フラグ
