@@ -85,6 +85,8 @@ public:
 	void TrueGameClear(void);
 	// ゲームオーバーのフラグをたてる
 	void TrueGameOver(void);
+	//	ゲームリセット処理
+	void ResetGame(void);
 
 	// 前のステージ数を渡す
 	const STAGE_NUM GetPrevStage(void) { return prevStage_; }

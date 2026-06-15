@@ -238,7 +238,6 @@ void SceneManager::ChangeScene(std::shared_ptr<SceneBase>scene)
 		scenes_.back() = scene;
 	}
 
-
 	// ステージクリア判定用初期化
 	isStageClear_ = false;
 	// ゲームクリア判定用初期化
@@ -276,6 +275,8 @@ void SceneManager::JumpScene(std::shared_ptr<SceneBase> scene)
 	for (auto& scene : scenes_) { scene->Release(); }
 	scenes_.clear();
 
+	// ステージクリア判定用初期化
+	isStageClear_ = false;
 	// ゲームクリア判定用初期化
 	isClear_ = false;
 	// ゲームオーバー判定用初期化
@@ -327,19 +328,16 @@ void SceneManager::TrueGameClear(void)
 {
 	// フラグを立てる
 	isClear_ = true;
-
-	// 現在のステージを初期化
-	prevStage_ = currentStage_ = STAGE_NUM::STAGE_1;
-
-	// プレイヤーのステータスを初期化
-	PlayerStatusManager::GetInstance().ResetStatus();
 }
 
 void SceneManager::TrueGameOver(void)
 {
 	// フラグを立てる
 	isOver_ = true;
+}
 
+void SceneManager::ResetGame(void)
+{
 	// 現在のステージを初期化
 	prevStage_ = currentStage_ = STAGE_NUM::STAGE_1;
 
