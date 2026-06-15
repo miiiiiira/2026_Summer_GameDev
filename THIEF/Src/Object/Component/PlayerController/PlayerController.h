@@ -82,6 +82,9 @@ public:
 	// Transform‚ğ•Ô‚·
 	Transform* GetTransform();
 
+	// Capsule‚ğ•Ô‚·
+	CapsuleCollider* GetCapsule(void);
+
 	// ’Í‚ñ‚Å‚¢‚é‚©‚Ìó‘Ô‚ğæ“¾
 	PLAYER_STATE GetState(void);
 
