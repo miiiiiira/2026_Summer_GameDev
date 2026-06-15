@@ -117,6 +117,11 @@ Transform* PlayerController::GetTransform()
 	return owner_->GetComponent<Transform>();
 }
 
+CapsuleCollider* PlayerController::GetCapsule(void)
+{
+	return owner_->GetComponent<CapsuleCollider>();
+}
+
 PLAYER_STATE PlayerController::GetState(void)
 {
 	return state_;
