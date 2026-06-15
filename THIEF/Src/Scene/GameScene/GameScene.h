@@ -52,6 +52,10 @@ private:
 	void Stage2Init(void);
 	void Stage3Init(void);
 
-	// 敵の攻撃当たり判定処理
+	// 敵の当たり判定処理
+	// 敵の攻撃とプレイヤーの当たり判定
 	void CheckEnemyAttack(void);
+
+	// 敵とステージの当たり判定
+	void CollisionEnemyToStage(void);
 };
