@@ -19,6 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Component\Item\Skull\Skull.cpp" />
+    <ClCompile Include="Src\Object\Component\Item\Mug\Mug.cpp" />
+    <ClCompile Include="Src\Object\Component\Item\Jar\Jar.cpp" />
+    <ClCompile Include="Src\Object\Component\Item\Bottle\Bottle.cpp" />
+    <ClCompile Include="Src\Object\Component\Item\Amphora\Amphora.cpp" />
     <ClCompile Include="Src\Common\FrameRenderer\FrameRenderer.cpp" />
     <ClCompile Include="Src\Common\Manager\PlayerStatus\PlayerStatusManager.cpp" />
     <ClCompile Include="Src\Object\Component\PlayerController\Upgrade\UpgradeManager.cpp" />
@@ -76,6 +81,11 @@
     <ClCompile Include="Src\Object\Actor\Enemy\Weapon\WeaponPunch.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Component\Item\Skull\Skull.h" />
+    <ClInclude Include="Src\Object\Component\Item\Mug\Mug.h" />
+    <ClInclude Include="Src\Object\Component\Item\Jar\Jar.h" />
+    <ClInclude Include="Src\Object\Component\Item\Bottle\Bottle.h" />
+    <ClInclude Include="Src\Object\Component\Item\Amphora\Amphora.h" />
     <ClInclude Include="Src\Common\FrameRenderer\FrameRenderer.h" />
     <ClInclude Include="Src\Common\Manager\PlayerStatus\PlayerStatusManager.h" />
     <ClInclude Include="Src\Object\Component\PlayerController\Upgrade\UpgradeManager.h" />
