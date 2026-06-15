@@ -170,6 +170,7 @@ void GameScene::Update(void)
 		ScoreManager::GetInstance().ResetTotalPrice();
 		// ゲームクリアシーンへ
 		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameClear>());
+		SceneManager::GetInstance()->ResetGame();
 		return;
 	}
 
@@ -179,6 +180,7 @@ void GameScene::Update(void)
 		ScoreManager::GetInstance().ResetTotalPrice();
 		// ゲームオーバーシーンへ
 		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameOver>());
+		SceneManager::GetInstance()->ResetGame();
 		return;
 	}
 

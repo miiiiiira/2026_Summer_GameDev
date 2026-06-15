@@ -48,6 +48,8 @@ public:
 
 protected:
 
+	const float NODE_CONNECT_MAX_DISTANCE_SQ = 1500.0f * 1500.0f;
+
 	AnimationController* animationController_;
 
 	// ïêäÌ

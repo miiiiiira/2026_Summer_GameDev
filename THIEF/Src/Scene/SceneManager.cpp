@@ -328,19 +328,16 @@ void SceneManager::TrueGameClear(void)
 {
 	// フラグを立てる
 	isClear_ = true;
-
-	// 現在のステージを初期化
-	prevStage_ = currentStage_ = STAGE_NUM::STAGE_1;
-
-	// プレイヤーのステータスを初期化
-	PlayerStatusManager::GetInstance().ResetStatus();
 }
 
 void SceneManager::TrueGameOver(void)
 {
 	// フラグを立てる
 	isOver_ = true;
+}
 
+void SceneManager::ResetGame(void)
+{
 	// 現在のステージを初期化
 	prevStage_ = currentStage_ = STAGE_NUM::STAGE_1;
 
