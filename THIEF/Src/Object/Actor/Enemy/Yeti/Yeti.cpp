@@ -44,8 +44,8 @@ void Yeti::Init(VECTOR* pos, int id)
 
 	moveDir_ = { 0.0f, 0.0f, 0.0f };
 
-	startOffset_ = { 0.0f,150.0f,0.0f };
-	endOffset_ = { 0.0f,0.0f,0.0f };
+	startOffset_ = { 0.0f,110.0f,0.0f };
+	endOffset_ = { 0.0f,40.0f,0.0f };
 	radius_ = 50.0f;
 
 	patrolRadius_ = 1500.0f;
@@ -148,9 +148,9 @@ void Yeti::Draw(void)
 #ifdef _DEBUG
 	DrawSphere3D(pos_, patrolRadius_, 8, GetColor(0, 255, 0), GetColor(0, 0, 0), FALSE);
 
-	VECTOR startPos = VAdd(pos_, startOffset_);
-	VECTOR endPos = VAdd(pos_, endOffset_);
-	DrawCapsule3D(startPos, endPos, radius_, 8, 0xff00ff, 0xff00ff, false);
+	//VECTOR startPos = VAdd(pos_, startOffset_);
+	//VECTOR endPos = VAdd(pos_, endOffset_);
+	//DrawCapsule3D(startPos, endPos, radius_, 8, 0xff00ff, 0xff00ff, false);
 
 	// èÑâÒÉãÅ[Égï`âÊ
 	for (const auto& point : way_)

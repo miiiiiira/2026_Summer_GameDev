@@ -5,6 +5,7 @@
 
 // ‘O•ûéŒ¾
 class Transform;
+class CapsuleCollider;
 class Animation;
 class Item;
 class Lantern;
