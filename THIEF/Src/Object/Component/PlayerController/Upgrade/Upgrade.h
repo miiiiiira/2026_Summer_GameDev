@@ -22,24 +22,24 @@ private:
 	static constexpr int ALPHA = 128;
 
 	// 基準座標
-	static constexpr float POS_X = 40.0f;
-	static constexpr float POS_Y = 200.0f;
+	static constexpr float POS_X = 110.0f;
+	static constexpr float POS_Y = 120.0f;
 
 	// 当たり判定を行うサイズ
-	static constexpr float COL_SIZE_X = 200.0f;
-	static constexpr float COL_SIZE_Y = 100.0f;
+	static constexpr float COL_SIZE_X = 150.0f;
+	static constexpr float COL_SIZE_Y = 200.0f;
 
 	// 画像間(余白)の大きさ
-	static constexpr float SPACE_X = COL_SIZE_X + 40.0f;
-	static constexpr float SPACE_Y = COL_SIZE_Y + 100.0f;
+	static constexpr float SPACE_X = COL_SIZE_X + 60.0f;
+	static constexpr float SPACE_Y = COL_SIZE_Y + 50.0f;
 
 	// 描画画像の縦横数
 	static constexpr int DRAW_NUM_X = 4;
 	static constexpr int DRAW_NUM_Y = 2;
 
 	// soldOutのオフセット
-	static constexpr float SOLDOUT_OFFSET_X = 11.5f;
-	static constexpr float SOLDOUT_OFFSET_Y = -9.5f;
+	static constexpr float SOLDOUT_OFFSET_X = -9.0f;
+	static constexpr float SOLDOUT_OFFSET_Y = 45.0f;
 
 	// 最大HPの強化値
 	static constexpr int HP_UP_NUM = 20;
