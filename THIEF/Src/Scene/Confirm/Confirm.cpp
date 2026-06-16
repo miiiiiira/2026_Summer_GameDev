@@ -160,6 +160,8 @@ void Confirm::UpdateYes(void)
 		break;
 	case TYPE::MAIN_MENU:
 		SceneManager::GetInstance()->JumpScene(std::make_shared<MainMenu>());
+		// ゲームを終了したため、ステージ情報などを初期化する
+		SceneManager::GetInstance()->ResetGame();
 		break;
 	case TYPE::BUY_UPGRADE:
 		UpgradeManager::GetInstance().GetUpgrade()->ChangeState(Upgrade::UPGRADE_STATE::APPLY);

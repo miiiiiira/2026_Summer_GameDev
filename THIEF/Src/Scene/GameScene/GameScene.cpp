@@ -174,6 +174,8 @@ void GameScene::Update(void)
 	{
 		// トータルスコアを初期化
 		ScoreManager::GetInstance().ResetTotalPrice();
+		// ステージ情報などを初期化する
+		SceneManager::GetInstance()->ResetGame();
 		// ゲームクリアシーンへ
 		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameClear>());
 		return;
@@ -183,6 +185,8 @@ void GameScene::Update(void)
 	{
 		// トータルスコアを初期化
 		ScoreManager::GetInstance().ResetTotalPrice();
+		// ステージ情報などを初期化する
+		SceneManager::GetInstance()->ResetGame();
 		// ゲームオーバーシーンへ
 		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameOver>());
 		return;
@@ -469,6 +473,9 @@ void GameScene::CheckEnemyAttack(void)
 			startPos, endPos, radius))
 		{
 			player->SetDamage(10);
+
+			VECTOR moveDir = VNorm(VSub(startPos, useWeapon->GetPos()));
+			player->SetHitReact(moveDir, 30.0f);
 			useWeapon->SetAlive(false);
 		}
 	}
