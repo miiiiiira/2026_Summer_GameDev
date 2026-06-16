@@ -9,9 +9,9 @@ AudioManager* AudioManager::instance_ = nullptr;
 AudioManager::AudioManager(void)
 {
 	currentBgm_ = SoundID::NON;
-	bgmVolume_ = 127;
-	seVolume_ = 127;
-	masterVolume_ = 127;
+	bgmVolume_ = 255;
+	seVolume_ = 255;
+	masterVolume_ = 255;
 }
 
 AudioManager::~AudioManager()
@@ -25,9 +25,9 @@ void AudioManager::Init(void)
 	// åªç›çƒê∂Ç≥ÇÍÇƒÇ¢ÇÈBGM
 	currentBgm_ = SoundID::NON;
 
-	bgmVolume_ = 127;		// bgmâπó 
-	seVolume_ = 127;		// seâπó 
-	masterVolume_ = 127;	// masterâπó 
+	bgmVolume_ = 255;		// bgmâπó 
+	seVolume_ = 255;		// seâπó 
+	masterVolume_ = 255;	// masterâπó 
 }
 
 void AudioManager::LoadSceneSound(LoadScene scene)

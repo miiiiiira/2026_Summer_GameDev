@@ -288,8 +288,6 @@ void PlayerController::Move()
 		transform_->pos_ = VAdd(transform_->pos_, VScale(moveDir_, moveSpeed_));
 	}
 
-	// しゃがみ処理
-	Crouching();
 
 	// 足音のサウンドを鳴らす
 	if (!Math::EqualsVZero(dir))
@@ -299,16 +297,18 @@ void PlayerController::Move()
 		if (!stageCol) return;
 
 		// 通常移動かつ接地している時のみ
-		if ((state_ == PLAYER_STATE::MOVE || state_ == PLAYER_STATE::DASH)
-			&&
-			stageCol->IsGround())
+		if (state_ == PLAYER_STATE::MOVE || state_ == PLAYER_STATE::DASH)
 		{
 			// 足音がなる間隔
 			if (moveSoundInterval_ > MOVE_SOUND_INTERVAL - (moveSpeed_ * MOVE_SPEED_UP_MULTI))
 			{
-				// 移動サウンドの再生
-				AudioManager::GetInstance()->PlaySE(SoundID::SE_MOVE);
-				moveSoundInterval_ = 0;
+				// 接地している場合
+				if (velocityY_ <= 0)
+				{
+					// 移動サウンドの再生
+					AudioManager::GetInstance()->PlaySE(SoundID::SE_MOVE);
+					moveSoundInterval_ = 0;
+				}
 			}
 			else
 			{
@@ -316,6 +316,9 @@ void PlayerController::Move()
 			}
 		}
 	}
+
+	// しゃがみ処理
+	Crouching();
 }
 
 // 重力処理
@@ -424,6 +427,12 @@ void PlayerController::InputSliding(void)
 
 		// ランタンの光を消す
 		lantern_->SetLight(false);
+
+		// スライディングのサウンド再生
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_SLIDING);
+
+		// ランタンOFFサウンド
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_OFF);
 	}
 }
 

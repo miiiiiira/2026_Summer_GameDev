@@ -1,7 +1,9 @@
 #pragma once
 
+#include <DxLib.h>
 #include <vector>
 
+#include "../../Object/Tag.h"
 #include "../SceneBase.h"
 
 class ObjectManager;
@@ -36,7 +38,9 @@ public:
 	void LanternCreate(void);		// ランタンの作成
 	void PlayerCreate(void);		// プレイヤーの作成
 	void EnemyCreate(void);			// 敵の作成
-	void ItemCreate(void);			// アイテムの作成
+	void ItemCreateStage1(void);	// ステージ1アイテムの作成
+	void ItemCreateStage2(void);	// ステージ2アイテムの作成
+	void ItemCreateStage3(void);	// ステージ3アイテムの作成
 
 private:
 	// オブジェクトマネージャー
@@ -58,4 +62,7 @@ private:
 
 	// 敵とステージの当たり判定
 	void CollisionEnemyToStage(void);
+
+	// タグを使用し、アイテムを作る
+	void ItemCreate(Tag tag, VECTOR pos);
 };

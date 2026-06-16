@@ -21,11 +21,11 @@ protected:
 	static constexpr float COEFFICIENT = 0.3f;
 
 	// ダメージ表記用のカウント
-	static constexpr int DAMAGE_DRAW_COUNT = 60 * 1.5;
+	static constexpr int DAMAGE_DRAW_COUNT = 90;
 
 	// 60フレームで大体1.5秒くらいの無敵時間
-	static constexpr int INVINCIBILITY_FRAMES = 60 * 1;
-	static constexpr int INVINCIBILITY_FRAMES_ISGRABB = 60 * 0.5;
+	static constexpr int INVINCIBILITY_FRAMES = 5;
+	static constexpr int INVINCIBILITY_FRAMES_ISGRABB = 30;
 
 public:
 	// デストラクタ
@@ -108,10 +108,10 @@ protected:
 	void UpdateInvincibility(void);
 
 	// 個々のパラメータを設定する
-	virtual void SetParam(void) = 0;
+	virtual void SetParam(void) {};
 
 	// 個々の破壊時の処理
-	virtual void Break(void) = 0;
+	virtual void Break(void) {};
 
 	// ダメージ表記用のカウントを更新
 	void CountUpdate(void);

@@ -17,6 +17,9 @@ void ItemCollider::Update(void)
 
 	if (!item_) return;
 
+	// アイテムが生存中でなければ処理を行わない
+	if (!item_->GetInfo().isAlive_)return;
+
 	if (!player_) return;
 
 	if (!stage_) return;

@@ -1,7 +1,6 @@
 #include "GameScene.h"
 
 #include <algorithm>
-#include <DxLib.h>
 
 #include "../../Application.h"
 #include "../../Common/Manager/Input/InputManager.h"
@@ -18,7 +17,6 @@
 #include "../../Object/Actor/Enemy/Weapon/WeaponBase.h"
 #include "../../Common/Crosshair/Crosshair.h"
 #include "../../Object/ObjectManager/ObjectManager.h"
-#include "../../Object/Tag.h"
 
 #include "../../Object/Component/Collider/3DCollider/CapsuleCollider.h"
 #include "../../Object/Component/Collider/StageCollider/StageCollider.h"
@@ -31,8 +29,14 @@
 #include "../../Object/Component/Stage/Stage.h"
 #include "../../Object/Component/Lantern/Lantern.h"
 #include "../../Object/Component/Item/Item.h"
+#include "../../Object/Component/Item/ItemInfo.h"
 #include "../../Object/Component/Item/Goblet/Goblet.h"
 #include "../../Object/Component/Item/Potion/Potion.h"
+#include "../../Object/Component/Item/Amphora/Amphora.h"
+#include "../../Object/Component/Item/Bottle/Bottle.h"
+#include "../../Object/Component/Item/Jar/Jar.h"
+#include "../../Object/Component/Item/Mug/Mug.h"
+#include "../../Object/Component/Item/Skull/Skull.h"
 #include "../../Object/Component/Transform/Transform.h"
 #include "../../Common/Transform/MatrixUtility.h"
 #include "../../Common/CameraUtility/CameraUtility.h"
@@ -263,7 +267,7 @@ void GameScene::StageCreate(void)
 
 	// 描画
 	auto render = stage->AddComponent<Render3D>();
-	render->SetModel("Data/Model/Stage/Dummy2.mv1");
+	render->SetModel("Data/Model/Stage/Stage1.mv1");
 
 	// ステージ機能
 	stage->AddComponent<Stage>();
@@ -362,82 +366,18 @@ void GameScene::EnemyCreate(void)
 	//col->radius_ = 20.0f;
 }
 
-void GameScene::ItemCreate(void)
+void GameScene::ItemCreateStage1(void)
 {
-	float posX = -100;
+	ItemCreate(Tag::Goblet, { -100,50.0f,0.0f });
+	ItemCreate(Tag::Potion, { 100.0f,50.0f,30.0f });
+}
 
-	for (int i = 0; i < 3; i++)
-	{
-		// アイテムの作成
-		auto item = objectManger_->CreateObject();
+void GameScene::ItemCreateStage2(void)
+{
+}
 
-		// タグを付与
-		item->SetTagAndPriority(Tag::Goblet);
-
-		// 座標の設定
-		auto trans = item->AddComponent<Transform>();
-		trans->pos_ = { posX + (100.0f * i),50.0f,0.0f };
-
-		// 描画
-		auto render = item->AddComponent<Render3D>();
-		render->SetModel("Data/Model/Item/Goblet.mv1");
-
-		// アイテム機能
-		auto goblet = item->AddComponent<Goblet>();
-
-		// プレイヤー取得
-		auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
-
-		// ステージ取得
-		auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
-
-		// アイテムの当たり判定
-		auto itemCol = item->AddComponent<ItemCollider>();
-		// プレイヤーを渡す
-		itemCol->SetPlayer(playerController);
-		// ステージを渡す
-		itemCol->SetStage(stage);
-		// クロスヘアを渡す
-		itemCol->SetCrosshair(crosshair_);
-
-		// ステージにアイテムを渡す
-		stage->SetItem(goblet);
-	}
-
-	// アイテムの作成
-	auto item = objectManger_->CreateObject();
-
-	// タグを付与
-	item->SetTagAndPriority(Tag::Potion);
-
-	// 座標の設定
-	auto trans = item->AddComponent<Transform>();
-	trans->pos_ = { 100.0f,50.0f,30.0f };
-
-	// 描画
-	auto render = item->AddComponent<Render3D>();
-	render->SetModel("Data/Model/Item/Potion_Blue.mv1");
-
-	// アイテム機能
-	auto potion = item->AddComponent<Potion>();
-
-	// プレイヤー取得
-	auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
-
-	// ステージ取得
-	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
-
-	// アイテムの当たり判定
-	auto itemCol = item->AddComponent<ItemCollider>();
-	// プレイヤーを渡す
-	itemCol->SetPlayer(playerController);
-	// ステージを渡す
-	itemCol->SetStage(stage);
-	// クロスヘアを渡す
-	itemCol->SetCrosshair(crosshair_);
-
-	// ステージにアイテムを渡す
-	stage->SetItem(potion);
+void GameScene::ItemCreateStage3(void)
+{
 }
 
 void GameScene::Stage1Init(void)
@@ -455,7 +395,7 @@ void GameScene::Stage1Init(void)
 	EnemyCreate();
 
 	// アイテムの作成
-	ItemCreate();
+	ItemCreateStage1();
 }
 
 void GameScene::Stage2Init(void)
@@ -473,7 +413,7 @@ void GameScene::Stage2Init(void)
 	EnemyCreate();
 
 	// アイテムの作成
-	ItemCreate();
+	ItemCreateStage2();
 }
 
 void GameScene::Stage3Init(void)
@@ -491,7 +431,7 @@ void GameScene::Stage3Init(void)
 	EnemyCreate();
 
 	// アイテムの作成
-	ItemCreate();
+	ItemCreateStage3();
 }
 
 void GameScene::CheckEnemyAttack(void)
@@ -721,4 +661,73 @@ void GameScene::CollisionEnemyToStage(void)
 
 	// 最終位置を反映
 	enemy_->SetPos(pos);
+}
+
+void GameScene::ItemCreate(Tag tag, VECTOR pos)
+{
+	auto ItemData = ItemTable_Stage1::Table.find(tag);
+
+	// アイテムの作成
+	auto item = objectManger_->CreateObject();
+
+	// タグを付与
+	item->SetTagAndPriority(tag);
+
+	// 座標の設定
+	auto trans = item->AddComponent<Transform>();
+	trans->pos_ = pos;
+
+	// 描画
+	auto render = item->AddComponent<Render3D>();
+	render->SetModel(ItemData->second);
+
+	Item* itemBase = nullptr;
+	// アイテム機能
+	switch (ItemData->first)
+	{
+	case Tag::Goblet:
+		itemBase = item->AddComponent<Goblet>();
+		break;
+	case Tag::Potion:
+		itemBase = item->AddComponent<Potion>();
+		break;
+	case Tag::Amphora:
+		itemBase = item->AddComponent<Amphora>();
+		break;
+	case Tag::Bottle:
+		itemBase = item->AddComponent<Bottle>();
+		break;
+	case Tag::Jar:
+		itemBase = item->AddComponent<Jar>();
+		break;
+	case Tag::Mug:
+		itemBase = item->AddComponent<Mug>();
+		break;
+	case Tag::Skull:
+		itemBase = item->AddComponent<Skull>();
+		break;
+	default:
+		break;
+	}
+
+	// プレイヤー取得
+	auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
+
+	// ステージ取得
+	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+
+	// アイテムの当たり判定
+	auto itemCol = item->AddComponent<ItemCollider>();
+	// プレイヤーを渡す
+	itemCol->SetPlayer(playerController);
+	// ステージを渡す
+	itemCol->SetStage(stage);
+	// クロスヘアを渡す
+	itemCol->SetCrosshair(crosshair_);
+
+	// ステージにアイテムを渡す
+	if (itemBase != nullptr)
+	{
+		stage->SetItem(itemBase);
+	}
 }

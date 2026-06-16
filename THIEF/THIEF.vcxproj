@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Component\Item\ItemInfo.cpp" />
     <ClCompile Include="Src\Object\Component\Item\Skull\Skull.cpp" />
     <ClCompile Include="Src\Object\Component\Item\Mug\Mug.cpp" />
     <ClCompile Include="Src\Object\Component\Item\Jar\Jar.cpp" />

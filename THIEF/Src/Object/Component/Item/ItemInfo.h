@@ -1,15 +1,9 @@
 #pragma once
 
 #include <DxLib.h>
-
-enum class ITEM_TAG
-{
-	GOBLET,
-	JEWELRY,
-
-	MAX
-};
-
+#include <unordered_map>
+#include <string>
+#include "../../Tag.h"
 
 struct ItemInfo
 {
@@ -59,3 +53,8 @@ struct ItemInfo
 	// –³“GŽžŠÔ
 	int invincibilityFrames_;
 };
+
+namespace ItemTable_Stage1
+{
+	extern const std::unordered_map<Tag, std::string> Table;
+}

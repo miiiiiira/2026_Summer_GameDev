@@ -167,6 +167,9 @@ void Item::SetDamage(int damage,VECTOR pos)
 		// •`‰æƒtƒ‰ƒO‚ğÜ‚é
 		auto render = owner_->GetComponent<Render3D>();
 		render->SetIsDraw(false);
+
+		// ‰ó‚ê‚½uŠÔ‚Ìˆ—
+		Break();
 	}
 
 }

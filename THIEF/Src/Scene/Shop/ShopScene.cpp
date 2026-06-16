@@ -32,6 +32,7 @@ void ShopScene::Load(void)
 
 void ShopScene::LoadEnd(void)
 {
+	Init();
 	UpgradeManager::GetInstance().Init();
 }
 

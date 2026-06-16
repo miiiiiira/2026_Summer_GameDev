@@ -5,7 +5,6 @@ enum class Tag
 {
 	None,
 	Object,
-	BreakObject,
 	Camera,
 	Stage,
 	Lantern,
@@ -13,4 +12,9 @@ enum class Tag
 	Player,
 	Goblet,
 	Potion,
+	Amphora,
+	Bottle,
+	Jar,
+	Mug,
+	Skull,
 };
