@@ -14,14 +14,14 @@ public:
 	static constexpr int MONEY = 2000;
 
 	// 当たり判定用の半径
-	static constexpr float COLLISION_RADIUS_X = 5.0f;
-	static constexpr float COLLISION_RADIUS_Y = 7.0f;
+	static constexpr float COLLISION_RADIUS_X = 55.0f;
+	static constexpr float COLLISION_RADIUS_Y = 50.0f;
 
 	// 頑丈さ
 	static constexpr int HARDNESS = 5;
 
 	// 重さ
-	static constexpr float WEIGHT = -15.0f;
+	static constexpr float WEIGHT = -25.0f;
 
 	// コンストラクタ
 	Amphora();

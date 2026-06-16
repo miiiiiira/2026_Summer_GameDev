@@ -54,7 +54,14 @@ struct ItemInfo
 	int invincibilityFrames_;
 };
 
+struct ItemData
+{
+	std::string path; // モデルのパス
+	float posOffsetY; // Y座標のオフセット
+};
+
+
 namespace ItemTable_Stage1
 {
-	extern const std::unordered_map<Tag, std::string> Table;
+	extern const std::unordered_map<Tag,ItemData> Table;
 }

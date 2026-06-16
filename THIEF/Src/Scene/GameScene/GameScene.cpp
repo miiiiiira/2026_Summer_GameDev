@@ -372,15 +372,21 @@ void GameScene::EnemyCreate(void)
 
 void GameScene::ItemCreateStage1(void)
 {
-	ItemCreate(Tag::Item_Goblet, { -100,50.0f,0.0f });
-	ItemCreate(Tag::Item_Potion_Red, { 100.0f,50.0f,30.0f });
-	ItemCreate(Tag::Item_Potion_Green, { 100.0f,50.0f,30.0f });
-	ItemCreate(Tag::Item_Potion_Blue, { 100.0f,50.0f,30.0f });
-	ItemCreate(Tag::Item_Amphora, { 100.0f,50.0f,30.0f });
-	ItemCreate(Tag::Item_Bottle, { 100.0f,50.0f,30.0f });
-	ItemCreate(Tag::Item_Jar, { 100.0f,50.0f,30.0f });
-	ItemCreate(Tag::Item_Mug, { 100.0f,50.0f,30.0f });
-	ItemCreate(Tag::Item_Skull, { 100.0f,50.0f,30.0f });
+	ItemCreate(Tag::Item_Potion_Green, { 1960.0f,20.0f,428.0f });
+	ItemCreate(Tag::Item_Bottle, { 2103.0f,186.0f,1263.0f });
+	ItemCreate(Tag::Item_Mug, { 1957.0f,184.0f,4480.0f });
+	ItemCreate(Tag::Item_Potion_Blue, { -362.0f,105.0f,4330.0f });
+	ItemCreate(Tag::Item_Goblet, { 2161.0f,9.0f,9648.0f });
+	ItemCreate(Tag::Item_Potion_Blue, { 2232.0f,452.0f,5346.0f });
+	ItemCreate(Tag::Item_Potion_Red, { -3111.0f,19.0f,4386.0f });
+	ItemCreate(Tag::Item_Amphora, { -3704.0f,40.0f,4724.0f });
+	ItemCreate(Tag::Item_Bottle, { -2421.0f,173.0f,2476.0f });
+	ItemCreate(Tag::Item_Jar, { -1196.0f,162.0f,5059.0f });
+	ItemCreate(Tag::Item_Potion_Green, { -1952.0f,4.0f,7835.0f });
+	ItemCreate(Tag::Item_Amphora, { -3717.0f,36.0f,6319.0f });
+	ItemCreate(Tag::Item_Potion_Red, { -3563.0f,250.0f,7697.0f });
+	ItemCreate(Tag::Item_Goblet, { -5775,154.0f,7690.0f });
+	ItemCreate(Tag::Item_Skull, { -5578.0f,200.0f,7785.0f });
 }
 
 void GameScene::ItemCreateStage2(void)
@@ -680,7 +686,7 @@ void GameScene::CollisionEnemyToStage(void)
 
 void GameScene::ItemCreate(Tag tag, VECTOR pos)
 {
-	auto ItemData = ItemTable_Stage1::Table.find(tag);
+	auto itemData = ItemTable_Stage1::Table.find(tag);
 
 	// アイテムの作成
 	auto item = objectManger_->CreateObject();
@@ -691,14 +697,15 @@ void GameScene::ItemCreate(Tag tag, VECTOR pos)
 	// 座標の設定
 	auto trans = item->AddComponent<Transform>();
 	trans->pos_ = pos;
+	trans->pos_.y += itemData->second.posOffsetY;
 
 	// 描画
 	auto render = item->AddComponent<Render3D>();
-	render->SetModel(ItemData->second);
+	render->SetModel(itemData->second.path);
 
 	Item* itemBase = nullptr;
 	// アイテム機能
-	switch (ItemData->first)
+	switch (itemData->first)
 	{
 	case Tag::Item_Goblet:
 		itemBase = item->AddComponent<Goblet>();

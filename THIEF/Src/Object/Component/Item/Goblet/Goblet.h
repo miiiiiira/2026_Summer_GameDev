@@ -16,8 +16,8 @@ public:
 	static constexpr int MONEY = 300;
 
 	// ìñÇΩÇËîªíËópÇÃîºåa
-	static constexpr float COLLISION_RADIUS_X = 5.0f;
-	static constexpr float COLLISION_RADIUS_Y = 7.0f;
+	static constexpr float COLLISION_RADIUS_X = 12.5f;
+	static constexpr float COLLISION_RADIUS_Y = 17.5f;
 
 	// äÊè‰Ç≥
 	static constexpr int HARDNESS = 20;

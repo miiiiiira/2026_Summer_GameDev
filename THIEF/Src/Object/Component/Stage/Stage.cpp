@@ -88,11 +88,11 @@ void Stage::DrawDebug(void)
 
 	startPos.x -= DELIVERY_SIZE_WID_RAD;
 	startPos.y -= DELIVERY_SIZE_HIG_RAD;
-	startPos.z -= DELIVERY_SIZE_WID_RAD;
+	startPos.z -= DELIVERY_SIZE_DEPTH_RAD;
 
 	endPos.x += DELIVERY_SIZE_WID_RAD;
 	endPos.y += DELIVERY_SIZE_HIG_RAD;
-	endPos.z += DELIVERY_SIZE_WID_RAD;
+	endPos.z += DELIVERY_SIZE_DEPTH_RAD;
 
 	DrawCube3D(startPos, endPos, 0x0000ff, 0x0000ff, false);
 
