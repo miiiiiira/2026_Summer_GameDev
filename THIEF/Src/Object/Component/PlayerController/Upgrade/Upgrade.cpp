@@ -241,12 +241,12 @@ void Upgrade::UpgradesInit(void)
 		maxPrice = 3000;
 
 		break;
-	case STAGE_3:
+	//case STAGE_3:
 
-		minPrice = 3500;
-		maxPrice = 5000;
+	//	minPrice = 3500;
+	//	maxPrice = 5000;
 
-		break;
+	//	break;
 	default:
 		break;
 	}

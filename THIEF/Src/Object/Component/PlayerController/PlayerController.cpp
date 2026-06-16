@@ -109,7 +109,23 @@ void PlayerController::Update()
 
 void PlayerController::Draw2D()
 {
+	// HPの表示
+	DrawFormatStringToHandle(10, 50, 0x00fa9a, Application::GetInstance()->GetFont(),
+		"HP : %d / %d",
+		hp_, PlayerStatusManager::GetInstance().GetPlayerStatus().hpMax_);
+
+	// スタミナの表示
+	DrawFormatStringToHandle(10, 90, 0xffc800, Application::GetInstance()->GetFont(),
+		"STAMINA : %.0f / %.0f",
+		stamina_, PlayerStatusManager::GetInstance().GetPlayerStatus().staminaMax_);
+
+#ifdef _DEBUG
+
+	// デバッグ表示
 	DebugDraw();
+
+#endif // _DEBUG
+
 }
 
 Transform* PlayerController::GetTransform()
@@ -698,15 +714,11 @@ bool PlayerController::RangeUpdate(void)
 
 void PlayerController::DebugDraw(void)
 {
-	// HPの表示
-	DrawFormatStringToHandle(10, 50, 0x00fa9a, Application::GetInstance()->GetFont(),
-		"HP : %d / %d", 
-		hp_, PlayerStatusManager::GetInstance().GetPlayerStatus().hpMax_);
-
-	// スタミナの表示
-	DrawFormatStringToHandle(10, 90, 0xffc800, Application::GetInstance()->GetFont(),
-		"STAMINA : %.0f / %.0f",
-		stamina_, PlayerStatusManager::GetInstance().GetPlayerStatus().staminaMax_);
+	DrawFormatString(20,
+		300,
+		0xff0000, 
+		"プレイヤー座標 : %.f,%.f,%.f",
+		transform_->pos_.x, transform_->pos_.y, transform_->pos_.z);
 }
 
 void PlayerController::IdleInit(void)

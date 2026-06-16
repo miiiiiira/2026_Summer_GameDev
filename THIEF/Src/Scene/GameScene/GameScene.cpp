@@ -110,12 +110,12 @@ void GameScene::Load(void)
 		Stage2Init();
 
 		break;
-	case STAGE_NUM::STAGE_3:
-		
-		// ステージ3の初期化処理
-		Stage3Init();
+	//case STAGE_NUM::STAGE_3:
+	//	
+	//	// ステージ3の初期化処理
+	//	Stage3Init();
 
-		break;
+	//	break;
 	default:
 		break;
 	}
@@ -372,12 +372,20 @@ void GameScene::EnemyCreate(void)
 
 void GameScene::ItemCreateStage1(void)
 {
-	ItemCreate(Tag::Goblet, { -100,50.0f,0.0f });
-	ItemCreate(Tag::Potion, { 100.0f,50.0f,30.0f });
+	ItemCreate(Tag::Item_Goblet, { -100,50.0f,0.0f });
+	ItemCreate(Tag::Item_Potion_Red, { 100.0f,50.0f,30.0f });
+	ItemCreate(Tag::Item_Potion_Green, { 100.0f,50.0f,30.0f });
+	ItemCreate(Tag::Item_Potion_Blue, { 100.0f,50.0f,30.0f });
+	ItemCreate(Tag::Item_Amphora, { 100.0f,50.0f,30.0f });
+	ItemCreate(Tag::Item_Bottle, { 100.0f,50.0f,30.0f });
+	ItemCreate(Tag::Item_Jar, { 100.0f,50.0f,30.0f });
+	ItemCreate(Tag::Item_Mug, { 100.0f,50.0f,30.0f });
+	ItemCreate(Tag::Item_Skull, { 100.0f,50.0f,30.0f });
 }
 
 void GameScene::ItemCreateStage2(void)
 {
+	ItemCreateStage1();
 }
 
 void GameScene::ItemCreateStage3(void)
@@ -692,25 +700,31 @@ void GameScene::ItemCreate(Tag tag, VECTOR pos)
 	// アイテム機能
 	switch (ItemData->first)
 	{
-	case Tag::Goblet:
+	case Tag::Item_Goblet:
 		itemBase = item->AddComponent<Goblet>();
 		break;
-	case Tag::Potion:
+	case Tag::Item_Potion_Red:
 		itemBase = item->AddComponent<Potion>();
 		break;
-	case Tag::Amphora:
+	case Tag::Item_Potion_Green:
+		itemBase = item->AddComponent<Potion>();
+		break;
+	case Tag::Item_Potion_Blue:
+		itemBase = item->AddComponent<Potion>();
+		break;
+	case Tag::Item_Amphora:
 		itemBase = item->AddComponent<Amphora>();
 		break;
-	case Tag::Bottle:
+	case Tag::Item_Bottle:
 		itemBase = item->AddComponent<Bottle>();
 		break;
-	case Tag::Jar:
+	case Tag::Item_Jar:
 		itemBase = item->AddComponent<Jar>();
 		break;
-	case Tag::Mug:
+	case Tag::Item_Mug:
 		itemBase = item->AddComponent<Mug>();
 		break;
-	case Tag::Skull:
+	case Tag::Item_Skull:
 		itemBase = item->AddComponent<Skull>();
 		break;
 	default:
