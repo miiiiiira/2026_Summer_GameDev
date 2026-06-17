@@ -82,13 +82,13 @@ void DebugScene::Update(void)
 	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_C))
 	{
 		// ゲームクリアへ
-		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameClear>());
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameClear>());
 	}
 
 	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_O))
 	{
 		// ゲームオーバーへ
-		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameOver>());
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameOver>());
 	}
 
 	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_ESCAPE))

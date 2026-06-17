@@ -13,7 +13,17 @@ public:
 	{
 		NONE, 
 		FADE_OUT,	// 徐々に暗転
-		FADE_IN		// 徐々に明転
+		FADE_IN,	// 徐々に明転
+		END
+	};
+
+	// タイプ
+	enum class TYPE
+	{
+		NORMAL,
+		SHUTTER,
+		WIPE,
+		CROSS,
 	};
 
 	//シングルトン
@@ -29,7 +39,7 @@ public:
 	STATE GetState(void);
 
 	// 指定フェードを開始する
-	void SetFade(STATE state, unsigned int color = 0x000000);
+	void SetFade(STATE state, TYPE type = TYPE::NORMAL, unsigned int color = 0x000000);
 
 private:
 
@@ -42,6 +52,9 @@ private:
 
 	// 状態
 	STATE state_;
+
+	// フェードタイプ
+	TYPE type_;
 
 	// 色情報 (unsignedはマイナスの値が使えない)
 	unsigned int color_;

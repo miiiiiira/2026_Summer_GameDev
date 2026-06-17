@@ -65,7 +65,7 @@ void MainMenu::Update(void)
 	// Lキーを押したらデバッグシーン
 	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_L))
 	{
-		SceneManager::GetInstance()->JumpScene(std::make_shared<DebugScene>());
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<DebugScene>(), true);
 		return;
 	}
 #endif //_DEBUG
@@ -137,7 +137,7 @@ void MainMenu::ChangeSelect(MENU menu)
 void MainMenu::UpdatePlay(void)
 {
 	// ゲームシーンへ
-	SceneManager::GetInstance()->JumpScene(std::make_shared<GameScene>());
+	SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameScene>(), true);
 }
 
 void MainMenu::UpdateOption(void)

@@ -43,11 +43,6 @@ void UpgradeManager::Update(void)
 
 void UpgradeManager::Draw(void)
 {
-	if (isUpgradeEnd_)
-	{
-		return;
-	}
-
 	upgrade_->Draw2D();
 }
 

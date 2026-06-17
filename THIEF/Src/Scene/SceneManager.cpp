@@ -10,7 +10,6 @@
 #include "../Common/Manager/Input/InputManager.h"
 #include "../Common/Manager/PlayerStatus/PlayerStatusManager.h"
 #include "../Common/FrameRenderer/FrameRenderer.h"
-#include "../Common/Fader/Fader.h" 
 #include "../Object/Component/PlayerController/Upgrade/UpgradeManager.h"
 #include "../Common/Shader/Shader.h"
 
@@ -63,8 +62,6 @@ void SceneManager::Init(void)
 
 	shader_ = new Shader();
 	shader_->Init();
-
-	isFader_ = false;
 
 	isShader_ = true;
 
@@ -134,31 +131,75 @@ void SceneManager::Update(void)
 	// シーンがなければ終了
 	if (scenes_.empty()) { return; }
 
-	if (isFader_)
+	// ロード中
+	if (load_->IsLoading())
 	{
-		Fader::GetInstance()->Update();
+		// ロード更新
+		load_->Update();
+
+		// ロードの更新が終了していたら
+		if (!load_->IsLoading())
+		{
+			// ロード後の初期化
+			scenes_.back()->LoadEnd();
+		}
 	}
+	// 通常の更新処理
 	else
 	{
-		// ロード中
-		if (load_->IsLoading())
-		{
-			// ロード更新
-			load_->Update();
-
-			// ロードの更新が終了していたら
-			if (load_->IsLoading() == false)
-			{
-				// ロード後の初期化
-				scenes_.back()->LoadEnd();
-			}
-		}
-		// 通常の更新処理
-		else
+		// フェードアウト中はシーン更新の停止
+		if (changeState_ != CHANGE_STATE::FADE_OUT)
 		{
 			// 現在のシーンの更新
 			scenes_.back()->Update();
 		}
+	}
+
+	// フェードを更新
+	Fader::GetInstance()->Update();
+
+	// シーンの状態
+	switch (changeState_)
+	{
+	case SceneManager::CHANGE_STATE::NONE:
+		break;
+		// フェードアウト待ち
+	case SceneManager::CHANGE_STATE::FADE_OUT:
+		if (Fader::GetInstance()->GetState() == Fader::STATE::END)
+		{
+			// 真っ暗な状態でシーン切り替え
+			if (isJumpScene_)
+			{
+				// 強制的に特定のシーンに飛ぶ
+				JumpScene(nextScene_);
+			}
+			else
+			{
+				// 末尾のものを新しいシーンへ変更
+				ChangeScene(nextScene_);
+			}
+			changeState_ = CHANGE_STATE::LOADING;
+		}
+		break;
+		// ロード待ち
+	case SceneManager::CHANGE_STATE::LOADING:
+		if (!load_->IsLoading())
+		{
+			Fader::GetInstance()->SetFade(Fader::STATE::FADE_IN);
+			changeState_ = CHANGE_STATE::FADE_IN;
+		}
+		break;
+		// フェードイン待ち
+	case SceneManager::CHANGE_STATE::FADE_IN:
+		if (Fader::GetInstance()->GetState() == Fader::STATE::END)
+		{
+			Fader::GetInstance()->Init();
+			changeState_ = CHANGE_STATE::NONE;
+			nextScene_ = nullptr;
+		}
+		break;
+	default:
+		break;
 	}
 
 	// デバイス切り替え処理
@@ -243,6 +284,27 @@ void SceneManager::Delete(void)
 	DeleteGraph(mainScreen_);
 }
 
+void SceneManager::NextChangeScene(std::shared_ptr<SceneBase> scene, bool isJumpScne, Fader::TYPE type)
+{
+	// シーンを切り替えれる状態であれば
+	if (changeState_ != CHANGE_STATE::NONE)
+	{
+		return;
+	}
+
+	// ジャンプシーンフラグを設定する
+	isJumpScene_ = isJumpScne;
+
+	// 遷移するシーンを予約する
+	nextScene_ = scene;
+
+	// 状態をフェードに
+	changeState_ = CHANGE_STATE::FADE_OUT;
+	
+	// フェードアウト
+	Fader::GetInstance()->SetFade(Fader::STATE::FADE_OUT, type);
+}
+
 void SceneManager::ChangeScene(std::shared_ptr<SceneBase>scene)
 {
 	// シーンが空か？
@@ -264,9 +326,6 @@ void SceneManager::ChangeScene(std::shared_ptr<SceneBase>scene)
 	isClear_ = false;
 	// ゲームオーバー判定用初期化
 	isOver_ = false;
-
-	Fader::GetInstance()->Init();
-	isFader_ = true;
 
 	// 読み込み(非同期)
 	load_->StartAsyncLoad();
@@ -298,15 +357,15 @@ void SceneManager::JumpScene(std::shared_ptr<SceneBase> scene)
 	for (auto& scene : scenes_) { scene->Release(); }
 	scenes_.clear();
 
+	// 新しく積む
+	scenes_.push_back(scene);
+
 	// ステージクリア判定用初期化
 	isStageClear_ = false;
 	// ゲームクリア判定用初期化
 	isClear_ = false;
 	// ゲームオーバー判定用初期化
 	isOver_ = false;
-
-	// 新しく積む
-	scenes_.push_back(scene);
 
 	// 読み込み(非同期)
 	load_->StartAsyncLoad();

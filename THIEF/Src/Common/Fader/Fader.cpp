@@ -16,6 +16,7 @@ Fader::~Fader(void)
 void Fader::Init(void)
 {
 	state_ = STATE::NONE;
+	type_ = TYPE::NORMAL;
 	alpha_ = 0.0f;
 	color_ = 0x000000;
 }
@@ -33,7 +34,7 @@ void Fader::Update(void)
 		if (alpha_ > 255)
 		{
 			// フェード終了
-			Init();
+			state_ = STATE::END;
 		}
 		break;
 
@@ -42,11 +43,13 @@ void Fader::Update(void)
 		if (alpha_ < 0)
 		{
 			// フェード終了
-			Init();
+			state_ = STATE::END;
 		}
-		SceneManager::GetInstance()->FalseIsFader();
 		break;
 
+	case STATE::END:
+		Init();
+		break;
 	default:
 		return;
 	}
@@ -55,12 +58,26 @@ void Fader::Update(void)
 
 void Fader::Draw(void)
 {
-	switch (state_)
+	// フェード中でないなら描画しない
+	if (state_ == STATE::NONE ||
+		state_ == STATE::END)
 	{
-	case STATE::NONE:
 		return;
-	case STATE::FADE_OUT:
-	case STATE::FADE_IN:
+	}
+
+	// 描画範囲
+	const int screenX = Application::SCREEN_SIZE_X;
+	const int screenY = Application::SCREEN_SIZE_Y;
+
+	const float rate = alpha_ / 255.0f;
+
+	int x = 0;
+	int h = 0;
+	int w = 0;
+
+	switch (type_)
+	{
+	case Fader::TYPE::NORMAL:
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(alpha_));
 		DrawBox(
 			0, 0,
@@ -69,8 +86,29 @@ void Fader::Draw(void)
 			color_, true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		break;
+	case Fader::TYPE::SHUTTER:
+		h =	static_cast<int>(Application::SCREEN_SIZE_Y * 0.5f * rate);
+
+		DrawBox(0, 0, screenX, h, color_,true);
+		DrawBox(0, screenY - h, screenX, screenY, color_, true);
+		break;
+	case Fader::TYPE::WIPE:
+		w = static_cast<int>(screenX * 0.5f * rate);
+
+		DrawBox(0, 0, w, screenY, color_, true);
+		DrawBox(screenX - w, 0, screenX, screenY, color_, true);
+		break;
+	case Fader::TYPE::CROSS:
+		h = static_cast<int>(screenY * 0.5f * rate);
+		w =	static_cast<int>(screenX * 0.5f * rate);
+
+		DrawBox(0, 0, screenX, h, color_,true);
+		DrawBox(0, screenY - h, screenX, screenY, color_, true);
+		DrawBox(0, 0, w, screenY, color_, true);
+		DrawBox(screenX - w, 0, screenX, screenY, color_, true);
+		break;
 	default:
-		return;
+		break;
 	}
 }
 
@@ -79,9 +117,10 @@ Fader::STATE Fader::GetState(void)
 	return state_;
 }
 
-void Fader::SetFade(STATE state, unsigned int color)
+void Fader::SetFade(STATE state, TYPE type, unsigned int color)
 {
 	state_ = state;
+	type_ = type;
 
 	switch (state)
 	{

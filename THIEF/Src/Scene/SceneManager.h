@@ -5,6 +5,7 @@
 #include <chrono>
 #include <DxLib.h>
 #include "GameScene/GameScene.h"
+#include "../Common/Fader/Fader.h" 
 
 class SceneBase;
 class Loading;
@@ -52,6 +53,9 @@ public:
 	void Draw(void);	// 描画
 	void Delete(void);	// リソースの破棄
 
+	// 状態遷移(フェードを挟む)
+	void NextChangeScene(std::shared_ptr<SceneBase> scene, bool isJumpScne = false, Fader::TYPE type = Fader::TYPE::NORMAL);
+
 	// 状態遷移		遷移させたいシーン,全てのシーンを解放させるか
 	void ChangeScene(std::shared_ptr<SceneBase> scene);
 
@@ -98,25 +102,38 @@ public:
 	// 現在のステージ数を指定のステージに設定する
 	void SetCurrentStage(const STAGE_NUM& stageNum) { currentStage_ = stageNum; }
 
-	void FalseIsFader(void) { isFader_ = false; }
-
 private:
+
+	// シーンマネージャーの状態
+	enum class CHANGE_STATE
+	{
+		NONE,
+		FADE_OUT,
+		LOADING,
+		FADE_IN
+	};
 
 	// フォグのスタート位置終了位置
 	static constexpr float FOG_START = 0.0f;
 	static constexpr float FOG_END = 5000.0f;
 
+	// シーンマネージャーの状態
+	CHANGE_STATE changeState_;
+
+	// ジャンプシーンか否か
+	bool isJumpScene_;
+
 	// 各種シーン
 	std::list<std::shared_ptr<SceneBase>> scenes_;
+
+	// シーン遷移の予約
+	std::shared_ptr<SceneBase> nextScene_;
 
 	// ロード画面
 	Loading* load_;
 
 	// シェーダー
 	Shader* shader_;
-
-	// フェーダー中か
-	bool isFader_;
 
 	// ゲーム終了
 	bool isGameEnd_;

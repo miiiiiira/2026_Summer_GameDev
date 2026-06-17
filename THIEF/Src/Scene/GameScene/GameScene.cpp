@@ -177,7 +177,7 @@ void GameScene::Update(void)
 		// ステージ情報などを初期化する
 		SceneManager::GetInstance()->ResetGame();
 		// ゲームクリアシーンへ
-		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameClear>());
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameClear>());
 		return;
 	}
 
@@ -188,7 +188,7 @@ void GameScene::Update(void)
 		// ステージ情報などを初期化する
 		SceneManager::GetInstance()->ResetGame();
 		// ゲームオーバーシーンへ
-		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameOver>());
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameOver>());
 		return;
 	}
 
@@ -197,7 +197,7 @@ void GameScene::Update(void)
 		// 納品した文の金額をショップで使える金額に加算
 		ScoreManager::GetInstance().AddTotalPrice(ScoreManager::GetInstance().GetDeliveryPrice());
 		// ショップシーンへ
-		SceneManager::GetInstance()->ChangeScene(std::make_shared<ShopScene>());
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<ShopScene>());
 		return;
 	}
 
