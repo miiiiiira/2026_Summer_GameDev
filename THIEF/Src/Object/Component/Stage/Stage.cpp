@@ -40,7 +40,9 @@ void Stage::Init()
 
 void Stage::Draw3D(void)
 {
+#ifdef _DEBUG
 	DrawDebug();
+#endif // _DEBUG
 }
 
 Transform* Stage::GetTransform()

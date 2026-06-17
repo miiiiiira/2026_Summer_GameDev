@@ -7,7 +7,21 @@ private:
 	// 最低でもロード画面を表示する時間
 	static constexpr int MIN_LOAD_TIME = 60;	// 60fps(1秒) * x
 
+	// 分割数縦横
+	static constexpr int DIV_NUM_XY = 2;
+
 public:
+
+	enum NOW_TYPE
+	{
+		Loading0,
+		Loading1,
+		Loading2,
+		Loading3,
+
+		MAX,
+	};
+
 	// デフォルトコンストラクタをprivateにして、
 	// 外部から生成できない様にする
 	Loading();
@@ -28,11 +42,13 @@ public:
 private:
 
 	// 画像ハンドル
-	int handle_;
+	int handles_[static_cast<int>(NOW_TYPE::MAX)];
 
 	// 座標
 	float posX_;	// X座標
 	float posY_;	// Y座標
+
+	NOW_TYPE nowType_;
 
 	// ロード中の判定用
 	bool isLoading_;

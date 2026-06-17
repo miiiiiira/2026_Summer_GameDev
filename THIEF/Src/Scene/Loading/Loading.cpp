@@ -1,14 +1,19 @@
 #include <DxLib.h>
+#include "../../Application.h"
 #include "Loading.h"
 
 // コンストラクタ
 Loading::Loading()
-	: handle_(-1)
-	, posX_(0)
+	: posX_(0)
 	, posY_(0)
 	, isLoading_(false)
 	, loadTimer_(0)
-{}
+{
+	for (int i = 0; i < static_cast<int>(NOW_TYPE::MAX); i++)
+	{
+		handles_[i] = -1;
+	}
+}
 
 // デストラクタ
 Loading::~Loading()
@@ -17,6 +22,7 @@ Loading::~Loading()
 // 初期化
 void Loading::Init(void)
 {
+	nowType_ = Loading0;
 	loadTimer_ = 0;
 	isLoading_ = false;
 	posX_ = 0.0f;
@@ -26,7 +32,17 @@ void Loading::Init(void)
 // 読み込み
 void Loading::Load(void)
 {
-	handle_ = LoadGraph("Data/Image/Loading.png");
+	for (int i = 0; i < static_cast<int>(NOW_TYPE::MAX); i++)
+	{
+		LoadDivGraph(
+			"Data/Image/Loading/Loading.png",
+			static_cast<int>(NOW_TYPE::MAX),
+			DIV_NUM_XY,
+			DIV_NUM_XY,
+			Application::SCREEN_SIZE_X,
+			Application::SCREEN_SIZE_Y,
+			handles_);
+	}
 }
 
 // 更新
@@ -43,7 +59,27 @@ void Loading::Update(void)
 	// 読み込み中
 	else
 	{
-		// ロード画面を動作させるならここに記述
+		// 40フレームごとに画像の種類を切り替える
+		if (loadTimer_ % 40 == 0)
+		{
+			switch (nowType_)
+			{
+			case Loading::Loading0:
+				nowType_ = Loading1;
+				break;
+			case Loading::Loading1:
+				nowType_ = Loading2;
+				break;
+			case Loading::Loading2:
+				nowType_ = Loading3;
+				break;
+			case Loading::Loading3:
+				nowType_ = Loading0;
+				break;
+			default:
+				break;
+			}
+		}
 	}
 }
 
@@ -52,7 +88,7 @@ void Loading::Draw(void)
 {
 	DrawGraphF(
 		posX_, posY_,	// 座標
-		handle_,		// ハンドル
+		handles_[static_cast<int>(nowType_)],		// ハンドル
 		true			// 透過フラグ
 	);
 }
@@ -60,7 +96,10 @@ void Loading::Draw(void)
 // 解放
 void Loading::Release(void)
 {
-	DeleteGraph(handle_);
+	for (int i = 0; i < static_cast<int>(NOW_TYPE::MAX); i++)
+	{
+		DeleteGraph(handles_[i]);
+	}
 }
 
 // 非同期読み込みに切り替える
