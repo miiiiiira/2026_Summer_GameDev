@@ -7,6 +7,9 @@
 #include "../../../Common/Math/Math.h"
 #include "../../../Common/Transform/MatrixUtility.h"
 #include "Weapon/WeaponPunch.h"
+#include "../../Component/PlayerController/PlayerController.h"
+#include "../../Component/Collider/3DCollider/CapsuleCollider.h"
+#include "../../Component/Transform/Transform.h"
 #include "EnemyBase.h"
 
 EnemyBase::EnemyBase(void)
@@ -285,7 +288,7 @@ void EnemyBase::DelayRotate(void)
 void EnemyBase::LookPlayer(void)
 {
 	// プレイヤー（相手）の座標を取得
-	VECTOR playerPos = *playerPos_;
+	VECTOR playerPos = player_->GetTransform()->pos_;
 
 	// 相手へのベクトルを計算
 	VECTOR diff = VSub(playerPos, pos_);
@@ -305,24 +308,34 @@ float EnemyBase::GetDistance(VECTOR pos1, VECTOR pos2)
 
 bool EnemyBase::CheckPlayerDiscovery(float radius)
 {
-	float distance = GetDistance(*playerPos_, pos_);
+	// プレイヤーの位置
+	VECTOR playerPos = player_->GetTransform()->pos_;
 
+	// 敵とプレイヤーの直線距離をチェック
+	float distance = GetDistance(playerPos, pos_);
 	if (distance > radius * radius) return false;
-	float pos = fabsf(playerPos_->y - pos_.y);
-	if (pos > 20.0f) return false;
 
+	// 高低差チェック
+	float pos = fabsf(playerPos.y - pos_.y);
+	if (pos > 50.0f) return false;
+
+	// 敵の正面方向ベクトルを計算
 	VECTOR dirEnemy = VECTOR();
 	if (VSize(moveDir_) < 0.001f)
 	{
+		// 移動していない場合は現在の向きから正面を計算
 		dirEnemy.x = sinf(angle_.y);
 		dirEnemy.y = 0.0f;
 		dirEnemy.z = cosf(angle_.y);
 	}
 	else
 	{
+		// 移動中の場合は移動方向を正面とする
 		dirEnemy = VNorm(moveDir_);
 	}
-	VECTOR diff = VSub(*playerPos_, pos_);
+
+	// 敵からプレイヤーへの方向ベクトルを計算
+	VECTOR diff = VSub(playerPos, pos_);
 	dirEnemy.y = 0.0f;
 	diff.y = 0.0f;
 	dirEnemy = VNorm(dirEnemy);
@@ -332,20 +345,32 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 	float dot = VDot(dirEnemy, dirPlayerForEnemy);
 	float angle = acosf(dot);
 
+	// 敵の視野角
 	const float viweRad = Math::Deg2Rad(30.0f);
 
 	// 視野内にいるか確認
 	if (angle <= viweRad)
 	{
-		MV1_COLL_RESULT_POLY hit = MV1CollCheck_Line(stageId_, -1, pos_, *playerPos_);
+		// プレイヤーの頭上位置
+		VECTOR playerOffsetStart = player_->GetCapsule()->GetStart();
 
-		// 障害物を挟んだら、確認しないようにする
-		if (!hit.HitFlag)
+		// 敵の頭上位置
+		VECTOR enemyPos = VAdd(pos_, startOffset_);
+
+		// 頭上同士を結ぶ直線上にステージがあるか
+		MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, enemyPos, playerOffsetStart, radius_);
+
+		// 障害物に当たらなかったら、目線が通っているとみなす
+		if (res.HitNum <= 0)
 		{
+			MV1CollResultPolyDimTerminate(res);
 			isNotice_ = true;
 			return true;
 		}
+		MV1CollResultPolyDimTerminate(res);
 	}
+
+	// 視野外、または障害物に遮られている場合
 	isNotice_ = false;
 	return false;
 }

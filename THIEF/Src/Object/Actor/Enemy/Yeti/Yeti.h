@@ -46,7 +46,7 @@ public:
 	// デストラクタ
 	~Yeti(void)override;
 	// 初期化
-	void Init(VECTOR* pos, int id = -1) override;
+	void Init(PlayerController* player, int id = -1) override;
 	// 読み込み処理
 	void Load(void) override;
 	void Update(void)override;
@@ -86,6 +86,7 @@ private:
 	float viewRadius_;		// 視野用の半径
 	float chaseTimer_;
 	float targetLostTimer_;
+	bool isHit_;
 
 	void SetMoveDirPatrol(void);
 
