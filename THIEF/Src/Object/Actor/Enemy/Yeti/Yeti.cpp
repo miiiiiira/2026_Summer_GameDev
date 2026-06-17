@@ -153,14 +153,6 @@ void Yeti::Draw(void)
 #ifdef _DEBUG
 	DrawSphere3D(pos_, patrolRadius_, 8, GetColor(0, 255, 0), GetColor(0, 0, 0), FALSE);
 
-	// プレイヤーの頭上位置
-	VECTOR playerOffsetStart = player_->GetCapsule()->GetStart();
-
-	// 敵の頭上位置
-	VECTOR enemyPos = VAdd(pos_, startOffset_);
-
-	DrawCapsule3D(enemyPos, playerOffsetStart, radius_, 8, 0xffffff, 0xffffff, false);
-
 	// 巡回ルート描画
 	for (const auto& point : way_)
 	{
@@ -270,7 +262,7 @@ int Yeti::FindNearestNode(VECTOR pos)
 	float minCost = FLT_MAX;
 	for (const auto& way : way_)
 	{
-		// プレイヤーから一番近いノードを探す
+		// 一番近いノードを探す
 		float distance = VSize(VSub(pos, way.pos));
 
 		if (distance < minCost)
@@ -308,10 +300,10 @@ void Yeti::ChaseDirect(void)
 	LookPlayer();
 }
 
-bool Yeti::CheckChaseLineCollision(VECTOR pPos, VECTOR ePos)
+bool Yeti::CheckChaseLineCollision(VECTOR pPos, VECTOR ePos, float radius)
 {
 	// 線分とモデルの衝突判定
-	MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, pPos, ePos, radius_);
+	MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, pPos, ePos, radius);
 
 	// 当たっていたら、trueを返す
 	if (res.HitNum > 0)
@@ -345,18 +337,6 @@ void Yeti::ChangeState(STATE state)
 
 void Yeti::ChangeThink(void)
 {
-	// 思考
-	// ランダムに次の行動を決定
-	// 20%で待機、80%で徘徊
-	int rand = GetRand(100);
-	if (rand < 20)
-	{
-		ChangeState(STATE::IDLE);
-	}
-	else
-	{
-		ChangeState(STATE::PATROL);
-	}
 }
 
 void Yeti::ChangeIdle(void)
@@ -384,7 +364,7 @@ void Yeti::ChangePatrol(void)
 	SetMoveDirPatrol();
 
 	// 移動スピード
-	moveSpeed_ = 2.0f;
+	moveSpeed_ = 4.0f;
 
 	animationController_->Play(static_cast<int>(ANIM_TYPE::WALK), true);
 }
@@ -398,7 +378,7 @@ void Yeti::ChangeSurprise(void)
 
 void Yeti::ChangeChase(void)
 {
-	moveSpeed_ = 6.0f;
+	moveSpeed_ = 8.0f;
 	chaseTimer_ = 0.0f;
 	targetLostTimer_ = 0.0f;
 	isNotice_ = false;
@@ -426,6 +406,18 @@ void Yeti::ChangeEnd(void)
 
 void Yeti::UpdateThink(void)
 {
+	// 思考
+	// ランダムに次の行動を決定	
+	// 20%で待機、80%で徘徊
+	int rand = GetRand(100);
+	if (rand < 20)
+	{
+		ChangeState(STATE::IDLE);
+	}
+	else
+	{
+		ChangeState(STATE::PATROL);
+	}
 }
 
 void Yeti::UpdateIdle(void)
@@ -484,25 +476,47 @@ void Yeti::UpdateChase(void)
 {
 	VECTOR enemyPos = pos_;
 	VECTOR playerPos = player_->GetTransform()->pos_;
+
+	// 視線位置
+	VECTOR enemyHead = VAdd(pos_, startOffset_);
+	VECTOR playerHead = player_->GetCapsule()->GetStart();
 	float distance = VSize(VSub(playerPos, enemyPos));
 
-	//　攻撃範囲内にいたら、攻撃状態にする
-	if (distance <= 300)
-	{
-		ChangeState(STATE::ATTACK);
-		return;
-	}
-
 	// 視線チェック
-	bool isPlayerVisible = (distance <= viewRadius_ * viewRadius_);
+	bool isPlayerVisible = false;
 
-	if (isPlayerVisible)
+	// 頭位置の高さの差を計算する
+	float heightDiff = fabsf(playerHead.y - enemyHead.y);
+
+	// 高低差が50.0fより大きければ、見えない判定にする
+	if (heightDiff > 50.0f || distance > viewRadius_)
 	{
-		targetLostTimer_ = 0.0f;
-
+		isPlayerVisible = false;
+		isHit_ = true;
 	}
 	else
 	{
+		// 高低差が範囲内なら、視線チェックする
+		isPlayerVisible = !CheckChaseLineCollision(enemyHead, playerHead, 20.0f);
+		isHit_ = !isPlayerVisible;
+	}
+
+	// プレイヤーを見つけたなら
+	if (isPlayerVisible)
+	{
+		// 見失いタイマーをリセット
+		targetLostTimer_ = 0.0f;
+
+		//　攻撃範囲内にいたら、攻撃状態にする
+		if (distance <= 300)
+		{
+			ChangeState(STATE::ATTACK);
+			return;
+		}
+	}
+	else
+	{
+		// 見失いタイマーをカウントさせる
 		targetLostTimer_ += SceneManager::GetInstance()->GetDeltaTime();
 	}
 
@@ -516,6 +530,7 @@ void Yeti::UpdateChase(void)
 		currentNodeId_ = FindNearestNode(pos_);
 		prevNodeId_ = -1;
 		prevPrevNodeId_ = -1;
+		nextWayPoint_ = way_[currentNodeId_].pos;
 
 		ChangeState(STATE::IDLE);
 		return;
@@ -526,16 +541,7 @@ void Yeti::UpdateChase(void)
 
 	if (chaseTimer_ >= CHASE_INTERVAL)
 	{
-		isHit_ = CheckChaseLineCollision(playerPos, enemyPos);
-
-		// 当たっていなかったら、直接追従
-		if (!isHit_ && !path_.empty())
-		{
-			path_.clear();
-			nextNodeId_ = 0;
-		}
-		// 当たっていたら、迂回して追従
-		else if (isHit_ && path_.empty())
+		if (isHit_ && path_.empty())
 		{
 			// プレイヤーから一番近いノードを探す
 			int playerNearNodeId = FindNearestNode(playerPos);
@@ -543,13 +549,14 @@ void Yeti::UpdateChase(void)
 			int enemyNearNodeId = FindNearestNode(enemyPos);
 			// 敵の位置とプレイヤーの位置を繋ぐルートを探す
 			FindPath(enemyNearNodeId, playerNearNodeId);
-			if (path_.size() > 1)
-			{
-				nextNodeId_ = 1;
+
+			if (path_.size() > 1) 
+			{ 
+				nextNodeId_ = 1; 
 			}
-			else
-			{
-				nextNodeId_ = 0;
+			else 
+			{ 
+				nextNodeId_ = 0; 
 			}
 		}
 
@@ -566,17 +573,17 @@ void Yeti::UpdateChase(void)
 	{
 		// 範囲外チェック
 		// 最後のノードにたどり着いたかチェックする
-		if (nextNodeId_ > static_cast<int>(path_.size() - 1))
+		if (nextNodeId_ >= static_cast<int>(path_.size()))
 		{
 			path_.clear();
 			nextNodeId_ = 0;
 
-			// 最後のノードかつ、プレイヤーを見つけることができなかったら巡回に戻す
-			if (!isPlayerVisible && isHit_)
+			if (!isPlayerVisible)
 			{
 				currentNodeId_ = FindNearestNode(pos_);
 				prevNodeId_ = -1;
 				prevPrevNodeId_ = -1;
+				nextWayPoint_ = way_[currentNodeId_].pos;
 
 				ChangeState(STATE::IDLE);
 				return;

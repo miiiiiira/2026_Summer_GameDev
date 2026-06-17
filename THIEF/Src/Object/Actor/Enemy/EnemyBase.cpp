@@ -131,7 +131,7 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 		// もし取り出したIDがゴールと一緒なら抜ける
 		if (currentNodeId == goalNodeId) break;
 
-		// ③ 取り出したコストが、すでに minCosts_ にある最小コストより大きければスキップ
+		// 取り出したコストが、すでに minCosts_ にある最小コストより大きければスキップ
 		if (currentCost > minCosts_[currentNodeId]) continue;
 
 		// つながっているエッジ

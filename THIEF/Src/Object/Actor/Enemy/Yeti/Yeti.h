@@ -107,7 +107,7 @@ private:
 	void ChaseDirect(void);
 
 	// 追従用の線分かステージと当たっているかどうか
-	bool CheckChaseLineCollision(VECTOR pPos, VECTOR ePos);
+	bool CheckChaseLineCollision(VECTOR pPos, VECTOR ePos, float radius);
 
 	// 状態遷移
 	void ChangeState(STATE state);
