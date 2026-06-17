@@ -10,6 +10,7 @@
 #include "../Common/Manager/Input/InputManager.h"
 #include "../Common/Manager/PlayerStatus/PlayerStatusManager.h"
 #include "../Common/FrameRenderer/FrameRenderer.h"
+#include "../Common/Fader/Fader.h" 
 #include "../Object/Component/PlayerController/Upgrade/UpgradeManager.h"
 #include "../Common/Shader/Shader.h"
 
@@ -45,6 +46,10 @@ void SceneManager::Init(void)
 	//アップグレード管理生成
 	UpgradeManager::CreateInstance();
 
+	// フェーダークラスを生成
+	Fader::GetInstance()->CreateInstance();
+	Fader::GetInstance()->Init();
+
 	// フレーム画像のロード
 	FrameRenderer::Load();
 
@@ -58,6 +63,8 @@ void SceneManager::Init(void)
 
 	shader_ = new Shader();
 	shader_->Init();
+
+	isFader_ = false;
 
 	isShader_ = true;
 
@@ -127,24 +134,31 @@ void SceneManager::Update(void)
 	// シーンがなければ終了
 	if (scenes_.empty()) { return; }
 
-	// ロード中
-	if (load_->IsLoading())
+	if (isFader_)
 	{
-		// ロード更新
-		load_->Update();
-
-		// ロードの更新が終了していたら
-		if (load_->IsLoading() == false)
-		{
-			// ロード後の初期化
-			scenes_.back()->LoadEnd();
-		}
+		Fader::GetInstance()->Update();
 	}
-	// 通常の更新処理
 	else
 	{
-		// 現在のシーンの更新
-		scenes_.back()->Update();
+		// ロード中
+		if (load_->IsLoading())
+		{
+			// ロード更新
+			load_->Update();
+
+			// ロードの更新が終了していたら
+			if (load_->IsLoading() == false)
+			{
+				// ロード後の初期化
+				scenes_.back()->LoadEnd();
+			}
+		}
+		// 通常の更新処理
+		else
+		{
+			// 現在のシーンの更新
+			scenes_.back()->Update();
+		}
 	}
 
 	// デバイス切り替え処理
@@ -189,6 +203,9 @@ void SceneManager::Draw(void)
 			DrawGraph(0, 0, mainScreen_, false);
 		}
 	}
+
+	// フェード描画
+	Fader::GetInstance()->Draw();
 }
 
 void SceneManager::Delete(void)
@@ -213,6 +230,9 @@ void SceneManager::Delete(void)
 
 	// アップグレード管理解放
 	UpgradeManager::GetInstance().Destroy();
+
+	// フェーダー解放
+	Fader::GetInstance()->DeleteInstance();
 
 	// ロード画面の削除
 	load_->Release();
@@ -244,6 +264,9 @@ void SceneManager::ChangeScene(std::shared_ptr<SceneBase>scene)
 	isClear_ = false;
 	// ゲームオーバー判定用初期化
 	isOver_ = false;
+
+	Fader::GetInstance()->Init();
+	isFader_ = true;
 
 	// 読み込み(非同期)
 	load_->StartAsyncLoad();

@@ -1,5 +1,6 @@
 #include <DxLib.h>
 #include "../../Application.h"
+#include "../../Scene/SceneManager.h"
 #include "Fader.h"
 
 Fader* Fader::instance_ = nullptr;
@@ -43,6 +44,7 @@ void Fader::Update(void)
 			// フェード終了
 			Init();
 		}
+		SceneManager::GetInstance()->FalseIsFader();
 		break;
 
 	default:

@@ -9,6 +9,7 @@
 
 Item::~Item(void)
 {
+	damageDrawList_.clear();
 }
 
 void Item::Init(void)
@@ -49,6 +50,8 @@ void Item::Init(void)
 
 	// 個々のパラメータを設定
 	SetParam();
+
+	damageDrawList_.clear();
 }
 
 void Item::Update(void)
@@ -84,27 +87,66 @@ void Item::Update(void)
 		Gravity();
 
 	}
+
+	// 一定の座標いったら
+	if (trans_->pos_.y < DEAD_POS_Y)
+	{
+		// 0初期化
+		info_.price_ = 0;
+
+		// 生存フラグを折る
+		info_.isAlive_ = false;
+
+		// 描画フラグを折る
+		auto render = owner_->GetComponent<Render3D>();
+		render->SetIsDraw(false);
+
+		// 壊れた瞬間の処理
+		Break();
+		return;
+	}
 }
 
 void Item::Draw2D(void)
 {
 	// 生存していなかったら描画しない
-	if (!info_.isAlive_)return;
+	int price = info_.price_;
+	int offset = 0;
+
+	// 金額が0円の場合は1桁として扱う
+	if (price == 0)
+	{
+		offset = 1;
+	}
+	else
+	{
+		while (price > 0)
+		{
+			price /= 10;
+			offset++; 
+		}
+	}
 
 	if (info_.isGrabbed_)
 	{
 		VECTOR pricePos = ConvWorldPosToScreenPos(trans_->pos_);
 
 		// お金表示
-		DrawFormatStringF(pricePos.x, pricePos.y, 0xff0000, "%d円", info_.price_);
+		DrawFormatStringFToHandle(
+			pricePos.x - ((offset * Application::FONT_SIZE) / 2),
+			pricePos.y,
+			0x00ff00,
+			Application::GetInstance()->GetFont(),
+			"%d",
+			info_.price_);
 	}
 
 	for (const DamageInfo damage : damageDrawList_)
 	{
 		VECTOR pos = ConvWorldPosToScreenPos(damage.pos);
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, damage.count % 255);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, (255 * damage.count) / DAMAGE_DRAW_COUNT);
 		DrawFormatStringToHandle(
-			pos.x,
+			pos.x - ((offset * Application::FONT_SIZE) / 2),
 			pos.y, 
 			0xff0000, 
 			Application::GetInstance()->GetFont(), 
@@ -144,16 +186,16 @@ void Item::SetDamage(int damage,VECTOR pos)
 	int dmg = damage - info_.hardness_;
 
 	// ダメージがマイナス値だったらHPに変更を行わない(回復してしまうため)
-	if (dmg < 0)return;
-
-	// ダメージ表記用に情報を保持しておく
-	damageDrawList_.push_back({ pos,damage,DAMAGE_DRAW_COUNT });
+	if (dmg <= 0)return;
 
 	// 残高にダメージを反映させる
 	info_.price_ -= dmg;
 
 	// 無敵時間を初期化
 	info_.invincibilityFrames_ = INVINCIBILITY_FRAMES_ISGRABB;
+
+	// ダメージ表記用に情報を保持しておく
+	damageDrawList_.push_back({ pos,dmg,DAMAGE_DRAW_COUNT });
 
 	// お金が0以下になったら
 	if (info_.price_ <= 0)

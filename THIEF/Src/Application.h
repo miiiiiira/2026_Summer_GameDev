@@ -21,6 +21,9 @@ public:
 	static const std::string PATH_EFFECT;
 	//-------------------------------------------
 
+	// フォントサイズ
+	static constexpr int FONT_SIZE = 20;
+
 public:
 	// シングルトン（生成・取得・削除）
 	static void CreateInstance(void) { if (instance_ == nullptr) { instance_ = new Application(); } }

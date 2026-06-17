@@ -70,7 +70,7 @@ void Application::Init(void)
 	fps_->Init();
 
 	// フォントの追加
-		font_ = CreateFontToHandle("Shikakufuto_Free", 20, 1, DX_FONTTYPE_ANTIALIASING);
+		font_ = CreateFontToHandle("Shikakufuto_Free", FONT_SIZE, 1, DX_FONTTYPE_ANTIALIASING);
 }
 
 // ゲームループ

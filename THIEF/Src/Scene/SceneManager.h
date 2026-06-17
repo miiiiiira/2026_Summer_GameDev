@@ -9,6 +9,7 @@
 class SceneBase;
 class Loading;
 class Shader;
+class Fader;
 
 class SceneManager
 {
@@ -97,6 +98,8 @@ public:
 	// 現在のステージ数を指定のステージに設定する
 	void SetCurrentStage(const STAGE_NUM& stageNum) { currentStage_ = stageNum; }
 
+	void FalseIsFader(void) { isFader_ = false; }
+
 private:
 
 	// フォグのスタート位置終了位置
@@ -111,6 +114,9 @@ private:
 
 	// シェーダー
 	Shader* shader_;
+
+	// フェーダー中か
+	bool isFader_;
 
 	// ゲーム終了
 	bool isGameEnd_;

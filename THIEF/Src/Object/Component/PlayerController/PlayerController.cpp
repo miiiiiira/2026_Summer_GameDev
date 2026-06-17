@@ -101,8 +101,7 @@ void PlayerController::Update()
 	// 一定の座標いったら
 	if (transform_->pos_.y < DEAD_POS_Y)
 	{
-		// ゲームオーバー
-		SceneManager::GetInstance()->TrueGameOver();
+		hp_ = 0;
 		return;
 	}
 }

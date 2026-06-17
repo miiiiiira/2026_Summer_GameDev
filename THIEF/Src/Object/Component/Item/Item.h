@@ -27,6 +27,8 @@ protected:
 	static constexpr int INVINCIBILITY_FRAMES = 5;
 	static constexpr int INVINCIBILITY_FRAMES_ISGRABB = 30;
 
+	// アイテムが壊れる座標
+	static constexpr float DEAD_POS_Y = -1000.0f;
 public:
 	// デストラクタ
 	virtual ~Item(void)override;

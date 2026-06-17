@@ -34,7 +34,7 @@ class PlayerController : public Component
 public:
 
 	// プレイヤーの掴み距離の最小値
-	static constexpr float MIN_RENGE = 50.0f;
+	static constexpr float MIN_RENGE = 60.0f;
 
 	// 通常時移動速度
 	static constexpr float DEFAULT_SPEED = 7.0f;
@@ -58,7 +58,7 @@ public:
 	static constexpr float COEFFICIENT = 0.2f;
 	
 	// プレイヤーが死ぬ座標
-	static constexpr float DEAD_POS_Y = -1000.0f;
+	static constexpr float DEAD_POS_Y = -1500.0f;
 
 	// プレイヤーの足音のインターバル
 	static constexpr int MOVE_SOUND_INTERVAL = 40;
