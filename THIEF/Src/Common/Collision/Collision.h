@@ -26,6 +26,12 @@ namespace Collision
         const VECTOR& pos1,const VECTOR& size1, 
         const VECTOR& pos2,const VECTOR& size2);
 
+    // 球体同士の押し出し
+    VECTOR ExtrusionCollision(VECTOR pos1, float collRad1, VECTOR pos2, float collRad2);
+
+    // カプセル同士の押し出し
+    VECTOR ExtrusionCollisionCapsule(VECTOR pos1, VECTOR top1, float radius1, VECTOR pos2, VECTOR top2, float radius2);
+
 #pragma endregion
 
 #pragma region 2D
