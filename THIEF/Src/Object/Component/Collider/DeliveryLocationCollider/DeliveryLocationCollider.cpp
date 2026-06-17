@@ -77,7 +77,7 @@ void DeliveryLocationCollider::ItemToDeliveryLocationCollision(void)
 			item->SetHasTouchedDelivery(true);
 
 			// そのアイテム分納品金額に足す
-			ScoreManager::GetInstance().AddDeliveryPrice(item->GetInfo().money_);
+			ScoreManager::GetInstance().AddDeliveryPrice(item->GetInfo().price_);
 		}
 		// 当たっていないかつ、納品場所に入っているフラグが立っていたら
 		else if (!Collision::HitAABBs(deliveryPos, deliverySize, itemPos, itemSize)
@@ -87,7 +87,7 @@ void DeliveryLocationCollider::ItemToDeliveryLocationCollision(void)
 			item->SetHasTouchedDelivery(false);
 
 			// そのアイテム分納品金額から引く
-			ScoreManager::GetInstance().AddDeliveryPrice(-item->GetInfo().money_);
+			ScoreManager::GetInstance().AddDeliveryPrice(-item->GetInfo().price_);
 		}
 	}
 

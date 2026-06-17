@@ -24,18 +24,18 @@ void ScoreManager::Update(void)
 	// アイテムの中身がなかったら処理を行わない
 	if (items_.empty())return;
 
-	int totalMoney = 0;
+	int totalPrice = 0;
 
 	for (Item* item : items_)
 	{
 		// 生存していなかったら次のアイテムへ
 		if (!item->GetInfo().isAlive_)continue;
 
-		totalMoney += item->GetInfo().money_;
+		totalPrice += item->GetInfo().price_;
 	}
 
 	// 生存中のアイテムが目標金額より下回ってしまったら
-	if (totalMoney < targetPrice_)
+	if (totalPrice < targetPrice_)
 	{
 		// ゲームオーバーにする
 		SceneManager::GetInstance()->TrueGameOver();
@@ -68,11 +68,35 @@ void ScoreManager::ResetTotalPrice(void)
 	totalPrice_ = 0;
 }
 
+void ScoreManager::SetItems(std::vector<Item*> items)
+{
+	items_ = items;
+
+	// アイテムの中身がなかったら処理を行わない
+	if (items_.empty())return;
+
+	int allPrice = 0;
+	for (Item* item : items_)
+	{
+		allPrice += item->GetInfo().price_;
+	}
+
+	// 60パーセントにする
+	allPrice *= TARGET_PRICE_RATIO;
+
+	// 100円以下は切り捨て
+	int price = allPrice % 100;
+	allPrice -= price;
+
+	// 目標金額を設定
+	targetPrice_ = allPrice;
+}
+
 ScoreManager::ScoreManager(void)
 {
 	ResetGame();
 	ResetTotalPrice();
 
 	// 目標金額を初期化
-	targetPrice_ = TARGET_PRICE;
+	targetPrice_ = 0;
 }

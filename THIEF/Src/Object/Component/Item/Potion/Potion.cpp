@@ -22,7 +22,7 @@ void Potion::SetParam(void)
 	MV1SetRotationXYZ(info_.modelId_, info_.angle_);
 
 	// ‹àŠz(ƒAƒCƒeƒ€‚ÌHP)‰Šú‰»
-	info_.money_ = MONEY;
+	info_.price_ = PRICE;
 
 	// Šæä‚³‰Šú‰»
 	info_.hardness_ = HARDNESS;

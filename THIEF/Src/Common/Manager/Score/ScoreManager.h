@@ -7,8 +7,8 @@ class Item;
 class ScoreManager
 {
 public:
-	// 目標金額
-	static constexpr int TARGET_PRICE = 500;
+	// 目標金額をアイテム全体の金額の60パーセントとする
+	static constexpr float TARGET_PRICE_RATIO = 0.6f;
 
 	// 明示的にインステンスを生成する
 	static void CreateInstance(void);
@@ -31,7 +31,7 @@ public:
 	void ResetTotalPrice(void);
 
 	// アイテム設定
-	void SetItems(std::vector<Item*> items) { items_ = items; }
+	void SetItems(std::vector<Item*> items);
 
 	// 納品金額に加算
 	void AddDeliveryPrice(const int price) { deliveryPrice_ += price; }

@@ -20,7 +20,7 @@ struct ItemInfo
 	VECTOR grabbedPos_;
 
 	// ‹àŠz(HP)
-	int money_;
+	int price_;
 
 	// ƒAƒCƒeƒ€‚ÌŠæä‚³
 	int hardness_;

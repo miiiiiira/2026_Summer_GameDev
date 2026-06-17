@@ -93,10 +93,10 @@ void Item::Draw2D(void)
 
 	if (info_.isGrabbed_)
 	{
-		VECTOR moneyPos = ConvWorldPosToScreenPos(trans_->pos_);
+		VECTOR pricePos = ConvWorldPosToScreenPos(trans_->pos_);
 
 		// お金表示
-		DrawFormatStringF(moneyPos.x, moneyPos.y, 0xff0000, "%d円", info_.money_);
+		DrawFormatStringF(pricePos.x, pricePos.y, 0xff0000, "%d円", info_.price_);
 	}
 
 	for (const DamageInfo damage : damageDrawList_)
@@ -150,16 +150,16 @@ void Item::SetDamage(int damage,VECTOR pos)
 	damageDrawList_.push_back({ pos,damage,DAMAGE_DRAW_COUNT });
 
 	// 残高にダメージを反映させる
-	info_.money_ -= dmg;
+	info_.price_ -= dmg;
 
 	// 無敵時間を初期化
 	info_.invincibilityFrames_ = INVINCIBILITY_FRAMES_ISGRABB;
 
 	// お金が0以下になったら
-	if (info_.money_ <= 0)
+	if (info_.price_ <= 0)
 	{
 		// 0初期化
-		info_.money_ = 0;
+		info_.price_ = 0;
 
 		// 生存フラグを折る
 		info_.isAlive_ = false;

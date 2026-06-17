@@ -119,15 +119,15 @@ void GameScene::Load(void)
 	default:
 		break;
 	}
-
-	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
-	// スコアマネージャーにアイテムたちを渡す
-	ScoreManager::GetInstance().SetItems(stage->GetItems());
 }
 
 void GameScene::LoadEnd(void)
 {
 	Init();
+
+	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+	// スコアマネージャーにアイテムたちを渡す
+	ScoreManager::GetInstance().SetItems(stage->GetItems());
 }
 
 void GameScene::Update(void)
