@@ -488,8 +488,8 @@ void Yeti::UpdateChase(void)
 	// 頭位置の高さの差を計算する
 	float heightDiff = fabsf(playerHead.y - enemyHead.y);
 
-	// 高低差が50.0fより大きければ、見えない判定にする
-	if (heightDiff > 50.0f || distance > viewRadius_)
+	// 高低差が700.0fより大きければ、見えない判定にする
+	if (heightDiff > 700.0f || distance > viewRadius_)
 	{
 		isPlayerVisible = false;
 		isHit_ = true;
