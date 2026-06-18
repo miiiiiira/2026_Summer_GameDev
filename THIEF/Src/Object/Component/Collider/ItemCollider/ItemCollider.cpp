@@ -230,39 +230,10 @@ void ItemCollider::StageCollision(void)
 	// 最終位置更新
 	item_->SetPos(testPos);
 
-	//　無敵時間があったら処理をしない
-	if (item_->GetInfo().invincibilityFrames_ > 0)return;
-
 	// 空中にいるならダメージ処理しない
 	if (!isHitStage)return;
 
-	// 納品場所にはいっているなら処理をしない
-	if (item_->GetInfo().hasTouchedDeliveryLocation_)return;
-
-	float hitSpeed = 0;
-
-	// アイテムが掴まれていたら
-	if (item_->GetInfo().isGrabbed_)
-	{
-		hitSpeed = VSize(VSub(currentPos, prevPos));
-		// 重力分を引いておく(重力でお金が削れるのを防ぐため)
-		hitSpeed -= VSize(item_->GetInfo().velocity_);
-	}
-	// 掴まれていないかつ、空中状態から1度も設置していなかったら
-	else if (!item_->GetInfo().isGrabbed_ && !item_->GetInfo().hasTouchedStage_)
-	{
-		hitSpeed = VSize(VSub(item_->GetInfo().grabbedPos_, testPos));
-		// 重力分を引いておく(重力でお金が削れるのを防ぐため)
-		hitSpeed -= VSize(item_->GetInfo().velocity_);
-
-		// 設置したためフラグを接触フラグを立てる
-		item_->TrueHasTouchedStage();
-	}
-
-	// スピードをそのままダメージに変換
-	int damage = static_cast<int>(hitSpeed);
-
 	// マイナス値になるのを防ぐ、ダメージをアイテムに渡す
-	item_->SetDamage(abs(damage), testPos);
+	item_->SetDamage(currentPos,testPos);
 }
 

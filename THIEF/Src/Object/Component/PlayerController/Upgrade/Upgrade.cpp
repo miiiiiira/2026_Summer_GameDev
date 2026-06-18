@@ -231,8 +231,8 @@ void Upgrade::UpgradesInit(void)
 	{
 	case STAGE_1:
 
-		minPrice = 1000;
-		maxPrice = 1500;
+		minPrice = 3000;
+		maxPrice = 3500;
 
 		break;
 	case STAGE_2:

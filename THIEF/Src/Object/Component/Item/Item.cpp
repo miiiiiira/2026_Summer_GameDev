@@ -10,6 +10,9 @@
 Item::~Item(void)
 {
 	damageDrawList_.clear();
+
+	// フォントの削除
+	DeleteFontToHandle(edgeFont_);
 }
 
 void Item::Init(void)
@@ -52,6 +55,8 @@ void Item::Init(void)
 	SetParam();
 
 	damageDrawList_.clear();
+
+	edgeFont_ = CreateFontToHandle("Shikakufuto_Free", FONT_SIZE, 1, DX_FONTTYPE_ANTIALIASING);
 }
 
 void Item::Update(void)
@@ -68,12 +73,6 @@ void Item::Update(void)
 	// 掴まれていたら
 	if (info_.isGrabbed_)
 	{
-		if (info_.hasTouchedStage_)
-		{
-			// 空中状態で一度もステージに接触していないとする
-			info_.hasTouchedStage_ = false;
-		}
-
 		// プレイヤーの位置を見て移動処理を行う
 		TrackingPlayer();
 
@@ -109,7 +108,6 @@ void Item::Update(void)
 
 void Item::Draw2D(void)
 {
-	// 生存していなかったら描画しない
 	int price = info_.price_;
 	int offset = 0;
 
@@ -123,33 +121,51 @@ void Item::Draw2D(void)
 		while (price > 0)
 		{
 			price /= 10;
-			offset++; 
+			offset++;
 		}
 	}
 
-	if (info_.isGrabbed_)
+	// 生存していなかったら描画しない
+	if (info_.isAlive_)
 	{
-		VECTOR pricePos = ConvWorldPosToScreenPos(trans_->pos_);
+		if (info_.isGrabbed_)
+		{
+			VECTOR pricePos = ConvWorldPosToScreenPos(trans_->pos_);
 
-		// お金表示
-		DrawFormatStringFToHandle(
-			pricePos.x - ((offset * Application::FONT_SIZE) / 2),
-			pricePos.y,
-			0x00ff00,
-			Application::GetInstance()->GetFont(),
-			"%d",
-			info_.price_);
+			// お金表示
+			// 縁
+			DrawFormatStringFToHandle(
+				pricePos.x - ((offset * FONT_SIZE) / 2),
+				pricePos.y,
+				0x000000,
+				edgeFont_,
+				"%d",
+				info_.price_);
+
+			DrawFormatStringFToHandle(
+				pricePos.x - ((offset * FONT_SIZE) / 2),
+				pricePos.y,
+				0x00ff00,
+				Application::GetInstance()->GetFont(),
+				"%d",
+				info_.price_);
+		}
 	}
 
 	for (const DamageInfo damage : damageDrawList_)
 	{
+		// ダメージの場所が視界内に入っていないのであれば処理をスキップ
+		if (CheckCameraViewClip(damage.pos))continue;
+
+		// ワールド座標をスクリーン座標にする
 		VECTOR pos = ConvWorldPosToScreenPos(damage.pos);
+
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, (255 * damage.count) / DAMAGE_DRAW_COUNT);
 		DrawFormatStringToHandle(
 			pos.x - ((offset * Application::FONT_SIZE) / 2),
-			pos.y, 
-			0xff0000, 
-			Application::GetInstance()->GetFont(), 
+			pos.y,
+			0xff0000,
+			Application::GetInstance()->GetFont(),
 			"-%d",
 			damage.damage);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
@@ -180,22 +196,56 @@ float Item::GetCameraDistance(VECTOR pos)
 	return VSize(VSub(pos, CameraUtility::GetCameraPos()));
 }
 
-void Item::SetDamage(int damage,VECTOR pos)
+void Item::SetDamage(VECTOR currentPos, VECTOR pos)
 {
-	// 指定のダメージから頑丈さ分引いた数値を実際に与えるダメージとする
-	int dmg = damage - info_.hardness_;
+	//　無敵時間があったら処理をしない
+	if (info_.invincibilityFrames_ > 0)return;
+
+	// 掴まれて離されて、一度も設置していないなら処理をしない
+	if (info_.hasTouchedStage_)return;
+
+	// 納品場所にはいっているなら処理をしない
+	if (info_.hasTouchedDeliveryLocation_)return;
+
+	int damage = 0;
+
+	// アイテムが掴まれていたら
+	if (info_.isGrabbed_)
+	{
+		damage = static_cast<int>(VSize(VSub(currentPos, trans_->prevPos_)));
+
+		damage *= DAMAGE_MULT;
+		// 指定のダメージから頑丈さ分引いた数値を実際に与えるダメージとする
+		int dmg = damage - info_.hardness_;
+	}
+
+	// 掴まれていないかつ、空中状態から1度も設置していなかったら
+	if (!info_.isGrabbed_ && !info_.hasTouchedStage_)
+	{
+		damage = static_cast<int>(VSize(VSub(info_.grabbedPos_, pos)));
+
+		// 設置したためフラグを接触フラグを立てる
+		info_.hasTouchedStage_ = true;
+	}
 
 	// ダメージがマイナス値だったらHPに変更を行わない(回復してしまうため)
-	if (dmg <= 0)return;
+	if (damage <= 0)return;
+
+	// ダメージ表記用に情報を保持しておく
+	if (damage <= info_.price_)
+	{
+		damageDrawList_.push_back({ pos,damage,DAMAGE_DRAW_COUNT });
+	}
+	else
+	{
+		damageDrawList_.push_back({ pos,info_.price_,DAMAGE_DRAW_COUNT });
+	}
 
 	// 残高にダメージを反映させる
-	info_.price_ -= dmg;
+	info_.price_ -= damage;
 
 	// 無敵時間を初期化
 	info_.invincibilityFrames_ = INVINCIBILITY_FRAMES_ISGRABB;
-
-	// ダメージ表記用に情報を保持しておく
-	damageDrawList_.push_back({ pos,dmg,DAMAGE_DRAW_COUNT });
 
 	// お金が0以下になったら
 	if (info_.price_ <= 0)
@@ -241,6 +291,9 @@ void Item::StartGrabbing(VECTOR localPos)
 	// プレイヤーとの相対座標をセット
 	info_.localPos_ = localPos;
 	info_.velocity_.y = 0.0f;
+
+	// 空中状態で一度もステージに接触していないとする
+	info_.hasTouchedStage_ = false;
 }
 
 void Item::EndGrabbed(void)
@@ -339,11 +392,11 @@ void Item::UpdateInvincibility(void)
 		&& info_.invincibilityFrames_ <= 0)
 	{
 		// 無敵時間を初期化
-		info_.invincibilityFrames_ = INVINCIBILITY_FRAMES;
+		info_.invincibilityFrames_ = 0;
 	}
 
-	// 最低値まで行ったら処理を行わない
-	if (info_.invincibilityFrames_ < 0)return;
+	// 掴んでないなら処理をしない
+	if (!info_.isGrabbed_)return;
 
 	// フレーム数がデフォルトより小さければ持っていると判断する
 	if (info_.invincibilityFrames_ > 0)

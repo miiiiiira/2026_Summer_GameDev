@@ -8,7 +8,7 @@ class ScoreManager
 {
 public:
 	// 目標金額をアイテム全体の金額の60パーセントとする
-	static constexpr float TARGET_PRICE_RATIO = 0.6f;
+	static constexpr float TARGET_PRICE_RATIO = 0.5f;
 
 	// 明示的にインステンスを生成する
 	static void CreateInstance(void);

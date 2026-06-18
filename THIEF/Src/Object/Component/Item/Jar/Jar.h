@@ -11,14 +11,14 @@ public:
 	static constexpr VECTOR DEFAULT_ANGLE = { 0.0f,0.0f,0.0f };
 
 	// ã‡äz
-	static constexpr int PRICE = 600;
+	static constexpr int PRICE = 2500;
 
 	// ìñÇΩÇËîªíËópÇÃîºåa
 	static constexpr float COLLISION_RADIUS_X = 32.0f;
 	static constexpr float COLLISION_RADIUS_Y = 20.0f;
 
 	// äÊè‰Ç≥
-	static constexpr int HARDNESS = 10;
+	static constexpr int HARDNESS = 300;
 
 	// èdÇ≥
 	static constexpr float WEIGHT = -5.0f;

@@ -23,8 +23,8 @@ protected:
 	// ダメージ表記用のカウント
 	static constexpr int DAMAGE_DRAW_COUNT = 90;
 
-	// 60フレームで大体1.5秒くらいの無敵時間
-	static constexpr int INVINCIBILITY_FRAMES = 5;
+	// 無敵時間
+	static constexpr int INVINCIBILITY_FRAMES = 20;
 	static constexpr int INVINCIBILITY_FRAMES_ISGRABB = 30;
 
 	// アイテムが壊れる座標
@@ -58,7 +58,7 @@ public:
 public:
 
 	// アイテムにダメージを与える(ダメージ数、当たった場所)
-	void SetDamage(int damage, VECTOR pos);
+	void SetDamage(VECTOR currentPos,VECTOR pos);
 
 	// 指定された座標をアイテムの座標に反映
 	void SetPos(const VECTOR& pos);
@@ -73,13 +73,14 @@ public:
 	// 掴まれた状態を終了する
 	void EndGrabbed(void);
 
-	// ステージに接触したためフラグを立てる
-	void TrueHasTouchedStage(void) { info_.hasTouchedStage_ = true; }
-
 	// 納品場所に入ったかどうかを変更
 	void SetHasTouchedDelivery(bool flg) { info_.hasTouchedDeliveryLocation_ = flg; }
 
 protected:
+
+	static constexpr int DAMAGE_MULT = 10;
+
+	static constexpr int FONT_SIZE = 21;
 
 	struct DamageInfo
 	{
@@ -96,6 +97,9 @@ protected:
 
 	// ダメージ数
 	std::vector<DamageInfo> damageDrawList_;
+
+	// 縁フォント
+	int edgeFont_;
 
 	// 重力をかける
 	void Gravity(void);

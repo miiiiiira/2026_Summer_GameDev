@@ -286,12 +286,6 @@ void SceneManager::Delete(void)
 
 void SceneManager::NextChangeScene(std::shared_ptr<SceneBase> scene, bool isJumpScne, Fader::TYPE type)
 {
-	// シーンを切り替えれる状態であれば
-	if (changeState_ != CHANGE_STATE::NONE)
-	{
-		return;
-	}
-
 	// ジャンプシーンフラグを設定する
 	isJumpScene_ = isJumpScne;
 
