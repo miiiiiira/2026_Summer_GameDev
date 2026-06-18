@@ -584,6 +584,7 @@ void Yeti::UpdateChase(void)
 				prevNodeId_ = -1;
 				prevPrevNodeId_ = -1;
 				nextWayPoint_ = way_[currentNodeId_].pos;
+				LookPlayer();
 
 				ChangeState(STATE::IDLE);
 				return;
