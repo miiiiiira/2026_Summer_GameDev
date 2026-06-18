@@ -68,7 +68,7 @@ void GameScene::Init(void)
 
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 	auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
-	enemy_->Init(&(player->GetTransform()->pos_),stage->GetModelId());
+	enemy_->Init(player,stage->GetModelId());
 
 	// BGM再生
 	AudioManager::GetInstance()->PlayBGM(SoundID::BGM_GAME_1);
@@ -157,6 +157,7 @@ void GameScene::Update(void)
 
 	CheckEnemyAttack();
 	CollisionEnemyToStage();
+	CollisionEnemy2Player();
 
 	// スコアマネージャーの更新
 	ScoreManager::GetInstance().Update();
@@ -682,6 +683,29 @@ void GameScene::CollisionEnemyToStage(void)
 
 	// 最終位置を反映
 	enemy_->SetPos(pos);
+}
+
+void GameScene::CollisionEnemy2Player(void)
+{
+	// 押し出し量を計算
+	auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
+	VECTOR playerPos = player->GetTransform()->pos_;
+	VECTOR playerTop = player->GetCapsule()->GetStart();
+	float playerRad = player->GetCapsule()->radius_;
+
+	VECTOR enemyPos = enemy_->GetPos();
+	VECTOR enemyTop = VAdd(enemyPos, enemy_->GetStart());
+	float enemyRad = enemy_->GetRadius();
+
+	VECTOR pushVector = Collision::ExtrusionCollisionCapsule(playerPos, playerTop, playerRad, enemyPos, enemyTop, enemyRad);
+
+	// カプセル1（プレイヤーなど）は足し算
+	playerPos = VAdd(playerPos, pushVector);
+	player->GetTransform()->pos_ = playerPos;
+
+	// カプセル2（敵など）は引き算
+	enemyPos = VSub(enemyPos, pushVector);
+	enemy_->SetPos(enemyPos);
 }
 
 void GameScene::ItemCreate(Tag tag, VECTOR pos)

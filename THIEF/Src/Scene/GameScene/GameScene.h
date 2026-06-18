@@ -63,6 +63,9 @@ private:
 	// 敵とステージの当たり判定
 	void CollisionEnemyToStage(void);
 
+	// プレイヤーと敵の当たり判定
+	void CollisionEnemy2Player(void);
+
 	// タグを使用し、アイテムを作る
 	void ItemCreate(Tag tag, VECTOR pos);
 };
