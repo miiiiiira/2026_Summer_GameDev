@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SoundTable.h"
+#include <DxLib.h>
 
 class AudioManager
 {
@@ -36,7 +37,7 @@ public:
 
 	void PlayBGM(SoundID id);		// BGMを再生
 	void StopBGM(void);				// BGMを止める
-	void PlaySE(SoundID id);		// SEを再生
+	void PlaySE(SoundID id, const VECTOR* pos = nullptr);		// SEを再生
 	void DeleteAll(void);			// 全てのサウンド削除
 
 	// 音量設定

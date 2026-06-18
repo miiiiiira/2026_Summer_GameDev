@@ -1,6 +1,7 @@
 #include<DxLib.h>
 #include "Amphora.h"
 #include "../../../../Common/Manager/Audio/AudioManager.h"
+#include "../../Transform/Transform.h"
 
 Amphora::Amphora()
 {
@@ -39,5 +40,11 @@ void Amphora::SetParam(void)
 
 void Amphora::Break(void)
 {
-	// TODO ‘å‚«‚¢•r”j‰óSE
+	// ‘å‚«‚¢•r”j‰óSE
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_6, &trans_->pos_);
+}
+
+void Amphora::Damage(void)
+{
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_DAMAGE_2, &trans_->pos_);
 }

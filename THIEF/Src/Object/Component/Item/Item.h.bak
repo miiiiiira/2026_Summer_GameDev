@@ -119,9 +119,6 @@ protected:
 	// 個々の破壊時の処理
 	virtual void Break(void) {};
 
-	// 個々のダメージ時の処理
-	virtual void Damage(void) {};
-	
 	// ダメージ表記用のカウントを更新
 	void CountUpdate(void);
 

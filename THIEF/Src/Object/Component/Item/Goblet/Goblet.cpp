@@ -2,6 +2,7 @@
 #include "Goblet.h"
 
 #include "../../../../Common/Manager/Audio/AudioManager.h"
+#include "../../Transform/Transform.h"
 
 Goblet::Goblet()
 	:Item()
@@ -41,5 +42,10 @@ void Goblet::SetParam(void)
 
 void Goblet::Break(void)
 {
-	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_1);
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_1, &trans_->pos_);
+}
+
+void Goblet::Damage(void)
+{
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_DAMAGE_1, &trans_->pos_);
 }

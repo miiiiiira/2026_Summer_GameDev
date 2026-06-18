@@ -1,6 +1,7 @@
 #include<DxLib.h>
 #include "Bottle.h"
 #include "../../../../Common/Manager/Audio/AudioManager.h"
+#include "../../Transform/Transform.h"
 
 Bottle::Bottle()
 {
@@ -39,6 +40,11 @@ void Bottle::SetParam(void)
 
 void Bottle::Break(void)
 {
-	// TODO Žæ‚ÁŽè•t‚«•r”j‰óSE
+	// Žæ‚ÁŽè•t‚«•r”j‰óSE
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_4, &trans_->pos_);
+}
 
+void Bottle::Damage(void)
+{
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_DAMAGE_2, &trans_->pos_);
 }

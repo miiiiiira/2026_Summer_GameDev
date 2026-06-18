@@ -62,8 +62,18 @@ void AudioManager::LoadSceneSound(LoadScene scene)
 		// サウンドを読み込む
 		SoundResource res;
 
+		// 3Dサウンドだったら読み込むサウンドを3Dサウンド用に
+		if (data.type == SoundType::SE_3D)
+			SetCreate3DSoundFlag(true);
+
+		// サウンドを読み込む
 		res.handle = LoadSoundMem(data.path.c_str());
+
+		// 3Dサウンドフラグは切っておく
+		SetCreate3DSoundFlag(false);
+
 		res.volume = data.volume;
+		res.type = data.type;
 
 		handles_[id] = res;
 	}
@@ -155,7 +165,7 @@ void AudioManager::StopBGM()
 	currentBgm_ = SoundID::NON;
 }
 
-void AudioManager::PlaySE(SoundID id)
+void AudioManager::PlaySE(SoundID id, const VECTOR* pos)
 {
 	// IDからサウンドハンドルを抽出
 	auto it = handles_.find(id);
@@ -167,9 +177,26 @@ void AudioManager::PlaySE(SoundID id)
 
 	// 実音量を計算
 	auto sound = it->second;
-	int volume = static_cast<int>(sound.volume * (seVolume_ / 255.0f) * (masterVolume_ / 255.0f));
 
-	// 音量を変更
+	// 3Dサウンドだったら出力座標を設定
+	if (sound.type == SoundType::SE_3D)
+	{
+		// 聞こえる範囲を設定
+		Set3DRadiusSoundMem(1024.0f, sound.handle);
+
+		// 引数で座標が設定されていれば
+		if (pos)
+		{
+			Set3DPositionSoundMem(*pos, sound.handle);
+		}
+		else
+		{
+			Set3DPositionSoundMem({ 0.0f,0.0f,0.0f }, sound.handle);
+		}
+	}
+
+	// 音量を設定
+	int volume = static_cast<int>(sound.volume * (seVolume_ / 255.0f) * (masterVolume_ / 255.0f));
 	ChangeVolumeSoundMem(volume, sound.handle);
 
 	// SEは複数同時再生を許可

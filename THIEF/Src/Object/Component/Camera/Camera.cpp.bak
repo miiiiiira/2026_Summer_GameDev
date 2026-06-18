@@ -125,9 +125,6 @@ void Camera::SetBeforeDrawFollow()
 		targetPos_,
 		up
 	);
-
-	// 3Dサウンドのリスナーの位置とリスナーの前方位置を設定する
-	Set3DSoundListenerPosAndFrontPos_UpVecY(transform_->pos_, targetPos_);
 }
 
 void Camera::ChangeMode(MODE mode)

@@ -1,6 +1,7 @@
 #include<DxLib.h>
 #include "Mug.h"
 #include "../../../../Common/Manager/Audio/AudioManager.h"
+#include "../../Transform/Transform.h"
 
 Mug::Mug()
 {
@@ -39,5 +40,11 @@ void Mug::SetParam(void)
 
 void Mug::Break(void)
 {
-	// TODO 木のマグカップ破壊SE
+	// 木のマグカップ破壊SE
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_7, &trans_->pos_);
+}
+
+void Mug::Damage(void)
+{
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_DAMAGE_3, &trans_->pos_);
 }

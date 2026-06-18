@@ -41,8 +41,6 @@ void Application::Init(void)
 
 	// DxLibの初期化
 	SetUseDirect3DVersion(DX_DIRECT3D_11);
-	// １メートルに相当する値を設定する
-	Set3DSoundOneMetre(16.0f);
 	isInitFail_ = false;
 	if (DxLib_Init() == -1)
 	{

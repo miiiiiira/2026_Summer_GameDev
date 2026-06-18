@@ -2,6 +2,7 @@
 #include "Potion.h"
 
 #include "../../../../Common/Manager/Audio/AudioManager.h"
+#include "../../Transform/Transform.h"
 
 Potion::Potion(void)
 {
@@ -40,5 +41,10 @@ void Potion::SetParam(void)
 
 void Potion::Break(void)
 {
-	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_2);
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_2, &trans_->pos_);
+}
+
+void Potion::Damage(void)
+{
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_DAMAGE_1, &trans_->pos_);
 }

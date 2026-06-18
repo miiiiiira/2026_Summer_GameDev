@@ -50,6 +50,9 @@ enum class SoundID
 	SE_ITEM_BREAK_2,
 	SE_ITEM_BREAK_3,
 	SE_ITEM_BREAK_4,
+	SE_ITEM_BREAK_5,
+	SE_ITEM_BREAK_6,
+	SE_ITEM_BREAK_7,
 
 	SE_ENEMY_SPAWN_1,
 	SE_ENEMY_SPAWN_2,
@@ -77,10 +80,19 @@ enum class LoadScene
 	SHOP,		// ゲーム
 };
 
+// サウンドのタイプ
+enum class SoundType
+{
+	BGM,
+	SE_2D,
+	SE_3D,
+};
+
 // サウンド属性
 struct SoundData
 {
 	std::string path;	// サウンドのパス
+	SoundType type;
 	int volume;			// 音量 (0～255)
 };
 
@@ -88,5 +100,6 @@ struct SoundData
 struct SoundResource
 {
 	int handle;
+	SoundType type;
 	int volume;
 };

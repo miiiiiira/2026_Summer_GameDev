@@ -263,11 +263,7 @@ void Item::SetDamage(VECTOR currentPos, VECTOR pos)
 		// 壊れた瞬間の処理
 		Break();
 	}
-	else
-	{
-		// 個々のダメージ時の処理
-		Damage();
-	}
+
 }
 
 void Item::SetPos(const VECTOR& pos)

@@ -1,6 +1,7 @@
 #include<DxLib.h>
 #include "Jar.h"
 #include "../../../../Common/Manager/Audio/AudioManager.h"
+#include "../../Transform/Transform.h"
 
 Jar::Jar(void)
 {
@@ -39,5 +40,11 @@ void Jar::SetParam(void)
 
 void Jar::Break(void)
 {
-	// TODO 食べ物入ってるジャー破壊SE
+	// 食べ物入ってるジャー破壊SE
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_5, &trans_->pos_);
+}
+
+void Jar::Damage(void)
+{
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_DAMAGE_2, &trans_->pos_);
 }
