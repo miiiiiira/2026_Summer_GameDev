@@ -5,6 +5,7 @@
 class AnimationController;
 class WeaponBase;
 class WeaponPunch;
+class PlayerController;
 
 class EnemyBase
 {
@@ -32,7 +33,7 @@ public:
 	// 読み込み処理
 	virtual void Load(void);
 	// 初期化処理
-	virtual void Init(VECTOR* pos,int id = -1) = 0;
+	virtual void Init(PlayerController* player,int id = -1) = 0;
 	// 更新処理
 	virtual void Update(void) = 0;
 	// 描画処理
@@ -75,6 +76,9 @@ protected:
 	WeaponBase* useWeapon_;
 	WeaponPunch* weaponPunch_;
 
+	PlayerController* player_;
+
+	// 敵の情報
 	int modelId_;
 	VECTOR scale_;
 	VECTOR angle_;
@@ -99,7 +103,6 @@ protected:
 	VECTOR endOffset_;
 
 	int stageId_ = -1;
-	VECTOR* playerPos_;
 
 	std::vector<Waypoint> way_;					// ウェイポイントを格納
 	std::vector<std::vector<Edge>> edgeList_;	// 行動可能な辺を格納
