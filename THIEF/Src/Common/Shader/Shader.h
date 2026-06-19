@@ -15,11 +15,11 @@ public:
 		float curvatureAmount;        // 歪み度
 		float noisePower;             // ノイズの強度
 		float rgbShift;               // 色のずれ
-		float dummy1;
+		float glitchProbability;		// グリッチの発生率
 	};
 
 	// デフォルト値の初期化
-	static constexpr Ctr DEFAULT_CTR = { 0.1f, 0.5f, 0.0f, 0.0f, 0.01f, 0.1f, 0.002f, 0.0f };
+	static constexpr Ctr DEFAULT_CTR = { 0.1f, 0.5f, 0.0f, 0.0f, 0.01f, 0.1f, 0.002f, 0.8f };
 
 	void Init(void);
 	void Draw(int texture);
@@ -32,6 +32,7 @@ public:
 	void SetCurvatureAmount(float val, bool isLerpActive = true);
 	void SetNoisePower(float val) { targetCtrParam_.noisePower = val; }
 	void SetRgbShift(float val) { targetCtrParam_.rgbShift = val; }
+	void SetGlitchProbability(float val, bool isLerpActive = true);
 
 	// 全ての目標値をデフォルトに戻す
 	void ResetParameters(void) { targetCtrParam_ = DEFAULT_CTR; }

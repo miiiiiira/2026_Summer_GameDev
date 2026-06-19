@@ -32,7 +32,7 @@ void TitleScene::Init(void)
 	// 走査線
 	SceneManager::GetInstance()->GetShader()->SetScanlineIntensity(0.5f);
 	// グリッチ
-	SceneManager::GetInstance()->GetShader()->SetGlitchAmount(0.02f);
+	SceneManager::GetInstance()->GetShader()->SetGlitchAmount(0.004f);
 	// 歪み
 	SceneManager::GetInstance()->GetShader()->SetCurvatureAmount(0.3f, false);
 	// ノイズ

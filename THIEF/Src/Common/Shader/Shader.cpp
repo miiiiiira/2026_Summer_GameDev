@@ -72,6 +72,18 @@ void Shader::SetCurvatureAmount(float val, bool isLerpActive)
 	}
 }
 
+void Shader::SetGlitchProbability(float val, bool isLerpActive)
+{
+	targetCtrParam_.glitchProbability = val;
+
+	// •âŠÔ‚µ‚È‚¢‚È‚ç
+	if (!isLerpActive)
+	{
+		// ‹­§“I‚É’l‚ğ“¯Šú‚³‚¹‚é
+		currentCtrParam_.glitchProbability = val;
+	}
+}
+
 bool Shader::IsDefault(void) const
 {
 	return fabsf(currentCtrParam_.scanlineIntensity - DEFAULT_CTR.scanlineIntensity) < 0.0001f &&
