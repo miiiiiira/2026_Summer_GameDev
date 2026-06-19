@@ -76,6 +76,9 @@ public:
 	// ”[•iêŠ‚É“ü‚Á‚½‚©‚Ç‚¤‚©‚ğ•ÏX
 	void SetHasTouchedDelivery(bool flg) { info_.hasTouchedDeliveryLocation_ = flg; }
 
+	// ‰º•ûŒü‚Ì‰Á‘¬“x‚ğ0‚É‚·‚é
+	void SetVelocityYZero(void) { info_.velocity_.y = 0.0f; }
+
 protected:
 
 	static constexpr int DAMAGE_MULT = 10;

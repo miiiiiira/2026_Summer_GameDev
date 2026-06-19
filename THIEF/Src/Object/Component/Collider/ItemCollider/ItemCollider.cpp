@@ -6,6 +6,8 @@
 #include "../../../../Common/Transform/MatrixUtility.h"
 #include "../../../../Common/Crosshair/Crosshair.h"
 
+#include <algorithm>
+
 void ItemCollider::Init(void)
 {
 	// アイテムの確保
@@ -91,149 +93,157 @@ void ItemCollider::StageCollision(void)
 	// 移動量(前回の座標と現在の座標の差分)
 	VECTOR move = VSub(currentPos, prevPos);
 
-	// 移動距離(距離を取る)
-	float distance = VSize(move);
+	// 衝突判定開始座標
+	VECTOR pos = prevPos;
 
-	// アイテムの半径取得
-	float itemRad = item_->GetInfo().collisionRadiusX_;
-
-	// 半径ベースで分割
-	int stepCount = (int)(distance / itemRad) + 1;
-
-	// 最大ステップ数
-	const int MAX_STEP = 16;
-
-	// 最低制限(最低でも1回は動くようにする)
-	if (stepCount < 1)
-		stepCount = 1;
-
-	// 最大制限(試行回数が多すぎて重くなるのを防ぐ)
-	if (stepCount > MAX_STEP)
-		stepCount = MAX_STEP;
-
-	// 1ステップ移動量を計算
-	VECTOR stepMove = VScale(move, 1.0f / stepCount);
-
-	// 判定用座標
-	VECTOR testPos = prevPos;
-
-	// 分割移動
-	for (int step = 0; step < stepCount; step++)
+	// 衝突とスライドを繰り返す
+	for (int bounce = 0; bounce < MAX_BOUNCE; bounce++)
 	{
-		// 判定用座標に1ステップの移動量を足し、次座標を計算
-		VECTOR nextPos = VAdd(testPos, stepMove);
+		// 残り移動量の長さ
+		float length = VSize(move);
 
-		// カプセル開始座標
-		VECTOR capStart = nextPos;
-		capStart.y -= item_->GetInfo().collisionRadiusY_;
+		// ほぼ移動していないなら終了
+		if (length < 0.01f)
+			break;
 
-		// カプセル終了座標
-		VECTOR capEnd = nextPos;
-		capEnd.y += item_->GetInfo().collisionRadiusY_;
+		// カプセル半径
+		float radius = item_->GetInfo().collisionRadiusX_;
 
-		// 衝突判定　ステージモデルとカプセル(アイテム)
-		MV1_COLL_RESULT_POLY_DIM hitResult =
-			MV1CollCheck_Capsule(
-				stage_->GetModelId(),
-				-1,
-				capStart,
-				capEnd,
-				itemRad
-			);
+		// 高速移動時のすり抜け防止のため、
+		// 移動経路を細かく分割して判定する
+		int stepCount = (int)(length / (radius * 0.5f)) + 1;
 
-		// 当たっていなければ移動確定
-		if (hitResult.HitNum <= 0)
+		// 分割数の上限・下限を設定
+		stepCount = std::clamp(stepCount, 1, 32);
+
+		// 1ステップ当たりの移動量
+		VECTOR stepMove = VScale(move, 1.0f / static_cast<float>(stepCount));
+
+		// 衝突情報
+		bool hit = false;
+		VECTOR hitNormal = VGet(0, 0, 0);
+
+		// 衝突していない最後の座標
+		VECTOR safePos = pos;
+
+		// 衝突したステップ番号
+		int hitStep = stepCount;
+
+		// 経路を少しずつ進めながら判定
+		for (int step = 0; step < stepCount; step++)
 		{
-			testPos = nextPos;
+			// 次に移動する座標
+			VECTOR nextPos = VAdd(safePos, stepMove);
 
-			// 衝突情報の解放
-			MV1CollResultPolyDimTerminate(hitResult);
+			// カプセル生成
+			VECTOR capStart = nextPos;
+			capStart.y -= item_->GetInfo().collisionRadiusY_;
+			VECTOR capEnd = nextPos;
+			capEnd.y += item_->GetInfo().collisionRadiusY_;
 
-			continue;
-		}
-
-		// 当たっているためフラグをたてる
-		isHitStage = true;
-
-		// 衝突押し戻し
-		for (int i = 0; i < hitResult.HitNum; i++)
-		{
-			auto& hit = hitResult.Dim[i];
-
-			// 法線
-			VECTOR normal = hit.Normal;
-
-			// 法線の長さを確認
-			float normalLength = VSize(normal);
-
-			// 小さすぎたら処理をしない
-			if (normalLength < 0.0001f)
-				continue;
-
-			// 正規化
-			normal = VNorm(normal);
-
-			// めり込み解消
-
-			// 三角形最近点取得
-			bool isHit =
-				HitCheck_Capsule_Triangle(
+			// ステージとカプセルの衝突判定
+			auto result =
+				MV1CollCheck_Capsule(
+					stage_->GetModelId(),
+					-1,
 					capStart,
 					capEnd,
-					itemRad,
-					hit.Position[0],
-					hit.Position[1],
-					hit.Position[2]
-				);
+					radius);
 
-			// めり込んでなければスキップ
-			if (!isHit)
-				continue;
+			float bestPush = 0.0f;
+			VECTOR bestNormal = VGet(0, 0, 0);
 
-			// 押し戻し量計算
+			bool collision = false;
 
-			// 少しずつ押し戻す
-			const float PUSH_BACK = 0.5f;
-
-			// 押し出し量を計算
-			VECTOR push = VScale(normal, PUSH_BACK);
-
-			// 押し戻し
-			nextPos = VAdd(nextPos, push);
-
-			// 壁沿い移動
-			float dot = VDot(stepMove, normal);
-
-			// 壁に向かっている場合だけ
-			if (dot < 0.0f)
+			// ヒットしたポリゴンを調べる
+			for (int i = 0; i < result.HitNum; i++)
 			{
-				// 法線成分除去
-				VECTOR slide =
-					VSub(
-						stepMove,
-						VScale(normal, dot)
-					);
+				auto& poly = result.Dim[i];
 
-				// スライド移動へ変更
-				stepMove = slide;
+				// ポリゴン法線
+				VECTOR normal = VNorm(poly.Normal);
+
+				// このステップの進行方向と法線から、正面衝突している度合いを求める
+				float push = -VDot(VNorm(stepMove), normal);
+
+				// 背面や平行な面は無視
+				if (push <= 0.0f)
+					continue;
+
+				// 最も正面から当たっている面を採用
+				if (push > bestPush)
+				{
+					bestPush = push;
+					bestNormal = normal;
+				}
+
+				collision = true;
 			}
 
-			// カプセル位置更新
-			capStart = VAdd(capStart, push);
-			capEnd = VAdd(capEnd, push);
+			// 衝突結果を解放
+			MV1CollResultPolyDimTerminate(result);
+
+			// 衝突したら探索終了
+			if (collision)
+			{
+				hit = true;
+				hitNormal = bestNormal;
+				hitStep = step;
+				break;
+			}
+
+			// この位置までは移動しても大丈夫
+			safePos = nextPos;
 		}
 
-		// 衝突情報の解放
-		MV1CollResultPolyDimTerminate(hitResult);
+		// 最後まで衝突しなかった
+		if (!hit)
+		{
+			pos = VAdd(pos, move);
+			break;
+		}
+
+		isHitStage = true;
+
+		// 床に当たった
+		if (hitNormal.y > FLOOR_NORMAL_Y)
+		{
+			// 下方向の加速度を0にする
+			item_->SetVelocityYZero();
+		}
+		else
+		{
+			// 衝突していない最後の座標へ戻す
+			pos = safePos;
+
+			// 少しだけ法線の方向へ押し出してめり込みを防止する
+			pos = VAdd(pos, VScale(hitNormal, SKIN));
+		}
+
+		// 衝突後に残っている移動割合
+		float remainRatio = (float)(stepCount - hitStep - 1) / stepCount;
+		VECTOR remainMove = VScale(move, remainRatio);
+
+		// 壁スライド処理
+		// 法線方向成分を除去して壁に沿って移動させる
+		float dot = VDot(remainMove, hitNormal);
+
+		if (dot < 0.0f)
+		{
+			remainMove = VSub(remainMove, VScale(hitNormal, dot));
+		}
+
+		// 次の反復で残り移動量を処理
+		move = remainMove;
 	}
 
-	// 最終位置更新
-	item_->SetPos(testPos);
+	// 最終位置を反映
+	item_->SetPos(pos);
 
 	// 空中にいるならダメージ処理しない
-	if (!isHitStage)return;
+	if (!isHitStage)
+		return;
 
-	// マイナス値になるのを防ぐ、ダメージをアイテムに渡す
-	item_->SetDamage(currentPos,testPos);
+	// ダメージ計算用の座標を渡す
+	item_->SetDamage(currentPos, pos);
 }
-

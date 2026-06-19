@@ -12,6 +12,16 @@ class Crosshair;
 // アイテム衝突コンポーネント
 class ItemCollider : public Component
 {
+private:
+	// めり込み防止
+	static constexpr float SKIN = 0.2f;
+
+	// 壁スライド反復回数
+	static constexpr int MAX_BOUNCE = 4;
+
+	// どの角度までを床として扱うか
+	static constexpr float FLOOR_NORMAL_Y = 0.95f;
+
 public:
 	void Init(void) override;		// 初期化
 	void Update(void) override;		// 更新
