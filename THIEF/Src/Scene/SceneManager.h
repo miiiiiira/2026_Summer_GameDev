@@ -102,6 +102,9 @@ public:
 	// 現在のステージ数を指定のステージに設定する
 	void SetCurrentStage(const STAGE_NUM& stageNum) { currentStage_ = stageNum; }
 
+	// シェーダのゲッター
+	Shader* GetShader(void) { return shader_; }
+
 private:
 
 	// シーンマネージャーの状態

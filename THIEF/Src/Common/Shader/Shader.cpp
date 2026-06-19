@@ -7,46 +7,40 @@ void Shader::Init(void)
 {
 	psCtr_ = LoadPixelShader("Data/CtrShader.pso");
 	psCtrConstBuf_ = CreateShaderConstantBuffer(sizeof(Ctr));
+
+	// 初期値のセット
+	targetCtrParam_ = DEFAULT_CTR;
+	currentCtrParam_ = DEFAULT_CTR;
+
 	// ポリゴン生成
 	MakeSquereVertex();
 }
 
 void Shader::Draw(int texture)
 {
-	// シェーダー設定
+	// スキャンライン
+	UpdateParam(currentCtrParam_.scanlineIntensity, targetCtrParam_.scanlineIntensity);
+	// ビネット
+	UpdateParam(currentCtrParam_.vignettePower, targetCtrParam_.vignettePower);
+	// グリッチ
+	UpdateParam(currentCtrParam_.glitchAmount, targetCtrParam_.glitchAmount);
+	// 魚眼
+	UpdateParam(currentCtrParam_.curvatureAmount, targetCtrParam_.curvatureAmount);
+	// ノイズ
+	UpdateParam(currentCtrParam_.noisePower, targetCtrParam_.noisePower);
+	// RGBずらし
+	UpdateParam(currentCtrParam_.rgbShift, targetCtrParam_.rgbShift);
 
+	// タイマーは毎フレーム更新
+	currentCtrParam_.timer = SceneManager::GetInstance()->GetTotalTime();
+
+	// シェーダー設定
 	SetUsePixelShader(psCtr_);
 	SetUseTextureToShader(0, texture);
 
 	// ピクセルシェーダー用の定数バッファのアドレスを取得
 	Ctr* cbBuf = (Ctr*)GetBufferShaderConstantBuffer(psCtrConstBuf_);
-
-	// 走査線の濃さ：0.0(なし) ～ 1.0(真っ黒)
-	cbBuf->scanlineIntensity = 0.1f;
-
-	// ビネットの鋭さ：0.0(なし)～1.0（多め）
-	// 大きいほど画面の四隅が暗くなる
-	cbBuf->vignettePower = 0.5f;
-
-	// グリッチの横ずれ幅：0.0(なし) ～ 1.0(画面半分以上)
-	// ずれすぎるので、小さめで設定した方がよい
-	cbBuf->glitchAmount = 0.0f;
-
-	// シェーダー内の時間経過：累積時間を秒単位で渡す
-	// 個人で設定する必要なし
-	cbBuf->timer = SceneManager::GetInstance()->GetTotalTime();
-
-	// 画面の湾曲度：0.0(なし)～1.0（魚眼レンズのように膨らむ）
-	// これも膨らみすぎると見えずらいため、小さめで設定した方がよい
-	cbBuf->curvatureAmount = 0.01f;
-
-	// 砂嵐ノイズの強さ：0.0(なし) ～ 1.0(砂嵐のみ)
-	// 画面が見えずらくなるため、小さめで設定した方がよい
-	cbBuf->noisePower = 0.1f;
-
-	// 色ずれ（色収差）の距離：0.0(なし)～1.0(ずれる)
-	// 大きすぎると見えずらいため、小さめで設定した方がよい
-	cbBuf->rgbShift = 0.002f;
+	*cbBuf = currentCtrParam_;
 
 	// ピクセルシェーダー用の定数バッファを更新して書き込んだ内容を反映
 	UpdateShaderConstantBuffer(psCtrConstBuf_);
@@ -64,6 +58,28 @@ void Shader::Release(void)
 {
 	DeleteShader(psCtr_);
 	DeleteShaderConstantBuffer(psCtrConstBuf_);
+}
+
+void Shader::SetCurvatureAmount(float val, bool isLerpActive)
+{
+	targetCtrParam_.curvatureAmount = val;
+
+	// 補間しないなら
+	if (!isLerpActive)
+	{
+		// 強制的に値を同期させる
+		currentCtrParam_.curvatureAmount = val;
+	}
+}
+
+bool Shader::IsDefault(void) const
+{
+	return fabsf(currentCtrParam_.scanlineIntensity - DEFAULT_CTR.scanlineIntensity) < 0.0001f &&
+		fabsf(currentCtrParam_.vignettePower - DEFAULT_CTR.vignettePower) < 0.0001f &&
+		fabsf(currentCtrParam_.glitchAmount - DEFAULT_CTR.glitchAmount) < 0.0001f &&
+		fabsf(currentCtrParam_.curvatureAmount - DEFAULT_CTR.curvatureAmount) < 0.0001f &&
+		fabsf(currentCtrParam_.noisePower - DEFAULT_CTR.noisePower) < 0.0001f &&
+		fabsf(currentCtrParam_.rgbShift - DEFAULT_CTR.rgbShift) < 0.0001f;
 }
 
 void Shader::MakeSquereVertex(void)
@@ -119,4 +135,16 @@ void Shader::MakeSquereVertex(void)
 	mIndex[cnt++] = 1;
 	mIndex[cnt++] = 2;
 	mIndex[cnt++] = 3;
+}
+
+void Shader::UpdateParam(float& current, float target)
+{
+	if (fabsf(target - current) < 0.0001f)
+	{
+		current = target;
+	}
+	else
+	{
+		current += (target - current) * kLerpSpeed;
+	}
 }

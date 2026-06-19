@@ -18,11 +18,11 @@ static const float TIME_RANDOM_SEED_A = 123.456f;
 static const float TIME_RANDOM_SEED_B = 789.012f;
 
 // グリッチ演出用
-static const float GLITCH_CHECK_HERTZ = 2.0f;
-static const float GLITCH_PROBABILITY = 0.9f; 
-static const float GLITCH_WAVE_FREQ = 20.0f; 
-static const float GLITCH_WAVE_SPEED = 0.5f; 
-static const float GLITCH_THRESHOLD = 0.9f;
+static const float GLITCH_CHECK_HERTZ = 2.0f;       // 1秒間に行うグリッチ判定
+static const float GLITCH_PROBABILITY = 0.8f;       // グリッチが発生しない率
+static const float GLITCH_WAVE_FREQ = 20.0f;       // グリッチ線の細かさ
+static const float GLITCH_WAVE_SPEED = 0.7f;        // グリッチの波が上下に流れる速度 
+static const float GLITCH_THRESHOLD = 0.95f;         // どの程度の波の強さでグリッチを有効にするか
 
 // 走査線の密度
 static const float SCANLINE_DENSITY = 500.0f;
