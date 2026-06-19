@@ -201,14 +201,14 @@ void PlayerController::SetDamage(int damage)
 	PlayerStatusManager::GetInstance().SetHp(hp_);
 }
 
-void PlayerController::SetHitReact(VECTOR moveDir, float moveSpeed)
+void PlayerController::SetHitReact(VECTOR moveDir, float moveSpeed, float jumpPow)
 {
 	moveDir_ = moveDir;
 
 	moveSpeed_ = moveSpeed;
 
 	// ƒWƒƒƒ“ƒv—Í‚ðÝ’è
-	velocityY_ = 40.0f;
+	velocityY_ = jumpPow;
 
 	auto stageCol = owner_->GetComponent<StageCollider>();
 

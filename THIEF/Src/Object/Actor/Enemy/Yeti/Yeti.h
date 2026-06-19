@@ -63,7 +63,7 @@ private:
 	static constexpr VECTOR DEFAULT_ANGLE = { 0.0f,0.0f,0.0f };
 
 	// ç¿ïW
-	static constexpr VECTOR DEFAULT_POS = { 1000.0f,10.0f,500.0f };
+	static constexpr VECTOR DEFAULT_POS = { -5617.04,10.0f,6573.71 };
 	
 	static constexpr float CHASE_INTERVAL = 0.5f;
 

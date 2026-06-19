@@ -10,6 +10,7 @@ class ObjectManager;
 class Goblet;
 class Yeti;
 class Crosshair;
+class DamageEffect;
 
 enum STAGE_NUM
 {
@@ -43,6 +44,12 @@ public:
 	void ItemCreateStage3(void);	// ステージ3アイテムの作成
 
 private:
+
+	// ダメージエフェクトのアルファ値
+	static constexpr int DAMAGE_EFFECT_ALPHA = 128;
+	// ダメージエフェクトのカラー値
+	static constexpr unsigned int DAMAGE_EFFECT_COLOR = 0xff0000;
+
 	// オブジェクトマネージャー
 	ObjectManager* objectManger_;
 
@@ -50,6 +57,9 @@ private:
 
 	// クロスヘア
 	Crosshair* crosshair_;
+
+	// エフェクト
+	DamageEffect* redEffect_;
 
 	// ステージ数別の初期化処理
 	void Stage1Init(void);

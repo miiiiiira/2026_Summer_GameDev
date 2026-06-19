@@ -46,7 +46,7 @@ void WeaponPunch::SetParam(void)
 	scales_ = { 1.0f, 1.0f, 1.0f };
 
 	// 移動スピード
-	speed_ = 5.0f;
+	speed_ = 8.0f;
 
 	// 衝突判定用半径
 	collisionRadius_ = 60.0f;

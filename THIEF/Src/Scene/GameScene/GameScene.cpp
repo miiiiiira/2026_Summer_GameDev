@@ -40,6 +40,7 @@
 #include "../../Object/Component/Transform/Transform.h"
 #include "../../Common/Transform/MatrixUtility.h"
 #include "../../Common/CameraUtility/CameraUtility.h"
+#include "../../Common/Effect/DamageEffect.h"
 
 
 #include "../../Common/Collision/Collision.h"
@@ -49,6 +50,8 @@ GameScene::GameScene(void)
 {
 	// マウスの表示を消す
 	SetMouseDispFlag(false);
+	crosshair_ = nullptr;
+	redEffect_ = nullptr;
 }
 
 GameScene::~GameScene(void)
@@ -65,6 +68,9 @@ void GameScene::Init(void)
 
 	// クロスヘアの初期化処理
 	crosshair_->Init();
+
+	// エフェクトの初期化
+	redEffect_->Init();
 
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 	auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
@@ -88,6 +94,10 @@ void GameScene::Load(void)
 	// クロスヘアの作成
 	crosshair_ = new Crosshair();
 	crosshair_->Load();
+
+	// エフェクトの生成・ロード
+	redEffect_ = new DamageEffect();
+	redEffect_->Load();
 
 	// カメラの作成
 	CameraCreate();
@@ -155,6 +165,9 @@ void GameScene::Update(void)
 	// クロスヘアの更新
 	crosshair_->Update();
 
+	// エフェクトの更新
+	redEffect_->Update();
+
 	CheckEnemyAttack();
 	CollisionEnemyToStage();
 	CollisionEnemy2Player();
@@ -217,6 +230,9 @@ void GameScene::Draw(void)
 	// クロスヘアの描画
 	crosshair_->Draw();
 
+	// エフェクトの描画
+	redEffect_->Draw();
+
 	// オブジェクトの2D描画
 	objectManger_->Draw2D();
 
@@ -236,6 +252,10 @@ void GameScene::Release(void)
 	crosshair_->Release();
 	delete crosshair_;
 	crosshair_ = nullptr;
+
+	// ポーズモードの解放
+	delete redEffect_;
+	redEffect_ = nullptr;
 
 	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::GAME);
 }
@@ -489,8 +509,11 @@ void GameScene::CheckEnemyAttack(void)
 		{
 			player->SetDamage(10);
 
+			// 画面を赤くするエフェクトを付ける
+			redEffect_->SetEffect(DAMAGE_EFFECT_ALPHA, DAMAGE_EFFECT_COLOR);
+
 			VECTOR moveDir = VNorm(VSub(startPos, useWeapon->GetPos()));
-			player->SetHitReact(moveDir, 30.0f);
+			player->SetHitReact(moveDir, 30.0f, 25.0f);
 			useWeapon->SetAlive(false);
 		}
 	}

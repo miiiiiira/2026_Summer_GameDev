@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Common\Effect\DamageEffect.cpp" />
     <ClCompile Include="Src\Object\Component\Item\ItemInfo.cpp" />
     <ClCompile Include="Src\Object\Component\Item\Skull\Skull.cpp" />
     <ClCompile Include="Src\Object\Component\Item\Mug\Mug.cpp" />
@@ -82,6 +83,7 @@
     <ClCompile Include="Src\Object\Actor\Enemy\Weapon\WeaponPunch.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Common\Effect\DamageEffect.h" />
     <ClInclude Include="Src\Object\Component\Item\Skull\Skull.h" />
     <ClInclude Include="Src\Object\Component\Item\Mug\Mug.h" />
     <ClInclude Include="Src\Object\Component\Item\Jar\Jar.h" />

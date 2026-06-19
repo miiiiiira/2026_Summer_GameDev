@@ -111,7 +111,7 @@ public:
 	void SetDamage(int damage);
 
 	// ‚Á”ò‚ÑƒŠƒAƒNƒVƒ‡ƒ“‚ğ‚³‚¹‚é
-	void SetHitReact(VECTOR moveDir,float moveSpeed);
+	void SetHitReact(VECTOR moveDir,float moveSpeed,float jumpPow);
 
 private:
 	// ˆÚ“®ˆ—
