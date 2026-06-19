@@ -8,6 +8,7 @@
 #include "../../Application.h"
 #include "../GameScene/GameScene.h"
 #include "../MainMenu/MainMenu.h"
+#include "../../Common/Shader/Shader.h"
 
 TitleScene::TitleScene(void)
 {
@@ -27,6 +28,17 @@ void TitleScene::Init(void)
 {
 	alpha_ = 255.0f;
 	isIncreasing_ = false;
+
+	// 走査線
+	SceneManager::GetInstance()->GetShader()->SetScanlineIntensity(0.5f);
+	// グリッチ
+	SceneManager::GetInstance()->GetShader()->SetGlitchAmount(0.004f);
+	// 歪み
+	SceneManager::GetInstance()->GetShader()->SetCurvatureAmount(0.3f, false);
+	// ノイズ
+	SceneManager::GetInstance()->GetShader()->SetNoisePower(0.5f);
+	// 色ずれ
+	SceneManager::GetInstance()->GetShader()->SetRgbShift(0.004f);
 }
 
 void TitleScene::Load(void)
@@ -50,7 +62,12 @@ void TitleScene::Update(void)
 		// ボタン音
 		AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_2);
 
-		// ゲームシーンへ
+		// シェーダをデフォルトに変更する
+		SceneManager::GetInstance()->GetShader()->ResetParameters();
+	}
+
+	if (SceneManager::GetInstance()->GetShader()->IsDefault())
+	{
 		SceneManager::GetInstance()->PushScene(std::make_shared<MainMenu>());
 	}
 
