@@ -525,6 +525,15 @@ void GameScene::CollisionEnemyToStage(void)
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 	if (!stage) return;
 
+	// 1フレーム中に複数回衝突する場合に対応するための最大反復回数
+	const int MAX_BOUNCE = 5;
+
+	// めり込み防止用の押し出し量
+	const float SKIN = 1.0f;
+
+	// 登れる最大段差
+	const float STEP_HEIGHT = 15.0f;
+
 	// 現在座標
 	VECTOR currentPos = enemy_->GetPos();
 
@@ -539,12 +548,6 @@ void GameScene::CollisionEnemyToStage(void)
 
 	// 毎フレーム初期化
 	enemy_->SetGround(false);
-
-	// 1フレーム中に複数回衝突する場合に対応するための最大反復回数
-	const int MAX_BOUNCE = 5;
-
-	// めり込み防止用の押し出し量
-	const float SKIN = 1.0f;
 
 	// 衝突とスライドを繰り返す
 	for (int bounce = 0; bounce < MAX_BOUNCE; bounce++)
@@ -651,6 +654,26 @@ void GameScene::CollisionEnemyToStage(void)
 			break;
 		}
 
+		// 壁に衝突した場合は段差として登れるか確認する(y成分が小さい法線は壁として扱う)
+		if (hitNormal.y < 0.5f)
+		{
+			// 段差判定
+			if (CanStepUp(safePos, stepMove, STEP_HEIGHT))
+			{
+				// 衝突していない最後の位置へ戻す
+				pos = safePos;
+
+				// 段差の高さ分だけ上へ移動（階段を1段上がるイメージ）
+				pos.y += STEP_HEIGHT;
+
+				// 今回消費した移動量を残り移動量から除外
+				move = VSub(move, stepMove);
+
+				// 次のループで残り移動を処理する
+				continue;
+			}
+		}
+
 		// 衝突していない最後の座標へ戻す
 		pos = safePos;
 
@@ -665,7 +688,6 @@ void GameScene::CollisionEnemyToStage(void)
 		{
 			// 接地フラグを立てる
 			enemy_->SetGround(true);
-
 
 			// 落下速度を停止
 			if (velocityY < 0.0f)
@@ -683,7 +705,6 @@ void GameScene::CollisionEnemyToStage(void)
 				velocityY = 0.0f;
 			}
 		}
-
 		enemy_->SetVelocity(velocityY);
 
 		// 衝突後に残っている移動割合
@@ -704,8 +725,44 @@ void GameScene::CollisionEnemyToStage(void)
 		move = remainMove;
 	}
 
+
 	// 最終位置を反映
 	enemy_->SetPos(pos);
+}
+
+// 小さな段差を登れるか判定する
+bool GameScene::CanStepUp(const VECTOR& pos, const VECTOR& move, float stepHeight)
+{
+	// 必要なコンポーネントが存在しないなら処理しない
+	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+	if (!stage) return -1;
+
+	// テスト用の座標
+	VECTOR testPos = pos;
+
+	// 段差の高さ分だけ上へ持ち上げる(階段の1段上に乗れるか確認するため）
+	testPos.y += stepHeight;
+
+	// その状態で前方へ移動してみる
+	testPos = VAdd(testPos, move);
+
+	// 持ち上げた状態でカプセルとステージの衝突判定を行う
+	auto result =
+		MV1CollCheck_Capsule(
+			stage->GetModelId(),
+			-1,
+			VAdd(testPos, enemy_->GetStart()),
+			VAdd(testPos, enemy_->GetEnd()),
+			enemy_->GetRadius());
+
+	// 1つでもポリゴンに当たっていれば衝突
+	bool hit = result.HitNum > 0;
+
+	// 衝突結果のメモリを解放
+	MV1CollResultPolyDimTerminate(result);
+
+	// 衝突していなければ段差を登れる
+	return !hit;
 }
 
 void GameScene::CollisionEnemy2Player(void)

@@ -42,7 +42,6 @@ public:
 	void ItemCreateStage1(void);	// ステージ1アイテムの作成
 	void ItemCreateStage2(void);	// ステージ2アイテムの作成
 	void ItemCreateStage3(void);	// ステージ3アイテムの作成
-
 private:
 
 	// ダメージエフェクトのアルファ値
@@ -72,6 +71,8 @@ private:
 
 	// 敵とステージの当たり判定
 	void CollisionEnemyToStage(void);
+	// 小さな段差を登れるか判定する
+	bool CanStepUp(const VECTOR& pos, const VECTOR& move, float stepHeight);
 
 	// プレイヤーと敵の当たり判定
 	void CollisionEnemy2Player(void);
