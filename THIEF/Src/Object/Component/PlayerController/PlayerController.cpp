@@ -698,9 +698,9 @@ bool PlayerController::RangeUpdate(void)
 		range_ -= EXTEND_RENGE_MOVE;
 
 		// Å¬’l‚ª’´‚¦‚È‚¢‚æ‚¤‚É‚·‚é
-		if (range_ < MIN_RENGE)
+		if (range_ < MIN_RENGE + item_->GetInfo().collisionRadiusX_)
 		{
-			range_ = MIN_RENGE;
+			range_ = MIN_RENGE + item_->GetInfo().collisionRadiusX_;
 		}
 
 		// •ÏX‚ª‚ ‚Á‚½‚çtrue‚ğ•Ô‚·
