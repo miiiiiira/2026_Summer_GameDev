@@ -244,7 +244,7 @@ bool InputManager::PauseButtons(void)
 
 bool InputManager::DashButtons(void)
 {
-	return IsNew(KEY_INPUT_LSHIFT) || IsPadBtnNew(JOYPAD_NO::PAD1, JOYPAD_BTN::B);
+	return IsNew(KEY_INPUT_LSHIFT) || IsPadBtnNew(JOYPAD_NO::PAD1, JOYPAD_BTN::RB);
 }
 
 bool InputManager::CrouchingButtons(void)
