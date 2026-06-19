@@ -416,7 +416,7 @@ void EnemyBase::AddEdge(int fromId, int toId)
 	VECTOR posA = way_[fromId].pos;
 	VECTOR posB = way_[toId].pos;
 
-	float checkRadius = 10.0f;
+	float checkRadius = 50.0f;
 
 	// カプセルとモデルの衝突判定
 	MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, posA, posB, checkRadius);
