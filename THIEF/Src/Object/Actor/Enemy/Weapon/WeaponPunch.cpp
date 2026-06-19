@@ -1,3 +1,4 @@
+#include "../../../../Scene/SceneManager.h"
 #include "WeaponPunch.h"
 
 WeaponPunch::WeaponPunch(void)
@@ -6,6 +7,26 @@ WeaponPunch::WeaponPunch(void)
 
 WeaponPunch::~WeaponPunch(void)
 {
+}
+
+void WeaponPunch::Update(void)
+{
+	if (isAlive_)
+	{
+		cntAlive_ += SceneManager::GetInstance()->GetDeltaTime();
+	}
+	else
+	{
+		cntAlive_ = 0.0f;
+	}
+
+	if (cntAlive_ >= MAX_ALIVE_COUNT)
+	{
+		isAlive_ = false;
+		cntAlive_ = 0.0f;
+	}
+
+	WeaponBase::Update();
 }
 
 void WeaponPunch::Draw(void)

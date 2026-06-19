@@ -63,7 +63,7 @@ protected:
 	bool isAlive_;
 
 	// 生存カウント
-	int cntAlive_;
+	float cntAlive_;
 
 	// 使用時の位置調整(Y)
 	VECTOR localPos_;

@@ -12,6 +12,7 @@ public:
 	// デストラクタ
 	~WeaponPunch(void);
 
+	void Update(void) override;
 	void Draw(void) override;
 	void Release(void) override;
 
@@ -25,4 +26,6 @@ protected:
 	void SetParam(void) override;
 
 private:
+
+	static constexpr float MAX_ALIVE_COUNT = 0.5f;
 };
