@@ -7,6 +7,7 @@
 #include "../../../Component/Collider/3DCollider/CapsuleCollider.h"
 #include "../../../Component/Transform/Transform.h"
 #include "../Weapon/WeaponPunch.h"
+#include "../../../../Common/Shader/Shader.h"
 #include "Yeti.h"
 
 
@@ -151,7 +152,30 @@ void Yeti::Draw(void)
 	EnemyBase::Draw();
 	
 #ifdef _DEBUG
+
+	for (int i = 0; i < (int)edgeList_.size(); i++)
+	{
+		for (const auto& edge : edgeList_[i])
+		{
+			// way_[i].pos が「接続元」の座標
+			// edge.way.pos が「接続先」の座標
+			DrawLine3D(way_[i].pos, edge.way.pos, GetColor(255, 255, 0));
+		}
+	}
+
+	// 現在地から、今目指しているノード（currentNodeId_）までの線を引く
+	DrawLine3D(pos_, way_[currentNodeId_].pos, GetColor(255, 0, 255));
+
+	// 目的地ノードのIDを画面左上に表示する
+	DrawFormatString(0, 50, GetColor(255, 255, 255), "TargetNodeID: %d", currentNodeId_);
+
 	DrawSphere3D(pos_, patrolRadius_, 8, GetColor(0, 255, 0), GetColor(0, 0, 0), FALSE);
+
+	// 1. 今の目的地（行きたい場所）を「緑」で描画
+	DrawSphere3D(nextWayPoint_, 40.0f, 10, GetColor(0, 255, 0), GetColor(0, 255, 0), TRUE);
+
+	// 2. 敵の現在地から、緑の目的地へ向かって「線」を引く
+	DrawLine3D(pos_, nextWayPoint_, GetColor(0, 255, 0));
 
 	// 巡回ルート描画
 	for (const auto& point : way_)
@@ -258,7 +282,7 @@ void Yeti::Move(void)
 
 int Yeti::FindNearestNode(VECTOR pos)
 {
-	int nearNodeId = 0;
+	int nearNodeId = -1;
 	float minCost = FLT_MAX;
 	for (const auto& way : way_)
 	{
@@ -271,6 +295,12 @@ int Yeti::FindNearestNode(VECTOR pos)
 			nearNodeId = way.id;
 		}
 	}
+
+	if (nearNodeId == -1)
+	{
+		nearNodeId = 0;
+	}
+
 	return nearNodeId;
 }
 
@@ -446,6 +476,10 @@ void Yeti::UpdatePatrol(void)
 		return;
 	}
 
+	SetMoveDirPatrol();
+
+	Move();
+
 	// 目的地までの距離を測る
 	VECTOR target = VSub(nextWayPoint_, pos_);
 	target.y = 0.0f;
@@ -457,8 +491,6 @@ void Yeti::UpdatePatrol(void)
 		ChangeState(STATE::THINK);
 		return;
 	}
-
-	Move();
 }
 
 void Yeti::UpdateSurprise(void)
