@@ -29,6 +29,7 @@
     <ClCompile Include="Src\Common\FrameRenderer\FrameRenderer.cpp" />
     <ClCompile Include="Src\Common\Manager\PlayerStatus\PlayerStatusManager.cpp" />
     <ClCompile Include="Src\Object\Component\PlayerController\Upgrade\UpgradeManager.cpp" />
+    <ClCompile Include="Src\Object\Component\Render\Render.cpp" />
     <ClCompile Include="Src\Object\Component\Transform\Transform.cpp" />
     <ClCompile Include="Src\Scene\Shop\ShopScene.cpp" />
     <ClCompile Include="Src\Object\Component\Item\Potion\Potion.cpp" />

@@ -18,12 +18,18 @@ public:
 
 	// 外部からモデルを設定
 	void SetModel(std::string path);
+	void SetModelHandles(std::string path);
 
 	// 描画フラグを設定
 	void SetIsDraw(bool flg);
 
 	// ハンドルを返す
 	int GetModel(void) const{ return handle_; }
+
+	// 指定された番号のハンドルを渡す
+	int GetHandles(int index)const;
+	// ハンドル全てを渡す
+	std::vector<int> GetAllHandles(void)const;
 
 private:
 	Transform* transform_ = nullptr;

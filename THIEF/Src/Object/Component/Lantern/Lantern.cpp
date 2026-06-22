@@ -36,18 +36,27 @@ void Lantern::Init(void)
 	if (!render) return;
 
 	// モデルIDを取得
-	modelId_ = render->GetHandle();
+	lanternModelId_ = render->GetHandles(0);
+	wispModelId_ = render->GetHandles(1);
 
 	// オーナーからTransformを取得
 	auto trans = owner_->GetComponent<Transform>();
 
 	// モデルに大きさ、向き、座標を設定
-	MV1SetScale(modelId_, scale_);
-	MV1SetRotationXYZ(modelId_, angle_);
-	MV1SetPosition(modelId_, trans->pos_);
+	MV1SetScale(lanternModelId_, scale_);
+	MV1SetRotationXYZ(lanternModelId_, angle_);
+	MV1SetPosition(lanternModelId_, trans->pos_);
 
 	// 衝突情報構築
-	MV1SetupCollInfo(modelId_, -1);
+	MV1SetupCollInfo(lanternModelId_, -1);
+
+	// モデルに大きさ、向き、座標を設定
+	MV1SetScale(wispModelId_, scale_);
+	MV1SetRotationXYZ(wispModelId_, angle_);
+	MV1SetPosition(wispModelId_, trans->pos_);
+
+	// 衝突情報構築
+	MV1SetupCollInfo(wispModelId_, -1);
 }
 
 void Lantern::Update(void)
@@ -104,7 +113,8 @@ void Lantern::UpdatePos(void)
 	trans->pos_ = Math::Lerp(prePos, trans->pos_, COEFFICIENT);
 
 	// モデルに座標を反映
-	MV1SetPosition(modelId_, trans->pos_);
+	MV1SetPosition(lanternModelId_, trans->pos_);
+	MV1SetPosition(wispModelId_, trans->pos_);
 
 	// 回転
 	// ランタンの回転を行列にする
@@ -114,7 +124,10 @@ void Lantern::UpdatePos(void)
 	MATRIX mat = Matrix::Multiplication(weaponMat, CameraUtility::GetCameraMatrix());
 
 	// 回転行列をモデルに反映
-	MV1SetRotationMatrix(modelId_, mat);
+	MV1SetRotationMatrix(lanternModelId_, mat);
+
+	// 回転行列をモデルに反映
+	MV1SetRotationMatrix(wispModelId_, mat);
 
 	// ポイントライトの座標を更新
 	SetLightPositionHandle(pointLightHandle_, trans->pos_);

@@ -200,6 +200,9 @@
     <ClCompile Include="Src\Common\Effect\DamageEffect.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Object\Component\Render\Render.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Common\Manager\Audio\AudioManager.h">

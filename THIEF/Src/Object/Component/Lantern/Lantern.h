@@ -41,7 +41,8 @@ public:
 	void Draw3D(void)override;
 
 	// モデルIDを返す
-	int GetModelId() const { return modelId_; }
+	int GetLanternModelId() const { return lanternModelId_; }
+	int GetWispModelId() const { return wispModelId_; }
 
 	// Transformを返す
 	Transform* GetTransform();
@@ -57,7 +58,10 @@ private:
 	int pointLightHandle_ = -1;
 
 	// モデルのハンドル
-	int modelId_ = -1;
+	int lanternModelId_ = -1;
+	int wispModelId_ = -1;
+
+	int wispTexture = -1;
 
 	// モデルの大きさ
 	VECTOR scale_;
