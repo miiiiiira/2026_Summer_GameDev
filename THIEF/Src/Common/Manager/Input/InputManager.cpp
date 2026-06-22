@@ -82,9 +82,6 @@ void InputManager::Update(void)
 		p.second.keyTrgUp = !p.second.keyNew && p.second.keyOld;
 	}
 
-	// マウス検知
-	mouseInput_ = GetMouseInput();
-
 	int mousePosX = 0;
 	int mousePosY = 0;
 
@@ -96,7 +93,7 @@ void InputManager::Update(void)
 	for (auto& p : mouseInfos_)
 	{
 		p.second.keyOld = p.second.keyNew;
-		p.second.keyNew = mouseInput_ == p.second.key;
+		p.second.keyNew = GetMouseInput() == p.second.key;
 		p.second.keyTrgDown = p.second.keyNew && !p.second.keyOld;
 		p.second.keyTrgUp = !p.second.keyNew && p.second.keyOld;
 	}
@@ -158,19 +155,14 @@ Vector2 InputManager::GetMousePos(void) const
 	return mousePos_;
 }
 
-int InputManager::GetMouse(void) const
-{
-	return mouseInput_;
-}
-
 bool InputManager::IsClickMouseLeft(void) const
 {
-	return mouseInput_ == MOUSE_INPUT_LEFT;
+	return GetMouseInput() & MOUSE_INPUT_LEFT;
 }
 
 bool InputManager::IsClickMouseRight(void) const
 {
-	return mouseInput_ == MOUSE_INPUT_RIGHT;
+	return GetMouseInput() & MOUSE_INPUT_RIGHT;
 }
 
 bool InputManager::IsTrgMouseLeft(void) const
@@ -295,7 +287,6 @@ bool InputManager::PushLightButtons(void)
 
 InputManager::InputManager(void)
 {
-	mouseInput_ = -1;
 }
 
 InputManager::~InputManager(void)

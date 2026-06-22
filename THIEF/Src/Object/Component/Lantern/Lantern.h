@@ -16,11 +16,11 @@ private:
 	static constexpr VECTOR DEFAULT_ANGLE = { 0.0f,0.0f,0.0f };
 
 	// ランタンの範囲
-	static constexpr float LANTEERN_RANGE = 400.0f;
+	static constexpr float LANTEERN_RANGE = 5000.0f;
 
 	// プレイヤーとランタンの相対座標
-	static constexpr VECTOR REACH_DEFAULT_LIGHT = { -80.0f,-50.0f,150.0f };
-	static constexpr VECTOR REACH_MAX_LIGHT = {-80.0f,0.0f,350.0f };
+	static constexpr VECTOR REACH_DEFAULT_LIGHT = { -80.0f,-50.0f,180.0f };
+	static constexpr VECTOR REACH_MAX_LIGHT = {-80.0f,0.0f,600.0f };
 
 	// 線形補間の係数
 	static constexpr float COEFFICIENT = 0.1f;

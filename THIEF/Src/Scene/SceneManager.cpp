@@ -100,12 +100,12 @@ void SceneManager::Init3D(void)
 	// 標準ライトをオン(デフォルトは環境光）
 	SetLightEnable(true);
 	// 環境光を少し強めにして、影を薄くする
-	SetLightAmbColor(GetColorF(0.4f, 0.4f, 0.4f, 1.0f));
+	SetLightAmbColor(GetColorF(0.0f, 0.0f, 0.0f, 1.0f));
 
 	// 追加ディレクショナルライト
 	dirLightHandle_ = CreateDirLightHandle(VGet(-0.5f, -0.3f, -1.0f));
 	// ディレクショナルライトのカラー値を設定
-	SetLightDifColorHandle(dirLightHandle_, GetColorF(0.6f, 0.6f, 0.6f, 1.0f));
+	SetLightDifColorHandle(dirLightHandle_, GetColorF(0.0f, 0.0f, 0.0f, 1.0f));
 	
 	// フォグ設定
 	SetFogEnable(true);
@@ -114,7 +114,7 @@ void SceneManager::Init3D(void)
 	// フォグを発生させる奥行きの最小、最大距離
 	SetFogStartEnd(FOG_START, FOG_END);
 	// フォグの密度を設定
-	SetFogDensity(0.3f);
+	SetFogDensity(0.6f);
 }
 
 // 更新

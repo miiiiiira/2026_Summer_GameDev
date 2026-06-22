@@ -127,9 +127,6 @@ public:
 	// マウス座標の取得
 	Vector2 GetMousePos(void) const;
 
-	// マウスのクリック状態を取得(MOUSE_INPUT_LEFT、RIGHT)
-	int GetMouse(void) const;
-
 	// マウスが左クリックされたか
 	bool IsClickMouseLeft(void) const;
 
@@ -244,9 +241,6 @@ private:
 	// マウスカーソルの位置
 	Vector2 mousePos_;
 	
-	// マウスボタンの入力状態
-	int mouseInput_;
-
 	// パッド情報
 	JOYPAD_IN_STATE padInfos_[5];
 

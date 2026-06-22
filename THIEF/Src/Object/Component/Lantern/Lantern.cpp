@@ -11,7 +11,7 @@ Lantern::Lantern(void)
 {
 	// 追加ポイントライト
 	pointLightHandle_ = CreatePointLightHandle(
-		{ 0.0f, 0.0f, 0.0f }, LANTEERN_RANGE, 0.000f, 0.002f, 0.000f);
+		{ 0.0f, 0.0f, 0.0f }, LANTEERN_RANGE, 0.000f, 0.0002f, 0.000f);
 
 	// ハンドルのポイントライトに色をつける
 	SetLightDifColorHandle(pointLightHandle_, GetColorF(0.5f, 0.2f, 0.3f, 1.0f));

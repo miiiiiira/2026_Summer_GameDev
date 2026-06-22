@@ -653,9 +653,8 @@ void PlayerController::Grabbing(void)
 			item_->SetLocalPosZ(range_);
 		}
 
-		// マウスの左クリックが今離されたか、マウスの左クリックを押されていなかったら
-		if (InputManager::GetInstance()->IsUpGrabbingButtons()
-			||!InputManager::GetInstance()->IsNewGrabbingButtons())
+		// マウスの左クリックを押されていなかったら
+		if (!InputManager::GetInstance()->IsNewGrabbingButtons())
 		{
 			// 掴み動作を終わる
 			grabState_ = GRABBING_STATE::NOT_GRABBING;
