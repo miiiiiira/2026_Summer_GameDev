@@ -1,5 +1,6 @@
 #pragma once
 #include "../Component.h"
+#include <vector>
 
 // 描画コンポーネントの基底
 class Render : public Component
@@ -20,4 +21,6 @@ public:
 
 protected:
 	int handle_ = -1;
+
+	std::vector<int> handles_;
 };
