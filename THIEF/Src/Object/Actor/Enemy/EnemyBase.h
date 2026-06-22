@@ -59,7 +59,7 @@ public:
 
 protected:
 
-	const float NODE_CONNECT_MAX_DISTANCE_SQ = 1500.0f * 1500.0f;
+	const float NODE_CONNECT_MAX_DISTANCE_SQ = 1300.0f * 1300.0f;
 
 	// ƒWƒƒƒ“ƒv—Í
 	const float JUMP_POW = 25.0f;
