@@ -245,5 +245,5 @@ void ItemCollider::StageCollision(void)
 		return;
 
 	// ダメージ計算用の座標を渡す
-	item_->SetDamage(currentPos, pos);
+	item_->SetDamage(pos);
 }

@@ -58,7 +58,7 @@ public:
 public:
 
 	// アイテムにダメージを与える(ダメージ数、当たった場所)
-	void SetDamage(VECTOR currentPos,VECTOR pos);
+	void SetDamage(VECTOR pos);
 
 	// 指定された座標をアイテムの座標に反映
 	void SetPos(const VECTOR& pos);

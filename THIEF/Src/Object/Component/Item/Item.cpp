@@ -196,7 +196,7 @@ float Item::GetCameraDistance(VECTOR pos)
 	return VSize(VSub(pos, CameraUtility::GetCameraPos()));
 }
 
-void Item::SetDamage(VECTOR currentPos, VECTOR pos)
+void Item::SetDamage(VECTOR pos)
 {
 	//　無敵時間があったら処理をしない
 	if (info_.invincibilityFrames_ > 0)return;
@@ -212,7 +212,7 @@ void Item::SetDamage(VECTOR currentPos, VECTOR pos)
 	// アイテムが掴まれていたら
 	if (info_.isGrabbed_)
 	{
-		damage = static_cast<int>(VSize(VSub(currentPos, trans_->prevPos_)));
+		damage = static_cast<int>(VSize(VSub(pos, trans_->prevPos_)));
 
 		damage *= DAMAGE_MULT;
 		// 指定のダメージから頑丈さ分引いた数値を実際に与えるダメージとする
@@ -353,28 +353,6 @@ void Item::TrackingPlayer(void)
 
 	// モデルに座標を反映
 	MV1SetPosition(info_.modelId_, trans_->pos_);
-
-	//// 相手へのベクトルを計算(引き算)
-	//VECTOR vec = VSub(CameraUtility::GetCameraPos(),trans_->pos_);
-
-	//// ベクトルの正規化で単位ベクトル(方向)を取得する
-	//float length = sqrtf(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
-
-	//if (length == 0.0f)
-	//{
-	//	return;
-	//}
-
-	//// 大きさで割って単位ベクトルにする
-	//VECTOR dir = VGet( 0.0f,0.0f,0.0f );
-	//dir.x = vec.x / length;
-	//dir.x = vec.y / length;
-	//dir.z = vec.z / length;
-
-	//// 方向から角度を出す
-	//info_.angle_.x = atan2(dir.y, dir.z);
-	//info_.angle_.y = atan2(dir.x, dir.z);
-	//info_.angle_.z = atan2(dir.x, dir.y);
 
 	// アイテムの回転を行列にする
 	MATRIX itemMat = Matrix::GetMatrixRotateXYZ(info_.angle_);
