@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Actor\Enemy\Skeleton\Skeleton.cpp" />
+    <ClCompile Include="Src\Object\Actor\Enemy\Mushnub\Mushnub.cpp" />
     <ClCompile Include="Src\Common\Effect\DamageEffect.cpp" />
     <ClCompile Include="Src\Object\Component\Item\ItemInfo.cpp" />
     <ClCompile Include="Src\Object\Component\Item\Skull\Skull.cpp" />
@@ -81,8 +83,11 @@
     <ClCompile Include="Src\Object\Actor\Enemy\Yeti\Yeti.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\Weapon\WeaponBase.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\Weapon\WeaponPunch.cpp" />
+    <ClCompile Include="Src\Object\Actor\Enemy\Statue\Statue.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Actor\Enemy\Skeleton\Skeleton.h" />
+    <ClInclude Include="Src\Object\Actor\Enemy\Mushnub\Mushnub.h" />
     <ClInclude Include="Src\Common\Effect\DamageEffect.h" />
     <ClInclude Include="Src\Object\Component\Item\Skull\Skull.h" />
     <ClInclude Include="Src\Object\Component\Item\Mug\Mug.h" />
@@ -157,6 +162,7 @@
     <ClInclude Include="Src\Object\Actor\Enemy\Yeti\Yeti.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\Weapon\WeaponBase.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\Weapon\WeaponPunch.h" />
+    <ClInclude Include="Src\Object\Actor\Enemy\Statue\Statue.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Src\Common\Shader\CtrShader.hlsl">
