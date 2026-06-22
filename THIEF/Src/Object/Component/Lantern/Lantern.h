@@ -9,21 +9,27 @@ class Transform;
 class Lantern:public Component
 {
 private:
+	// 初期座標
+	static constexpr VECTOR DEFAULT_POS = { 0.0f,0.0f,0.0f };
+	
 	// 大きさ
-	static constexpr VECTOR SCALE = { 0.0f,0.0f,0.0f };
+	static constexpr VECTOR SCALE = { 1.0f,1.0f,1.0f };
 
 	// 向き
 	static constexpr VECTOR DEFAULT_ANGLE = { 0.0f,0.0f,0.0f };
 
 	// ランタンの範囲
-	static constexpr float LANTEERN_RANGE = 5000.0f;
+	static constexpr float LANTEERN_RANGE = 3000.0f;
 
 	// プレイヤーとランタンの相対座標
-	static constexpr VECTOR REACH_DEFAULT_LIGHT = { -80.0f,-50.0f,180.0f };
-	static constexpr VECTOR REACH_MAX_LIGHT = {-80.0f,0.0f,600.0f };
+	static constexpr VECTOR REACH_DEFAULT_LIGHT = { -80.0f,-50.0f,230.0f };
+	static constexpr VECTOR REACH_MAX_LIGHT = {-80.0f,0.0f,800.0f };
+
+	// オフセット
+	static constexpr VECTOR POINTLIGHT_OFFSET = { 0.0f,70.0f,0.0f };
 
 	// 線形補間の係数
-	static constexpr float COEFFICIENT = 0.1f;
+	static constexpr float COEFFICIENT = 0.2f;
 
 public:
 
@@ -56,6 +62,8 @@ public:
 private:
 	// ポイントライトのハンドル
 	int pointLightHandle_ = -1;
+
+	VECTOR pointPos_;
 
 	// モデルのハンドル
 	int lanternModelId_ = -1;

@@ -312,7 +312,7 @@ void GameScene::LanternCreate(void)
 
 	// •`‰æ
 	auto render = lantern->AddComponent<Render3D>();
-	render->SetModelHandles("Data/Model/Player/Lantern/Lantern.mv1");
+	render->SetModelHandles("Data/Model/Player/Lantern/Lantern2.mv1");
 	render->SetModelHandles("Data/Model/Player/Lantern/Wisp.mv1");
 
 	// ƒ‰ƒ“ƒ^ƒ“‹@”\

@@ -11,10 +11,14 @@ Lantern::Lantern(void)
 {
 	// 追加ポイントライト
 	pointLightHandle_ = CreatePointLightHandle(
-		{ 0.0f, 0.0f, 0.0f }, LANTEERN_RANGE, 0.000f, 0.0002f, 0.000f);
+		{ 0.0f, 0.0f, 0.0f }, LANTEERN_RANGE,
+		0.0f,
+		0.0009f,
+		0.000f
+	);
 
 	// ハンドルのポイントライトに色をつける
-	SetLightDifColorHandle(pointLightHandle_, GetColorF(0.5f, 0.2f, 0.3f, 1.0f));
+	SetLightDifColorHandle(pointLightHandle_, GetColorF(0x41 / 255.0f, 0x69 / 255.0f, 0xe1 / 255.0f, 1.0f));
 }
 
 Lantern::~Lantern(void)
@@ -25,6 +29,8 @@ Lantern::~Lantern(void)
 
 void Lantern::Init(void)
 {
+	pointPos_ = DEFAULT_POS;
+
 	// 大きさの初期化
 	scale_ = SCALE;
 
@@ -67,8 +73,12 @@ void Lantern::Update(void)
 
 void Lantern::Draw3D(void)
 {
+#ifdef _DEBUG
+
 	// デバッグ用の描画処理
 	DebugDraw();
+
+#endif // _DEBUG
 }
 
 void Lantern::SetLight(bool lightFlg)
@@ -87,6 +97,9 @@ void Lantern::UpdatePos(void)
 	// オーナーからTransformを取得
 	auto trans = owner_->GetComponent<Transform>();
 
+	// ポイントライトの座標
+	VECTOR pointPrevPos = pointPos_;
+
 	// 前の座標を保持しておく
 	VECTOR prePos = trans->pos_;
 
@@ -102,15 +115,21 @@ void Lantern::UpdatePos(void)
 	{
 		// ランタンの座標に反映
 		trans->pos_ = CameraUtility::AddCameraPosLocalPos(REACH_MAX_LIGHT);
+		pointPos_ = CameraUtility::AddCameraPosLocalPos(VAdd(REACH_MAX_LIGHT, POINTLIGHT_OFFSET));
 	}
 	else
 	{
 		// ランタンの座標に反映
 		trans->pos_ = CameraUtility::AddCameraPosLocalPos(REACH_DEFAULT_LIGHT);
+		pointPos_ = CameraUtility::AddCameraPosLocalPos(VAdd(REACH_DEFAULT_LIGHT, POINTLIGHT_OFFSET ));
 	}
 
 	// 線形補間で滑らかにする
+	pointPos_ = Math::Lerp(pointPrevPos, pointPos_, COEFFICIENT);
 	trans->pos_ = Math::Lerp(prePos, trans->pos_, COEFFICIENT);
+
+	// ポイントライトの座標を更新
+	SetLightPositionHandle(pointLightHandle_, pointPos_);
 
 	// モデルに座標を反映
 	MV1SetPosition(lanternModelId_, trans->pos_);
@@ -125,12 +144,7 @@ void Lantern::UpdatePos(void)
 
 	// 回転行列をモデルに反映
 	MV1SetRotationMatrix(lanternModelId_, mat);
-
-	// 回転行列をモデルに反映
 	MV1SetRotationMatrix(wispModelId_, mat);
-
-	// ポイントライトの座標を更新
-	SetLightPositionHandle(pointLightHandle_, trans->pos_);
 }
 
 void Lantern::DebugDraw(void)

@@ -12,13 +12,24 @@ void Render3D::Init(void)
 
 void Render3D::Update(void)
 {
-	// ロードされていないなら処理しない
-	if (handle_ == -1) return;
 	// 位置情報がないなら処理しない
 	if (!transform_) return;
 
-	// モデルの座標を更新
-	MV1SetPosition(handle_, transform_->pos_);
+	// ロードされていたら
+	if (handle_ != -1)
+	{
+		// モデルの座標を更新
+		MV1SetPosition(handle_, transform_->pos_);
+	}
+
+	if (handles_.size() > 0)
+	{
+		for (const auto& handle : handles_)
+		{
+			// モデルの座標を更新
+			MV1SetPosition(handle, transform_->pos_);
+		}
+	}
 }
 
 void Render3D::Draw3D()
@@ -36,7 +47,7 @@ void Render3D::Draw3D()
 	// ロードされていたら
 	if (handles_.size() > 0)
 	{
-		for (const auto handle : handles_)
+		for (const auto& handle : handles_)
 		{
 			// モデルを描画
 			MV1DrawModel(handle);

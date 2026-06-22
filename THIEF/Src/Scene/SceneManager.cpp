@@ -97,15 +97,10 @@ void SceneManager::Init3D(void)
 	// ライトの設定
 	SetUseLighting(true);
 
-	// 標準ライトをオン(デフォルトは環境光）
-	SetLightEnable(true);
-	// 環境光を少し強めにして、影を薄くする
-	SetLightAmbColor(GetColorF(0.0f, 0.0f, 0.0f, 1.0f));
+	// 標準ライトをディレクショナルライトにする
+	ChangeLightTypeDir(VGet(-0.5f, -0.3f, -1.0f));
 
-	// 追加ディレクショナルライト
-	dirLightHandle_ = CreateDirLightHandle(VGet(-0.5f, -0.3f, -1.0f));
-	// ディレクショナルライトのカラー値を設定
-	SetLightDifColorHandle(dirLightHandle_, GetColorF(0.0f, 0.0f, 0.0f, 1.0f));
+	SetLightDifColor(GetColorF(0.0f, 0.0f, 0.0f, 1.0f));
 	
 	// フォグ設定
 	SetFogEnable(true);
@@ -251,9 +246,6 @@ void SceneManager::Draw(void)
 
 void SceneManager::Delete(void)
 {
-	// ポイントライトのハンドルを解放
-	DeleteLightHandle(dirLightHandle_);
-
 	// 全てのシーンの解放・削除
 	for (auto& scene : scenes_) { scene->Release(); }
 	scenes_.clear();
