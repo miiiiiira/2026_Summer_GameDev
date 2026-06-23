@@ -292,7 +292,7 @@ void GameScene::StageCreate(void)
 
 	// 描画
 	auto render = stage->AddComponent<Render3D>();
-	render->SetModel("Data/Model/Stage/Stage1.mv1");
+	render->SetModel("Data/Model/Stage/Stage.mv1");
 
 	// ステージ機能
 	stage->AddComponent<Stage>();
