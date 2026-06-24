@@ -14,7 +14,7 @@ void Camera::Init(void)
 
 	transform_->pos_ = DERFAULT_POS;
 	angle_ = DERFAULT_ANGLES;
-
+	moveCount = 0.0f;
 	SetCameraPositionAndAngle(
 		transform_->pos_,
 		angle_.x,
@@ -26,6 +26,46 @@ void Camera::Init(void)
 void Camera::Update(void)
 {
 	ProcessRot(true);
+
+	if (playerController_->GetState() == PLAYER_STATE::CROUCHING
+		|| playerController_->GetState() == PLAYER_STATE::SLIDING
+		|| playerController_->GetState() == PLAYER_STATE::HIT_REACT)
+	{
+		// 移動カウントが動いていたら初期化
+		if (moveCount > 0)
+		{
+			moveCount = 0;
+		}
+		return;
+	}
+
+	// プレイヤーの現在位置と前フレーム位置の移動ベクトルを作る
+	VECTOR playerMoveVec = VSub(playerController_->GetTransform()->pos_, playerController_->GetTransform()->prevPos_);
+	// Y軸移動は抜いたXZ軸の移動距離を計算
+	float playerMoveDis = VSize({ playerMoveVec.x,0.0f,playerMoveVec.z });
+
+	if (playerMoveDis < 0.01f)
+	{
+		moveCount = 0.0f;
+		return;
+	}
+
+	// 移動していたら
+	if (moveCount < MOVE_COUNT_MAX)
+	{
+		if (playerMoveDis > PlayerController::DEFAULT_SPEED)
+		{
+			moveCount += 1.7f;
+		}
+		else
+		{
+			moveCount += 0.9f;
+		}
+	}
+	else
+	{
+		moveCount = 0.0f;
+	}
 }
 
 void Camera::PreDraw(void)
@@ -90,6 +130,12 @@ void Camera::SetBeforeDrawFollow()
 	// カメラY軸座標を保持しておく
 	float prePosY = transform_->pos_.y;
 
+	// プレイヤーの現在位置と前フレーム位置の移動ベクトルを作る
+	VECTOR playerMoveVec = VSub(playerController_->GetTransform()->pos_, playerController_->GetTransform()->prevPos_);
+	// Y軸移動は抜いたXZ軸の移動距離を計算
+	float playerMoveDis = VSize({ playerMoveVec.x,0.0f,playerMoveVec.z });
+
+
 	// 相対座標からワールド座標に直して、カメラ座標とする
 	// しゃがみ状態かスライディング状態であれば、カメラの位置を下げる
 	if (playerController_->GetState() == PLAYER_STATE::CROUCHING
@@ -97,6 +143,11 @@ void Camera::SetBeforeDrawFollow()
 	{
 		VECTOR followCameraPos = VAdd(PlayerController::CROUCHING_CAP_START_OFFSET, PlayerController::STANDING_CAP_END_OFFSET);
 		// 相対座標をカメラの回転を反映
+		transform_->pos_ = VAdd(followPos, followCameraPos);
+	}
+	else if (playerMoveDis > 1.0f && moveCount < MOVE_COUNT_MAX /2)
+	{
+		VECTOR followCameraPos = VAdd(PlayerController::MOVE_CAP_START_OFFSET, PlayerController::STANDING_CAP_END_OFFSET);
 		transform_->pos_ = VAdd(followPos, followCameraPos);
 	}
 	// しゃがみ状態でなければ、カメラの位置は立ち状態のまま

@@ -30,7 +30,10 @@ public:
 	static constexpr float THRESHOLD = 1.5f;
 
 	// 線形補間の係数
-	static constexpr float COEFFICIENT = 0.1f;
+	static constexpr float COEFFICIENT = 0.09f;
+
+	// 移動カウント最高値(カメラの揺らしタイミングに使用)
+	static constexpr float MOVE_COUNT_MAX = 32.0f;
 
 public:
 	enum class MODE
@@ -94,4 +97,6 @@ private:
 
 	int mousePosX_ = 0;
 	int mousePosY_ = 0;
+
+	float moveCount;
 };

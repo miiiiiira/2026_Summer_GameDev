@@ -736,7 +736,7 @@ bool GameScene::CanStepUp(const VECTOR& pos, const VECTOR& move, float stepHeigh
 {
 	// 必要なコンポーネントが存在しないなら処理しない
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
-	if (!stage) return -1;
+	if (!stage) return false;
 
 	// テスト用の座標
 	VECTOR testPos = pos;

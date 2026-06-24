@@ -137,6 +137,11 @@ CapsuleCollider* PlayerController::GetCapsule(void)
 	return owner_->GetComponent<CapsuleCollider>();
 }
 
+float PlayerController::GetMoveSpeed(void)
+{
+	return moveSpeed_;
+}
+
 PLAYER_STATE PlayerController::GetState(void)
 {
 	return state_;

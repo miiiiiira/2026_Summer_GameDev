@@ -75,6 +75,10 @@ public:
 	// スタート位置
 	static constexpr VECTOR CROUCHING_CAP_START_OFFSET = { 0.0f,60.0f,0.0f };
 
+	// 移動状態
+	// スタート位置
+	static constexpr VECTOR MOVE_CAP_START_OFFSET = { 0.0f,135.0f,0.0f };
+
 public:
 	void Init() override;		// 初期化
 	void Update() override;		// 更新
@@ -85,6 +89,9 @@ public:
 
 	// Capsuleを返す
 	CapsuleCollider* GetCapsule(void);
+
+	// 移動速度を渡す
+	float GetMoveSpeed(void);
 
 	// 掴んでいるかの状態を取得
 	PLAYER_STATE GetState(void);
