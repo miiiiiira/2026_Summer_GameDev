@@ -95,9 +95,6 @@ private:
 	// ノード到着時
 	void ArriveNode(void);
 
-	// 移動処理
-	void Move(void);
-
 	// 一番近いノードを探す
 	int FindNearestNode(VECTOR pos);
 

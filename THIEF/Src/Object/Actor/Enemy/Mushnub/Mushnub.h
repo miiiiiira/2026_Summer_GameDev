@@ -4,6 +4,7 @@
 
 class Mushnub : public EnemyBase
 {
+public:
 	// 敵の状態
 	enum class STATE
 	{
@@ -43,19 +44,18 @@ class Mushnub : public EnemyBase
 	void Update(void)override;
 	void Draw(void) override;
 
-	STATE GetState(void);
-
 private:
 
 	// 大きさ
-	static constexpr VECTOR SCALE = { 1.0f,1.0f,1.0f };
+	static constexpr VECTOR SCALE = { 0.3f,0.3f,0.3f };
 
 	// 向き
-	static constexpr VECTOR DEFAULT_ANGLE = { 0.0f,0.0f,0.0f };
+	static constexpr VECTOR DEFAULT_ANGLE = { 0.0f, 0.0f,0.0f };
 
 	// 座標
-	static constexpr VECTOR DEFAULT_POS = { -5617.04f,10.0f,6573.71f };
-	
+	static constexpr VECTOR CHASE_POS = { -1506.83f,10.0f,6513.62f };
+	static constexpr VECTOR DEFAULT_POS = { -1426.83f,10.0f,7200.0f };
+
 	// 更新ステップ
 	float step_;
 
@@ -64,11 +64,6 @@ private:
 	float viewRadius_;		// 視野用の半径
 
 	bool isHit_;
-
-	void SetMoveDirPatrol(void);
-
-	// 移動処理
-	void Move(void);
 
 	// 追従用の線分かステージと当たっているかどうか
 	bool CheckChaseLineCollision(VECTOR pPos, VECTOR ePos, float radius);

@@ -48,6 +48,7 @@ void Yeti::Init(PlayerController* player, int id)
 	prevPos_ = pos_;
 
 	moveDir_ = { 0.0f, 0.0f, 0.0f };
+	moveSpeed_ = 0.0f;
 
 	startOffset_ = { 0.0f,180.0f,0.0f };
 	endOffset_ = { 0.0f,40.0f,0.0f };
@@ -268,16 +269,6 @@ int Yeti::SelectNextNode(void)
 	}
 
 	return currentNodeId_;
-}
-
-void Yeti::Move(void)
-{
-	// ˆÚ“®—Ê‚ğŒvZ‚·‚é
-	movePow_ = VScale(moveDir_, moveSpeed_);
-	// ˆÚ“®—Êˆ—
-	pos_ = VAdd(pos_, movePow_);
-	// ƒ‚ƒfƒ‹‚ÉÀ•W‚ğİ’è
-	MV1SetPosition(modelId_, pos_);
 }
 
 int Yeti::FindNearestNode(VECTOR pos)
