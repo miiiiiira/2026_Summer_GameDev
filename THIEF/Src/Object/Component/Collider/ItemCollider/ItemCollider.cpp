@@ -61,7 +61,7 @@ void ItemCollider::PlayerGrabCollision(void)
 		if (player_->GetGrabbingState() == GRABBING_STATE::TRY_GRABBING)
 		{
 			// ƒJƒƒ‰‚Æ“–‚½‚Á‚½êŠ‚Ì‹——£‚ğ‹‚ß‚é
-			float distance = item_->GetCameraDistance(hitResult.HitPosition);
+			float distance = item_->GetCameraDistance();
 
 			// ‹——£‚ªÅ’á‹——£’l‚æ‚è‚à¬‚³‚©‚Á‚½‚çÅ’á‹——£’l‚É‚·‚é
 			if (distance < PlayerController::MIN_RENGE)distance = PlayerController::MIN_RENGE;

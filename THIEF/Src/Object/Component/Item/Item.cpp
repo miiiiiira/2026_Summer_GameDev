@@ -1,5 +1,6 @@
 #include "Item.h"
 #include <DxLib.h>
+#include <math.h>
 #include "../../../Common/Transform/MatrixUtility.h"
 #include "../../../Common/Math/Math.h"
 #include "../Render/Render3D.h"
@@ -161,7 +162,7 @@ void Item::Draw2D(void)
 		VECTOR pos = ConvWorldPosToScreenPos(damage.pos);
 
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, (255 * damage.count) / DAMAGE_DRAW_COUNT);
-		DrawFormatStringToHandle(
+		DrawFormatStringFToHandle(
 			pos.x - ((offset * Application::FONT_SIZE) / 2),
 			pos.y,
 			0xff0000,
@@ -191,9 +192,10 @@ const ItemInfo& Item::GetInfo(void)
 	return info_;
 }
 
-float Item::GetCameraDistance(VECTOR pos)
+float Item::GetCameraDistance(void)
 {
-	return VSize(VSub(pos, CameraUtility::GetCameraPos()));
+	// アイテムの座標とカメラの座標のベクトルを求めて、距離を算出
+	return VSize(VSub(trans_->pos_, CameraUtility::GetCameraPos()));
 }
 
 void Item::SetDamage(VECTOR pos)
@@ -354,14 +356,14 @@ void Item::TrackingPlayer(void)
 	// モデルに座標を反映
 	MV1SetPosition(info_.modelId_, trans_->pos_);
 
-	// アイテムの回転を行列にする
-	MATRIX itemMat = Matrix::GetMatrixRotateXYZ(info_.angle_);
+	// XとZの比率から、Y軸の角度を直接計算する
+	float forwardX = CameraUtility::GetCameraMatrix().m[2][0];
+	float forwardZ = CameraUtility::GetCameraMatrix().m[2][2];
+	// ベクトルから角度を出す
+	info_.angle_.y = atan2f(forwardX, forwardZ);
 
-	// プレイヤーの回転を杖のの回転行列に反映する
-	MATRIX mat = Matrix::Multiplication(itemMat, CameraUtility::GetCameraMatrix());
-	
 	// 回転行列をモデルに反映
-	MV1SetRotationMatrix(info_.modelId_, mat);
+	MV1SetRotationMatrix(info_.modelId_, CameraUtility::GetCameraMatrix());
 
 	// 当たり判定情報を最新の状態に更新
 	MV1RefreshCollInfo(info_.modelId_, -1);

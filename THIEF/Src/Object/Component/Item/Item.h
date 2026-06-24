@@ -53,7 +53,7 @@ public:
 	int GetModelID(void) { return info_.modelId_; }
 
 	// ƒJƒƒ‰‚Æ‚Ì‹——£‚ğ“n‚·
-	float GetCameraDistance(VECTOR pos);
+	float GetCameraDistance(void);
 
 public:
 
