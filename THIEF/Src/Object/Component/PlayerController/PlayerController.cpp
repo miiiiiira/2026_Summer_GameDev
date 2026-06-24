@@ -440,7 +440,7 @@ void PlayerController::InputSliding(void)
 		}
 
 		// プレイヤーのスライディングの移動速度とダッシュ移動速度を加算
-		moveSpeed_ = SLIDING_SPEED+PlayerStatusManager::GetInstance().GetPlayerStatus().dashMoveSpeed_;
+		moveSpeed_ = SLIDING_SPEED + PlayerStatusManager::GetInstance().GetPlayerStatus().dashMoveSpeed_;
 
 		// スライディング可能時間を初期化
 		slidingInputBufferTime = 0;

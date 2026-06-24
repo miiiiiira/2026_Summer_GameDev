@@ -33,7 +33,13 @@ public:
 	static constexpr float COEFFICIENT = 0.09f;
 
 	// 移動カウント最高値(カメラの揺らしタイミングに使用)
-	static constexpr float MOVE_COUNT_MAX = 32.0f;
+	static constexpr float MOVE_COUNT_MAX = 100.0f;
+
+	// 移動時のカメラ揺らしの幅
+	static constexpr float SHAKE_SIZE = 10.0f;
+
+	// プレイヤーの速度から角度を求める際の微調整係数
+	static constexpr float SHAKE_ADJUST = 0.4f;
 
 public:
 	enum class MODE
@@ -98,5 +104,5 @@ private:
 	int mousePosX_ = 0;
 	int mousePosY_ = 0;
 
-	float moveCount;
+	float angleMoveCount;
 };
