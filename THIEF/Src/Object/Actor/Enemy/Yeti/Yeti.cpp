@@ -87,7 +87,6 @@ void Yeti::Init(PlayerController* player, int id)
 			// 同じノードならスキップ
 			if (i == j) continue;
 
-
 			// 遠すぎるノードも除外する
 			float nodeDistance = GetDistance(way_[j].pos, way_[i].pos);
 			if (nodeDistance > NODE_CONNECT_MAX_DISTANCE_SQ) continue;

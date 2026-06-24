@@ -54,7 +54,7 @@ private:
 
 	// 座標
 	static constexpr VECTOR CHASE_POS = { -1506.83f,10.0f,6513.62f };
-	static constexpr VECTOR DEFAULT_POS = { -1426.83f,10.0f,7200.0f };
+	static constexpr VECTOR DEFAULT_POS = { -1426.83f,10.0f,5200.0f };
 
 	// 更新ステップ
 	float step_;
