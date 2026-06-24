@@ -284,6 +284,9 @@ int Yeti::FindNearestNode(VECTOR pos)
 {
 	int nearNodeId = -1;
 	float minCost = FLT_MAX;
+
+	// 視線が通っているノードの中で
+
 	for (const auto& way : way_)
 	{
 		// 一番近いノードを探す
