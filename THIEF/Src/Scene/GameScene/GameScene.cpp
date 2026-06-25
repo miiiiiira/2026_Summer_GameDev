@@ -99,12 +99,6 @@ void GameScene::Load(void)
 	redEffect_ = new DamageEffect();
 	redEffect_->Load();
 
-	// カメラの作成
-	CameraCreate();
-
-	// カメラユーティリティにカメラのポインタを渡す
-	CameraUtility::SetCameraPoint(objectManger_->FindComponentWithTag<Camera>(Tag::Camera));
-
 	// 現在のステージ数を見て初期化処理を変更
 	switch (SceneManager::GetInstance()->GetCurrentStage())
 	{
@@ -310,16 +304,16 @@ void GameScene::WispCreate(void)
 	// タグを付与
 	wisp->SetTagAndPriority(Tag::Wisp);
 
+	// 座標の設定
+	auto trans = wisp->AddComponent<Transform>();
+	trans->pos_ = { 0.0f,0.0f,0.0f };
+
 	// 描画
 	auto render = wisp->AddComponent<Render3D>();
 	render->SetModel("Data/Model/Player/Light/Wisp.mv1");
 
 	// 火機能
 	auto cont = wisp->AddComponent<Wisp>();
-
-	// 座標の設定
-	auto trans = wisp->AddComponent<Transform>();
-	trans->pos_ = { 0.0f,0.0f,0.0f };
 }
 
 void GameScene::PlayerCreate(void)
@@ -421,6 +415,12 @@ void GameScene::ItemCreateStage3(void)
 
 void GameScene::Stage1Init(void)
 {
+	// カメラの作成
+	CameraCreate();
+
+	// カメラユーティリティにカメラのポインタを渡す
+	CameraUtility::SetCameraPoint(objectManger_->FindComponentWithTag<Camera>(Tag::Camera));
+
 	// ステージの作成
 	StageCreate();
 
@@ -439,6 +439,12 @@ void GameScene::Stage1Init(void)
 
 void GameScene::Stage2Init(void)
 {
+	// カメラの作成
+	CameraCreate();
+
+	// カメラユーティリティにカメラのポインタを渡す
+	CameraUtility::SetCameraPoint(objectManger_->FindComponentWithTag<Camera>(Tag::Camera));
+
 	// ステージの作成
 	StageCreate();
 
@@ -457,6 +463,12 @@ void GameScene::Stage2Init(void)
 
 void GameScene::Stage3Init(void)
 {
+	// カメラの作成
+	CameraCreate();
+
+	// カメラユーティリティにカメラのポインタを渡す
+	CameraUtility::SetCameraPoint(objectManger_->FindComponentWithTag<Camera>(Tag::Camera));
+
 	// ステージの作成
 	StageCreate();
 

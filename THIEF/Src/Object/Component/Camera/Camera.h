@@ -13,7 +13,7 @@ public:
 	static constexpr VECTOR DERFAULT_POS = { 0.0f, 0.0f, 0.0f };
 
 	// カメラの初期角度
-	static constexpr VECTOR DERFAULT_ANGLES = {	0.0f, 0.0f, 0.0f };
+	static constexpr VECTOR DERFAULT_ANGLES = { 0.0f, 100.0f * DX_PI_F / 180.0f, 0.0f };
 
 	// 追従対象から注視点への相対座標
 	static constexpr VECTOR FOLLOW_TARGET_LOCAL_POS = { 0.0f, 0.0f, 300.0f };
