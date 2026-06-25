@@ -18,7 +18,7 @@
 #include "../Object/Component/PlayerController/PlayerController.h"
 #include "../Object/Component/Animation/Animation.h"
 #include "../Object/Component/Stage/Stage.h"
-#include "../Object/Component/Lantern/Lantern.h"
+#include "../Object/Component/Wisp/Wisp.h"
 #include "../Object/Component/Transform/Transform.h"
 #include "../Common/Transform/MatrixUtility.h"
 #include "../Common/CameraUtility/CameraUtility.h"
@@ -61,8 +61,8 @@ void DebugScene::Load(void)
 	// カメラユーティリティにカメラのポインタを渡す
 	CameraUtility::SetCameraPoint(objectManger_->FindComponentWithTag<Camera>(Tag::Camera));
 
-	// ランタンの作成
-	LanternCreate();
+	// ライトの作成
+	Wisp();
 
 	// プレイヤーの作成
 	PlayerCreate();
@@ -171,23 +171,23 @@ void DebugScene::CameraCreate(void)
 	camera->ChangeMode(Camera::MODE::FOLLOW);
 }
 
-void DebugScene::LanternCreate(void)
+void DebugScene::WispCreate(void)
 {
 	// ランタン生成
-	auto lantern = objectManger_->CreateObject();
+	auto wisp = objectManger_->CreateObject();
 
 	// タグを付与
-	lantern->SetTagAndPriority(Tag::Lantern);
+	wisp->SetTagAndPriority(Tag::Wisp);
 
 	// 描画
-	auto render = lantern->AddComponent<Render3D>();
-	render->SetModel("Data/Model/Lantern/Lantern.mv1");
+	auto render = wisp->AddComponent<Render3D>();
+	render->SetModel("Data/Model/Player/Light/Wisp.mv1");
 
 	// ランタン機能
-	auto cont = lantern->AddComponent<Lantern>();
+	auto cont = wisp->AddComponent<Wisp>();
 
 	// 座標の設定
-	auto trans = lantern->AddComponent<Transform>();
+	auto trans = wisp->AddComponent<Transform>();
 	trans->pos_ = { 0.0f,0.0f,0.0f };
 }
 
@@ -227,10 +227,10 @@ void DebugScene::PlayerCreate(void)
 	auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
 
 	// ランタン取得
-	auto lantern = objectManger_->FindComponentWithTag<Lantern>(Tag::Lantern);
+	auto wisp = objectManger_->FindComponentWithTag<Wisp>(Tag::Wisp);
 
 	// プレイヤークラスにランタンのポインタを渡す
-	playerController->SetLantern(lantern);
+	playerController->SetWisp(wisp);
 }
 
 void DebugScene::EnemyCreate(void)

@@ -8,7 +8,7 @@ class Transform;
 class CapsuleCollider;
 class Animation;
 class Item;
-class Lantern;
+class Wisp;
 
 // プレイヤーの状態
 enum class PLAYER_STATE
@@ -108,8 +108,8 @@ public:
 	// 指定された掴み動作を設定
 	void StartGrabbing(float range);
 
-	// ランタンクラスのポインタ取得
-	void SetLantern(Lantern* lantern);
+	// ライトクラスのポインタ取得
+	void SetWisp(Wisp* wisp);
 
 	// アイテムを取得
 	void SetItemPoint(Item* item);
@@ -166,8 +166,8 @@ private:
 	// アイテム
 	Item* item_ = nullptr;
 
-	// ランタン
-	Lantern* lantern_ = nullptr;
+	// 火
+	Wisp* wisp_ = nullptr;
 
 	// 現在の落下速度
 	float velocityY_ = 0.0f;

@@ -7,7 +7,7 @@ enum class Tag
 	Object,
 	Camera,
 	Stage,
-	Lantern,
+	Wisp,
 	Enemy,
 	Player,
 	Item_Goblet,

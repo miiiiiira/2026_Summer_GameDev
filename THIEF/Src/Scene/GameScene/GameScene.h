@@ -36,7 +36,7 @@ public:
 
 	void CameraCreate(void);		// カメラの作成
 	void StageCreate(void);			// ステージの作成
-	void LanternCreate(void);		// ランタンの作成
+	void WispCreate(void);			// ライトの作成
 	void PlayerCreate(void);		// プレイヤーの作成
 	void EnemyCreate(void);			// 敵の作成
 	void ItemCreateStage1(void);	// ステージ1アイテムの作成

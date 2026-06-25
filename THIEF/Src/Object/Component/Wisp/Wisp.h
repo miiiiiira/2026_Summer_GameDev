@@ -6,24 +6,21 @@
 // 前方宣言
 class Transform;
 
-class Lantern:public Component
+class Wisp :public Component
 {
 private:
 	// 初期座標
 	static constexpr VECTOR DEFAULT_POS = { 0.0f,0.0f,0.0f };
-	
+
 	// 大きさ
 	static constexpr VECTOR SCALE = { 1.0f,1.0f,1.0f };
-
-	// 向き
-	static constexpr VECTOR DEFAULT_ANGLE = { 0.0f,0.0f,0.0f };
 
 	// ランタンの範囲
 	static constexpr float LANTEERN_RANGE = 3000.0f;
 
 	// プレイヤーとランタンの相対座標
 	static constexpr VECTOR REACH_DEFAULT_LIGHT = { -110.0f,-70.0f,220.0f };
-	static constexpr VECTOR REACH_MAX_LIGHT = {-110.0f,0.0f,800.0f };
+	static constexpr VECTOR REACH_MAX_LIGHT = { -110.0f,0.0f,800.0f };
 
 	// オフセット
 	static constexpr VECTOR POINTLIGHT_OFFSET = { 0.0f,70.0f,0.0f };
@@ -34,10 +31,10 @@ private:
 public:
 
 	// コンストラクタ
-	Lantern(void);
+	Wisp(void);
 
 	// デストラクタ
-	~Lantern(void) override;
+	~Wisp(void) override;
 
 	// 初期化処理
 	void Init(void)override;
@@ -47,7 +44,6 @@ public:
 	void Draw3D(void)override;
 
 	// モデルIDを返す
-	int GetLanternModelId() const { return lanternModelId_; }
 	int GetWispModelId() const { return wispModelId_; }
 
 	// Transformを返す
@@ -66,16 +62,12 @@ private:
 	VECTOR pointPos_;
 
 	// モデルのハンドル
-	int lanternModelId_ = -1;
 	int wispModelId_ = -1;
 
 	int wispTexture = -1;
 
 	// モデルの大きさ
 	VECTOR scale_;
-
-	// モデルの向き
-	VECTOR angle_;
 
 	// 座標更新処理
 	void UpdatePos(void);

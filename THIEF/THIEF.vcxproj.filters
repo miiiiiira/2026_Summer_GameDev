@@ -129,7 +129,7 @@
     <ClCompile Include="Src\Object\Component\Collider\ItemCollider\ItemCollider.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Object\Component\Lantern\Lantern.cpp">
+    <ClCompile Include="Src\Object\Component\Wisp\Wisp.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Scene\DebugScene.cpp">
@@ -361,7 +361,7 @@
     <ClInclude Include="Src\Object\Component\Collider\ItemCollider\ItemCollider.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Object\Component\Lantern\Lantern.h">
+    <ClInclude Include="Src\Object\Component\Wisp\Wisp.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Scene\DebugScene.h">

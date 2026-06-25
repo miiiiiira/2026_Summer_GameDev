@@ -11,7 +11,7 @@
 #include "../../Component/Transform/Transform.h"
 #include "../../Component/Animation/Animation.h"
 #include "../../Component/Item/Item.h"
-#include "../../Component/Lantern/Lantern.h"
+#include "../../Component/Wisp/Wisp.h"
 #include "../../../Common/Transform/MatrixUtility.h"
 #include "../../../Common/CameraUtility/CameraUtility.h"
 #include "../../../Scene/SceneManager.h"
@@ -181,10 +181,10 @@ void PlayerController::StartGrabbing(float range)
 	range_ = range;
 }
 
-void PlayerController::SetLantern(Lantern* lantern)
+void PlayerController::SetWisp(Wisp* wisp)
 {
 	// ランタンクラスのポインタを設定
-	lantern_ = lantern;
+	wisp_ = wisp;
 }
 
 void PlayerController::SetItemPoint(Item* item)
@@ -232,7 +232,7 @@ void PlayerController::Move()
 	if (!transform_) return;
 
 	// ランタンがなければ処理しない
-	if (!lantern_) return;
+	if (!wisp_) return;
 
 	switch (state_)
 	{
@@ -446,7 +446,7 @@ void PlayerController::InputSliding(void)
 		slidingInputBufferTime = 0;
 
 		// ランタンの光を消す
-		lantern_->SetLight(false);
+		wisp_->SetLight(false);
 
 		// スライディングのサウンド再生
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_SLIDING);
@@ -488,7 +488,7 @@ void PlayerController::Crouching(void)
 		CrouchingInit();
 
 		// ランタンの光を消す
-		lantern_->SetLight(false);
+		wisp_->SetLight(false);
 
 		if (!prevCrouching_)
 		{
@@ -739,10 +739,10 @@ void PlayerController::IdleInit(void)
 		cap->startOffset_ = STANDING_CAP_START_OFFSET;
 	}
 
-	if (!lantern_->GetLight())
+	if (!wisp_->GetLight())
 	{
 		// ランタンの光をつける
-		lantern_->SetLight(true);
+		wisp_->SetLight(true);
 	}
 }
 

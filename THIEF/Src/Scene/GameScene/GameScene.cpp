@@ -27,7 +27,7 @@
 #include "../../Object/Component/PlayerController/PlayerController.h"
 #include "../../Object/Component/Animation/Animation.h"
 #include "../../Object/Component/Stage/Stage.h"
-#include "../../Object/Component/Lantern/Lantern.h"
+#include "../../Object/Component/Wisp/Wisp.h"
 #include "../../Object/Component/Item/Item.h"
 #include "../../Object/Component/Item/ItemInfo.h"
 #include "../../Object/Component/Item/Goblet/Goblet.h"
@@ -302,24 +302,23 @@ void GameScene::StageCreate(void)
 	delivery->SetCrosshair(crosshair_);
 }
 
-void GameScene::LanternCreate(void)
+void GameScene::WispCreate(void)
 {
-	// ランタン生成
-	auto lantern = objectManger_->CreateObject();
+	// 火生成
+	auto wisp = objectManger_->CreateObject();
 
 	// タグを付与
-	lantern->SetTagAndPriority(Tag::Lantern);
+	wisp->SetTagAndPriority(Tag::Wisp);
 
 	// 描画
-	auto render = lantern->AddComponent<Render3D>();
-	render->SetModelHandles("Data/Model/Player/Lantern/Lantern2.mv1");
-	render->SetModelHandles("Data/Model/Player/Lantern/Wisp.mv1");
+	auto render = wisp->AddComponent<Render3D>();
+	render->SetModel("Data/Model/Player/Light/Wisp.mv1");
 
-	// ランタン機能
-	auto cont = lantern->AddComponent<Lantern>();
+	// 火機能
+	auto cont = wisp->AddComponent<Wisp>();
 
 	// 座標の設定
-	auto trans = lantern->AddComponent<Transform>();
+	auto trans = wisp->AddComponent<Transform>();
 	trans->pos_ = { 0.0f,0.0f,0.0f };
 }
 
@@ -360,11 +359,11 @@ void GameScene::PlayerCreate(void)
 	// プレイヤー取得
 	auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
 
-	// ランタン取得
-	auto lantern = objectManger_->FindComponentWithTag<Lantern>(Tag::Lantern);
+	// ライト取得
+	auto wisp = objectManger_->FindComponentWithTag<Wisp>(Tag::Wisp);
 
-	// ランタンのポインタを渡す
-	playerController->SetLantern(lantern);
+	// ライトのポインタを渡す
+	playerController->SetWisp(wisp);
 
 	// 納品場所用当たり判定にプレイヤーを渡す
 	auto deliveryCol = stage->GetOwner()->GetComponent<DeliveryLocationCollider>();
@@ -425,8 +424,8 @@ void GameScene::Stage1Init(void)
 	// ステージの作成
 	StageCreate();
 
-	// ランタンの作成
-	LanternCreate();
+	// ライトの作成
+	WispCreate();
 
 	// プレイヤーの作成
 	PlayerCreate();
@@ -443,8 +442,8 @@ void GameScene::Stage2Init(void)
 	// ステージの作成
 	StageCreate();
 
-	// ランタンの作成
-	LanternCreate();
+	// ライトの作成
+	WispCreate();
 
 	// プレイヤーの作成
 	PlayerCreate();
@@ -461,8 +460,8 @@ void GameScene::Stage3Init(void)
 	// ステージの作成
 	StageCreate();
 
-	// ランタンの作成
-	LanternCreate();
+	// ライトの作成
+	WispCreate();
 
 	// プレイヤーの作成
 	PlayerCreate();

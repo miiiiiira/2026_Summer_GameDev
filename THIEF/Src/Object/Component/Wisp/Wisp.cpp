@@ -1,4 +1,4 @@
-#include "Lantern.h"
+#include "Wisp.h"
 
 #include "../../../Common/Transform/MatrixUtility.h"
 #include "../../../Common/CameraUtility/CameraUtility.h"
@@ -7,7 +7,7 @@
 #include "../Render/Render3D.h"
 #include "../../Object.h"
 
-Lantern::Lantern(void)
+Wisp::Wisp(void)
 {
 	// 追加ポイントライト
 	pointLightHandle_ = CreatePointLightHandle(
@@ -21,57 +21,46 @@ Lantern::Lantern(void)
 	SetLightDifColorHandle(pointLightHandle_, GetColorF(0x41 / 255.0f, 0x69 / 255.0f, 0xe1 / 255.0f, 1.0f));
 }
 
-Lantern::~Lantern(void)
+Wisp::~Wisp(void)
 {
 	// ポイントライトのハンドルを解放
 	DeleteLightHandle(pointLightHandle_);
 }
 
-void Lantern::Init(void)
+void Wisp::Init(void)
 {
 	pointPos_ = DEFAULT_POS;
 
 	// 大きさの初期化
 	scale_ = SCALE;
 
-	// 向きの初期化
-	angle_ = DEFAULT_ANGLE;
-
 	// オーナーから3D描画コンポーネントを取得
 	auto render = owner_->GetComponent<Render3D>();
 	if (!render) return;
 
 	// モデルIDを取得
-	lanternModelId_ = render->GetHandles(0);
-	wispModelId_ = render->GetHandles(1);
+	wispModelId_ = render->GetHandle();
 
 	// オーナーからTransformを取得
 	auto trans = owner_->GetComponent<Transform>();
 
 	// モデルに大きさ、向き、座標を設定
-	MV1SetScale(lanternModelId_, scale_);
-	MV1SetRotationXYZ(lanternModelId_, angle_);
-	MV1SetPosition(lanternModelId_, trans->pos_);
-
-	// 衝突情報構築
-	MV1SetupCollInfo(lanternModelId_, -1);
-
-	// モデルに大きさ、向き、座標を設定
 	MV1SetScale(wispModelId_, scale_);
-	MV1SetRotationXYZ(wispModelId_, angle_);
 	MV1SetPosition(wispModelId_, trans->pos_);
+	// 回転行列をモデルに反映
+	MV1SetRotationMatrix(wispModelId_, CameraUtility::GetCameraMatrix());
 
 	// 衝突情報構築
 	MV1SetupCollInfo(wispModelId_, -1);
 }
 
-void Lantern::Update(void)
+void Wisp::Update(void)
 {
-	// ランタンの座標を更新
+	// 座標を更新
 	UpdatePos();
 }
 
-void Lantern::Draw3D(void)
+void Wisp::Draw3D(void)
 {
 #ifdef _DEBUG
 
@@ -81,18 +70,18 @@ void Lantern::Draw3D(void)
 #endif // _DEBUG
 }
 
-void Lantern::SetLight(bool lightFlg)
+void Wisp::SetLight(bool lightFlg)
 {
 	// 指定されたライト状態にする
 	SetLightEnableHandle(pointLightHandle_, lightFlg);
 }
 
-bool Lantern::GetLight(void)
+bool Wisp::GetLight(void)
 {
 	return GetLightEnableHandle(pointLightHandle_);
 }
 
-void Lantern::UpdatePos(void)
+void Wisp::UpdatePos(void)
 {
 	// オーナーからTransformを取得
 	auto trans = owner_->GetComponent<Transform>();
@@ -113,13 +102,13 @@ void Lantern::UpdatePos(void)
 	// 方向と同じ要領で、相対座標を回転
 	if (InputManager::GetInstance()->PushLightButtons())
 	{
-		// ランタンの座標に反映
+		// 座標に反映
 		trans->pos_ = CameraUtility::AddCameraPosLocalPos(REACH_MAX_LIGHT);
 		pointPos_ = CameraUtility::AddCameraPosLocalPos(VAdd(REACH_MAX_LIGHT, POINTLIGHT_OFFSET));
 	}
 	else
 	{
-		// ランタンの座標に反映
+		// 座標に反映
 		trans->pos_ = CameraUtility::AddCameraPosLocalPos(REACH_DEFAULT_LIGHT);
 		pointPos_ = CameraUtility::AddCameraPosLocalPos(VAdd(REACH_DEFAULT_LIGHT, POINTLIGHT_OFFSET ));
 	}
@@ -132,22 +121,13 @@ void Lantern::UpdatePos(void)
 	SetLightPositionHandle(pointLightHandle_, pointPos_);
 
 	// モデルに座標を反映
-	MV1SetPosition(lanternModelId_, trans->pos_);
 	MV1SetPosition(wispModelId_, trans->pos_);
 
-	// 回転
-	// ランタンの回転を行列にする
-	MATRIX weaponMat = Matrix::GetMatrixRotateXYZ(angle_);
-
-	// プレイヤーの回転をランタンの回転行列に反映する
-	MATRIX mat = Matrix::Multiplication(weaponMat, CameraUtility::GetCameraMatrix());
-
 	// 回転行列をモデルに反映
-	MV1SetRotationMatrix(lanternModelId_, mat);
-	MV1SetRotationMatrix(wispModelId_, mat);
+	MV1SetRotationMatrix(wispModelId_, CameraUtility::GetCameraMatrix());
 }
 
-void Lantern::DebugDraw(void)
+void Wisp::DebugDraw(void)
 {
 	// オーナーからTransformを取得
 	auto trans = owner_->GetComponent<Transform>();
