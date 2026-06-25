@@ -301,6 +301,16 @@ void EnemyBase::LookPlayer(void)
 	angle_.x = angle_.z = 0.0f;
 }
 
+void EnemyBase::Move(void)
+{
+	// ˆÚ“®—Ê‚ğŒvZ‚·‚é
+	movePow_ = VScale(moveDir_, moveSpeed_);
+	// ˆÚ“®—Êˆ—
+	pos_ = VAdd(pos_, movePow_);
+	// ƒ‚ƒfƒ‹‚ÉÀ•W‚ğİ’è
+	MV1SetPosition(modelId_, pos_);
+}
+
 float EnemyBase::GetDistance(VECTOR pos1, VECTOR pos2)
 {
 	return VSquareSize(VSub(pos1, pos2));

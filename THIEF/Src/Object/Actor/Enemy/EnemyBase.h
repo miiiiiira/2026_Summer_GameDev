@@ -118,6 +118,9 @@ protected:
 	// プレイヤー追従処理
 	void LookPlayer(void);
 
+	// 移動処理
+	void Move(void);
+
 	float GetDistance(VECTOR pos1, VECTOR pos2);
 
 	// プレイヤーを見つけたかどうか

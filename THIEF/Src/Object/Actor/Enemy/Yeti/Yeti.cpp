@@ -48,6 +48,7 @@ void Yeti::Init(PlayerController* player, int id)
 	prevPos_ = pos_;
 
 	moveDir_ = { 0.0f, 0.0f, 0.0f };
+	moveSpeed_ = 0.0f;
 
 	startOffset_ = { 0.0f,180.0f,0.0f };
 	endOffset_ = { 0.0f,40.0f,0.0f };
@@ -85,7 +86,6 @@ void Yeti::Init(PlayerController* player, int id)
 		{
 			// 同じノードならスキップ
 			if (i == j) continue;
-
 
 			// 遠すぎるノードも除外する
 			float nodeDistance = GetDistance(way_[j].pos, way_[i].pos);
@@ -270,20 +270,13 @@ int Yeti::SelectNextNode(void)
 	return currentNodeId_;
 }
 
-void Yeti::Move(void)
-{
-	// 移動量を計算する
-	movePow_ = VScale(moveDir_, moveSpeed_);
-	// 移動量処理
-	pos_ = VAdd(pos_, movePow_);
-	// モデルに座標を設定
-	MV1SetPosition(modelId_, pos_);
-}
-
 int Yeti::FindNearestNode(VECTOR pos)
 {
 	int nearNodeId = -1;
 	float minCost = FLT_MAX;
+
+	// 視線が通っているノードの中で
+
 	for (const auto& way : way_)
 	{
 		// 一番近いノードを探す
