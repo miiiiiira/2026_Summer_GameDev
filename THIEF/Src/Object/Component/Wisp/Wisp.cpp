@@ -9,12 +9,20 @@
 
 Wisp::Wisp(void)
 {
+	// ライトの範囲初期化
+	range_ = POINTLIGHT_RANGE_MAX;
+	// 最大値とする
+	isRangeMax_ = true;
+
+	// ライトの光量初期化
+	lightPow_ = LIGHT_POW_MAX;
+
 	// 追加ポイントライト
 	pointLightHandle_ = CreatePointLightHandle(
-		{ 0.0f, 0.0f, 0.0f }, LANTEERN_RANGE,
-		0.0f,
-		0.0009f,
-		0.000f
+		{ 0.0f, 0.0f, 0.0f }, range_,
+		ATTEN_0,
+		lightPow_,
+		ATTEN_2
 	);
 
 	// ハンドルのポイントライトに色をつける
@@ -58,6 +66,9 @@ void Wisp::Update(void)
 {
 	// 座標を更新
 	UpdatePos();
+
+	// ライトの範囲を更新
+	UpdateRange();
 }
 
 void Wisp::Draw3D(void)
@@ -70,15 +81,14 @@ void Wisp::Draw3D(void)
 #endif // _DEBUG
 }
 
-void Wisp::SetLight(bool lightFlg)
+void Wisp::SetIsRangeMax(bool flg)
 {
-	// 指定されたライト状態にする
-	SetLightEnableHandle(pointLightHandle_, lightFlg);
+	isRangeMax_ = flg;
 }
 
-bool Wisp::GetLight(void)
+bool Wisp::GetIsRangeMax(void)
 {
-	return GetLightEnableHandle(pointLightHandle_);
+	return isRangeMax_;
 }
 
 void Wisp::UpdatePos(void)
@@ -125,6 +135,57 @@ void Wisp::UpdatePos(void)
 
 	// 回転行列をモデルに反映
 	MV1SetRotationMatrix(wispModelId_, CameraUtility::GetCameraMatrix());
+}
+
+void Wisp::UpdateRange(void)
+{
+	// 前の情報を保持しておく
+	float prevRange = range_;
+	float prevLightPow = lightPow_;
+
+	if (isRangeMax_)
+	{
+		// 最大値じゃなければ変更
+		if (range_ < POINTLIGHT_RANGE_MAX)
+		{
+			range_ = POINTLIGHT_RANGE_MAX;
+		}
+		// 最大値じゃなければ変更
+		if (lightPow_ > LIGHT_POW_MAX)
+		{
+			lightPow_ = LIGHT_POW_MAX;
+		}
+	}
+	else
+	{
+		// 最小値じゃなければ変更
+		if (range_ > POINTLIGHT_RANGE_MIN)
+		{
+			range_ = POINTLIGHT_RANGE_MIN;
+		}
+		// 最小値じゃなければ変更
+		if (lightPow_ < LIGHT_POW_MIN)
+		{
+			lightPow_ = LIGHT_POW_MIN;
+		}
+	}
+
+	// 変更があったら
+	if (range_ != prevRange 
+		|| lightPow_ != prevLightPow)
+	{
+		// 線形補間で滑らかにする
+		range_ = Math::Lerp(prevRange, range_, COEFFICIENT);
+		lightPow_ = Math::Lerp(prevLightPow, lightPow_, COEFFICIENT);
+
+		// ライトに範囲を反映
+		SetLightRangeAttenHandle(
+			pointLightHandle_,
+			range_,
+			ATTEN_0,
+			lightPow_,
+			ATTEN_2);
+	}
 }
 
 void Wisp::DebugDraw(void)

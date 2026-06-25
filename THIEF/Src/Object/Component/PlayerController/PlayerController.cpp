@@ -445,8 +445,8 @@ void PlayerController::InputSliding(void)
 		// スライディング可能時間を初期化
 		slidingInputBufferTime = 0;
 
-		// ランタンの光を消す
-		wisp_->SetLight(false);
+		// ライトの範囲を最小値設定にする
+		wisp_->SetIsRangeMax(false);
 
 		// スライディングのサウンド再生
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_SLIDING);
@@ -487,8 +487,8 @@ void PlayerController::Crouching(void)
 		// しゃがみ状態にする
 		CrouchingInit();
 
-		// ランタンの光を消す
-		wisp_->SetLight(false);
+		// ライトの範囲を最小値設定にする
+		wisp_->SetIsRangeMax(false);
 
 		if (!prevCrouching_)
 		{
@@ -739,10 +739,11 @@ void PlayerController::IdleInit(void)
 		cap->startOffset_ = STANDING_CAP_START_OFFSET;
 	}
 
-	if (!wisp_->GetLight())
+	// ライトの範囲設定が最大値でなければ
+	if (!wisp_->GetIsRangeMax())
 	{
-		// ランタンの光をつける
-		wisp_->SetLight(true);
+		// 最大値設定にする
+		wisp_->SetIsRangeMax(true);
 	}
 }
 

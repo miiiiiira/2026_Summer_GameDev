@@ -15,10 +15,11 @@ private:
 	// 大きさ
 	static constexpr VECTOR SCALE = { 1.0f,1.0f,1.0f };
 
-	// ランタンの範囲
-	static constexpr float LANTEERN_RANGE = 3000.0f;
+	// ライトの範囲
+	static constexpr float POINTLIGHT_RANGE_MAX = 3000.0f;
+	static constexpr float POINTLIGHT_RANGE_MIN = 500.0f;
 
-	// プレイヤーとランタンの相対座標
+	// プレイヤーとライトの相対座標
 	static constexpr VECTOR REACH_DEFAULT_LIGHT = { -110.0f,-70.0f,220.0f };
 	static constexpr VECTOR REACH_MAX_LIGHT = { -110.0f,0.0f,800.0f };
 
@@ -27,6 +28,12 @@ private:
 
 	// 線形補間の係数
 	static constexpr float COEFFICIENT = 0.15f;
+
+	// 距離減衰
+	static constexpr float ATTEN_0 = 0.0f;
+	static constexpr float LIGHT_POW_MAX = 0.0009f;
+	static constexpr float LIGHT_POW_MIN = 0.002f;
+	static constexpr float ATTEN_2 = 0.0f;
 
 public:
 
@@ -46,14 +53,11 @@ public:
 	// モデルIDを返す
 	int GetWispModelId() const { return wispModelId_; }
 
-	// Transformを返す
-	Transform* GetTransform();
-
 	// 指定されたライト状態にする　true / ライトを付ける , false / ライトを消す
-	void SetLight(bool lightFlg);
+	void SetIsRangeMax(bool flg);
 
-	// ライトの状態を見る　true / ライトがついている , false / ライトがついていない
-	bool GetLight(void);
+	// ライトの状態を見る　true = 最大値にする処理が行われている / false = 最小値にする処理が行われている
+	bool GetIsRangeMax(void);
 
 private:
 	// ポイントライトのハンドル
@@ -66,11 +70,22 @@ private:
 
 	int wispTexture = -1;
 
+	// ライトの光量(小さいほど光量が増す)
+	float lightPow_;
+
+	// ライトの範囲
+	float range_;
+
+	// 範囲設定を最大値にしているか　true = 最大値にする処理が行われる / false = 最小値にする処理が行われる
+	bool isRangeMax_;
+
 	// モデルの大きさ
 	VECTOR scale_;
 
 	// 座標更新処理
 	void UpdatePos(void);
+	// 範囲更新処理
+	void UpdateRange(void);
 
 	// デバッグ用の描画処理
 	void DebugDraw(void);
