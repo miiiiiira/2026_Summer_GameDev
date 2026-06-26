@@ -8,6 +8,7 @@ class Item;
 class PlayerController;
 class Stage;
 class Crosshair;
+class Wisp;
 
 // アイテム衝突コンポーネント
 class ItemCollider : public Component
@@ -35,6 +36,9 @@ public:
 	// クロスヘア設定
 	void SetCrosshair(Crosshair* crosshair) { crosshair_ = crosshair; }
 
+	// ライトの範囲設定
+	void SetWisp(Wisp* wisp) { wisp_ = wisp; }
+
 	// 接地判定
 	bool IsGround(void) const { return isGround_; }
 
@@ -42,6 +46,9 @@ public:
 	void IsGroundFold(void) { isGround_ = false; }
 
 private:
+
+	// カメラレイとの当たり判定
+	void CameraRayCollision(void);
 
 	// プレイヤーの掴み機能との当たり判定
 	void PlayerGrabCollision(void);
@@ -65,5 +72,8 @@ private:
 
 	// クロスヘア
 	Crosshair* crosshair_ = nullptr;
+
+	// ライトの範囲
+	Wisp* wisp_ = nullptr;
 };
 

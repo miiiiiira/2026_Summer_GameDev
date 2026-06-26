@@ -50,16 +50,26 @@ struct ItemInfo
 	// 納品場所に入っているかどうか		true / 入っている , false / 入っていない
 	bool hasTouchedDeliveryLocation_;
 
+	// 一度でも発見したか　true / 見つけた , false / 見つけてない
+	bool isFound_;
+
 	// 無敵時間
 	int invincibilityFrames_;
+};
+
+enum ITEM_SIZE
+{
+	BIG,
+	MEDIUM,
+	SMALL
 };
 
 struct ItemData
 {
 	std::string path; // モデルのパス
 	float posOffsetY; // Y座標のオフセット
+	ITEM_SIZE size;
 };
-
 
 namespace ItemTable_Stage1
 {

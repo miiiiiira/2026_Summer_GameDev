@@ -3,7 +3,9 @@
 #include "../../PlayerController/PlayerController.h"
 #include "../../Stage/Stage.h"
 #include "../../Item/Item.h"
+#include "../../Wisp/Wisp.h"
 #include "../../../../Common/Transform/MatrixUtility.h"
+#include "../../../../Common/CameraUtility/CameraUtility.h"
 #include "../../../../Common/Crosshair/Crosshair.h"
 
 #include <algorithm>
@@ -26,11 +28,25 @@ void ItemCollider::Update(void)
 
 	if (!stage_) return;
 
+	// カメラレイとの当たり判定
+
 	// プレイヤーの掴み機能との当たり判定
 	PlayerGrabCollision();
 
 	// ステージとの当たり判定
 	StageCollision();
+}
+
+void ItemCollider::CameraRayCollision(void)
+{
+	// すでに見つけていたら処理を行わない
+	if (item_->GetInfo().isFound_)return;
+
+	// TODO ライトの範囲にアイテム座標が入っているか
+
+	// TODO カメラレイ飛ばしてアイテムに当たっているか
+
+	// TODO 当たっていたら見つけた判定にする
 }
 
 void ItemCollider::PlayerGrabCollision(void)
