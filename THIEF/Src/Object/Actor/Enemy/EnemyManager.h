@@ -21,10 +21,10 @@ public:
 		MAX,
 	};
 
-	EnemyManager(PlayerController* player, int stageId = -1);
+	EnemyManager(void);
 	~EnemyManager(void);
 
-	void Init(void);
+	void Init(PlayerController* player, int id = -1);
 	void Load(void);
 	void Update(void);
 	void Draw(void);

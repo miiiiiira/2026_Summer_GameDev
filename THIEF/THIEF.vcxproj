@@ -87,6 +87,7 @@
     <ClCompile Include="Src\Object\Actor\Enemy\Statue\Statue.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Actor\Enemy\EnemyCommon.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\EnemyManager.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\Skeleton\Skeleton.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\Mushnub\Mushnub.h" />

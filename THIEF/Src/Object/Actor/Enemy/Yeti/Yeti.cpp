@@ -352,7 +352,7 @@ void Yeti::UpdateChase(void)
 	else
 	{
 		// 高低差が範囲内なら、視線チェックする
-		isPlayerVisible = !CheckChaseLineCollision(enemyHead, playerHead, 20.0f);
+		isPlayerVisible = !CheckChaseLineCollision(enemyHead, playerHead, 40.0f);
 		isHit_ = !isPlayerVisible;
 	}
 

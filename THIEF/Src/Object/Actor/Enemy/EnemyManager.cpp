@@ -7,31 +7,30 @@
 #include "Mushnub/Mushnub.h"
 #include "EnemyManager.h"
 
-EnemyManager::EnemyManager(PlayerController* player, int id)
+EnemyManager::EnemyManager(void)
 {
-	if (player == nullptr) return;
-	player_ = player;
-
-	if (id == -1) return;
-	stageId_ = id;
 }
 
 EnemyManager::~EnemyManager(void)
 {
 }
 
-void EnemyManager::Init(void)
+void EnemyManager::Init(PlayerController* player, int id)
 {
-}
+	if (player == nullptr) return;
+	player_ = player;
 
-void EnemyManager::Load(void)
-{
-	enemyModelIds_.emplace_back(
-		MV1LoadModel((Application::PATH_MODEL + "Enemy/Yeti.mv1").c_str()));
-	enemyModelIds_.emplace_back(
-		MV1LoadModel((Application::PATH_MODEL + "Enemy/Mushnub_Evolved.mv1").c_str()));
+	if (id == -1) return;
+	stageId_ = id;
 
-	LoadCsvData();
+	// Yetiを生成
+	EnemyBase* newEnemy = new Yeti(enemyModelIds_[static_cast<int>(ENEMY_TYPE::YETI)]);
+	// 派生クラスで持っている各変数（way_ など）を流し込む
+	// EnemyBase で共通化しているため、ここでデータを渡すだけでOK！
+	newEnemy->Load();
+	newEnemy->Init(player_, stageId_, way_, edgeList_);
+	// リストに追加
+	enemys_.push_back(newEnemy);
 
 	edgeList_.clear();
 	edgeList_.resize(way_.size());
@@ -50,15 +49,16 @@ void EnemyManager::Load(void)
 			AddEdge(i, j);
 		}
 	}
+}
 
-	// Yetiを生成
-	EnemyBase* newEnemy = new Yeti(enemyModelIds_[static_cast<int>(ENEMY_TYPE::YETI)]);
-	// 派生クラスで持っている各変数（way_ など）を流し込む
-	// EnemyBase で共通化しているため、ここでデータを渡すだけでOK！
-	newEnemy->Load();
-	newEnemy->Init(player_, stageId_, way_, edgeList_);
-	// リストに追加
-	enemys_.push_back(newEnemy);
+void EnemyManager::Load(void)
+{
+	enemyModelIds_.emplace_back(
+		MV1LoadModel((Application::PATH_MODEL + "Enemy/Yeti.mv1").c_str()));
+	enemyModelIds_.emplace_back(
+		MV1LoadModel((Application::PATH_MODEL + "Enemy/Mushnub_Evolved.mv1").c_str()));
+
+	LoadCsvData();
 }
 
 void EnemyManager::Update(void)
