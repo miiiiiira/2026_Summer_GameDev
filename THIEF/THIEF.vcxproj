@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Component\PlayerController\Map\Map.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\EnemyManager.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\Skeleton\Skeleton.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\Mushnub\Mushnub.cpp" />
@@ -87,6 +88,7 @@
     <ClCompile Include="Src\Object\Actor\Enemy\Statue\Statue.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Component\PlayerController\Map\Map.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\EnemyManager.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\Skeleton\Skeleton.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\Mushnub\Mushnub.h" />
