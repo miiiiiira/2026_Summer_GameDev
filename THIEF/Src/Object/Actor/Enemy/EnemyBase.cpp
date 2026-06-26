@@ -1,6 +1,4 @@
-#include <string>
-#include <fstream>
-#include <sstream>
+
 #include <algorithm>
 #include <queue>
 #include "../../Common/AnimationController.h"
@@ -10,11 +8,19 @@
 #include "../../Component/PlayerController/PlayerController.h"
 #include "../../Component/Collider/3DCollider/CapsuleCollider.h"
 #include "../../Component/Transform/Transform.h"
+#include "EnemyManager.h"
 #include "EnemyBase.h"
 
-EnemyBase::EnemyBase(void)
+EnemyBase::EnemyBase(int modelId)
+	:
+	animationController_(nullptr),
+	modelId_(modelId)
 {
-	animationController_ = nullptr;
+	currentNodeId_ = 0;
+	nextNodeId_ = 0;
+	prevNodeId_ = -1;
+	prevPrevNodeId_ = -1;
+	targetLostTimer_ = 0.0f;
 }
 
 EnemyBase::~EnemyBase(void)
@@ -23,11 +29,20 @@ EnemyBase::~EnemyBase(void)
 
 void EnemyBase::Load(void)
 {
-	LoadCsvData();
+}
 
-	path_.reserve(way_.size());
-	minCosts_.reserve(way_.size());
-	parentNodes_.reserve(way_.size());
+void EnemyBase::Init(PlayerController* player, int stageId, const std::vector<EnemyCommon::WAYPOINT>& way, const std::vector<std::vector<EnemyCommon::EDGE>>& edgeList)
+{
+	player_ = player;
+	stageId_ = stageId;
+	way_ = &way;
+	edgeList_ = &edgeList;
+
+	path_.reserve(way_->size());
+	minCosts_.reserve(way_->size());
+	parentNodes_.reserve(way_->size());
+
+	OnInitialize();
 }
 
 void EnemyBase::Draw(void)
@@ -107,8 +122,8 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 	path_.clear();
 
 	// 全て同じ値で埋め尽くす
-	minCosts_.assign(way_.size(), FLT_MAX);
-	parentNodes_.assign(way_.size(), -1);
+	minCosts_.assign(way_->size(), FLT_MAX);
+	parentNodes_.assign(way_->size(), -1);
 
 	// スタート地点のコストは0にする
 	minCosts_[startNodeId] = 0.0f;
@@ -135,7 +150,7 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 		if (currentCost > minCosts_[currentNodeId]) continue;
 
 		// つながっているエッジ
-		for (const auto& edge : edgeList_[currentNodeId])
+		for (const auto& edge : (*edgeList_)[currentNodeId])
 		{
 			// 隣接しているノードIDを取得
 			int nextNodeId = edge.way.id;
@@ -159,9 +174,9 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 	int i = goalNodeId;
 	while (i != -1)
 	{
-		Edge path;
-		path.way.id = way_[i].id;   // 「現在のノードID」を正しく登録する
-		path.way.pos = way_[i].pos; // ★座標の設定漏れもここで修正！
+		EDGE path;
+		path.way.id = (*way_)[i].id;   // 「現在のノードID」を正しく登録する
+		path.way.pos = (*way_)[i].pos; // ★座標の設定漏れもここで修正！
 		path.cost = minCosts_[i];
 
 		path_.push_back(path);
@@ -221,59 +236,6 @@ float EnemyBase::GetVelocity(void)
 void EnemyBase::SetVelocity(float velocityY)
 {
 	velocityY_ = velocityY;
-}
-
-void EnemyBase::LoadCsvData(void)
-{
-	// 初期化
-	way_.clear();
-	std::ifstream ifs = std::ifstream("Data/PointSave.csv");
-
-	if (!ifs) return;
-	//ファイルを１行ずつ読み込む
-	std::string line;		//1行の文字情報
-	std::string c;			//1文字情報
-
-	while (getline(ifs, line))
-	{
-		//1行情報　string を ifstream　の仲間に変換
-		std::istringstream stream(line);
-		int index = 0;
-		int pointId = 0;
-		float posX = 0.0f;
-		float posY = 0.0f;
-		float posZ = 0.0f;
-
-		while (getline(stream, c, ','))
-		{
-			// 列のインデックスに応じて代入先を切り替える
-			if (index == 0)
-			{
-				pointId = std::stoi(c);
-			}
-			else if (index == 1)
-			{
-				posX = std::stof(c);
-			}
-			else if (index == 2)
-			{
-				posY = std::stof(c);
-			}
-			else if (index == 3)
-			{
-				posZ = std::stof(c);
-			}
-			index++;
-		}
-
-		VECTOR position = VGet(posX, posY, posZ);
-
-		Waypoint way = {};
-		way.id = pointId;
-		way.pos = position;
-
-		way_.push_back(way);
-	}
 }
 
 void EnemyBase::DelayRotate(void)
@@ -421,32 +383,130 @@ void EnemyBase::ApplyGravity()
 	}
 }
 
-void EnemyBase::AddEdge(int fromId, int toId)
+void EnemyBase::SetMoveDirPatrol(void)
 {
-	VECTOR posA = way_[fromId].pos;
-	VECTOR posB = way_[toId].pos;
+	VECTOR tmpPos = nextWayPoint_;
+	tmpPos.y = 0.0f;
 
-	float checkRadius = 50.0f;
+	VECTOR pos = pos_;
+	pos.y = 0.0f;
 
-	// カプセルとモデルの衝突判定
-	MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, posA, posB, checkRadius);
+	moveDir_ = VNorm(VSub(tmpPos, pos));
+}
 
-	// 当たっていたら、省く
-	if (res.HitNum > 0)
+void EnemyBase::ArriveNode(void)
+{
+	// 次のノードを選ぶ
+	int nextId = SelectNextNode();
+
+	// 履歴を更新する
+	prevPrevNodeId_ = prevNodeId_;
+	prevNodeId_ = currentNodeId_;
+	currentNodeId_ = nextId;
+
+	// 次の目的地の座標を設定する
+	nextWayPoint_ = (*way_)[currentNodeId_].pos;
+}
+
+int EnemyBase::SelectNextNode(void)
+{
+	// 有効ノードを探す前に空にする
+	candidates_.clear();
+
+	for (const auto& edge : (*edgeList_)[currentNodeId_])
 	{
-		// 後始末をする
-		MV1CollResultPolyDimTerminate(res);
-		return;
+		int nextId = edge.way.id;
+
+		float distance = GetDistance(edge.way.pos, pos_);
+
+		// 敵の座標から半径以内に無いポイントは除外
+		if (distance > patrolRadius_ * patrolRadius_) continue;
+
+		// 前回、前々回のノードは除外する
+		if (nextId == prevNodeId_) continue;
+		if (nextId == prevPrevNodeId_) continue;
+
+		candidates_.push_back(nextId);
 	}
 
-	Edge edge = {};
-	edge.way.id = way_[toId].id;	// 行った先
-	edge.way.pos = way_[toId].pos;	// 行った先の座標
-	// 行った先から行った元を引いて、VSizeでfloat型に変換
-	edge.cost = VSize(VSub(posB, posA));
+	// 候補があった場合ランダムに選ぶ
+	if (!candidates_.empty())
+	{
+		int index = GetRand(static_cast<int>(candidates_.size() - 1));
+		return candidates_[index];
+	}
 
-	edgeList_[fromId].push_back(edge);
+	if (prevNodeId_ != -1)
+	{
+		return prevNodeId_;
+	}
 
-	// 後始末をする
+	return currentNodeId_;
+}
+
+int EnemyBase::FindNearestNode(VECTOR pos)
+{
+	int nearNodeId = -1;
+	float minCost = FLT_MAX;
+
+	// 視線が通っているノードの中で
+	for (const auto& way : (*way_))
+	{
+		// 一番近いノードを探す
+		float distance = VSize(VSub(pos, way.pos));
+
+		if (distance < minCost)
+		{
+			minCost = distance;
+			nearNodeId = way.id;
+		}
+	}
+
+	if (nearNodeId == -1)
+	{
+		nearNodeId = 0;
+	}
+
+	return nearNodeId;
+}
+
+void EnemyBase::ChaseNode(void)
+{
+	nextWayPoint_ = path_[nextNodeId_].way.pos;
+	// 移動方向を設定
+	SetMoveDirPatrol();
+
+	VECTOR enemyPos = pos_;
+	enemyPos.y = 0.0f;
+
+	VECTOR targetNode = path_[nextNodeId_].way.pos;
+	targetNode.y = 0.0f;
+
+	// 水平方向の純粋な距離を測る
+	float nodeDistance = VSize(VSub(targetNode, enemyPos));
+
+	if (nodeDistance < 60.0f)
+	{
+		nextNodeId_++;
+	}
+}
+
+void EnemyBase::ChaseDirect(void)
+{
+	LookPlayer();
+}
+
+bool EnemyBase::CheckChaseLineCollision(VECTOR pPos, VECTOR ePos, float radius)
+{
+	// 線分とモデルの衝突判定
+	MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, pPos, ePos, radius);
+
+	// 当たっていたら、trueを返す
+	if (res.HitNum > 0)
+	{
+		MV1CollResultPolyDimTerminate(res);
+		return true;
+	}
 	MV1CollResultPolyDimTerminate(res);
+	return false;
 }

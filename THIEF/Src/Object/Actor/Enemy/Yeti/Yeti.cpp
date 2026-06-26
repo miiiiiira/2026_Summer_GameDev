@@ -11,14 +11,9 @@
 #include "Yeti.h"
 
 
-Yeti::Yeti(void)
+Yeti::Yeti(int modelId)
 	: 
-	currentNodeId_(0),
-	prevNodeId_(-1),
-	prevPrevNodeId_(-1),
-	patrolRadius_(0.0f),
-	nextWayPoint_{0.0f, 0.0f, 0.0f},
-	nextNodeId_(0),
+	EnemyBase(modelId),
 	chaseTimer_(0.0f)
 {
 }
@@ -27,11 +22,8 @@ Yeti::~Yeti(void)
 {
 }
 
-void Yeti::Init(PlayerController* player, int id)
+void Yeti::OnInitialize(void)
 {
-	if (player == nullptr) return;
-	player_ = player;
-
 	scale_ = SCALE;
 	MV1SetScale(modelId_, scale_);
 
@@ -63,37 +55,13 @@ void Yeti::Init(PlayerController* player, int id)
 	weaponPunch_ = new WeaponPunch();
 	weaponPunch_->Init(WeaponBase::TYPE::PUNCH);
 
-	// Yetiの攻撃ははパンチ
+	// Yetiの攻撃はパンチ
 	useWeapon_ = weaponPunch_;
 
 	// 初期アニメーション再生
 	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
 
-	candidates_.reserve(way_.size());
-
-	if (id == -1) return;
-	stageId_ = id;
-
-	edgeList_.clear();
-	edgeList_.resize(way_.size());
-
-	isNotice_ = false;
-	isHit_ = false;
-
-	for (int i = 0; i < static_cast<int>(way_.size()); i++)
-	{
-		for (int j = 0; j < static_cast<int>(way_.size()); j++)
-		{
-			// 同じノードならスキップ
-			if (i == j) continue;
-
-			// 遠すぎるノードも除外する
-			float nodeDistance = GetDistance(way_[j].pos, way_[i].pos);
-			if (nodeDistance > NODE_CONNECT_MAX_DISTANCE_SQ) continue;
-
-			AddEdge(i, j);
-		}
-	}
+	candidates_.reserve(way_->size());
 
 	currentNodeId_ = FindNearestNode(pos_);
 
@@ -102,10 +70,6 @@ void Yeti::Init(PlayerController* player, int id)
 
 void Yeti::Load(void)
 {
-	EnemyBase::Load();
-
-	modelId_ = MV1LoadModel((Application::PATH_MODEL + "Enemy/Yeti.mv1").c_str());
-
 	// モデルアニメーション制御の初期化
 	animationController_ = new AnimationController(modelId_);
 	for (int i = 0; i < static_cast<int>(ANIM_TYPE::MAX); i++)
@@ -153,18 +117,18 @@ void Yeti::Draw(void)
 	
 #ifdef _DEBUG
 
-	for (int i = 0; i < (int)edgeList_.size(); i++)
+	for (int i = 0; i < (int)edgeList_->size(); i++)
 	{
-		for (const auto& edge : edgeList_[i])
+		for (const auto& edge : (*edgeList_)[i])
 		{
 			// way_[i].pos が「接続元」の座標
 			// edge.way.pos が「接続先」の座標
-			DrawLine3D(way_[i].pos, edge.way.pos, GetColor(255, 255, 0));
+			DrawLine3D((*way_)[i].pos, edge.way.pos, GetColor(255, 255, 0));
 		}
 	}
 
 	// 現在地から、今目指しているノード（currentNodeId_）までの線を引く
-	DrawLine3D(pos_, way_[currentNodeId_].pos, GetColor(255, 0, 255));
+	DrawLine3D(pos_, (*way_)[currentNodeId_].pos, GetColor(255, 0, 255));
 
 	// 目的地ノードのIDを画面左上に表示する
 	DrawFormatString(0, 50, GetColor(255, 255, 255), "TargetNodeID: %d", currentNodeId_);
@@ -178,7 +142,7 @@ void Yeti::Draw(void)
 	DrawLine3D(pos_, nextWayPoint_, GetColor(0, 255, 0));
 
 	// 巡回ルート描画
-	for (const auto& point : way_)
+	for (const auto& point : (*way_))
 	{
 		float distance = VSize(VSub(point.pos, pos_));
 
@@ -202,140 +166,6 @@ void Yeti::Draw(void)
 	}
 	useWeapon_->Draw();
 #endif
-}
-
-Yeti::STATE Yeti::GetState(void)
-{
-	return state_;
-}
-
-void Yeti::SetMoveDirPatrol(void)
-{
-	VECTOR tmpPos = nextWayPoint_;
-	tmpPos.y = 0.0f;
-
-	VECTOR pos = pos_;
-	pos.y = 0.0f;
-
-	moveDir_ = VNorm(VSub(tmpPos, pos));
-}
-
-void Yeti::ArriveNode(void)
-{
-	// 次のノードを選ぶ
-	int nextId = SelectNextNode();
-
-	// 履歴を更新する
-	prevPrevNodeId_ = prevNodeId_;
-	prevNodeId_ = currentNodeId_;
-	currentNodeId_ = nextId;
-
-	// 次の目的地の座標を設定する
-	nextWayPoint_ = way_[currentNodeId_].pos;
-}
-
-int Yeti::SelectNextNode(void)
-{
-	// 有効ノードを探す前に空にする
-	candidates_.clear();
-
-	for (const auto& edge : edgeList_[currentNodeId_])
-	{
-		int nextId = edge.way.id;
-
-		float distance = GetDistance(edge.way.pos, pos_);
-
-		// 敵の座標から半径以内に無いポイントは除外
-		if (distance > patrolRadius_ * patrolRadius_) continue;
-
-		// 前回、前々回のノードは除外する
-		if (nextId == prevNodeId_) continue;
-		if (nextId == prevPrevNodeId_) continue;
-
-		candidates_.push_back(nextId);
-	}
-
-	// 候補があった場合ランダムに選ぶ
-	if (!candidates_.empty())
-	{
-		int index = GetRand(static_cast<int>(candidates_.size() - 1));
-		return candidates_[index];
-	}
-
-	if (prevNodeId_ != -1)
-	{
-		return prevNodeId_;
-	}
-
-	return currentNodeId_;
-}
-
-int Yeti::FindNearestNode(VECTOR pos)
-{
-	int nearNodeId = -1;
-	float minCost = FLT_MAX;
-
-	// 視線が通っているノードの中で
-
-	for (const auto& way : way_)
-	{
-		// 一番近いノードを探す
-		float distance = VSize(VSub(pos, way.pos));
-
-		if (distance < minCost)
-		{
-			minCost = distance;
-			nearNodeId = way.id;
-		}
-	}
-
-	if (nearNodeId == -1)
-	{
-		nearNodeId = 0;
-	}
-
-	return nearNodeId;
-}
-
-void Yeti::ChaseNode(void)
-{
-	nextWayPoint_ = path_[nextNodeId_].way.pos;
-	// 移動方向を設定
-	SetMoveDirPatrol();
-
-	VECTOR enemyPos = pos_;
-	enemyPos.y = 0.0f;
-
-	VECTOR targetNode = path_[nextNodeId_].way.pos;
-	targetNode.y = 0.0f;
-
-	// 水平方向の純粋な距離を測る
-	float nodeDistance = VSize(VSub(targetNode, enemyPos));
-
-	if (nodeDistance < 60.0f)
-	{
-		nextNodeId_++;
-	}
-}
-
-void Yeti::ChaseDirect(void)
-{
-	LookPlayer();
-}
-
-bool Yeti::CheckChaseLineCollision(VECTOR pPos, VECTOR ePos, float radius)
-{
-	// 線分とモデルの衝突判定
-	MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, pPos, ePos, radius);
-
-	// 当たっていたら、trueを返す
-	if (res.HitNum > 0)
-	{
-		MV1CollResultPolyDimTerminate(res);
-		return true;
-	}
-	MV1CollResultPolyDimTerminate(res);
-	return false;
 }
 
 void Yeti::ChangeState(STATE state)
@@ -555,7 +385,7 @@ void Yeti::UpdateChase(void)
 		currentNodeId_ = FindNearestNode(pos_);
 		prevNodeId_ = -1;
 		prevPrevNodeId_ = -1;
-		nextWayPoint_ = way_[currentNodeId_].pos;
+		nextWayPoint_ = (*way_)[currentNodeId_].pos;
 
 		ChangeState(STATE::IDLE);
 		return;
@@ -608,7 +438,7 @@ void Yeti::UpdateChase(void)
 				currentNodeId_ = FindNearestNode(pos_);
 				prevNodeId_ = -1;
 				prevPrevNodeId_ = -1;
-				nextWayPoint_ = way_[currentNodeId_].pos;
+				nextWayPoint_ = (*way_)[currentNodeId_].pos;
 				LookPlayer();
 
 				ChangeState(STATE::IDLE);
