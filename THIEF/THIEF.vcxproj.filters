@@ -451,6 +451,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\Component\PlayerController\Map\Map.h">
+	  <Filter>ヘッダー ファイル</Filter>
+	</ClInclude>
+    <ClInclude Include="Src\Object\Actor\Enemy\EnemyCommon.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

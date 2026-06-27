@@ -1,39 +1,33 @@
 #pragma once
 #include<vector>
 #include <DxLib.h>
+#include "EnemyCommon.h"
 
 class AnimationController;
 class WeaponBase;
 class WeaponPunch;
 class PlayerController;
+class EnemyManager;
+
+using namespace EnemyCommon;
 
 class EnemyBase
 {
 public:
 	
-	// ウェイポイント
-	struct Waypoint
-	{
-		int id;			// ウェイポイントID
-		VECTOR pos;		// 座標
-	};
-
-	// エッジ
-	struct Edge
-	{
-		Waypoint way;	// 行った先のウェイポイントID
-		float cost;		// 距離
-	};
-
 	// コンストラクタ
-	EnemyBase(void);
+	EnemyBase(int modelId);
 	// デストラクタ
 	virtual ~EnemyBase(void);
 
 	// 読み込み処理
 	virtual void Load(void);
 	// 初期化処理
-	virtual void Init(PlayerController* player,int id = -1) = 0;
+	void Init(PlayerController* player,int stageId,
+		const std::vector<WAYPOINT>& way,
+		const std::vector<std::vector<EDGE>>& edgeList);
+	virtual void OnInitialize(void) = 0;
+
 	// 更新処理
 	virtual void Update(void) = 0;
 	// 描画処理
@@ -59,7 +53,10 @@ public:
 
 protected:
 
-	const float NODE_CONNECT_MAX_DISTANCE_SQ = 1300.0f * 1300.0f;
+	PlayerController* player_;
+	int stageId_;
+	const std::vector<WAYPOINT>* way_ = nullptr;
+	const std::vector<std::vector<EDGE>>* edgeList_ = nullptr;
 
 	// ジャンプ力
 	const float JUMP_POW = 25.0f;
@@ -75,8 +72,6 @@ protected:
 	// 武器
 	WeaponBase* useWeapon_;
 	WeaponPunch* weaponPunch_;
-
-	PlayerController* player_;
 
 	// 敵の情報
 	int modelId_;
@@ -98,19 +93,25 @@ protected:
 
 	// 開始位置
 	VECTOR startOffset_;
-
 	// 終了位置
 	VECTOR endOffset_;
 
-	int stageId_ = -1;
-
-	std::vector<Waypoint> way_;					// ウェイポイントを格納
-	std::vector<std::vector<Edge>> edgeList_;	// 行動可能な辺を格納
 	std::vector<float> minCosts_;				// ポイントへの最短経路合計
 	std::vector<int> parentNodes_;				// どこから来たかを記録
-	std::vector<Edge> path_;					// 探索された最短経路を格納
+	std::vector<EDGE> path_;					// 探索された最短経路を格納
 
-	void AddEdge(int fromId, int toId);
+	VECTOR nextWayPoint_;
+	// 更新ステップ
+	float step_;
+	std::vector<int> candidates_;	// 候補のノードを格納する
+	int currentNodeId_;		// 今いるノード
+	int prevNodeId_;		// 前回のノード
+	int prevPrevNodeId_;	// 前々回のノード
+	int nextNodeId_;
+	float viewRadius_;		// 視野用の半径
+	bool isHit_;
+	float patrolRadius_;	// 巡回用の半径
+	float targetLostTimer_;
 
 	// 移動方向に応じた遅延回転
 	void DelayRotate(void);
@@ -132,6 +133,21 @@ protected:
 	// 重力処理
 	void ApplyGravity();
 
-private:
-	void LoadCsvData(void);
+	void SetMoveDirPatrol(void);
+
+	// 次のノードを選ぶ
+	int SelectNextNode(void);
+	// ノード到着時
+	void ArriveNode(void);
+
+	// 一番近いノードを探す
+	int FindNearestNode(VECTOR pos);
+
+	// ノードを経由して追従
+	void ChaseNode(void);
+	// 直接追従
+	void ChaseDirect(void);
+
+	// 追従用の線分かステージと当たっているかどうか
+	bool CheckChaseLineCollision(VECTOR pPos, VECTOR ePos, float radius);
 };

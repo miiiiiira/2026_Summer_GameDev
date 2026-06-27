@@ -1,5 +1,4 @@
 #pragma once
-#include<vector>
 #include "../EnemyBase.h"
 
 class Yeti : public EnemyBase
@@ -21,6 +20,7 @@ public:
 		END,		// 終了
 	};
 
+	// 敵のアニメーション
 	enum class ANIM_TYPE
 	{
 		DEATH,
@@ -41,18 +41,16 @@ public:
 	};
 
 	// コンストラクタ
-	Yeti(void);
+	Yeti(int modelId);
 
 	// デストラクタ
 	~Yeti(void)override;
-	// 初期化
-	void Init(PlayerController* player, int id = -1) override;
+	// 初期化処理
+	void OnInitialize(void) override;
 	// 読み込み処理
 	void Load(void) override;
 	void Update(void)override;
 	void Draw(void) override;
-
-	STATE GetState(void);
 
 private:
 
@@ -69,42 +67,9 @@ private:
 
 	static constexpr float LOST_LIMIT_TIME = 10.0f;
 
-	VECTOR nextWayPoint_;
-
-	// 更新ステップ
-	float step_;
-
 	STATE state_;
 
-	std::vector<int> candidates_;	// 候補のノードを格納する
-
-	int currentNodeId_;		// 今いるノード
-	int prevNodeId_;		// 前回のノード
-	int prevPrevNodeId_;	// 前々回のノード
-	int nextNodeId_;
-	float patrolRadius_;	// 巡回用の半径
-	float viewRadius_;		// 視野用の半径
 	float chaseTimer_;
-	float targetLostTimer_;
-	bool isHit_;
-
-	void SetMoveDirPatrol(void);
-
-	// 次のノードを選ぶ
-	int SelectNextNode(void);
-	// ノード到着時
-	void ArriveNode(void);
-
-	// 一番近いノードを探す
-	int FindNearestNode(VECTOR pos);
-
-	// ノードを経由して追従
-	void ChaseNode(void);
-	// 直接追従
-	void ChaseDirect(void);
-
-	// 追従用の線分かステージと当たっているかどうか
-	bool CheckChaseLineCollision(VECTOR pPos, VECTOR ePos, float radius);
 
 	// 状態遷移
 	void ChangeState(STATE state);

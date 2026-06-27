@@ -8,7 +8,9 @@
 #include "../../../Component/Transform/Transform.h"
 #include "Mushnub.h"
 
-Mushnub::Mushnub(void)
+Mushnub::Mushnub(int modelId)
+	:
+	EnemyBase(modelId)
 {
 }
 
@@ -16,11 +18,8 @@ Mushnub::~Mushnub(void)
 {
 }
 
-void Mushnub::Init(PlayerController* player, int id)
+void Mushnub::OnInitialize(void)
 {
-	if (player == nullptr) return;
-	player_ = player;
-
 	scale_ = SCALE;
 	MV1SetScale(modelId_, scale_);
 
@@ -49,16 +48,11 @@ void Mushnub::Init(PlayerController* player, int id)
 	// 初期アニメーション再生
 	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
 
-	if (id == -1) return;
-	stageId_ = id;
-
 	ChangeState(STATE::IDLE);
 }
 
 void Mushnub::Load(void)
 {
-	modelId_ = MV1LoadModel((Application::PATH_MODEL + "Enemy/Mushnub_Evolved.mv1").c_str());
-
 	// モデルアニメーション制御の初期化
 	animationController_ = new AnimationController(modelId_);
 	for (int i = 0; i < static_cast<int>(ANIM_TYPE::MAX); i++)

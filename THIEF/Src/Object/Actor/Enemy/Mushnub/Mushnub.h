@@ -17,6 +17,7 @@ public:
 		END,		// 終了
 	};
 
+	// 敵のアニメーション
 	enum class ANIM_TYPE
 	{
 		FRONT,
@@ -32,13 +33,13 @@ public:
 	};
 
 	// コンストラクタ
-	Mushnub(void);
+	Mushnub(int modelId);
 
 	// デストラクタ
 	~Mushnub(void)override;
 
 	// 初期化
-	void Init(PlayerController* player, int id = -1) override;
+	void OnInitialize(void) override;
 	// 読み込み処理
 	void Load(void) override;
 	void Update(void)override;
@@ -56,17 +57,7 @@ private:
 	static constexpr VECTOR CHASE_POS = { -1506.83f,10.0f,6513.62f };
 	static constexpr VECTOR DEFAULT_POS = { -1426.83f,10.0f,5200.0f };
 
-	// 更新ステップ
-	float step_;
-
 	STATE state_;
-
-	float viewRadius_;		// 視野用の半径
-
-	bool isHit_;
-
-	// 追従用の線分かステージと当たっているかどうか
-	bool CheckChaseLineCollision(VECTOR pPos, VECTOR ePos, float radius);
 
 	// 状態遷移
 	void ChangeState(STATE state);
