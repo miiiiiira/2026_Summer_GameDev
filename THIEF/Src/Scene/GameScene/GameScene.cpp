@@ -12,8 +12,8 @@
 #include "../Shop/ShopScene.h"
 #include "../Pause/Pause.h"
 
+#include "../../Object/Actor/Enemy/EnemyManager.h"
 #include "../../Object/Actor/Enemy/EnemyBase.h"
-#include "../../Object/Actor/Enemy/Yeti/Yeti.h"
 #include "../../Object/Actor/Enemy/Weapon/WeaponBase.h"
 #include "../../Common/Crosshair/Crosshair.h"
 #include "../../Object/ObjectManager/ObjectManager.h"
@@ -74,7 +74,7 @@ void GameScene::Init(void)
 
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 	auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
-	enemy_->Init(player,stage->GetModelId());
+	enemyManager_->Init(player,stage->GetModelId());
 
 	// BGM再生
 	AudioManager::GetInstance()->PlayBGM(SoundID::BGM_GAME_1);
@@ -88,8 +88,9 @@ void GameScene::Load(void)
 	// オブジェクトマネージャーの生成
 	objectManger_ = new ObjectManager();
 
-	enemy_ = new Yeti();
-	enemy_->Load();
+	// 敵作成
+	enemyManager_ = new EnemyManager();
+	enemyManager_->Load();
 
 	// クロスヘアの作成
 	crosshair_ = new Crosshair();
@@ -154,7 +155,7 @@ void GameScene::Update(void)
 	// オブジェクトの更新
 	objectManger_->Update();
 
-	enemy_->Update();
+	enemyManager_->Update();
 
 	// クロスヘアの更新
 	crosshair_->Update();
@@ -216,7 +217,7 @@ void GameScene::Draw(void)
 	// オブジェクトの描画前
 	objectManger_->PreDraw();
 
-	enemy_->Draw();
+	enemyManager_->Draw();
 
 	// オブジェクトの3D描画
 	objectManger_->Draw3D();
@@ -239,9 +240,9 @@ void GameScene::Release(void)
 	// オブジェクトマネージャー削除
 	delete objectManger_;
 
-	enemy_->Release();
-	delete enemy_;
-	enemy_ = nullptr;
+	enemyManager_->Release();
+	delete enemyManager_;
+	enemyManager_ = nullptr;
 
 	crosshair_->Release();
 	delete crosshair_;
@@ -487,46 +488,50 @@ void GameScene::Stage3Init(void)
 
 void GameScene::CheckEnemyAttack(void)
 {
-	// 武器の情報
-	WeaponBase* useWeapon = enemy_->GetUseWeapon();
-
-	// 攻撃中（描画されている）なら
-	if (useWeapon->IsAlive())
+	for (auto enemy : enemyManager_->GetEnemys())
 	{
-		auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
-		// 敵の攻撃とステージのの当たり判定
-		MV1_COLL_RESULT_POLY_DIM hits = MV1CollCheck_Sphere
-		(
-			stage->GetModelId(),
-			-1,
-			useWeapon->GetPos(),
-			useWeapon->GetCollisionRadius()
-		);
+		// 武器の情報
+		WeaponBase* useWeapon = enemy->GetUseWeapon();
+		if (useWeapon == nullptr) continue;
 
-		// 当たっているなら描画をやめる
-		if (hits.HitNum > 0)
+		// 攻撃中（描画されている）なら
+		if (useWeapon->IsAlive())
 		{
-			useWeapon->SetAlive(false);
-		}
-		MV1CollResultPolyDimTerminate(hits);
+			auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+			// 敵の攻撃とステージのの当たり判定
+			MV1_COLL_RESULT_POLY_DIM hits = MV1CollCheck_Sphere
+			(
+				stage->GetModelId(),
+				-1,
+				useWeapon->GetPos(),
+				useWeapon->GetCollisionRadius()
+			);
 
-		// プレイヤーと敵の攻撃の当たり判定
-		auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
-		VECTOR startPos = player->GetOwner()->GetComponent<CapsuleCollider>()->GetStart();
-		VECTOR endPos = player->GetOwner()->GetComponent<CapsuleCollider>()->GetEnd();
-		float radius = player->GetOwner()->GetComponent<CapsuleCollider>()->radius_;
+			// 当たっているなら描画をやめる
+			if (hits.HitNum > 0)
+			{
+				useWeapon->SetAlive(false);
+			}
+			MV1CollResultPolyDimTerminate(hits);
 
-		if (Collision::HitSphereCapsule(useWeapon->GetPos(), useWeapon->GetCollisionRadius(),
-			startPos, endPos, radius))
-		{
-			player->SetDamage(10);
+			// プレイヤーと敵の攻撃の当たり判定
+			auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
+			VECTOR startPos = player->GetOwner()->GetComponent<CapsuleCollider>()->GetStart();
+			VECTOR endPos = player->GetOwner()->GetComponent<CapsuleCollider>()->GetEnd();
+			float radius = player->GetOwner()->GetComponent<CapsuleCollider>()->radius_;
 
-			// 画面を赤くするエフェクトを付ける
-			redEffect_->SetEffect(DAMAGE_EFFECT_ALPHA, DAMAGE_EFFECT_COLOR);
+			if (Collision::HitSphereCapsule(useWeapon->GetPos(), useWeapon->GetCollisionRadius(),
+				startPos, endPos, radius))
+			{
+				player->SetDamage(10);
 
-			VECTOR moveDir = VNorm(VSub(startPos, useWeapon->GetPos()));
-			player->SetHitReact(moveDir, 30.0f, 25.0f);
-			useWeapon->SetAlive(false);
+				// 画面を赤くするエフェクトを付ける
+				redEffect_->SetEffect(DAMAGE_EFFECT_ALPHA, DAMAGE_EFFECT_COLOR);
+
+				VECTOR moveDir = VNorm(VSub(startPos, useWeapon->GetPos()));
+				player->SetHitReact(moveDir, 30.0f, 25.0f);
+				useWeapon->SetAlive(false);
+			}
 		}
 	}
 }
@@ -546,204 +551,207 @@ void GameScene::CollisionEnemyToStage(void)
 	// 登れる最大段差
 	const float STEP_HEIGHT = 15.0f;
 
-	// 現在座標
-	VECTOR currentPos = enemy_->GetPos();
-
-	// 前フレーム座標
-	VECTOR prevPos = enemy_->GetPrevPos();
-
-	// 今フレーム移動量
-	VECTOR move = VSub(currentPos, prevPos);
-
-	// 衝突判定開始座標
-	VECTOR pos = prevPos;
-
-	// 毎フレーム初期化
-	enemy_->SetGround(false);
-
-	// 衝突とスライドを繰り返す
-	for (int bounce = 0; bounce < MAX_BOUNCE; bounce++)
+	for (auto enemy : enemyManager_->GetEnemys())
 	{
-		// 残り移動量の長さ
-		float length = VSize(move);
+		// 現在座標
+		VECTOR currentPos = enemy->GetPos();
 
-		// ほぼ移動していないなら終了
-		if (length < 0.01f)
-			break;
+		// 前フレーム座標
+		VECTOR prevPos = enemy->GetPrevPos();
 
-		float radius = enemy_->GetRadius();
+		// 今フレーム移動量
+		VECTOR move = VSub(currentPos, prevPos);
 
-		// 高速移動時のすり抜け防止のため、
-		// 移動経路を細かく分割して判定する
-		int stepCount = (int)(length / (radius * 0.1f)) + 1;
+		// 衝突判定開始座標
+		VECTOR pos = prevPos;
 
-		// 分割数の上限・下限を設定
-		stepCount = std::clamp(stepCount, 1, 64);
+		// 毎フレーム初期化
+		enemy->SetGround(false);
 
-		// 1ステップ当たりの移動量
-		VECTOR stepMove = VScale(move, 1.0f / stepCount);
-
-		// 衝突情報
-		bool hit = false;
-		VECTOR hitNormal = VGet(0, 0, 0);
-
-		// 衝突していない最後の座標
-		VECTOR safePos = pos;
-
-		// 衝突したステップ番号
-		int hitStep = stepCount;
-
-		// 経路を少しずつ進めながら判定
-		for (int step = 0; step < stepCount; step++)
+		// 衝突とスライドを繰り返す
+		for (int bounce = 0; bounce < MAX_BOUNCE; bounce++)
 		{
-			// 次に移動する座標
-			VECTOR nextPos = VAdd(safePos, stepMove);
+			// 残り移動量の長さ
+			float length = VSize(move);
 
-			// カプセル始点・終点を算出
-			VECTOR capStart = VAdd(nextPos, enemy_->GetStart());
-			VECTOR capEnd = VAdd(nextPos, enemy_->GetEnd());
+			// ほぼ移動していないなら終了
+			if (length < 0.01f)
+				break;
 
-			// ステージとカプセルの衝突判定
-			auto result =
-				MV1CollCheck_Capsule(
-					stage->GetModelId(),
-					-1,
-					capStart,
-					capEnd,
-					radius);
+			float radius = enemy->GetRadius();
 
-			float bestPush = 0.0f;
-			VECTOR bestNormal = VGet(0, 0, 0);
+			// 高速移動時のすり抜け防止のため、
+			// 移動経路を細かく分割して判定する
+			int stepCount = (int)(length / (radius * 0.1f)) + 1;
 
-			bool collision = false;
+			// 分割数の上限・下限を設定
+			stepCount = std::clamp(stepCount, 1, 64);
 
-			// ヒットしたポリゴンを調べる
-			for (int i = 0; i < result.HitNum; i++)
+			// 1ステップ当たりの移動量
+			VECTOR stepMove = VScale(move, 1.0f / stepCount);
+
+			// 衝突情報
+			bool hit = false;
+			VECTOR hitNormal = VGet(0, 0, 0);
+
+			// 衝突していない最後の座標
+			VECTOR safePos = pos;
+
+			// 衝突したステップ番号
+			int hitStep = stepCount;
+
+			// 経路を少しずつ進めながら判定
+			for (int step = 0; step < stepCount; step++)
 			{
-				auto& poly = result.Dim[i];
+				// 次に移動する座標
+				VECTOR nextPos = VAdd(safePos, stepMove);
 
-				// ポリゴン法線
-				VECTOR normal = VNorm(poly.Normal);
+				// カプセル始点・終点を算出
+				VECTOR capStart = VAdd(nextPos, enemy->GetStart());
+				VECTOR capEnd = VAdd(nextPos, enemy->GetEnd());
 
-				// 現在の移動方向と法線の向きから
-				// 正面衝突している度合いを求める
-				float push = -VDot(VNorm(move), normal);
+				// ステージとカプセルの衝突判定
+				auto result =
+					MV1CollCheck_Capsule(
+						stage->GetModelId(),
+						-1,
+						capStart,
+						capEnd,
+						radius);
 
-				// 背面や平行な面は無視
-				if (push <= 0.0f)
-					continue;
+				float bestPush = 0.0f;
+				VECTOR bestNormal = VGet(0, 0, 0);
 
-				// 最も正面から当たっている面を採用
-				if (push > bestPush)
+				bool collision = false;
+
+				// ヒットしたポリゴンを調べる
+				for (int i = 0; i < result.HitNum; i++)
 				{
-					bestPush = push;
-					bestNormal = normal;
+					auto& poly = result.Dim[i];
+
+					// ポリゴン法線
+					VECTOR normal = VNorm(poly.Normal);
+
+					// 現在の移動方向と法線の向きから
+					// 正面衝突している度合いを求める
+					float push = -VDot(VNorm(move), normal);
+
+					// 背面や平行な面は無視
+					if (push <= 0.0f)
+						continue;
+
+					// 最も正面から当たっている面を採用
+					if (push > bestPush)
+					{
+						bestPush = push;
+						bestNormal = normal;
+					}
+
+					collision = true;
 				}
 
-				collision = true;
+				// 衝突結果を解放
+				MV1CollResultPolyDimTerminate(result);
+
+				// 衝突したら探索終了
+				if (collision)
+				{
+					hit = true;
+					hitNormal = bestNormal;
+					hitStep = step;
+					break;
+				}
+
+				// この位置までは移動しても大丈夫
+				safePos = nextPos;
 			}
 
-			// 衝突結果を解放
-			MV1CollResultPolyDimTerminate(result);
-
-			// 衝突したら探索終了
-			if (collision)
+			// 最後まで衝突しなかった
+			if (!hit)
 			{
-				hit = true;
-				hitNormal = bestNormal;
-				hitStep = step;
+				pos = VAdd(pos, move);
 				break;
 			}
 
-			// この位置までは移動しても大丈夫
-			safePos = nextPos;
-		}
-
-		// 最後まで衝突しなかった
-		if (!hit)
-		{
-			pos = VAdd(pos, move);
-			break;
-		}
-
-		// 壁に衝突した場合は段差として登れるか確認する(y成分が小さい法線は壁として扱う)
-		if (hitNormal.y < 0.5f)
-		{
-			// 段差判定
-			if (CanStepUp(safePos, stepMove, STEP_HEIGHT))
+			// 壁に衝突した場合は段差として登れるか確認する(y成分が小さい法線は壁として扱う)
+			if (hitNormal.y < 0.5f)
 			{
-				// 衝突していない最後の位置へ戻す
-				pos = safePos;
+				// 段差判定
+				if (CanStepUp(enemy, safePos, stepMove, STEP_HEIGHT))
+				{
+					// 衝突していない最後の位置へ戻す
+					pos = safePos;
 
-				// 段差の高さ分だけ上へ移動（階段を1段上がるイメージ）
-				pos.y += STEP_HEIGHT;
+					// 段差の高さ分だけ上へ移動（階段を1段上がるイメージ）
+					pos.y += STEP_HEIGHT;
 
-				// 今回消費した移動量を残り移動量から除外
-				move = VSub(move, stepMove);
+					// 今回消費した移動量を残り移動量から除外
+					move = VSub(move, stepMove);
 
-				// 次のループで残り移動を処理する
-				continue;
+					// 次のループで残り移動を処理する
+					continue;
+				}
 			}
-		}
 
-		// 衝突していない最後の座標へ戻す
-		pos = safePos;
+			// 衝突していない最後の座標へ戻す
+			pos = safePos;
 
-		// 少しだけ法線の方向へ押し出して
-		// めり込みを防止する
-		pos = VAdd(pos, VScale(hitNormal, SKIN));
+			// 少しだけ法線の方向へ押し出して
+			// めり込みを防止する
+			pos = VAdd(pos, VScale(hitNormal, SKIN));
 
-		float velocityY = enemy_->GetVelocity();
+			float velocityY = enemy->GetVelocity();
 
-		// 床判定
-		if (hitNormal.y > 0.6f)
-		{
-			// 接地フラグを立てる
-			enemy_->SetGround(true);
-
-			// 落下速度を停止
-			if (velocityY < 0.0f)
+			// 床判定
+			if (hitNormal.y > 0.6f)
 			{
-				velocityY = 0.0f;
-			}
-		}
+				// 接地フラグを立てる
+				enemy->SetGround(true);
 
-		// 天井判定
-		if (hitNormal.y < -0.6f)
-		{
-			// 上昇速度を停止
-			if (velocityY > 0.0f)
+				// 落下速度を停止
+				if (velocityY < 0.0f)
+				{
+					velocityY = 0.0f;
+				}
+			}
+
+			// 天井判定
+			if (hitNormal.y < -0.6f)
 			{
-				velocityY = 0.0f;
+				// 上昇速度を停止
+				if (velocityY > 0.0f)
+				{
+					velocityY = 0.0f;
+				}
 			}
+			enemy->SetVelocity(velocityY);
+
+			// 衝突後に残っている移動割合
+			float remainRatio = (float)(stepCount - hitStep) / stepCount;
+
+			VECTOR remainMove = VScale(move, remainRatio);
+
+			// 壁スライド処理
+			// 法線方向成分を除去して壁に沿って移動させる
+			float dot = VDot(remainMove, hitNormal);
+
+			if (dot < 0.0f)
+			{
+				remainMove = VSub(remainMove, VScale(hitNormal, dot));
+			}
+
+			// 次の反復で残り移動量を処理
+			move = remainMove;
 		}
-		enemy_->SetVelocity(velocityY);
 
-		// 衝突後に残っている移動割合
-		float remainRatio = (float)(stepCount - hitStep) / stepCount;
 
-		VECTOR remainMove = VScale(move, remainRatio);
-
-		// 壁スライド処理
-		// 法線方向成分を除去して壁に沿って移動させる
-		float dot = VDot(remainMove, hitNormal);
-
-		if (dot < 0.0f)
-		{
-			remainMove = VSub(remainMove, VScale(hitNormal, dot));
-		}
-
-		// 次の反復で残り移動量を処理
-		move = remainMove;
+		// 最終位置を反映
+		enemy->SetPos(pos);
 	}
-
-
-	// 最終位置を反映
-	enemy_->SetPos(pos);
 }
 
 // 小さな段差を登れるか判定する
-bool GameScene::CanStepUp(const VECTOR& pos, const VECTOR& move, float stepHeight)
+bool GameScene::CanStepUp(EnemyBase* enemy, const VECTOR& pos, const VECTOR& move, float stepHeight)
 {
 	// 必要なコンポーネントが存在しないなら処理しない
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
@@ -763,9 +771,9 @@ bool GameScene::CanStepUp(const VECTOR& pos, const VECTOR& move, float stepHeigh
 		MV1CollCheck_Capsule(
 			stage->GetModelId(),
 			-1,
-			VAdd(testPos, enemy_->GetStart()),
-			VAdd(testPos, enemy_->GetEnd()),
-			enemy_->GetRadius());
+			VAdd(testPos, enemy->GetStart()),
+			VAdd(testPos, enemy->GetEnd()),
+			enemy->GetRadius());
 
 	// 1つでもポリゴンに当たっていれば衝突
 	bool hit = result.HitNum > 0;
@@ -785,19 +793,22 @@ void GameScene::CollisionEnemy2Player(void)
 	VECTOR playerTop = player->GetCapsule()->GetStart();
 	float playerRad = player->GetCapsule()->radius_;
 
-	VECTOR enemyPos = enemy_->GetPos();
-	VECTOR enemyTop = VAdd(enemyPos, enemy_->GetStart());
-	float enemyRad = enemy_->GetRadius();
+	for (auto enemy : enemyManager_->GetEnemys())
+	{
+		VECTOR enemyPos = enemy->GetPos();
+		VECTOR enemyTop = VAdd(enemyPos, enemy->GetStart());
+		float enemyRad = enemy->GetRadius();
 
-	VECTOR pushVector = Collision::ExtrusionCollisionCapsule(playerPos, playerTop, playerRad, enemyPos, enemyTop, enemyRad);
+		VECTOR pushVector = Collision::ExtrusionCollisionCapsule(playerPos, playerTop, playerRad, enemyPos, enemyTop, enemyRad);
 
-	// カプセル1（プレイヤーなど）は足し算
-	playerPos = VAdd(playerPos, pushVector);
-	player->GetTransform()->pos_ = playerPos;
+		// カプセル1（プレイヤーなど）は足し算
+		playerPos = VAdd(playerPos, pushVector);
+		player->GetTransform()->pos_ = playerPos;
 
-	// カプセル2（敵など）は引き算
-	enemyPos = VSub(enemyPos, pushVector);
-	enemy_->SetPos(enemyPos);
+		// カプセル2（敵など）は引き算
+		enemyPos = VSub(enemyPos, pushVector);
+		enemy->SetPos(enemyPos);
+	}
 }
 
 void GameScene::ItemCreate(Tag tag, VECTOR pos)

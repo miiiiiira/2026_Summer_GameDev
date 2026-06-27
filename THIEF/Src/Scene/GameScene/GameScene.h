@@ -8,7 +8,8 @@
 
 class ObjectManager;
 class Goblet;
-class Yeti;
+class EnemyManager;
+class EnemyBase;
 class Crosshair;
 class DamageEffect;
 
@@ -52,7 +53,7 @@ private:
 	// オブジェクトマネージャー
 	ObjectManager* objectManger_;
 
-	Yeti* enemy_;
+	EnemyManager* enemyManager_;
 
 	// クロスヘア
 	Crosshair* crosshair_;
@@ -72,7 +73,7 @@ private:
 	// 敵とステージの当たり判定
 	void CollisionEnemyToStage(void);
 	// 小さな段差を登れるか判定する
-	bool CanStepUp(const VECTOR& pos, const VECTOR& move, float stepHeight);
+	bool CanStepUp(EnemyBase* enemy, const VECTOR& pos, const VECTOR& move, float stepHeight);
 
 	// プレイヤーと敵の当たり判定
 	void CollisionEnemy2Player(void);
