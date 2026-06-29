@@ -1,33 +1,53 @@
 #pragma once
+
+#include "../../Component.h"
 #include <vector>
+
 class Transform;
 class PlayerController;
 class Item;
 
-class Map
+class Map : public Component
 {
 public:
-	Map(PlayerController* player);
-	~Map(void);
+	Map(void);
+	~Map(void)override;
 
-	void Load(void);
-	void Init(void);
-	void Update(void);
-	void Draw(void);
-	void Release(void);
+	void Init(void)override;
+	void Update(void)override;
+	void Draw2D(void)override;
 
 private:
+
+	// マップの中心位置(左下らへん)
+	static constexpr int MAP_CENTER_POS_X = Application::SCREEN_SIZE_X / 4;
+	static constexpr int MAP_CENTER_POS_Y = Application::SCREEN_SIZE_Y / 2 + Application::SCREEN_SIZE_Y / 4;
+
+	// マップ画像サイズ
+	static constexpr int MAP_IMG_SIZE_X = 1024;
+	static constexpr int MAP_IMG_SIZE_Y = 843;
+
+	// マップ上のプレイヤーの初期位置
+	static constexpr int PLAYER_SPAWN_POS_X = 982;
+	static constexpr int PLAYER_SPAWN_POS_Y = 233;
+
+	// マップ画像の初期位置
+	static constexpr int MAP_IMG_DEFAULT_POS_X =
+		MAP_CENTER_POS_X + (MAP_IMG_SIZE_X / 2 - PLAYER_SPAWN_POS_X);
+	static constexpr int MAP_IMG_DEFAULT_POS_Y =
+		MAP_CENTER_POS_Y + (MAP_IMG_SIZE_Y / 2 - PLAYER_SPAWN_POS_Y);
 
 	// アイテムのサイズによって表示する大きさを変更
 	static constexpr int BIG_RAD = 15;
 	static constexpr int MEDIUM_RAD = 10;
 	static constexpr int SMALL_RAD = 5;
 
-	// プレイヤーのポインタ
-	PlayerController* player_;
-
 	// 発見したアイテムの格納場所
 	std::vector<Item*> foundItems_;
+
+	// 地図画像の位置
+	int mapImgPosX_;
+	int mapImgPosY_;
 
 	// 地図画像
 	int mapImg_;

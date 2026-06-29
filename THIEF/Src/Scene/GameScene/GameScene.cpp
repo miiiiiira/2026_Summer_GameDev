@@ -25,6 +25,7 @@
 #include "../../Object/Component/Render/Render3D.h"
 #include "../../Object/Component/Camera/Camera.h"
 #include "../../Object/Component/PlayerController/PlayerController.h"
+#include "../../Object/Component/PlayerController/Map/Map.h"
 #include "../../Object/Component/Animation/Animation.h"
 #include "../../Object/Component/Stage/Stage.h"
 #include "../../Object/Component/Wisp/Wisp.h"
@@ -363,6 +364,10 @@ void GameScene::PlayerCreate(void)
 	// 納品場所用当たり判定にプレイヤーを渡す
 	auto deliveryCol = stage->GetOwner()->GetComponent<DeliveryLocationCollider>();
 	deliveryCol->SetPlayer(playerController);
+
+	// マップの設定
+	auto map = player->AddComponent<Map>();
+	map->SetOwner(player);
 }
 
 void GameScene::EnemyCreate(void)
