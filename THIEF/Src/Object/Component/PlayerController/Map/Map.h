@@ -19,9 +19,15 @@ public:
 
 private:
 
+	// マップの描画範囲
+	static constexpr int MAP_DRAW_AREA_START_X = Application::SCREEN_SIZE_X / 5;
+	static constexpr int MAP_DRAW_AREA_START_Y = Application::SCREEN_SIZE_Y / 7;
+	static constexpr int MAP_DRAW_AREA_END_X = Application::SCREEN_SIZE_X - Application::SCREEN_SIZE_X / 5;
+	static constexpr int MAP_DRAW_AREA_END_Y = Application::SCREEN_SIZE_Y - Application::SCREEN_SIZE_Y / 7;
+
 	// マップの中心位置(左下らへん)
-	static constexpr int MAP_CENTER_POS_X = Application::SCREEN_SIZE_X / 4;
-	static constexpr int MAP_CENTER_POS_Y = Application::SCREEN_SIZE_Y / 2 + Application::SCREEN_SIZE_Y / 4;
+	static constexpr int MAP_CENTER_POS_X = Application::SCREEN_SIZE_X / 2;
+	static constexpr int MAP_CENTER_POS_Y = Application::SCREEN_SIZE_Y / 2;
 
 	// マップ画像サイズ
 	static constexpr int MAP_IMG_SIZE_X = 1024;

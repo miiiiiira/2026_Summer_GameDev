@@ -5,6 +5,7 @@
 #include "../../Transform/Transform.h"
 #include "../../../../Application.h"
 #include "Map.h"
+#include "../../../../Common/CameraUtility/CameraUtility.h"
 
 Map::Map(void)
 {
@@ -40,45 +41,50 @@ void Map::Update(void)
 		}
 	}
 
-	// TODO プレイヤーの3D座標から2D座標変換して移動分マップの位置を動かす
+	// プレイヤーの3D座標を2D座標に変換して移動分マップの位置を動かす
 	auto* player = owner_->GetComponent<PlayerController>();
 	VECTOR plaPos = player->GetTransform()->pos_;
-	VECTOR plaPrevPos = player->GetTransform()->prevPos_;
-	mapImgPosX_ = MAP_IMG_DEFAULT_POS_X + (plaPos.z*0.14f);
-	mapImgPosY_ = MAP_IMG_DEFAULT_POS_Y + (plaPos.x*0.14f);
+	mapImgPosX_ = PLAYER_SPAWN_POS_X - (plaPos.z * 0.1f);
+	mapImgPosY_ = PLAYER_SPAWN_POS_Y - (plaPos.x * 0.1f);
 
 }
 
 void Map::Draw2D(void)
 {
+	// アルファ値をかける
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+
 	// 描画の範囲制限をかける
 	SetDrawArea(
-		0,
-		Application::SCREEN_SIZE_Y / 2,
-		Application::SCREEN_SIZE_X / 2,
-		Application::SCREEN_SIZE_Y);
+		MAP_DRAW_AREA_START_X,
+		MAP_DRAW_AREA_START_Y,
+		MAP_DRAW_AREA_END_X,
+		MAP_DRAW_AREA_END_Y);
 
 	// マップの背景
 	DrawBox(
-		0,
-		Application::SCREEN_SIZE_Y / 2,
-		Application::SCREEN_SIZE_X / 2,
-		Application::SCREEN_SIZE_Y,
+		MAP_DRAW_AREA_START_X,
+		MAP_DRAW_AREA_START_Y,
+		MAP_DRAW_AREA_END_X,
+		MAP_DRAW_AREA_END_Y,
 		0x000000, true);
 
 	// マップ自体の描画
-	DrawRotaGraph(
+	DrawRotaGraph2(
+		MAP_CENTER_POS_X,
+		MAP_CENTER_POS_Y,
 		mapImgPosX_,
 		mapImgPosY_,
 		1.0,
-		0.0,
+		// カメラの回転と逆方向にマップを回すため
+		// マップ画像がステージと比べて-90°向きが回転しているため
+		-CameraUtility::GetCameraAngle().y+(90 * DX_PI_F / 180.0f),
 		mapImg_,
 		true);
 
-
 	// プレイヤーの位置は必ずマップの中心
 	DrawCircle(MAP_CENTER_POS_X, MAP_CENTER_POS_Y,3,0xffffff);
-	//DrawRotaGraphF(mapCenterPosX, mapCenterPosY, 1.0, 0.0, playerImg_, true);
+	//DrawRotaGraphF(MAP_CENTER_POS_X, MAP_CENTER_POS_Y, 1.0, 0.0, playerImg_, true);
 
 	//int size = 0;
 	//// 見つけたアイテムの数分回す
@@ -107,6 +113,10 @@ void Map::Draw2D(void)
 	
 	// 描画の範囲制限解除
 	SetDrawArea(0, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y);
+
+	// 通常描画に戻す
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
 }
 
 void Map::AddFoundItem(Item* item)
