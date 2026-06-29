@@ -523,7 +523,7 @@ void GameScene::CheckEnemyAttack(void)
 			if (Collision::HitSphereCapsule(useWeapon->GetPos(), useWeapon->GetCollisionRadius(),
 				startPos, endPos, radius))
 			{
-				player->SetDamage(10);
+				player->SetDamage(50);
 
 				// 画面を赤くするエフェクトを付ける
 				redEffect_->SetEffect(DAMAGE_EFFECT_ALPHA, DAMAGE_EFFECT_COLOR);
@@ -744,7 +744,6 @@ void GameScene::CollisionEnemyToStage(void)
 			move = remainMove;
 		}
 
-
 		// 最終位置を反映
 		enemy->SetPos(pos);
 	}
@@ -803,7 +802,16 @@ void GameScene::CollisionEnemy2Player(void)
 
 		// カプセル1（プレイヤーなど）は足し算
 		playerPos = VAdd(playerPos, pushVector);
-		player->GetTransform()->pos_ = playerPos;
+		player->GetTransform()->pos_ = playerPos; 
+
+		if (enemy->GetTag() == ENEMY_TAG::MUSHNUB && 
+			(pushVector.x > 0.1f || pushVector.y > 0.1f || pushVector.z > 0.1f))
+		{
+			// player->SetDamage(5);
+
+			// 画面を赤くするエフェクトを付ける
+			redEffect_->SetEffect(DAMAGE_EFFECT_ALPHA, DAMAGE_EFFECT_COLOR);
+		}
 
 		// カプセル2（敵など）は引き算
 		enemyPos = VSub(enemyPos, pushVector);

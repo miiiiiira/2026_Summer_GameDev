@@ -15,4 +15,13 @@ namespace EnemyCommon
         WAYPOINT way;
         float cost;
     };
+
+    enum class ENEMY_TAG
+    {
+        YETI,
+        MUSHNUB,
+        SKELETON,
+        STATUE,
+        MAX,
+    };
 }

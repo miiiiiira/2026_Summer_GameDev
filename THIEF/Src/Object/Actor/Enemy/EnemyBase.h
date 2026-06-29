@@ -50,6 +50,8 @@ public:
 	void SetGround(bool isGround);
 	float GetVelocity(void);
 	void SetVelocity(float velocityY);
+	void SetTag(ENEMY_TAG tag);
+	ENEMY_TAG GetTag(void);
 
 protected:
 
@@ -90,6 +92,7 @@ protected:
 	bool isNotice_;
 	bool isGround_;	
 	float velocityY_ = 0.0f;	// 現在の落下速度
+	ENEMY_TAG tag_;
 
 	// 開始位置
 	VECTOR startOffset_;
@@ -126,6 +129,9 @@ protected:
 
 	// プレイヤーを見つけたかどうか
 	bool CheckPlayerDiscovery(float radius);
+
+	// プレイヤーが特定のエリアにいるかどうか
+	bool IsPlayerInArea(VECTOR minPos, VECTOR maxPos);
 
 	// ジャンプ処理
 	void Jump(void);
