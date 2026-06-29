@@ -201,6 +201,9 @@ VECTOR EnemyBase::GetPos(void)
 void EnemyBase::SetPos(VECTOR pos)
 {
 	pos_ = pos;
+	MV1SetPosition(modelId_, pos_);
+	// 当たり判定情報を最新の状態に更新
+	MV1RefreshCollInfo(modelId_, -1);
 }
 
 float EnemyBase::GetRadius(void)
@@ -236,6 +239,16 @@ float EnemyBase::GetVelocity(void)
 void EnemyBase::SetVelocity(float velocityY)
 {
 	velocityY_ = velocityY;
+}
+
+void EnemyBase::SetTag(ENEMY_TAG tag)
+{
+	tag_ = tag;
+}
+
+ENEMY_TAG EnemyBase::GetTag(void)
+{
+	return tag_;
 }
 
 void EnemyBase::DelayRotate(void)
@@ -345,6 +358,25 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 	// 視野外、または障害物に遮られている場合
 	isNotice_ = false;
 	return false;
+}
+
+bool EnemyBase::IsPlayerInArea(VECTOR minPos, VECTOR maxPos)
+{
+	bool ret = false;
+
+	VECTOR playerPos = player_->GetTransform()->pos_;
+
+	// プレイヤーの座標が、エリアの最大、最小の中に収まっているか
+	bool isInsideX = (playerPos.x >= minPos.x && playerPos.x <= maxPos.x);
+	bool isInsideY = (playerPos.y >= minPos.y && playerPos.y <= maxPos.y);
+	bool isInsideZ = (playerPos.z >= minPos.z && playerPos.z <= maxPos.z);
+
+	// プレイヤーがエリア内なら
+	if (isInsideX && isInsideY && isInsideZ)
+	{
+		ret = true;
+	}
+	return ret;
 }
 
 void EnemyBase::Jump(void)

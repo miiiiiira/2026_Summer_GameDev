@@ -55,7 +55,11 @@ private:
 
 	// 座標
 	static constexpr VECTOR CHASE_POS = { -1506.83f,10.0f,6513.62f };
-	static constexpr VECTOR DEFAULT_POS = { -1426.83f,10.0f,5200.0f };
+	static constexpr VECTOR DEFAULT_POS = { -1526.83f,10.0f,5500.0f };
+
+	// 特定エリアの最大、最小値
+	static constexpr VECTOR MIN_AREA_POS = { -2150.0f, 10.0f, 5400.0f };
+	static constexpr VECTOR MAX_AREA_POS = { -560.0f, 700.0f, 7800.0f };
 
 	STATE state_;
 

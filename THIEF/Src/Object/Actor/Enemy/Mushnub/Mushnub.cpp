@@ -101,7 +101,7 @@ void Mushnub::Draw(void)
 	VECTOR end = VAdd(pos_, endOffset_);
 	DrawCapsule3D(start, end, radius_, 8, 0xff0000, 0xff0000, false);
 
-	DrawSphere3D(CHASE_POS, 1000.0f, 8, 0x00ff00, 0x00ff00, false);
+	DrawCube3D(MIN_AREA_POS, MAX_AREA_POS, 0xff00ff, 0xff00ff, false);
 
 #endif
 }
@@ -162,9 +162,7 @@ void Mushnub::UpdateIdle(void)
 		return;
 	}
 
-	float dist = GetDistance(CHASE_POS, player_->GetTransform()->pos_);
-
-	if (dist <= 800.0f * 800.0f)
+	if (IsPlayerInArea(MIN_AREA_POS, MAX_AREA_POS))
 	{
 		LookPlayer();
 	}
@@ -183,16 +181,19 @@ void Mushnub::UpdateSurprise(void)
 
 void Mushnub::UpdateChase(void)
 {
-	float distance = GetDistance(CHASE_POS, player_->GetTransform()->pos_);
 	float enemyDist2 = GetDistance(pos_, CHASE_POS);
 
-	if (distance > 1000.0f * 1000.0f && enemyDist2 <= 100.0f * 100.0f)
+	if (enemyDist2 <= 100.0f * 100.0f)
 	{
 		ChangeState(STATE::IDLE);
 		return;
 	}
 
-	if (distance > 1000.0f * 1000.0f)
+	if (IsPlayerInArea(MIN_AREA_POS, MAX_AREA_POS))
+	{
+		LookPlayer();
+	}
+	else
 	{
 		// ‘ŠŽè‚Ö‚ÌƒxƒNƒgƒ‹‚ðŒvŽZ
 		VECTOR diff = VSub(CHASE_POS, pos_);
@@ -203,10 +204,6 @@ void Mushnub::UpdateChase(void)
 
 		// ‰ñ“]‚ÍYŽ²‚Ì‚Ý
 		angle_.x = angle_.z = 0.0f;
-	}
-	else
-	{
-		LookPlayer();
 	}
 
 	float enemyDist = GetDistance(pos_, player_->GetTransform()->pos_);

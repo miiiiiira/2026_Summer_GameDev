@@ -12,15 +12,6 @@ class EnemyManager
 {
 public:
 
-	enum class ENEMY_TYPE
-	{
-		YETI,
-		MUSHNUB,
-		SKELETON,
-		STATUE,
-		MAX,
-	};
-
 	EnemyManager(void);
 	~EnemyManager(void);
 

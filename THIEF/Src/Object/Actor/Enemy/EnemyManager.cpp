@@ -23,15 +23,6 @@ void EnemyManager::Init(PlayerController* player, int id)
 	if (id == -1) return;
 	stageId_ = id;
 
-	// Yetiを生成
-	EnemyBase* newEnemy = new Yeti(enemyModelIds_[static_cast<int>(ENEMY_TYPE::YETI)]);
-	// 派生クラスで持っている各変数（way_ など）を流し込む
-	// EnemyBase で共通化しているため、ここでデータを渡すだけでOK！
-	newEnemy->Load();
-	newEnemy->Init(player_, stageId_, way_, edgeList_);
-	// リストに追加
-	enemys_.push_back(newEnemy);
-
 	edgeList_.clear();
 	edgeList_.resize(way_.size());
 
@@ -49,6 +40,22 @@ void EnemyManager::Init(PlayerController* player, int id)
 			AddEdge(i, j);
 		}
 	}
+
+	// Yetiを生成
+	EnemyBase* newEnemy = new Yeti(enemyModelIds_[static_cast<int>(ENEMY_TAG::YETI)]);
+	newEnemy->Load();
+	newEnemy->SetTag(ENEMY_TAG::YETI);
+	newEnemy->Init(player_, stageId_, way_, edgeList_);
+	// リストに追加
+	enemys_.push_back(newEnemy);
+
+	// Mushnubを生成
+	newEnemy = new Mushnub(enemyModelIds_[static_cast<int>(ENEMY_TAG::MUSHNUB)]);
+	newEnemy->Load();
+	newEnemy->SetTag(ENEMY_TAG::MUSHNUB);
+	newEnemy->Init(player_, stageId_, way_, edgeList_);
+	// リストに追加
+	enemys_.push_back(newEnemy);
 }
 
 void EnemyManager::Load(void)
