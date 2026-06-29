@@ -52,6 +52,9 @@ void Item::Init(void)
 	// 無敵時間を初期化しておく
 	info_.invincibilityFrames_ = INVINCIBILITY_FRAMES;
 
+	// まだ見つかっていないことにする
+	info_.isFound_ = false;
+
 	// 個々のパラメータを設定
 	SetParam();
 

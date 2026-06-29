@@ -79,6 +79,9 @@ public:
 	// ‰º•ûŒü‚Ì‰Á‘¬“x‚ð0‚É‚·‚é
 	void SetVelocityYZero(void) { info_.velocity_.y = 0.0f; }
 
+	// ”­Œ©‚µ‚½‚±‚Æ‚É‚·‚é
+	void TrueIsFound(void) { info_.isFound_ = true; }
+
 protected:
 
 	static constexpr int DAMAGE_MULT = 10;
