@@ -110,41 +110,58 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 	// 線分の下座標
 	VECTOR lineEndPos = player_->GetLineEndPos();
 
-	// 当たっている
-	if (Collision::HitLineSphere(lineStartPos, lineEndPos, doneSwitchPos, doneSwitchRad))
-	{
-		// クロスヘアの種類を掴めるに変更
-		crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::CAN_GRABB);
-
-		// 掴もうとしていたら
-		if (player_->GetGrabbingState() == GRABBING_STATE::TRY_GRABBING)
-		{
-			// 納品済みの金額を確認
-			int deliveryPrice = ScoreManager::GetInstance().GetDeliveryPrice();
-			// 目標金額を確認
-			int targetPrice = ScoreManager::GetInstance().GetTargetPrice();
-
-			// 目標金額を達成していたら
-			if (deliveryPrice >= targetPrice)
-			{
-				// 納品完了音
-				AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_SUC);
-
-				// ステージクリアへ
-				SceneManager::GetInstance()->TrueStageClear();
-				return;
-			}
-			else
-			{
-				// 納品失敗音
-				AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_FAI);
-			}
-		}
-	}
-	else
+	// 当たっていない
+	if (!Collision::HitLineSphere(lineStartPos, lineEndPos, doneSwitchPos, doneSwitchRad))
 	{
 		// クロスヘアの種類を掴めないに変更
 		crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::NOT_GRABB);
+		return;
+	}
+
+	// 線分とステージモデルの衝突判定
+	MV1_COLL_RESULT_POLY stageHitResult =
+		MV1CollCheck_Line(stage_->GetModelId(), -1, lineStartPos, lineEndPos);
+
+	// ステージに当たっていたら
+	if (stageHitResult.HitFlag)
+	{
+		// カメラ側の線分座標と、納品スイッチ座標の距離を取る
+		float lineToItemDis = VSize(VSub(doneSwitchPos, lineStartPos));
+		// カメラ側の線分座標と、ステージヒット座標の距離を取る
+		float lineToStageDis = VSize(VSub(stageHitResult.HitPosition, lineStartPos));
+
+		// 納品スイッチ座標がステージヒット座標よりカメラに近くなかったら
+		// 線分と納品スイッチの間にステージがあると判定して処理を行わない
+		if (lineToItemDis > lineToStageDis)return;
+	}
+
+	// 当たっている
+	// クロスヘアの種類を掴めるに変更
+	crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::CAN_GRABB);
+
+	// 掴もうとしていたら
+	if (player_->GetGrabbingState() == GRABBING_STATE::TRY_GRABBING)
+	{
+		// 納品済みの金額を確認
+		int deliveryPrice = ScoreManager::GetInstance().GetDeliveryPrice();
+		// 目標金額を確認
+		int targetPrice = ScoreManager::GetInstance().GetTargetPrice();
+
+		// 目標金額を達成していたら
+		if (deliveryPrice >= targetPrice)
+		{
+			// 納品完了音
+			AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_SUC);
+
+			// ステージクリアへ
+			SceneManager::GetInstance()->TrueStageClear();
+			return;
+		}
+		else
+		{
+			// 納品失敗音
+			AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_FAI);
+		}
 	}
 }
 

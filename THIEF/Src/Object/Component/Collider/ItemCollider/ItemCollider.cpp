@@ -63,36 +63,50 @@ void ItemCollider::PlayerGrabCollision(void)
 	// 線分の下座標
 	VECTOR lineEndPos = player_->GetLineEndPos();
 
-	// 線分とモデルの衝突判定
-	MV1_COLL_RESULT_POLY hitResult =
-		MV1CollCheck_Line(itemModelId, -1, lineStartPos, lineEndPos);
+	// 線分とアイテムモデルの衝突判定
+	MV1_COLL_RESULT_POLY itemHitResult = MV1CollCheck_Line(itemModelId, -1, lineStartPos, lineEndPos);
+	// 線分と当たっていないなら処理をしない
+	if (!itemHitResult.HitFlag)return;
 
-	// 当たっている
-	if (hitResult.HitFlag)
+	// 線分とステージモデルの衝突判定
+	MV1_COLL_RESULT_POLY stageHitResult =
+		MV1CollCheck_Line(stage_->GetModelId(), -1, lineStartPos, lineEndPos);
+	
+	// ステージに当たっていたら
+	if (stageHitResult.HitFlag)
 	{
-		// クロスヘアの種類を掴めるに変更
-		crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::CAN_GRABB);
+		// カメラ側の線分座標と、アイテムのヒット座標の距離を取る
+		float lineToItemDis = VSize(VSub(itemHitResult.HitPosition, lineStartPos));
+		// カメラ側の線分座標と、ステージヒット座標の距離を取る
+		float lineToStageDis = VSize(VSub(stageHitResult.HitPosition, lineStartPos));
 
-		// 掴もうとしていたら
-		if (player_->GetGrabbingState() == GRABBING_STATE::TRY_GRABBING)
-		{
-			// カメラと当たった場所の距離を求める
-			float distance = item_->GetCameraDistance();
-
-			// 距離が最低距離値よりも小さかったら最低距離値にする
-			if (distance < PlayerController::MIN_RENGE)distance = PlayerController::MIN_RENGE;
-
-			// アイテムの追従モードをオンにする
-			item_->StartGrabbing({ 0,0,distance });
-			// 掴み状態にする
-			player_->StartGrabbing(distance);
-			player_->SetItemPoint(item_);
-
-			// クロスヘアの種類を掴んでいるに変更
-			crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::GRABBING);
-		}
+		// アイテムのヒット座標がステージヒット座標よりカメラに近くなかったら
+		// 線分とアイテムの間にステージがあると判定して処理を行わない
+		if (lineToItemDis > lineToStageDis)return;
 	}
 
+	// 当たっている
+	// クロスヘアの種類を掴めるに変更
+	crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::CAN_GRABB);
+
+	// 掴もうとしていたら
+	if (player_->GetGrabbingState() == GRABBING_STATE::TRY_GRABBING)
+	{
+		// カメラと当たった場所の距離を求める
+		float distance = item_->GetCameraDistance();
+
+		// 距離が最低距離値よりも小さかったら最低距離値にする
+		if (distance < PlayerController::MIN_RENGE)distance = PlayerController::MIN_RENGE;
+
+		// アイテムの追従モードをオンにする
+		item_->StartGrabbing({ 0,0,distance });
+		// 掴み状態にする
+		player_->StartGrabbing(distance);
+		player_->SetItemPoint(item_);
+
+		// クロスヘアの種類を掴んでいるに変更
+		crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::GRABBING);
+	}
 }
 
 void ItemCollider::StageCollision(void)

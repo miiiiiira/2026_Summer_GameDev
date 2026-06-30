@@ -154,20 +154,20 @@ GRABBING_STATE PlayerController::GetGrabbingState(void)
 
 VECTOR PlayerController::GetLineStartPos(void)
 {
+	// カメラの位置をラインの初め座標とする
+	return CameraUtility::GetCameraPos();
+}
+
+VECTOR PlayerController::GetLineEndPos(void)
+{
 	// 相対座標
-	VECTOR LOCAL_POS = 
+	VECTOR LOCAL_POS =
 	{ 0.0f,0.0f, PlayerStatusManager::GetInstance().GetPlayerStatus().rangeMax_ };
 
 	// 座標に反映
 	VECTOR downPos = CameraUtility::AddCameraPosLocalPos(LOCAL_POS);
 
 	return downPos;
-}
-
-VECTOR PlayerController::GetLineEndPos(void)
-{
-	// カメラの位置をラインの初め座標とする
-	return CameraUtility::GetCameraPos();
 }
 
 void PlayerController::StartGrabbing(float range)
