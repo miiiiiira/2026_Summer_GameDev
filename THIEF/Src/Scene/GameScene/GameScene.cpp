@@ -134,6 +134,10 @@ void GameScene::LoadEnd(void)
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 	// スコアマネージャーにアイテムたちを渡す
 	ScoreManager::GetInstance().SetItems(stage->GetItems());
+
+	auto map = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player)->GetOwner()->GetComponent<Map>();
+	// マップにアイテムたちを渡す
+	map->SetItems(stage->GetItems());
 }
 
 void GameScene::Update(void)

@@ -12,6 +12,7 @@
 #include "../../Component/Animation/Animation.h"
 #include "../../Component/Item/Item.h"
 #include "../../Component/Wisp/Wisp.h"
+#include "Map/Map.h"
 #include "../../../Common/Transform/MatrixUtility.h"
 #include "../../../Common/CameraUtility/CameraUtility.h"
 #include "../../../Scene/SceneManager.h"
@@ -97,6 +98,9 @@ void PlayerController::Update()
 
 	// 掴み動作処理
 	Grabbing();
+
+	// マップの表示処理
+	MapDrawUpdate();
 
 	// 一定の座標いったら
 	if (transform_->pos_.y < DEAD_POS_Y)
@@ -713,6 +717,30 @@ bool PlayerController::RangeUpdate(void)
 
 	// 変更がなかったらfalseを返す
 	return false;
+}
+
+void PlayerController::MapDrawUpdate(void)
+{
+	if (InputManager::GetInstance()->MapButtons())
+	{
+		auto* map = owner_->GetComponent<Map>();
+
+		// 中身が無かったら処理しない
+		if (map == nullptr)	return;
+
+		// マップが表示中なら
+		if (map->GetIsDraw())
+		{
+			// マップを非表示にする
+			map->SetIsDraw(false);
+		}
+		// マップが非表示中なら
+		else
+		{
+			// マップを表示する
+			map->SetIsDraw(true);
+		}
+	}
 }
 
 void PlayerController::DebugDraw(void)

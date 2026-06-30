@@ -158,6 +158,9 @@ private:
 	// つかめる範囲の設定
 	bool RangeUpdate(void);
 
+	// マップ表示処理
+	void MapDrawUpdate(void);
+
 	// デバッグ用描画
 	void DebugDraw(void);
 

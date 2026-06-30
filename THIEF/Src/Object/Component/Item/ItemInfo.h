@@ -5,6 +5,13 @@
 #include <string>
 #include "../../Tag.h"
 
+enum ITEM_SIZE
+{
+	BIG,
+	MEDIUM,
+	SMALL
+};
+
 struct ItemInfo
 {
 	// モデルのハンドル
@@ -24,6 +31,9 @@ struct ItemInfo
 
 	// アイテムの頑丈さ
 	int hardness_;
+
+	// アイテムの大きさ
+	ITEM_SIZE size_;
 
 	// 重力
 	VECTOR velocity_;
@@ -57,12 +67,6 @@ struct ItemInfo
 	int invincibilityFrames_;
 };
 
-enum ITEM_SIZE
-{
-	BIG,
-	MEDIUM,
-	SMALL
-};
 
 struct ItemData
 {

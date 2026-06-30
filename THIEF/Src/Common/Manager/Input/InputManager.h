@@ -202,6 +202,9 @@ public:
 	// ライトとの距離を伸ばす
 	bool PushLightButtons(void);
 
+	// ライトとの距離を伸ばす
+	bool MapButtons(void);
+
 private:
 
 	// キー情報

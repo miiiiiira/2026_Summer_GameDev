@@ -30,6 +30,9 @@ void Amphora::SetParam(void)
 	// 重さ初期化
 	info_.weight_ = WEIGHT;
 
+	// アイテムの大きさ設定
+	info_.size_ = ITEM_SIZE::BIG;
+
 	// 当たり判定用の半径を初期化
 	info_.collisionRadiusX_ = COLLISION_RADIUS_X;
 	info_.collisionRadiusY_ = COLLISION_RADIUS_Y;

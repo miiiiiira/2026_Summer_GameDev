@@ -23,6 +23,9 @@ void InputManager::Init(void)
 	// ランタンを奥にする
 	Add(KEY_INPUT_Q);
 
+	// マップを開く
+	Add(KEY_INPUT_TAB);
+
 	Add(KEY_INPUT_E);
 	Add(KEY_INPUT_R);
 	Add(KEY_INPUT_F);
@@ -283,6 +286,11 @@ bool InputManager::PullItemButtons(int wheel)
 bool InputManager::PushLightButtons(void)
 {
 	return IsNew(KEY_INPUT_Q)||IsPadBtnNew(JOYPAD_NO::PAD1, JOYPAD_BTN::L_TRIGGER);
+}
+
+bool InputManager::MapButtons(void)
+{
+	return IsTrgDown(KEY_INPUT_TAB);
 }
 
 InputManager::InputManager(void)

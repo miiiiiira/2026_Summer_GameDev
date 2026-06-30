@@ -17,6 +17,13 @@ public:
 	void Update(void)override;
 	void Draw2D(void)override;
 
+	// 発見されたアイテムを格納する
+	void SetItems(std::vector<Item*> items);
+
+	// 描画するかを設定
+	void SetIsDraw(bool flg);
+	bool GetIsDraw(void);
+
 private:
 
 	// マップの描画範囲
@@ -25,7 +32,7 @@ private:
 	static constexpr int MAP_DRAW_AREA_END_X = Application::SCREEN_SIZE_X - Application::SCREEN_SIZE_X / 5;
 	static constexpr int MAP_DRAW_AREA_END_Y = Application::SCREEN_SIZE_Y - Application::SCREEN_SIZE_Y / 7;
 
-	// マップの中心位置(左下らへん)
+	// マップの中心位置
 	static constexpr int MAP_CENTER_POS_X = Application::SCREEN_SIZE_X / 2;
 	static constexpr int MAP_CENTER_POS_Y = Application::SCREEN_SIZE_Y / 2;
 
@@ -48,8 +55,11 @@ private:
 	static constexpr int MEDIUM_RAD = 10;
 	static constexpr int SMALL_RAD = 5;
 
-	// 発見したアイテムの格納場所
-	std::vector<Item*> foundItems_;
+	// マップを表示するかしないカ
+	bool isDraw_;
+
+	// ステージ上のアイテムたち
+	std::vector<Item*> items_;
 
 	// 地図画像の位置
 	int mapImgPosX_;
@@ -60,8 +70,5 @@ private:
 
 	// プレイヤー画像
 	int playerImg_;
-
-	// 発見されたアイテムを格納する
-	void AddFoundItem(Item* item);
 };
 

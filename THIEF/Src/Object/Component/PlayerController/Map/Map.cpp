@@ -21,7 +21,7 @@ Map::~Map(void)
 	DeleteGraph(mapImg_);
 	DeleteGraph(playerImg_);
 
-	foundItems_.clear();
+	items_.clear();
 }
 
 void Map::Init(void)
@@ -29,17 +29,14 @@ void Map::Init(void)
 	// マップ画像の位置初期化
 	mapImgPosX_ = MAP_IMG_DEFAULT_POS_X;
 	mapImgPosY_ = MAP_IMG_DEFAULT_POS_Y;
+
+	isDraw_ = false;
 }
 
 void Map::Update(void)
 {
-	for (Item* item : foundItems_)
-	{
-		if (!item->GetInfo().isAlive_)
-		{
-			// TODO アイテムのポインタを削除させる
-		}
-	}
+	// 描画フラグが立っていなかったら処理を行わない
+	if (!isDraw_)return;
 
 	// プレイヤーの3D座標を2D座標に変換して移動分マップの位置を動かす
 	auto* player = owner_->GetComponent<PlayerController>();
@@ -51,8 +48,11 @@ void Map::Update(void)
 
 void Map::Draw2D(void)
 {
+	// 描画フラグが立っていなかったら処理を行わない
+	if (!isDraw_)return;
+
 	// アルファ値をかける
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
 
 	// 描画の範囲制限をかける
 	SetDrawArea(
@@ -86,30 +86,41 @@ void Map::Draw2D(void)
 	DrawCircle(MAP_CENTER_POS_X, MAP_CENTER_POS_Y,3,0xffffff);
 	//DrawRotaGraphF(MAP_CENTER_POS_X, MAP_CENTER_POS_Y, 1.0, 0.0, playerImg_, true);
 
-	//int size = 0;
-	//// 見つけたアイテムの数分回す
-	//for (Item* item : foundItems_)
-	//{
-	//	// TODO 3D座標から2D座標変換して
-	//	float posX, posY;
-	//	switch (item->GetInfo().size_)
-	//	{
-	//	case ITEM_SIZE::BIG:
-	//		size = BIG_RAD;
-	//		break;
-	//	case ITEM_SIZE::MEDIUM:
-	//		size = MEDIUM_RAD;
-	//		break;
-	//	case ITEM_SIZE::SMALL:
-	//		size = SMALL_RAD;
-	//		break;
-	//	default:
-	//		break;
-	//	}
+	int size = 0;
+	// 見つけたアイテムの数分回す
+	for (Item* item : items_)
+	{
+		// アイテムが壊れているなら次の処理へ
+		if (!item->GetInfo().isAlive_)continue;
 
-	//	// サークルを表示
-	//	DrawCircle(posX,posY,size,0xffff00);
-	//}
+		// アイテムがまだ見つけられていなかったら次の処理へ
+		if (!item->GetInfo().isFound_)continue;
+
+		// プレイヤーの3D座標を2D座標に変換して移動分マップの位置を動かす
+		auto* player = owner_->GetComponent<PlayerController>();
+		VECTOR plaPos = player->GetTransform()->pos_;
+		// プレイヤーのスポーン位置から実際のアイテムの座標分をスケーリングして足してあげる
+		float posX = MAP_CENTER_POS_X - (item->GetTransform()->pos_.z * 0.1f) + (plaPos.z * 0.1f);
+		float posY = MAP_CENTER_POS_Y - (item->GetTransform()->pos_.x * 0.1f) + (plaPos.x * 0.1f);
+
+		switch (item->GetInfo().size_)
+		{
+		case ITEM_SIZE::BIG:
+			size = BIG_RAD;
+			break;
+		case ITEM_SIZE::MEDIUM:
+			size = MEDIUM_RAD;
+			break;
+		case ITEM_SIZE::SMALL:
+			size = SMALL_RAD;
+			break;
+		default:
+			break;
+		}
+
+		// サークルを表示
+		DrawCircle(posX,posY,size,0xffff00);
+	}
 	
 	// 描画の範囲制限解除
 	SetDrawArea(0, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y);
@@ -119,8 +130,19 @@ void Map::Draw2D(void)
 
 }
 
-void Map::AddFoundItem(Item* item)
+void Map::SetItems(std::vector<Item*> items)
 {
-	// 発見したアイテムを格納
-	foundItems_.push_back(item);
+	// アイテムたちのポインタを格納
+	items_ = items;
+}
+
+void Map::SetIsDraw(bool flg)
+{
+	// 描画するかを設定
+	isDraw_ = flg;
+}
+
+bool Map::GetIsDraw(void)
+{
+	return isDraw_;
 }
