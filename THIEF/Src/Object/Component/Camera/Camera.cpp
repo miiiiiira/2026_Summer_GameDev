@@ -21,11 +21,23 @@ void Camera::Init(void)
 		angle_.y,
 		angle_.z
 	);
+
+	// NearFarの初期化
+	SetCameraNearFar(VIEW_NEAR, VIEW_FAR);
 }
 
 void Camera::Update(void)
 {
+	// カメラの回転処理
 	ProcessRot(true);
+
+	// 座標とアングルを更新
+	SetCameraPositionAndAngle(
+		transform_->pos_,
+		angle_.x,
+		angle_.y,
+		angle_.z
+	);
 }
 
 void Camera::PreDraw(void)
@@ -35,8 +47,6 @@ void Camera::PreDraw(void)
 
 void Camera::SetBeforeDraw(void)
 {
-	SetCameraNearFar(VIEW_NEAR, VIEW_FAR);
-
 	switch (mode_)
 	{
 	case Camera::MODE::FIXED:

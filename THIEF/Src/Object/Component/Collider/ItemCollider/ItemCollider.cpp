@@ -54,17 +54,8 @@ void ItemCollider::CameraRayCollision(void)
 		PlayerController::PLAYER_ITEM_SEARCH_RADIUS,
 		item_->GetTransform()->pos_))return;
 
-	// ワールド座標をスクリーン座標にする
-	VECTOR itemPos2D = ConvWorldPosToScreenPos(item_->GetTransform()->pos_);
-	// SetCameraNearFarで設定した範囲から外れていたら処理をしない
-	if (itemPos2D.z <= 0.0f || itemPos2D.z >= 1.0f)return;
-
-	// 画面内にあるか
-	if (itemPos2D.x < 0 ||
-		itemPos2D.x >Application::SCREEN_SIZE_X ||
-		itemPos2D.y < 0 ||
-		itemPos2D.y >Application::SCREEN_SIZE_Y
-		)return;
+	// ダメージの場所が視界内に入っていないのであれば処理をスキップ
+	if (CheckCameraViewClip(item_->GetTransform()->pos_))return;
 
 	// カメラとアイテムに線分をつなげてステージに当たっているか
 	// 線分とステージモデルの衝突判定
