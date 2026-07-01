@@ -6,7 +6,9 @@
 #include "../../Wisp/Wisp.h"
 #include "../../../../Common/Transform/MatrixUtility.h"
 #include "../../../../Common/CameraUtility/CameraUtility.h"
+#include "../../../../Common/Collision/Collision.h"
 #include "../../../../Common/Crosshair/Crosshair.h"
+#include "../../../../Application.h"
 
 #include <algorithm>
 
@@ -29,6 +31,7 @@ void ItemCollider::Update(void)
 	if (!stage_) return;
 
 	// カメラレイとの当たり判定
+	CameraRayCollision();
 
 	// プレイヤーの掴み機能との当たり判定
 	PlayerGrabCollision();
@@ -42,20 +45,44 @@ void ItemCollider::CameraRayCollision(void)
 	// すでに見つけていたら処理を行わない
 	if (item_->GetInfo().isFound_)return;
 
-	// TODO ライトの範囲にアイテム座標が入っているか
+	// 線分の上座標
+	VECTOR lineStartPos = player_->GetLineStartPos();
 
-	// TODO カメラレイ飛ばしてアイテムに当たっているか
+	//プレイヤーから一定距離内に入っているか
+	if (!Collision::HitSpherePoint(
+		lineStartPos,
+		PlayerController::PLAYER_ITEM_SEARCH_RADIUS,
+		item_->GetTransform()->pos_))return;
 
-	// TODO 当たっていたら見つけた判定にする
+	// ワールド座標をスクリーン座標にする
+	VECTOR itemPos2D = ConvWorldPosToScreenPos(item_->GetTransform()->pos_);
+	// SetCameraNearFarで設定した範囲から外れていたら処理をしない
+	if (itemPos2D.z <= 0.0f || itemPos2D.z >= 1.0f)return;
+
+	// 画面内にあるか
+	if (itemPos2D.x < 0 ||
+		itemPos2D.x >Application::SCREEN_SIZE_X ||
+		itemPos2D.y < 0 ||
+		itemPos2D.y >Application::SCREEN_SIZE_Y
+		)return;
+
+	// カメラとアイテムに線分をつなげてステージに当たっているか
+	// 線分とステージモデルの衝突判定
+	MV1_COLL_RESULT_POLY stageHitResult =
+		MV1CollCheck_Line(stage_->GetModelId(), -1, lineStartPos, item_->GetTransform()->pos_);
+
+	// ステージに当たっていたら
+	if (stageHitResult.HitFlag)return;
+
+	// 当たっていたら見つけた判定にする
+	item_->TrueIsFound();
+
 }
 
 void ItemCollider::PlayerGrabCollision(void)
 {
 	// プレイヤーが何かを掴んでいる状態だったら処理を行わない
 	if (player_->GetGrabbingState() == GRABBING_STATE::IS_GRABBING) return;
-
-	// アイテムのモデルIDを取得
-	int itemModelId = item_->GetModelID();
 
 	// 線分の上座標
 	VECTOR lineStartPos = player_->GetLineStartPos();
@@ -64,7 +91,7 @@ void ItemCollider::PlayerGrabCollision(void)
 	VECTOR lineEndPos = player_->GetLineEndPos();
 
 	// 線分とアイテムモデルの衝突判定
-	MV1_COLL_RESULT_POLY itemHitResult = MV1CollCheck_Line(itemModelId, -1, lineStartPos, lineEndPos);
+	MV1_COLL_RESULT_POLY itemHitResult = MV1CollCheck_Line(item_->GetModelID(), -1, lineStartPos, lineEndPos);
 	// 線分と当たっていないなら処理をしない
 	if (!itemHitResult.HitFlag)return;
 

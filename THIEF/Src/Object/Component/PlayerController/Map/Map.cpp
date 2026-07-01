@@ -41,8 +41,8 @@ void Map::Update(void)
 	// プレイヤーの3D座標を2D座標に変換して移動分マップの位置を動かす
 	auto* player = owner_->GetComponent<PlayerController>();
 	VECTOR plaPos = player->GetTransform()->pos_;
-	mapImgPosX_ = PLAYER_SPAWN_POS_X - (plaPos.z * 0.1f);
-	mapImgPosY_ = PLAYER_SPAWN_POS_Y - (plaPos.x * 0.1f);
+	mapImgPosX_ = PLAYER_SPAWN_POS_X + (plaPos.x * 0.1f);
+	mapImgPosY_ = PLAYER_SPAWN_POS_Y - (plaPos.z * 0.1f);
 
 }
 
@@ -69,6 +69,9 @@ void Map::Draw2D(void)
 		MAP_DRAW_AREA_END_Y,
 		0x000000, true);
 
+	// カメラのY軸回転取得
+	float angle = -CameraUtility::GetCameraAngle().y;
+
 	// マップ自体の描画
 	DrawRotaGraph2(
 		MAP_CENTER_POS_X,
@@ -77,8 +80,7 @@ void Map::Draw2D(void)
 		mapImgPosY_,
 		1.0,
 		// カメラの回転と逆方向にマップを回すため
-		// マップ画像がステージと比べて-90°向きが回転しているため
-		-CameraUtility::GetCameraAngle().y+(90 * DX_PI_F / 180.0f),
+		angle,
 		mapImg_,
 		true);
 
@@ -99,10 +101,17 @@ void Map::Draw2D(void)
 		// プレイヤーの3D座標を2D座標に変換して移動分マップの位置を動かす
 		auto* player = owner_->GetComponent<PlayerController>();
 		VECTOR plaPos = player->GetTransform()->pos_;
-		// プレイヤーのスポーン位置から実際のアイテムの座標分をスケーリングして足してあげる
-		float posX = MAP_CENTER_POS_X - (item->GetTransform()->pos_.z * 0.1f) + (plaPos.z * 0.1f);
-		float posY = MAP_CENTER_POS_Y - (item->GetTransform()->pos_.x * 0.1f) + (plaPos.x * 0.1f);
+		// 実際のアイテムの座標とプレイヤーの座標でスケーリング(中心からの相対座標)
+		float localX = (item->GetTransform()->pos_.x - plaPos.x) * 0.1f;
+		float localZ = (-item->GetTransform()->pos_.z + plaPos.z) * 0.1f;
 
+		// 2次元の回転行列を適用
+		float rotatedX = localX * cosf(angle) - localZ * sinf(angle);
+		float rotatedY = localX * sinf(angle) + localZ * cosf(angle);
+
+		float posX = MAP_CENTER_POS_X + rotatedX;
+		float posY = MAP_CENTER_POS_Y + rotatedY;
+		// プレイヤーのスポーン位置から実際のアイテムの座標分をスケーリングして足してあげる
 		switch (item->GetInfo().size_)
 		{
 		case ITEM_SIZE::BIG:

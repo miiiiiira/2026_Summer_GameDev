@@ -37,12 +37,12 @@ private:
 	static constexpr int MAP_CENTER_POS_Y = Application::SCREEN_SIZE_Y / 2;
 
 	// マップ画像サイズ
-	static constexpr int MAP_IMG_SIZE_X = 1024;
-	static constexpr int MAP_IMG_SIZE_Y = 843;
+	static constexpr int MAP_IMG_SIZE_X = 843;
+	static constexpr int MAP_IMG_SIZE_Y = 1024;
 
 	// マップ上のプレイヤーの初期位置
-	static constexpr int PLAYER_SPAWN_POS_X = 982;
-	static constexpr int PLAYER_SPAWN_POS_Y = 233;
+	static constexpr int PLAYER_SPAWN_POS_X = 610;
+	static constexpr int PLAYER_SPAWN_POS_Y = 982;
 
 	// マップ画像の初期位置
 	static constexpr int MAP_IMG_DEFAULT_POS_X =

@@ -79,6 +79,9 @@ public:
 	// スタート位置
 	static constexpr VECTOR MOVE_CAP_START_OFFSET = { 0.0f,135.0f,0.0f };
 
+	// アイテム発見につかう用のプレイヤーからの範囲
+	static constexpr float PLAYER_ITEM_SEARCH_RADIUS = 800.0f;
+
 public:
 	void Init() override;		// 初期化
 	void Update() override;		// 更新

@@ -16,6 +16,11 @@ namespace Collision
         const VECTOR& sphPos, const float& sphRadius,
         const VECTOR& capA, const VECTOR& capB, const float& capRadius);
 
+    // ‹…‘Ì‚Æ“_(À•W)‚ÌÕ“Ë”»’è
+    bool HitSpherePoint(
+        const VECTOR& sphPos, const float& sphRad,
+        const VECTOR& pos);
+
     // ü‚Æ‹…‘Ì‚ÌÕ“Ë”»’è
     bool HitLineSphere(
         const VECTOR& lineStart, const VECTOR& lineEnd,

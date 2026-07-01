@@ -27,6 +27,18 @@ namespace Collision
         return HitSpheres(closest, capRadius, sphPos, sphRadius);
     }
 
+    bool HitSpherePoint(const VECTOR& sphPos, const float& sphRad, const VECTOR& pos)
+    {
+        // 各軸の差分（距離）を計算
+        VECTOR diff = VSub(pos, sphPos);
+
+        // ベクトルの長さの2乗
+        float distanceSq = VSquareSize(diff);
+
+        // 入っている
+        return distanceSq <= sphRad * sphRad;
+    }
+
     bool HitLineSphere(
         const VECTOR& lineStart, const VECTOR& lineEnd,
         const VECTOR& sphPos, const float& sphRadius)
