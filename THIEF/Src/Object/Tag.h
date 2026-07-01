@@ -10,6 +10,7 @@ enum class Tag
 	Wisp,
 	Enemy,
 	Player,
+	Cart,
 	Item_Goblet,
 	Item_Potion_Red,
 	Item_Potion_Green,

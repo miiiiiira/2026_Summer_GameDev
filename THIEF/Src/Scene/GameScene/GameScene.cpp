@@ -28,6 +28,7 @@
 #include "../../Object/Component/PlayerController/Map/Map.h"
 #include "../../Object/Component/Animation/Animation.h"
 #include "../../Object/Component/Stage/Stage.h"
+#include "../../Object/Component/Cart/Cart.h"
 #include "../../Object/Component/Wisp/Wisp.h"
 #include "../../Object/Component/Item/Item.h"
 #include "../../Object/Component/Item/ItemInfo.h"
@@ -116,12 +117,12 @@ void GameScene::Load(void)
 		Stage2Init();
 
 		break;
-	//case STAGE_NUM::STAGE_3:
-	//	
-	//	// ステージ3の初期化処理
-	//	Stage3Init();
+	case STAGE_NUM::STAGE_3:
+		
+		// ステージ3の初期化処理
+		Stage3Init();
 
-	//	break;
+		break;
 	default:
 		break;
 	}
@@ -423,6 +424,30 @@ void GameScene::ItemCreateStage3(void)
 {
 }
 
+void GameScene::CartCreate(void)
+{
+	// カートの作成
+	auto cart = objectManger_->CreateObject();
+
+	// タグを付与
+	cart->SetTagAndPriority(Tag::Cart);
+
+	// 座標の設定
+	auto trans = cart->AddComponent<Transform>();
+	trans->pos_ = { 0.0f,0.0f,0.0f };
+
+	// 描画
+	auto render = cart->AddComponent<Render3D>();
+	render->SetModel("Data/Model/Cart/Cart.mv1");
+
+	// ステージ機能
+	cart->AddComponent<Cart>();
+
+	// カートの当たり判定追加
+	//auto cartColl = cart->AddComponent<CartCollider>();
+	//cartColl->SetCrosshair(crosshair_);
+}
+
 void GameScene::Stage1Init(void)
 {
 	// カメラの作成
@@ -445,6 +470,9 @@ void GameScene::Stage1Init(void)
 
 	// アイテムの作成
 	ItemCreateStage1();
+
+	// カートの作成
+	CartCreate();
 }
 
 void GameScene::Stage2Init(void)

@@ -17,7 +17,7 @@ enum STAGE_NUM
 {
 	STAGE_1,
 	STAGE_2,
-	//STAGE_3,
+	STAGE_3,
 
 	STAGE_MAX,
 };
@@ -43,6 +43,7 @@ public:
 	void ItemCreateStage1(void);	// ステージ1アイテムの作成
 	void ItemCreateStage2(void);	// ステージ2アイテムの作成
 	void ItemCreateStage3(void);	// ステージ3アイテムの作成
+	void CartCreate(void);			// カートの作成
 private:
 
 	// ダメージエフェクトのアルファ値

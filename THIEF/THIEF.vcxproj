@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Component\Collider\CartCollider\CartCollider.cpp" />
+    <ClCompile Include="Src\Object\Component\Cart\Cart.cpp" />
     <ClCompile Include="Src\Object\Component\PlayerController\Map\Map.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\EnemyManager.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\Skeleton\Skeleton.cpp" />
@@ -88,6 +90,8 @@
     <ClCompile Include="Src\Object\Actor\Enemy\Statue\Statue.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Component\Collider\CartCollider\CartCollider.h" />
+    <ClInclude Include="Src\Object\Component\Cart\Cart.h" />
     <ClInclude Include="Src\Object\Component\PlayerController\Map\Map.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\EnemyCommon.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\EnemyManager.h" />

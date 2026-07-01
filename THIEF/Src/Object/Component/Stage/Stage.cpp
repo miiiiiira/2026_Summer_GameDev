@@ -1,7 +1,5 @@
 #include "Stage.h"
 
-#include <DxLib.h>
-
 #include "../Render/Render3D.h"
 #include "../Collider/DeliveryLocationCollider/DeliveryLocationCollider.h"
 #include "../../Object.h"
