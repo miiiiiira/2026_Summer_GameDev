@@ -86,22 +86,13 @@ void ItemCollider::PlayerGrabCollision(void)
 	// 線分と当たっていないなら処理をしない
 	if (!itemHitResult.HitFlag)return;
 
+	// カメラとアイテムに線分をつなげてステージに当たっているか
 	// 線分とステージモデルの衝突判定
 	MV1_COLL_RESULT_POLY stageHitResult =
-		MV1CollCheck_Line(stage_->GetModelId(), -1, lineStartPos, lineEndPos);
-	
-	// ステージに当たっていたら
-	if (stageHitResult.HitFlag)
-	{
-		// カメラ側の線分座標と、アイテムのヒット座標の距離を取る
-		float lineToItemDis = VSize(VSub(itemHitResult.HitPosition, lineStartPos));
-		// カメラ側の線分座標と、ステージヒット座標の距離を取る
-		float lineToStageDis = VSize(VSub(stageHitResult.HitPosition, lineStartPos));
+		MV1CollCheck_Line(stage_->GetModelId(), -1, lineStartPos, itemHitResult.HitPosition);
 
-		// アイテムのヒット座標がステージヒット座標よりカメラに近くなかったら
-		// 線分とアイテムの間にステージがあると判定して処理を行わない
-		if (lineToItemDis > lineToStageDis)return;
-	}
+	// ステージに当たっていたら
+	if (stageHitResult.HitFlag)return;
 
 	// 当たっている
 	// クロスヘアの種類を掴めるに変更

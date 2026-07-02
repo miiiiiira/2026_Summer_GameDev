@@ -19,9 +19,12 @@ public:
 	static constexpr float CART_SIZE_HIG_RAD = 110.0f;
 	// カートのサイズ奥行  
 	static constexpr float CART_SIZE_DEPTH_RAD = 50.0f;
+	
+	// プレイヤーとの相対座標
+	static constexpr VECTOR CART_LOCAL_POS = {0.0f,0.0f,300.0f};
 
 	// 線形補間の係数
-	static constexpr float COEFFICIENT = 0.3f;
+	static constexpr float COEFFICIENT = 0.15f;
 
 	~Cart(void)override;
 
@@ -39,7 +42,7 @@ public:
 	Transform* GetTransform();
 
 	// 掴まれた状態にする
-	void StartGrabbing(VECTOR localPos);
+	void StartGrabbing(void);
 
 	// 掴まれた状態を終了する
 	void EndGrabbed(void);

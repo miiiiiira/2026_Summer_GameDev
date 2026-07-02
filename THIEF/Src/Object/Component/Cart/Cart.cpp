@@ -30,11 +30,16 @@ void Cart::Init(void)
 	angleY_ = 0.0f;
 	// モデルに座標を反映
 	MV1SetRotationXYZ(modelId_, { 0.0f,angleY_,0.0f });
+
+	isGrabbed_ = false;
 }
 
 void Cart::Update(void)
 {
-	TrackingPlayer();
+	if (isGrabbed_)
+	{
+		TrackingPlayer();
+	}
 }
 
 void Cart::Draw3D(void)
@@ -44,13 +49,30 @@ void Cart::Draw3D(void)
 #endif // _DEBUG
 }
 
+Transform* Cart::GetTransform(void)
+{
+	return trans_;
+}
+
+void Cart::StartGrabbing(void)
+{
+	// 掴まれた状態にする
+	isGrabbed_ = true;
+}
+
+void Cart::EndGrabbed(void)
+{
+	// 掴まれていない状態にする
+	isGrabbed_ = false;
+}
+
 void Cart::TrackingPlayer(void)
 {
 	// 前の座標を保持しておく
 	VECTOR prePos = trans_->pos_;
 
 	// ローカル座標に
-	trans_->pos_ = CameraUtility::AddCameraPosLocalPos({0.0f,0.0f,250.0f});
+	trans_->pos_ = CameraUtility::AddCameraPosLocalPos(CART_LOCAL_POS);
 
 	// 線形補間で滑らかにする
 	trans_->pos_ = Math::Lerp(prePos, trans_->pos_, COEFFICIENT);

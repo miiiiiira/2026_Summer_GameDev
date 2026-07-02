@@ -46,6 +46,7 @@
 
 
 #include "../../Common/Collision/Collision.h"
+#include "../../Object/Component/Collider/CartCollider/CartCollider.h"
 
 
 GameScene::GameScene(void)
@@ -444,8 +445,14 @@ void GameScene::CartCreate(void)
 	cart->AddComponent<Cart>();
 
 	// カートの当たり判定追加
-	//auto cartColl = cart->AddComponent<CartCollider>();
-	//cartColl->SetCrosshair(crosshair_);
+	auto cartColl = cart->AddComponent<CartCollider>();
+	// ステージの取得
+	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+	cartColl->SetStage(stage);
+	// プレイヤーの取得
+	auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
+	cartColl->SetPlayer(player);
+	cartColl->SetCrosshair(crosshair_);
 }
 
 void GameScene::Stage1Init(void)

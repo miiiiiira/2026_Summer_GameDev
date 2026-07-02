@@ -3,6 +3,7 @@
 #include "../../Component.h"
 
 // 前方宣言
+class Cart;
 class Stage;
 class PlayerController;
 class Crosshair;
@@ -26,13 +27,16 @@ public:
 
 private:
 
-	// アイテムとカートの当たり判定
-	void ItemToCartCollision(void);
-
 	// カートとプレイヤー掴み機能との当たり判定
 	void CartToPlayerGrabbingCollision(void);
 
+	// アイテムとカートの当たり判定
+	void ItemToCartCollision(void);
+
 private:
+
+	// カート
+	Cart* cart_ = nullptr;
 
 	// ステージ
 	Stage* stage_ = nullptr;

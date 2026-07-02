@@ -120,20 +120,10 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 
 	// 線分とステージモデルの衝突判定
 	MV1_COLL_RESULT_POLY stageHitResult =
-		MV1CollCheck_Line(stage_->GetModelId(), -1, lineStartPos, lineEndPos);
+		MV1CollCheck_Line(stage_->GetModelId(), -1, lineStartPos, doneSwitchPos);
 
 	// ステージに当たっていたら
-	if (stageHitResult.HitFlag)
-	{
-		// カメラ側の線分座標と、納品スイッチ座標の距離を取る
-		float lineToItemDis = VSize(VSub(doneSwitchPos, lineStartPos));
-		// カメラ側の線分座標と、ステージヒット座標の距離を取る
-		float lineToStageDis = VSize(VSub(stageHitResult.HitPosition, lineStartPos));
-
-		// 納品スイッチ座標がステージヒット座標よりカメラに近くなかったら
-		// 線分と納品スイッチの間にステージがあると判定して処理を行わない
-		if (lineToItemDis > lineToStageDis)return;
-	}
+	if (stageHitResult.HitFlag)return;
 
 	// 当たっている
 	// クロスヘアの種類を掴めるに変更
