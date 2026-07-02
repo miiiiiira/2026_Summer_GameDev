@@ -2,6 +2,7 @@
 #include "../../../Object.h"
 #include "../../PlayerController/PlayerController.h"
 #include "../../Stage/Stage.h"
+#include "../../Cart/Cart.h"
 #include "../../Item/Item.h"
 #include "../../Wisp/Wisp.h"
 #include "../../../../Common/Transform/MatrixUtility.h"
@@ -38,6 +39,9 @@ void ItemCollider::Update(void)
 
 	// ステージとの当たり判定
 	StageCollision();
+
+	// アイテムとカートの当たり判定
+	ItemToCartCollision();
 }
 
 void ItemCollider::CameraRayCollision(void)
@@ -115,6 +119,181 @@ void ItemCollider::PlayerGrabCollision(void)
 
 		// クロスヘアの種類を掴んでいるに変更
 		crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::GRABBING);
+	}
+}
+
+void ItemCollider::ItemToCartCollision(void)
+{
+	if (!cart_) return;
+
+	// 接触したかどうか
+	bool isHitCart = false;
+
+	// 現在の座標
+	VECTOR itemCurrentPos = item_->GetTransform()->pos_;
+	// 前回の座標取得
+	VECTOR itemPrevPos = item_->GetTransform()->prevPos_;
+	// アイテム移動量(前回の座標と現在の座標の差分)
+	VECTOR itemMove = VSub(itemCurrentPos, itemPrevPos);
+
+	// 現在の座標
+	VECTOR cartCurrentPos = cart_->GetTransform()->pos_;
+	// 前回の座標取得
+	VECTOR cartPrevPos = cart_->GetTransform()->prevPos_;
+	// カート移動量
+	VECTOR cartMove = VSub(cartCurrentPos, cartPrevPos);
+
+	// アイテムのトータルの移動量  (自身の移動 - ステージの移動)
+	VECTOR move = VSub(itemMove, cartMove);
+
+	// 衝突判定開始座標
+	VECTOR pos = itemPrevPos;
+
+	// 衝突とスライドを繰り返す
+	for (int bounce = 0; bounce < MAX_BOUNCE; bounce++)
+	{
+		// 残り移動量の長さ
+		float length = VSize(move);
+
+		// ほぼ移動していないなら終了
+		if (length < 0.01f)
+			break;
+
+		// カプセル半径
+		float radius = item_->GetInfo().collisionRadiusX_;
+
+		// 高速移動時のすり抜け防止のため、
+		// 移動経路を細かく分割して判定する
+		int stepCount = (int)(length / (radius * 0.5f)) + 1;
+
+		// 分割数の上限・下限を設定
+		stepCount = std::clamp(stepCount, 1, 32);
+
+		// 1ステップ当たりの移動量
+		VECTOR stepMove = VScale(move, 1.0f / static_cast<float>(stepCount));
+
+		// 衝突情報
+		bool hit = false;
+		VECTOR hitNormal = VGet(0, 0, 0);
+
+		// 衝突していない最後の座標
+		VECTOR safePos = pos;
+
+		// 衝突したステップ番号
+		int hitStep = stepCount;
+
+		// 経路を少しずつ進めながら判定
+		for (int step = 0; step < stepCount; step++)
+		{
+			// 次に移動する座標
+			VECTOR nextPos = VAdd(safePos, stepMove);
+
+			// カプセル生成
+			VECTOR capStart = nextPos;
+			capStart.y -= item_->GetInfo().collisionRadiusY_;
+			VECTOR capEnd = nextPos;
+			capEnd.y += item_->GetInfo().collisionRadiusY_;
+
+			// ステージとカプセルの衝突判定
+			auto result =
+				MV1CollCheck_Capsule(
+					cart_->GetModelId(),
+					-1,
+					capStart,
+					capEnd,
+					radius);
+
+			float bestPush = 0.0f;
+			VECTOR bestNormal = VGet(0, 0, 0);
+
+			bool collision = false;
+
+			// ヒットしたポリゴンを調べる
+			for (int i = 0; i < result.HitNum; i++)
+			{
+				auto& poly = result.Dim[i];
+
+				// ポリゴン法線
+				VECTOR normal = VNorm(poly.Normal);
+
+				// このステップの進行方向と法線から、正面衝突している度合いを求める
+				float push = -VDot(VNorm(stepMove), normal);
+
+				// 背面や平行な面は無視
+				if (push <= 0.0f)
+					continue;
+
+				// 最も正面から当たっている面を採用
+				if (push > bestPush)
+				{
+					bestPush = push;
+					bestNormal = normal;
+				}
+
+				collision = true;
+			}
+
+			// 衝突結果を解放
+			MV1CollResultPolyDimTerminate(result);
+
+			// 衝突したら探索終了
+			if (collision)
+			{
+				hit = true;
+				hitNormal = bestNormal;
+				hitStep = step;
+				break;
+			}
+
+			// この位置までは移動しても大丈夫
+			safePos = nextPos;
+		}
+
+		// 最後まで衝突しなかった
+		if (!hit)
+		{
+			pos = VAdd(pos, move);
+			break;
+		}
+
+		isHitCart = true;
+
+		// 床に当たった
+		if (hitNormal.y > FLOOR_NORMAL_Y)
+		{
+			// 下方向の加速度を0にする
+			item_->SetVelocityYZero();
+		}
+		else
+		{
+			// 衝突していない最後の座標へ戻す
+			pos = safePos;
+
+			// 少しだけ法線の方向へ押し出してめり込みを防止する
+			pos = VAdd(pos, VScale(hitNormal, SKIN));
+		}
+
+		// 衝突後に残っている移動割合
+		float remainRatio = (float)(stepCount - hitStep - 1) / stepCount;
+		VECTOR remainMove = VScale(move, remainRatio);
+
+		// 壁スライド処理
+		// 法線方向成分を除去して壁に沿って移動させる
+		float dot = VDot(remainMove, hitNormal);
+
+		if (dot < 0.0f)
+		{
+			remainMove = VSub(remainMove, VScale(hitNormal, dot));
+		}
+
+		// 次の反復で残り移動量を処理
+		move = remainMove;
+	}
+
+	if (isHitCart)
+	{
+		// 最終位置を反映
+		item_->SetPos(VAdd(pos, cartMove));
 	}
 }
 
@@ -277,7 +456,7 @@ void ItemCollider::StageCollision(void)
 	}
 
 	// 最終位置を反映
-	item_->SetPos(pos);
+	item_->SetPos(VAdd(pos,move));
 
 	// 空中にいるならダメージ処理しない
 	if (!isHitStage)

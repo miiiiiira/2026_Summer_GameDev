@@ -30,9 +30,6 @@ private:
 	// カートとプレイヤー掴み機能との当たり判定
 	void CartToPlayerGrabbingCollision(void);
 
-	// アイテムとカートの当たり判定
-	void ItemToCartCollision(void);
-
 private:
 
 	// カート

@@ -40,10 +40,10 @@ public:
 	void WispCreate(void);			// ライトの作成
 	void PlayerCreate(void);		// プレイヤーの作成
 	void EnemyCreate(void);			// 敵の作成
+	void CartCreate(void);			// カートの作成
 	void ItemCreateStage1(void);	// ステージ1アイテムの作成
 	void ItemCreateStage2(void);	// ステージ2アイテムの作成
 	void ItemCreateStage3(void);	// ステージ3アイテムの作成
-	void CartCreate(void);			// カートの作成
 private:
 
 	// ダメージエフェクトのアルファ値

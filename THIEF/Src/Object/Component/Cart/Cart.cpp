@@ -23,15 +23,15 @@ void Cart::Init(void)
 	// 座標の更新
 	MV1SetPosition(modelId_, trans_->pos_);
 
-	// 衝突情報構築
-	MV1SetupCollInfo(modelId_, -1);
-
 	// 向きの初期化
 	angleY_ = 0.0f;
 	// モデルに座標を反映
 	MV1SetRotationXYZ(modelId_, { 0.0f,angleY_,0.0f });
 
 	isGrabbed_ = false;
+
+	// 衝突情報構築
+	MV1SetupCollInfo(modelId_, -1);
 }
 
 void Cart::Update(void)

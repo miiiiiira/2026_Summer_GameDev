@@ -7,6 +7,7 @@
 class Item;
 class PlayerController;
 class Stage;
+class Cart;
 class Crosshair;
 class Wisp;
 
@@ -33,6 +34,9 @@ public:
 	// ステージ設定
 	void SetStage(Stage* stage) { stage_ = stage; }
 
+	// カート設定
+	void SetCart(Cart* cart) { cart_ = cart; }
+
 	// クロスヘア設定
 	void SetCrosshair(Crosshair* crosshair) { crosshair_ = crosshair; }
 
@@ -53,6 +57,9 @@ private:
 	// プレイヤーの掴み機能との当たり判定
 	void PlayerGrabCollision(void);
 
+	// アイテムとカートの当たり判定
+	void ItemToCartCollision(void);
+
 	// ステージとの当たり判定
 	void StageCollision(void);
 
@@ -69,6 +76,9 @@ private:
 
 	// ステージ
 	Stage* stage_ = nullptr;
+
+	// カート
+	Cart* cart_ = nullptr;
 
 	// クロスヘア
 	Crosshair* crosshair_ = nullptr;

@@ -74,6 +74,7 @@ void Item::Update(void)
 	// 無敵時間の更新処理
 	UpdateInvincibility();
 
+
 	// 掴まれていたら
 	if (info_.isGrabbed_)
 	{
@@ -340,6 +341,9 @@ void Item::Gravity(void)
 
 	// モデルの座標を反映
 	MV1SetPosition(info_.modelId_, trans_->pos_);
+
+	// 当たり判定更新
+	MV1RefreshCollInfo(info_.modelId_, -1);
 }
 
 void Item::Weight(void)
@@ -349,6 +353,9 @@ void Item::Weight(void)
 
 	// モデルの座標を反映
 	MV1SetPosition(info_.modelId_, trans_->pos_);
+
+	// 当たり判定更新
+	MV1RefreshCollInfo(info_.modelId_, -1);
 }
 
 void Item::TrackingPlayer(void)

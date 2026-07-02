@@ -23,8 +23,6 @@ void CartCollider::Update(void)
 	// カートとプレイヤー掴み機能との当たり判定
 	CartToPlayerGrabbingCollision();
 
-	// アイテムとカートの当たり判定
-	ItemToCartCollision();
 }
 
 void CartCollider::Draw2D(void)
@@ -71,8 +69,4 @@ void CartCollider::CartToPlayerGrabbingCollision(void)
 		// クロスヘアの種類を掴んでいるに変更
 		crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::GRABBING);
 	}
-}
-void CartCollider::ItemToCartCollision(void)
-{
-	
 }
