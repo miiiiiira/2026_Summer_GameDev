@@ -111,7 +111,7 @@ void ItemCollider::PlayerGrabCollision(void)
 		item_->StartGrabbing({ 0,0,distance });
 		// 掴み状態にする
 		player_->StartGrabbing(distance);
-		player_->SetItemPoint(item_);
+		player_->SetGrabObject(item_);
 
 		// クロスヘアの種類を掴んでいるに変更
 		crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::GRABBING);

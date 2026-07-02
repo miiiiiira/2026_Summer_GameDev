@@ -1,6 +1,7 @@
 #pragma once
 #include "../Component.h"
 #include "Upgrade/UpgradeType.h"
+#include <variant>
 #include <DxLib.h>
 
 // 前方宣言
@@ -8,6 +9,7 @@ class Transform;
 class CapsuleCollider;
 class Animation;
 class Item;
+class Cart;
 class Wisp;
 
 // プレイヤーの状態
@@ -114,8 +116,9 @@ public:
 	// ライトクラスのポインタ取得
 	void SetWisp(Wisp* wisp);
 
-	// アイテムを取得
-	void SetItemPoint(Item* item);
+	// 掴んでいるオブジェクトを設定
+	void SetGrabObject(Item* item);
+	void SetGrabObject(Cart* cart);
 
 	// ダメージを与える
 	void SetDamage(int damage);
@@ -169,8 +172,9 @@ private:
 
 private:
 
-	// アイテム
-	Item* item_ = nullptr;
+	// カートとアイテムのポインタを入れられる
+	// 掴んでいるオブジェクト
+	std::variant<std::monostate,Cart*, Item*> grabObject_;
 
 	// 火
 	Wisp* wisp_ = nullptr;
@@ -231,4 +235,9 @@ private:
 
 	// しゃがみ状態での、初期化処理
 	void CrouchingInit(void);
+
+	Item* GetGrabbItem(void);
+	Cart* GetGrabbCart(void);
+
+	bool IsGrabbing(void);
 };

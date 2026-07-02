@@ -66,6 +66,7 @@ void CartCollider::CartToPlayerGrabbingCollision(void)
 		cart_->StartGrabbing();
 		// 掴み状態にする
 		player_->StartGrabbing(0);
+		player_->SetGrabObject(cart_);
 
 		// クロスヘアの種類を掴んでいるに変更
 		crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::GRABBING);
