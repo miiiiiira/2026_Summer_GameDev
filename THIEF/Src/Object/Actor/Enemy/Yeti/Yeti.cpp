@@ -435,14 +435,25 @@ void Yeti::UpdateChase(void)
 
 			if (!isPlayerVisible)
 			{
-				currentNodeId_ = FindNearestNode(pos_);
-				prevNodeId_ = -1;
-				prevPrevNodeId_ = -1;
-				nextWayPoint_ = (*way_)[currentNodeId_].pos;
-				LookPlayer();
+				// プレイヤーの現在の位置に一番近いノードを取得
+				int playerNearNodeId = FindNearestNode(playerPos);
 
-				ChangeState(STATE::IDLE);
-				return;
+				// 自分が今いる位置が、そのノードの近くであるか判定
+				float distance = VSize(VSub(pos_, (*way_)[playerNearNodeId].pos));
+
+				// プレイヤーを見失っているかつ、
+				// プレイヤーに一番近いノードまで近づいているなら
+				if (distance < 100.0f)
+				{
+					currentNodeId_ = FindNearestNode(pos_);
+					prevNodeId_ = -1;
+					prevPrevNodeId_ = -1;
+					nextWayPoint_ = (*way_)[currentNodeId_].pos;
+					LookPlayer();
+
+					ChangeState(STATE::IDLE);
+					return;
+				}
 			}
 		}
 		else
