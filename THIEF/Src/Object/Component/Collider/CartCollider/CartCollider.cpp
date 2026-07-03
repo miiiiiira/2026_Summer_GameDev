@@ -40,15 +40,15 @@ void CartCollider::CartToPlayerGrabbingCollision(void)
 	// 線分の下座標
 	VECTOR lineEndPos = player_->GetLineEndPos();
 
-	// 線分とアイテムモデルの衝突判定
-	MV1_COLL_RESULT_POLY itemHitResult = MV1CollCheck_Line(cart_->GetModelId(), -1, lineStartPos, lineEndPos);
+	// 線分とカートモデル衝突判定
+	MV1_COLL_RESULT_POLY itemHitResult = MV1CollCheck_Line(cart_->GetModelId(), 1, lineStartPos, lineEndPos);
 	// 線分と当たっていないなら処理をしない
 	if (!itemHitResult.HitFlag)return;
 
 	// カメラとアイテムに線分をつなげてステージに当たっているか
 	// 線分とステージモデルの衝突判定
 	MV1_COLL_RESULT_POLY stageHitResult =
-		MV1CollCheck_Line(stage_->GetModelId(), -1, lineStartPos, itemHitResult.HitPosition);
+		MV1CollCheck_Line(stage_->GetModelId(), 1, lineStartPos, itemHitResult.HitPosition);
 
 	// ステージに当たっていたら
 	if (stageHitResult.HitFlag)return;

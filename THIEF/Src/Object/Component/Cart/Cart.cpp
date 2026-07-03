@@ -32,6 +32,7 @@ void Cart::Init(void)
 
 	// 衝突情報構築
 	MV1SetupCollInfo(modelId_, -1);
+	MV1SetupCollInfo(modelId_, 1);
 }
 
 void Cart::Update(void)
@@ -93,6 +94,7 @@ void Cart::TrackingPlayer(void)
 
 	// 当たり判定情報を最新の状態に更新
 	MV1RefreshCollInfo(modelId_, -1);
+	MV1RefreshCollInfo(modelId_, 1);
 }
 
 void Cart::DrawDebug(void)
