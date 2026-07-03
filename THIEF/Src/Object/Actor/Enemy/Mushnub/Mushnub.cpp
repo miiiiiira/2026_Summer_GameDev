@@ -156,15 +156,10 @@ void Mushnub::ChangeEnd(void)
 
 void Mushnub::UpdateIdle(void)
 {
-	if (CheckPlayerDiscovery(viewRadius_))
+	if (IsPlayerInArea(MIN_AREA_POS, MAX_AREA_POS))
 	{
 		ChangeState(STATE::SURPRISE);
 		return;
-	}
-
-	if (IsPlayerInArea(MIN_AREA_POS, MAX_AREA_POS))
-	{
-		LookPlayer();
 	}
 }
 
@@ -181,14 +176,6 @@ void Mushnub::UpdateSurprise(void)
 
 void Mushnub::UpdateChase(void)
 {
-	float enemyDist2 = GetDistance(pos_, CHASE_POS);
-
-	if (enemyDist2 <= 100.0f * 100.0f)
-	{
-		ChangeState(STATE::IDLE);
-		return;
-	}
-
 	if (IsPlayerInArea(MIN_AREA_POS, MAX_AREA_POS))
 	{
 		LookPlayer();
@@ -204,6 +191,14 @@ void Mushnub::UpdateChase(void)
 
 		// ‰ñ“]‚ÍYŽ²‚Ì‚Ý
 		angle_.x = angle_.z = 0.0f;
+
+		float enemyDist2 = GetDistance(pos_, CHASE_POS);
+
+		if (enemyDist2 <= 100.0f * 100.0f)
+		{
+			ChangeState(STATE::IDLE);
+			return;
+		}
 	}
 
 	float enemyDist = GetDistance(pos_, player_->GetTransform()->pos_);
