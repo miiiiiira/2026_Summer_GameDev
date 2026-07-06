@@ -28,6 +28,7 @@
 #include "../../Object/Component/PlayerController/Map/Map.h"
 #include "../../Object/Component/Animation/Animation.h"
 #include "../../Object/Component/Stage/Stage.h"
+#include "../../Object/Component/Cart/Cart.h"
 #include "../../Object/Component/Wisp/Wisp.h"
 #include "../../Object/Component/Item/Item.h"
 #include "../../Object/Component/Item/ItemInfo.h"
@@ -45,6 +46,7 @@
 
 
 #include "../../Common/Collision/Collision.h"
+#include "../../Object/Component/Collider/CartCollider/CartCollider.h"
 
 
 GameScene::GameScene(void)
@@ -116,12 +118,12 @@ void GameScene::Load(void)
 		Stage2Init();
 
 		break;
-	//case STAGE_NUM::STAGE_3:
-	//	
-	//	// ステージ3の初期化処理
-	//	Stage3Init();
+	case STAGE_NUM::STAGE_3:
+		
+		// ステージ3の初期化処理
+		Stage3Init();
 
-	//	break;
+		break;
 	default:
 		break;
 	}
@@ -395,6 +397,36 @@ void GameScene::EnemyCreate(void)
 	//col->radius_ = 20.0f;
 }
 
+void GameScene::CartCreate(void)
+{
+	// カートの作成
+	auto cart = objectManger_->CreateObject();
+
+	// タグを付与
+	cart->SetTagAndPriority(Tag::Cart);
+
+	// 座標の設定
+	auto trans = cart->AddComponent<Transform>();
+	trans->pos_ = { 500.0f,0.0f,0.0f };
+
+	// 描画
+	auto render = cart->AddComponent<Render3D>();
+	render->SetModel("Data/Model/Cart/Cart.mv1");
+
+	// ステージ機能
+	cart->AddComponent<Cart>();
+
+	// カートの当たり判定追加
+	auto cartColl = cart->AddComponent<CartCollider>();
+	// ステージの取得
+	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+	cartColl->SetStage(stage);
+	// プレイヤーの取得
+	auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
+	cartColl->SetPlayer(player);
+	cartColl->SetCrosshair(crosshair_);
+}
+
 void GameScene::ItemCreateStage1(void)
 {
 	ItemCreate(Tag::Item_Potion_Green, { 1960.0f,20.0f,428.0f });
@@ -442,6 +474,9 @@ void GameScene::Stage1Init(void)
 
 	// 敵の作成
 	EnemyCreate();
+
+	// カートの作成
+	CartCreate();
 
 	// アイテムの作成
 	ItemCreateStage1();
@@ -888,12 +923,17 @@ void GameScene::ItemCreate(Tag tag, VECTOR pos)
 	// ステージ取得
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 
+	// カート取得
+	auto cart = objectManger_->FindComponentWithTag<Cart>(Tag::Cart);
+
 	// アイテムの当たり判定
 	auto itemCol = item->AddComponent<ItemCollider>();
 	// プレイヤーを渡す
 	itemCol->SetPlayer(playerController);
 	// ステージを渡す
 	itemCol->SetStage(stage);
+	// カートを渡す
+	itemCol->SetCart(cart);
 	// クロスヘアを渡す
 	itemCol->SetCrosshair(crosshair_);
 

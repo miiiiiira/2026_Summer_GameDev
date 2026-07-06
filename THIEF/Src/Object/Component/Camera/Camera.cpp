@@ -21,9 +21,6 @@ void Camera::Init(void)
 		angle_.y,
 		angle_.z
 	);
-
-	// NearFar‚Ì‰Šú‰»
-	SetCameraNearFar(VIEW_NEAR, VIEW_FAR);
 }
 
 void Camera::Update(void)
@@ -47,6 +44,9 @@ void Camera::PreDraw(void)
 
 void Camera::SetBeforeDraw(void)
 {
+	// NearFar‚Ì‰Šú‰»
+	SetCameraNearFar(VIEW_NEAR, VIEW_FAR);
+
 	switch (mode_)
 	{
 	case Camera::MODE::FIXED:

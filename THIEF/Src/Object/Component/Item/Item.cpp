@@ -74,6 +74,7 @@ void Item::Update(void)
 	// 無敵時間の更新処理
 	UpdateInvincibility();
 
+
 	// 掴まれていたら
 	if (info_.isGrabbed_)
 	{
@@ -314,6 +315,12 @@ void Item::EndGrabbed(void)
 	info_.grabbedPos_ = trans_->pos_;
 
 	MV1SetPosition(info_.modelId_, trans_->pos_);
+
+	// XとZの比率から、Y軸の角度を直接計算する
+	float forwardX = CameraUtility::GetCameraMatrix().m[2][0];
+	float forwardZ = CameraUtility::GetCameraMatrix().m[2][2];
+	// ベクトルから角度を出す
+	info_.angle_.y = atan2f(forwardX, forwardZ);
 	MV1SetRotationXYZ(info_.modelId_, info_.angle_);
 
 	// 重力を初期化する
@@ -334,6 +341,9 @@ void Item::Gravity(void)
 
 	// モデルの座標を反映
 	MV1SetPosition(info_.modelId_, trans_->pos_);
+
+	// 当たり判定更新
+	MV1RefreshCollInfo(info_.modelId_, -1);
 }
 
 void Item::Weight(void)
@@ -343,6 +353,9 @@ void Item::Weight(void)
 
 	// モデルの座標を反映
 	MV1SetPosition(info_.modelId_, trans_->pos_);
+
+	// 当たり判定更新
+	MV1RefreshCollInfo(info_.modelId_, -1);
 }
 
 void Item::TrackingPlayer(void)
@@ -358,12 +371,6 @@ void Item::TrackingPlayer(void)
 
 	// モデルに座標を反映
 	MV1SetPosition(info_.modelId_, trans_->pos_);
-
-	// XとZの比率から、Y軸の角度を直接計算する
-	float forwardX = CameraUtility::GetCameraMatrix().m[2][0];
-	float forwardZ = CameraUtility::GetCameraMatrix().m[2][2];
-	// ベクトルから角度を出す
-	info_.angle_.y = atan2f(forwardX, forwardZ);
 
 	// 回転行列をモデルに反映
 	MV1SetRotationMatrix(info_.modelId_, CameraUtility::GetCameraMatrix());

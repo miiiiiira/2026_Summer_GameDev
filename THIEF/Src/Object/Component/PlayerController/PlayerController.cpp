@@ -12,6 +12,7 @@
 #include "../../Component/Animation/Animation.h"
 #include "../../Component/Item/Item.h"
 #include "../../Component/Wisp/Wisp.h"
+#include "../../Component/Cart/Cart.h"
 #include "Map/Map.h"
 #include "../../../Common/Transform/MatrixUtility.h"
 #include "../../../Common/CameraUtility/CameraUtility.h"
@@ -191,10 +192,16 @@ void PlayerController::SetWisp(Wisp* wisp)
 	wisp_ = wisp;
 }
 
-void PlayerController::SetItemPoint(Item* item)
+void PlayerController::SetGrabObject(Item* item)
 {
 	// アイテムクラスのポインタを設定
-	item_ = item;
+	grabObject_ = item;
+}
+
+void PlayerController::SetGrabObject(Cart* cart)
+{
+	// カートクラスのポインタを設定
+	grabObject_ = cart;
 }
 
 void PlayerController::SetDamage(int damage)
@@ -652,24 +659,42 @@ void PlayerController::Grabbing(void)
 		break;
 	case GRABBING_STATE::IS_GRABBING:
 
-		// アイテムの中身がなかったら
-		if (item_ == nullptr)return;
-
-		// つかめる範囲に変更があったら
-		if (RangeUpdate())
-		{
-			// アイテムに反映させる
-			item_->SetLocalPosZ(range_);
-		}
-
 		// マウスの左クリックを押されていなかったら
 		if (!InputManager::GetInstance()->IsNewGrabbingButtons())
 		{
 			// 掴み動作を終わる
 			grabState_ = GRABBING_STATE::NOT_GRABBING;
-			// アイテムの追従を終わる
-			item_->EndGrabbed();
-			item_ = nullptr;
+
+			// 中身がアイテムだったら
+			// 持っている状態を終了させる
+			if (GetGrabbItem() != nullptr)
+			{
+				// アイテムを離した状態にする
+				GetGrabbItem()->EndGrabbed();
+
+				// 空状態にする
+				grabObject_ = std::monostate{};
+			}
+			// 中身がカートだったら
+			else if (GetGrabbCart() != nullptr)
+			{
+				// カートを離した状態にする
+				GetGrabbCart()->EndGrabbed();
+
+				// 空状態にする
+				grabObject_ = std::monostate{};
+			}
+		}
+
+		// 中身がアイテムだったら
+		if (GetGrabbItem() != nullptr)
+		{
+			// つかめる範囲に変更があったら
+			if (RangeUpdate())
+			{
+				// アイテムに反映させる
+				GetGrabbItem()->SetLocalPosZ(range_);
+			}
 		}
 
 		break;
@@ -706,9 +731,9 @@ bool PlayerController::RangeUpdate(void)
 		range_ -= EXTEND_RENGE_MOVE;
 
 		// 最小値が超えないようにする
-		if (range_ < MIN_RENGE + item_->GetInfo().collisionRadiusX_)
+		if (range_ < MIN_RENGE + GetGrabbItem()->GetInfo().collisionRadiusX_)
 		{
-			range_ = MIN_RENGE + item_->GetInfo().collisionRadiusX_;
+			range_ = MIN_RENGE + GetGrabbItem()->GetInfo().collisionRadiusX_;
 		}
 
 		// 変更があったらtrueを返す
@@ -786,4 +811,36 @@ void PlayerController::CrouchingInit(void)
 	{
 		cap->startOffset_ = CROUCHING_CAP_START_OFFSET;
 	}
+}
+
+Item* PlayerController::GetGrabbItem(void)
+{
+	if (auto item = std::get_if<Item*>(&grabObject_)) {
+		// アイテムポインタを取り出す
+		return *item;
+	}
+
+	return nullptr;
+}
+
+Cart* PlayerController::GetGrabbCart(void)
+{
+	if (auto cart = std::get_if<Cart*>(&grabObject_)) {
+		// アイテムポインタを取り出す
+		return *cart;
+	}
+
+	return nullptr;
+}
+
+bool PlayerController::IsGrabbing(void)
+{
+	if (std::holds_alternative<std::monostate>(grabObject_)) 
+	{
+		// 中身がない
+		return false;
+	}
+
+	// 中身がある
+	return true;
 }

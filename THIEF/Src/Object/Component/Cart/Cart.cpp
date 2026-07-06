@@ -1,0 +1,115 @@
+#include "Cart.h"
+#include "../Render/Render3D.h"
+#include "../../Object.h"
+#include "../../../Common/CameraUtility/CameraUtility.h"
+#include "../../../Common/Math/Math.h"
+
+Cart::~Cart(void)
+{
+}
+
+void Cart::Init(void)
+{
+	// オーナーから3D描画コンポーネントを取得
+	auto render = owner_->GetComponent<Render3D>();
+	if (!render) return;
+
+	// モデルIDを取得
+	modelId_ = render->GetHandle();
+
+	// オーナーからTransformを取得
+	trans_ = owner_->GetComponent<Transform>();
+
+	// 座標の更新
+	MV1SetPosition(modelId_, trans_->pos_);
+
+	// 向きの初期化
+	angleY_ = 0.0f;
+	// モデルに座標を反映
+	MV1SetRotationXYZ(modelId_, { 0.0f,angleY_,0.0f });
+
+	isGrabbed_ = false;
+
+	// 衝突情報構築
+	MV1SetupCollInfo(modelId_, -1);
+	MV1SetupCollInfo(modelId_, 1);
+}
+
+void Cart::Update(void)
+{
+	if (isGrabbed_)
+	{
+		TrackingPlayer();
+	}
+}
+
+void Cart::Draw3D(void)
+{
+#ifdef _DEBUG
+	DrawDebug();
+#endif // _DEBUG
+}
+
+Transform* Cart::GetTransform(void)
+{
+	return trans_;
+}
+
+void Cart::StartGrabbing(void)
+{
+	// 掴まれた状態にする
+	isGrabbed_ = true;
+}
+
+void Cart::EndGrabbed(void)
+{
+	// 掴まれていない状態にする
+	isGrabbed_ = false;
+}
+
+void Cart::TrackingPlayer(void)
+{
+	// 前の座標を保持しておく
+	VECTOR prePos = trans_->pos_;
+
+	// ローカル座標に
+	trans_->pos_ = CameraUtility::AddCameraPosLocalPos(CART_LOCAL_POS);
+
+	// 線形補間で滑らかにする
+	trans_->pos_ = Math::Lerp(prePos, trans_->pos_, COEFFICIENT);
+	trans_->pos_.y = 0.0f;
+
+	// モデルに座標を反映
+	MV1SetPosition(modelId_, trans_->pos_);
+
+	// 前の座標を保持しておく
+	float preAngleY = angleY_;
+	// カメラのアングルを適用
+	angleY_ = CameraUtility::GetCameraAngle().y;
+	// 線形補間で滑らかにする
+	angleY_ = Math::Lerp(preAngleY, angleY_, COEFFICIENT);
+
+	// モデルに座標を反映
+	MV1SetRotationXYZ(modelId_, { 0.0f,angleY_,0.0f });
+
+	// 当たり判定情報を最新の状態に更新
+	MV1RefreshCollInfo(modelId_, -1);
+	MV1RefreshCollInfo(modelId_, 1);
+}
+
+void Cart::DrawDebug(void)
+{
+	// 納品場所の当たり判定の視覚化
+	VECTOR startPos, endPos;
+	startPos = endPos = trans_->pos_;
+
+	startPos.x -= CART_SIZE_WID_RAD;
+	startPos.y -= CART_SIZE_HIG_RAD;
+	startPos.z -= CART_SIZE_DEPTH_RAD;
+
+	endPos.x += CART_SIZE_WID_RAD;
+	endPos.y += CART_SIZE_HIG_RAD;
+	endPos.z += CART_SIZE_DEPTH_RAD;
+
+	DrawCube3D(startPos, endPos, 0xffff00, 0xffff00, false);
+}
