@@ -26,13 +26,32 @@ Wisp::Wisp(void)
 	);
 
 	// ハンドルのポイントライトに色をつける
-	SetLightDifColorHandle(pointLightHandle_, GetColorF(0x41 / 255.0f, 0x69 / 255.0f, 0xe1 / 255.0f, 1.0f));
+	SetLightDifColorHandle(pointLightHandle_,
+		GetColorF(
+			DEFAULT_LIGHT_COLOR.x / 255.0f,
+			DEFAULT_LIGHT_COLOR.y / 255.0f,
+			DEFAULT_LIGHT_COLOR.z / 255.0f,
+			1.0f));
+
+	 // テクスチャをロード
+	for (auto table : LightTable::Table)
+	{
+		textureId_[static_cast<int>(table.first)] = LoadGraph(table.second.path.c_str());
+	}
+
+	lightType = LIGHT_TYPE::COLOR_MAX;
 }
 
 Wisp::~Wisp(void)
 {
 	// ポイントライトのハンドルを解放
 	DeleteLightHandle(pointLightHandle_);
+
+	for (auto table : LightTable::Table)
+	{
+		// テクスチャの解放
+		DeleteGraph(static_cast<int>(table.first));
+	}
 }
 
 void Wisp::Init(void)
@@ -69,6 +88,60 @@ void Wisp::Update(void)
 
 	// ライトの範囲を更新
 	UpdateRange();
+
+#ifdef _DEBUG
+
+	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_H))
+	{
+		switch (lightType)
+		{
+		case COLOR_1:
+			lightType = LIGHT_TYPE::COLOR_2;
+			break;
+		case COLOR_2:
+			lightType = LIGHT_TYPE::COLOR_3;
+			break;
+		case COLOR_3:
+			lightType = LIGHT_TYPE::COLOR_4;
+			break;
+		case COLOR_4:
+			lightType = LIGHT_TYPE::COLOR_5;
+			break;
+		case COLOR_5:
+			lightType = LIGHT_TYPE::COLOR_6;
+			break;
+		case COLOR_6:
+			lightType = LIGHT_TYPE::COLOR_7;
+			break;
+		case COLOR_7:
+			lightType = LIGHT_TYPE::COLOR_8;
+			break;
+		case COLOR_8:
+			lightType = LIGHT_TYPE::COLOR_9;
+			break;
+		case COLOR_9:
+			lightType = LIGHT_TYPE::COLOR_10;
+			break;
+		case COLOR_10:
+			lightType = LIGHT_TYPE::COLOR_11;
+			break;
+		case COLOR_11:
+			lightType = LIGHT_TYPE::COLOR_12;
+			break;
+		case COLOR_12:
+			lightType = LIGHT_TYPE::COLOR_MAX;
+			break;
+		case COLOR_MAX:
+			lightType = LIGHT_TYPE::COLOR_1;
+			break;
+		default:
+			break;
+		}
+
+		ChangeLightTexture(lightType);
+	}
+
+#endif // _DEBUG
 }
 
 void Wisp::Draw3D(void)
@@ -89,6 +162,37 @@ void Wisp::SetIsRangeMax(bool flg)
 bool Wisp::GetIsRangeMax(void)
 {
 	return isRangeMax_;
+}
+
+void Wisp::ChangeLightTexture(LIGHT_TYPE lightType)
+{
+	if (lightType == LIGHT_TYPE::COLOR_MAX)
+	{
+		// テクスチャをデフォルトに戻す
+		MV1SetTextureGraphHandle(wispModelId_, 0, -1, false);
+
+		// ライトの色をデフォルトに戻す
+		SetLightDifColorHandle(pointLightHandle_, 
+			GetColorF(
+				DEFAULT_LIGHT_COLOR.x / 255.0f,
+				DEFAULT_LIGHT_COLOR.y / 255.0f, 
+				DEFAULT_LIGHT_COLOR.z / 255.0f,
+				1.0f));
+
+		return;
+	}
+
+	auto lightData = LightTable::Table.find(lightType);
+
+	// テクスチャを変更
+	MV1SetTextureGraphHandle(wispModelId_, 0, textureId_[static_cast<int>(lightType)], false);
+	// ライトの色を変更
+	SetLightDifColorHandle(pointLightHandle_,
+		GetColorF(
+			lightData->second.color.x / 255.0f,
+			lightData->second.color.y / 255.0f,
+			lightData->second.color.z / 255.0f,
+			1.0f));
 }
 
 void Wisp::UpdatePos(void)
