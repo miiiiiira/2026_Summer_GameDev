@@ -68,6 +68,8 @@ enum class SoundID
 	SE_SHOP_BUY_HEAL_50,
 	SE_SHOP_NOT_MONEY,
 
+	SE_ENEMY_GIGGLE,
+
 };
 
 // ì«Ç›çûÇﬁÉVÅ[Éì

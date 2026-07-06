@@ -85,7 +85,7 @@ void Mushnub::Update(void)
 	}
 
 	// 重力処理
-	//ApplyGravity();
+	ApplyGravity();
 
 	// アニメーションの更新
 	animationController_->Update();

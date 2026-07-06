@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <unordered_map>
 #include <DxLib.h>
 #include "EnemyCommon.h"
 
@@ -16,7 +17,12 @@ public:
 	~EnemyManager(void);
 
 	void Init(PlayerController* player, int id = -1);
-	void Load(void);
+	void CreateEnemyStage1(void);
+	void CreateEnemyStage2(void);
+	void CreateEnemyStage3(void);
+	void LoadStage1(void);
+	void LoadStage2(void);
+	void LoadStage3(void);
 	void Update(void);
 	void Draw(void);
 	void Release(void);
@@ -31,7 +37,7 @@ private:
 	int stageId_;
 
 	// エネミー用のモデルハンドルID
-	std::vector<int> enemyModelIds_;
+	std::unordered_map<ENEMY_TAG, int> enemyModelIds_;
 
 	// エネミー
 	std::vector<EnemyBase*> enemys_;

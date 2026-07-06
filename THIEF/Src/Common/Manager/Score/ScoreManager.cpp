@@ -34,12 +34,12 @@ void ScoreManager::Update(void)
 		totalPrice += item->GetInfo().price_;
 	}
 
-	// 生存中のアイテムが目標金額より下回ってしまったら
-	if (totalPrice < targetPrice_)
-	{
-		// ゲームオーバーにする
-		SceneManager::GetInstance()->TrueGameOver();
-	}
+	//// 生存中のアイテムが目標金額より下回ってしまったら
+	//if (totalPrice < targetPrice_)
+	//{
+	//	// ゲームオーバーにする
+	//	SceneManager::GetInstance()->TrueGameOver();
+	//}
 }
 
 void ScoreManager::Draw(void)
