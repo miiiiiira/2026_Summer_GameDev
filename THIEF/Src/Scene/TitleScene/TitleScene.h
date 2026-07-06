@@ -36,4 +36,6 @@ private:
 
 	float alpha_;
 	bool isIncreasing_;				// ボタンのアルファ値が増加しているかどうか
+
+	bool isPlaySoundSE_;			// サウンドを鳴らしたか
 };

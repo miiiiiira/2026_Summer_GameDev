@@ -16,6 +16,7 @@ TitleScene::TitleScene(void)
 	buttonHandle_ = -1;
 	alpha_ = 0.0f;
 	isIncreasing_ = false;
+	isPlaySoundSE_ = false;
 	// マウスの表示する
 	SetMouseDispFlag(true);
 }
@@ -59,8 +60,13 @@ void TitleScene::Update(void)
 	// ボタンが押されると次のシーンへ
 	if (InputManager::GetInstance()->PushAnyButton())
 	{
-		// ボタン音
-		AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_2);
+		if (!isPlaySoundSE_)
+		{
+			// ボタン音
+			AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_2);
+			alpha_ = ALPHA_MAX;
+			isPlaySoundSE_ = true;
+		}
 
 		// シェーダをデフォルトに変更する
 		SceneManager::GetInstance()->GetShader()->ResetParameters();
@@ -70,6 +76,9 @@ void TitleScene::Update(void)
 	{
 		SceneManager::GetInstance()->PushScene(std::make_shared<MainMenu>());
 	}
+
+	// ボタンを押されたら動きを止める
+	if (isPlaySoundSE_)return;
 
 	// ボタンのアルファ値を変化させる
 	if (isIncreasing_)
