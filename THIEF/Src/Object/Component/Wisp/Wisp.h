@@ -2,6 +2,7 @@
 
 #include "../Component.h"
 #include <DxLib.h>
+#include "LightInfo.h"
 
 // 前方宣言
 class Transform;
@@ -35,6 +36,9 @@ private:
 	static constexpr float LIGHT_POW_MIN = 0.002f;
 	static constexpr float ATTEN_2 = 0.0f;
 
+	// デフォルトのライトカラー
+	static constexpr VECTOR DEFAULT_LIGHT_COLOR = { 0x41 , 0x69, 0xe1 };
+
 public:
 
 	// コンストラクタ
@@ -59,6 +63,9 @@ public:
 	// ライトの状態を見る　true = 最大値にする処理が行われている / false = 最小値にする処理が行われている
 	bool GetIsRangeMax(void);
 
+	// 指定されたテクスチャ番号に変更(MAXを設定するとモデルについていた元の色へ戻す)
+	void ChangeLightTexture(LIGHT_TYPE lightType);
+
 private:
 	// ポイントライトのハンドル
 	int pointLightHandle_ = -1;
@@ -68,7 +75,8 @@ private:
 	// モデルのハンドル
 	int wispModelId_ = -1;
 
-	int wispTexture = -1;
+	// テクスチャId
+	int textureId_[static_cast<int>(LIGHT_TYPE::COLOR_MAX)];
 
 	// ライトの光量(小さいほど光量が増す)
 	float lightPow_;
@@ -81,6 +89,8 @@ private:
 
 	// モデルの大きさ
 	VECTOR scale_;
+
+	LIGHT_TYPE lightType;
 
 	// 座標更新処理
 	void UpdatePos(void);

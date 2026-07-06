@@ -46,6 +46,7 @@ void InputManager::Init(void)
 	Add(KEY_INPUT_C);
 	Add(KEY_INPUT_K);
 	Add(KEY_INPUT_L);
+	Add(KEY_INPUT_H);
 
 	InputManager::MouseInfo info;
 
