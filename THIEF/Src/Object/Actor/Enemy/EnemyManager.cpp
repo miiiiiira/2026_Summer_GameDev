@@ -6,6 +6,7 @@
 #include "Yeti/Yeti.h"
 #include "Mushnub/Mushnub.h"
 #include "Giggle/Giggle.h"
+#include "Statue/Statue.h"
 #include "EnemyManager.h"
 
 EnemyManager::EnemyManager(void)
@@ -54,7 +55,7 @@ void EnemyManager::CreateEnemyStage1(void)
 	enemys_.push_back(newEnemy);
 
 	// Yetiを生成
-	newEnemy = new Yeti(enemyModelIds_[static_cast<int>(ENEMY_TAG::YETI)]);
+	newEnemy = new Yeti(enemyModelIds_[ENEMY_TAG::YETI]);
 	newEnemy->Load();
 	newEnemy->SetTag(ENEMY_TAG::YETI);
 	newEnemy->Init(player_, stageId_, way_, edgeList_);
@@ -62,7 +63,7 @@ void EnemyManager::CreateEnemyStage1(void)
 	enemys_.push_back(newEnemy);
 
 	// Mushnubを生成
-	newEnemy = new Mushnub(enemyModelIds_[static_cast<int>(ENEMY_TAG::MUSHNUB)]);
+	newEnemy = new Mushnub(enemyModelIds_[ENEMY_TAG::MUSHNUB]);
 	newEnemy->Load();
 	newEnemy->SetTag(ENEMY_TAG::MUSHNUB);
 	newEnemy->Init(player_, stageId_, way_, edgeList_);
@@ -77,6 +78,14 @@ void EnemyManager::CreateEnemyStage2(void)
 	newEnemy->Load();
 	newEnemy->SetTag(ENEMY_TAG::GIGGLE);
 	newEnemy->Init();
+	// リストに追加
+	enemys_.push_back(newEnemy);
+
+	// Statueを生成
+	newEnemy = new Statue(enemyModelIds_[ENEMY_TAG::STATUE]);
+	newEnemy->Load();
+	newEnemy->SetTag(ENEMY_TAG::STATUE);
+	newEnemy->Init(player_, stageId_, way_, edgeList_);
 	// リストに追加
 	enemys_.push_back(newEnemy);
 }
@@ -94,16 +103,16 @@ void EnemyManager::CreateEnemyStage3(void)
 
 void EnemyManager::LoadStage1(void)
 {
-	enemyModelIds_.emplace_back(
-		MV1LoadModel((Application::PATH_MODEL + "Enemy/Yeti.mv1").c_str()));
-	enemyModelIds_.emplace_back(
-		MV1LoadModel((Application::PATH_MODEL + "Enemy/Mushnub_Evolved.mv1").c_str()));
+	enemyModelIds_[ENEMY_TAG::YETI] = MV1LoadModel((Application::PATH_MODEL + "Enemy/Yeti.mv1").c_str());
+	enemyModelIds_[ENEMY_TAG::MUSHNUB] = MV1LoadModel((Application::PATH_MODEL + "Enemy/Mushnub_Evolved.mv1").c_str());
 
 	LoadCsvData();
 }
 
 void EnemyManager::LoadStage2(void)
 {
+	enemyModelIds_[ENEMY_TAG::STATUE] = MV1LoadModel((Application::PATH_MODEL + "Enemy/Statue.mv1").c_str());
+
 	LoadCsvData();
 }
 
@@ -136,10 +145,11 @@ void EnemyManager::Release(void)
 		delete enemy;
 	}
 
-	for (int id : enemyModelIds_)
+	for (const auto& [tag, modelId] : enemyModelIds_)
 	{
-		MV1DeleteModel(id);
+		MV1DeleteModel(modelId);
 	}
+	enemyModelIds_.clear();
 }
 
 std::vector<EnemyBase*> EnemyManager::GetEnemys(void)

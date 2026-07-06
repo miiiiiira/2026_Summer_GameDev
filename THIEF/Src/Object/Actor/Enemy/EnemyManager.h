@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <unordered_map>
 #include <DxLib.h>
 #include "EnemyCommon.h"
 
@@ -36,7 +37,7 @@ private:
 	int stageId_;
 
 	// エネミー用のモデルハンドルID
-	std::vector<int> enemyModelIds_;
+	std::unordered_map<ENEMY_TAG, int> enemyModelIds_;
 
 	// エネミー
 	std::vector<EnemyBase*> enemys_;
