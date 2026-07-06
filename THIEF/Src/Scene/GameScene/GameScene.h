@@ -79,6 +79,8 @@ private:
 
 	// プレイヤーと敵の当たり判定
 	void CollisionEnemy2Player(void);
+	// プレイヤーのつかみとと敵の当たり判定
+	void CollisionEnemy2PlayerGrab(void);
 
 	// タグを使用し、アイテムを作る
 	void ItemCreate(Tag tag, VECTOR pos);

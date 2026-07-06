@@ -84,6 +84,9 @@ public:
 	// アイテム発見につかう用のプレイヤーからの範囲
 	static constexpr float PLAYER_ITEM_SEARCH_RADIUS = 800.0f;
 
+	// 無敵時間
+	static constexpr int  INVINCIBLE_TIME = 60;
+
 public:
 	void Init() override;		// 初期化
 	void Update() override;		// 更新
@@ -94,6 +97,9 @@ public:
 
 	// Capsuleを返す
 	CapsuleCollider* GetCapsule(void);
+
+	// 無敵時間を返す
+	int GetInvincibleTime(void);
 
 	// 移動速度を渡す
 	float GetMoveSpeed(void);
@@ -176,7 +182,7 @@ private:
 	// 掴んでいるオブジェクト
 	std::variant<std::monostate,Cart*, Item*> grabObject_;
 
-	// 火
+	// ライト
 	Wisp* wisp_ = nullptr;
 
 	// 現在の落下速度
@@ -199,6 +205,9 @@ private:
 
 	// 今現在のHP
 	int hp_;
+
+	// 無敵時間
+	int invincibleTime_;
 
 	// 実際に移動させる移動量
 	float moveSpeed_;
@@ -236,8 +245,8 @@ private:
 	// しゃがみ状態での、初期化処理
 	void CrouchingInit(void);
 
-	Item* GetGrabbItem(void);
-	Cart* GetGrabbCart(void);
+	Item* GetGrabItem(void);
+	Cart* GetGrabCart(void);
 
 	bool IsGrabbing(void);
 };

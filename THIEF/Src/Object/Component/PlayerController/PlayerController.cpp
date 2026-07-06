@@ -39,7 +39,11 @@ void PlayerController::Init()
 	// プレイヤーステータスマネージャー
 	auto status = PlayerStatusManager::GetInstance().GetPlayerStatus();
 
+	// HPの初期化
 	hp_ = status.hp_;
+
+	// 無敵時間の初期化
+	invincibleTime_ = 0;
 
 	// プレイヤーの移動速度の初期化
 	moveSpeed_ = DEFAULT_SPEED;
@@ -103,6 +107,11 @@ void PlayerController::Update()
 	// マップの表示処理
 	MapDrawUpdate();
 
+	if (invincibleTime_ > 0)
+	{
+		--invincibleTime_;
+	}
+
 	// 一定の座標いったら
 	if (transform_->pos_.y < DEAD_POS_Y)
 	{
@@ -140,6 +149,11 @@ Transform* PlayerController::GetTransform()
 CapsuleCollider* PlayerController::GetCapsule(void)
 {
 	return owner_->GetComponent<CapsuleCollider>();
+}
+
+int PlayerController::GetInvincibleTime(void)
+{
+	return invincibleTime_;
 }
 
 float PlayerController::GetMoveSpeed(void)
@@ -206,11 +220,21 @@ void PlayerController::SetGrabObject(Cart* cart)
 
 void PlayerController::SetDamage(int damage)
 {
+	// 無敵時間があればダメージを与えない
+	if (invincibleTime_ > 0)return;
+
 	hp_ -= damage;
+
+	// TODO プレイヤーのダメージSE
 
 	if (hp_ <= 0)
 	{
 		hp_ = 0;
+	}
+	else
+	{
+		// 無敵時間を設ける
+		invincibleTime_ = INVINCIBLE_TIME;
 	}
 
 	// プレイヤーステータスに反映
@@ -667,19 +691,19 @@ void PlayerController::Grabbing(void)
 
 			// 中身がアイテムだったら
 			// 持っている状態を終了させる
-			if (GetGrabbItem() != nullptr)
+			if (GetGrabItem() != nullptr)
 			{
 				// アイテムを離した状態にする
-				GetGrabbItem()->EndGrabbed();
+				GetGrabItem()->EndGrabbed();
 
 				// 空状態にする
 				grabObject_ = std::monostate{};
 			}
 			// 中身がカートだったら
-			else if (GetGrabbCart() != nullptr)
+			else if (GetGrabCart() != nullptr)
 			{
 				// カートを離した状態にする
-				GetGrabbCart()->EndGrabbed();
+				GetGrabCart()->EndGrabbed();
 
 				// 空状態にする
 				grabObject_ = std::monostate{};
@@ -687,13 +711,13 @@ void PlayerController::Grabbing(void)
 		}
 
 		// 中身がアイテムだったら
-		if (GetGrabbItem() != nullptr)
+		if (GetGrabItem() != nullptr)
 		{
 			// つかめる範囲に変更があったら
 			if (RangeUpdate())
 			{
 				// アイテムに反映させる
-				GetGrabbItem()->SetLocalPosZ(range_);
+				GetGrabItem()->SetLocalPosZ(range_);
 			}
 		}
 
@@ -731,9 +755,9 @@ bool PlayerController::RangeUpdate(void)
 		range_ -= EXTEND_RENGE_MOVE;
 
 		// 最小値が超えないようにする
-		if (range_ < MIN_RENGE + GetGrabbItem()->GetInfo().collisionRadiusX_)
+		if (range_ < MIN_RENGE + GetGrabItem()->GetInfo().collisionRadiusX_)
 		{
-			range_ = MIN_RENGE + GetGrabbItem()->GetInfo().collisionRadiusX_;
+			range_ = MIN_RENGE + GetGrabItem()->GetInfo().collisionRadiusX_;
 		}
 
 		// 変更があったらtrueを返す
@@ -813,7 +837,7 @@ void PlayerController::CrouchingInit(void)
 	}
 }
 
-Item* PlayerController::GetGrabbItem(void)
+Item* PlayerController::GetGrabItem(void)
 {
 	if (auto item = std::get_if<Item*>(&grabObject_)) {
 		// アイテムポインタを取り出す
@@ -823,7 +847,7 @@ Item* PlayerController::GetGrabbItem(void)
 	return nullptr;
 }
 
-Cart* PlayerController::GetGrabbCart(void)
+Cart* PlayerController::GetGrabCart(void)
 {
 	if (auto cart = std::get_if<Cart*>(&grabObject_)) {
 		// アイテムポインタを取り出す

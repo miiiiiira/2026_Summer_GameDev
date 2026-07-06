@@ -100,7 +100,7 @@ void ItemCollider::PlayerGrabCollision(void)
 
 	// 当たっている
 	// クロスヘアの種類を掴めるに変更
-	crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::CAN_GRABB);
+	crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::CAN_GRAB);
 
 	// 掴もうとしていたら
 	if (player_->GetGrabbingState() == GRABBING_STATE::TRY_GRABBING)

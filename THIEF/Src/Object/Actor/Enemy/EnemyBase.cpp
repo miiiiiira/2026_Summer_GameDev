@@ -193,6 +193,11 @@ WeaponBase* EnemyBase::GetUseWeapon(void)
 	return useWeapon_;
 }
 
+int EnemyBase::GetModelId(void)
+{
+	return modelId_;
+}
+
 VECTOR EnemyBase::GetPos(void)
 {
 	return pos_;

@@ -188,6 +188,7 @@ void GameScene::Update(void)
 	CheckEnemyAttack();
 	CollisionEnemyToStage();
 	CollisionEnemy2Player();
+	CollisionEnemy2PlayerGrab();
 
 	// スコアマネージャーの更新
 	ScoreManager::GetInstance().Update();
@@ -877,7 +878,8 @@ void GameScene::CollisionEnemy2Player(void)
 		if (enemy->GetTag() == ENEMY_TAG::MUSHNUB && 
 			(pushVector.x > 0.1f || pushVector.y > 0.1f || pushVector.z > 0.1f))
 		{
-			// player->SetDamage(5);
+			// プレイヤーにダメージを与える
+			player->SetDamage(10);
 
 			// 画面を赤くするエフェクトを付ける
 			redEffect_->SetEffect(DAMAGE_EFFECT_ALPHA, DAMAGE_EFFECT_COLOR);
@@ -886,6 +888,57 @@ void GameScene::CollisionEnemy2Player(void)
 		// カプセル2（敵など）は引き算
 		enemyPos = VSub(enemyPos, pushVector);
 		enemy->SetPos(enemyPos);
+	}
+}
+
+void GameScene::CollisionEnemy2PlayerGrab(void)
+{
+	auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
+	// プレイヤーが何かを掴んでいる状態か無敵状態だったら処理を行わない
+	if (player->GetGrabbingState() == GRABBING_STATE::IS_GRABBING
+		|| player->GetInvincibleTime() > 0) return;
+
+	for (auto enemy : enemyManager_->GetEnemys())
+	{
+		// 敵の種類がキノコじゃなかったら処理をしない
+		if (enemy->GetTag() != ENEMY_TAG::MUSHNUB)continue;
+
+		// 線分の上座標
+		VECTOR lineStartPos = player->GetLineStartPos();
+
+		// 線分の下座標
+		VECTOR lineEndPos = player->GetLineEndPos();
+
+		// 線分とカートモデル衝突判定
+		MV1_COLL_RESULT_POLY hitResult = MV1CollCheck_Line(enemy->GetModelId(), -1, lineStartPos, lineEndPos);
+		// 線分と当たっていないなら処理をしない
+		if (!hitResult.HitFlag)return;
+
+		// カメラとアイテムに線分をつなげてステージに当たっているか
+		// 線分とステージモデルの衝突判定
+		auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+		MV1_COLL_RESULT_POLY stageHitResult =
+			MV1CollCheck_Line(stage->GetModelId(), -1, lineStartPos, hitResult.HitPosition);
+
+		// ステージに当たっていたら
+		if (stageHitResult.HitFlag)return;
+
+		// 当たっている
+		// クロスヘアの種類を掴めるに変更
+		crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::CAN_GRAB);
+
+		// 掴もうとしていたら
+		if (player->GetGrabbingState() == GRABBING_STATE::TRY_GRABBING)
+		{
+			// プレイヤーにダメージを与える
+			player->SetDamage(10);
+
+			// 画面を赤くするエフェクトを付ける
+			redEffect_->SetEffect(DAMAGE_EFFECT_ALPHA, DAMAGE_EFFECT_COLOR);
+
+			// クロスヘアの種類を掴めないに変更
+			crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::NOT_GRAB);
+		}
 	}
 }
 

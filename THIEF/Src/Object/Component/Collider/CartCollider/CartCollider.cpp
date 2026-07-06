@@ -48,14 +48,14 @@ void CartCollider::CartToPlayerGrabbingCollision(void)
 	// カメラとアイテムに線分をつなげてステージに当たっているか
 	// 線分とステージモデルの衝突判定
 	MV1_COLL_RESULT_POLY stageHitResult =
-		MV1CollCheck_Line(stage_->GetModelId(), 1, lineStartPos, itemHitResult.HitPosition);
+		MV1CollCheck_Line(stage_->GetModelId(), -1, lineStartPos, itemHitResult.HitPosition);
 
 	// ステージに当たっていたら
 	if (stageHitResult.HitFlag)return;
 
 	// 当たっている
 	// クロスヘアの種類を掴めるに変更
-	crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::CAN_GRABB);
+	crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::CAN_GRAB);
 
 	// 掴もうとしていたら
 	if (player_->GetGrabbingState() == GRABBING_STATE::TRY_GRABBING)

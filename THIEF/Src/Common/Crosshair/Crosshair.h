@@ -5,8 +5,8 @@ class PlayerController;
 // •\Ž¦Ží—Þ
 enum CROSSHAIR_TYPE
 {
-	NOT_GRABB,
-	CAN_GRABB,
+	NOT_GRAB,
+	CAN_GRAB,
 	GRABBING,
 
 	MAX,

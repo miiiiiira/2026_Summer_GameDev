@@ -41,6 +41,7 @@ public:
 	// •ŠíƒNƒ‰ƒX‚ğæ“¾
 	WeaponBase* GetUseWeapon(void);
 
+	int GetModelId(void);
 	VECTOR GetPos(void);
 	void SetPos(VECTOR pos);
 	float GetRadius(void);

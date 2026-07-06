@@ -18,15 +18,15 @@ Crosshair::~Crosshair(void)
 void Crosshair::Load(void)
 {
 	// âÊëúÇÉçÅ[Éh
-	img[CROSSHAIR_TYPE::NOT_GRABB] = LoadGraph("Data/Image/notGrabbCrosshair.png");
-	img[CROSSHAIR_TYPE::CAN_GRABB] = LoadGraph("Data/Image/canGrabbCrosshair.png");
-	img[CROSSHAIR_TYPE::GRABBING] = LoadGraph("Data/Image/grabbingCrosshair.png");
+	img[CROSSHAIR_TYPE::NOT_GRAB] = LoadGraph("Data/Image/GameScene/notGrabCrosshair.png");
+	img[CROSSHAIR_TYPE::CAN_GRAB] = LoadGraph("Data/Image/GameScene/canGrabCrosshair.png");
+	img[CROSSHAIR_TYPE::GRABBING] = LoadGraph("Data/Image/GameScene/grabbingCrosshair.png");
 }
 
 void Crosshair::Init(void)
 {
 	// ï\é¶Ç∑ÇÈéÌóﬁÇÃèâä˙âª
-	type_ = NOT_GRABB;
+	type_ = NOT_GRAB;
 }
 
 void Crosshair::Update(void)
@@ -57,9 +57,9 @@ void Crosshair::ChangeCrosshair(const CROSSHAIR_TYPE type)
 
 	switch (type_)
 	{
-	case NOT_GRABB:
+	case NOT_GRAB:
 		break;
-	case CAN_GRABB:
+	case CAN_GRAB:
 		break;
 	case GRABBING:
 		break;
