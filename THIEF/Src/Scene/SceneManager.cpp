@@ -6,6 +6,7 @@
 #include "../Application.h"
 
 #include "../Common/Manager/System/SystemManager.h"
+#include "../Common/Manager/Light/LightManager.h"
 #include "../Common/Manager/Score/ScoreManager.h"
 #include "../Common/Manager/Input/InputManager.h"
 #include "../Common/Manager/PlayerStatus/PlayerStatusManager.h"
@@ -35,6 +36,9 @@ void SceneManager::Init(void)
 
 	//システム管理生成
 	SystemManager::CreateInstance();
+
+	//ライトの管理生成
+	LightManager::CreateInstance();
 
 	//金額管理生成
 	ScoreManager::CreateInstance();
@@ -254,6 +258,9 @@ void SceneManager::Delete(void)
 
 	// システム管理解放
 	SystemManager::GetInstance().Destroy();
+
+	// システム管理解放
+	LightManager::GetInstance().Destroy();
 
 	// 金額管理解放
 	ScoreManager::GetInstance().Destroy();

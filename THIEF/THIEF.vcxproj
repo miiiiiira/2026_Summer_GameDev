@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Common\Manager\Light\LightManager.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\Giggle\Giggle.cpp" />
     <ClCompile Include="Src\Object\Component\Wisp\LightInfo.cpp" />
     <ClCompile Include="Src\Object\Component\Collider\CartCollider\CartCollider.cpp" />
@@ -92,6 +93,7 @@
     <ClCompile Include="Src\Object\Actor\Enemy\Statue\Statue.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Common\Manager\Light\LightManager.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\Giggle\Giggle.h" />
     <ClInclude Include="Src\Object\Component\Wisp\LightInfo.h" />
     <ClInclude Include="Src\Object\Component\Collider\CartCollider\CartCollider.h" />

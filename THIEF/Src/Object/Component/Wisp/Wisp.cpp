@@ -4,6 +4,7 @@
 #include "../../../Common/CameraUtility/CameraUtility.h"
 #include "../../../Common/Math/Math.h"
 #include "../../../Common/Manager/Input/InputManager.h"
+#include "../../../Common/Manager/Light/LightManager.h"
 #include "../Render/Render3D.h"
 #include "../../Object.h"
 
@@ -39,7 +40,7 @@ Wisp::Wisp(void)
 		textureId_[static_cast<int>(table.first)] = LoadGraph(table.second.path.c_str());
 	}
 
-	lightType = LIGHT_TYPE::COLOR_MAX;
+	lightType_ = LightManager::GetInstance().GetLightType();
 }
 
 Wisp::~Wisp(void)
@@ -93,55 +94,60 @@ void Wisp::Update(void)
 
 	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_H))
 	{
-		switch (lightType)
+		switch (lightType_)
 		{
 		case COLOR_1:
-			lightType = LIGHT_TYPE::COLOR_2;
+			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_2);
 			break;
 		case COLOR_2:
-			lightType = LIGHT_TYPE::COLOR_3;
+			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_3);
 			break;
 		case COLOR_3:
-			lightType = LIGHT_TYPE::COLOR_4;
+			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_4);
 			break;
 		case COLOR_4:
-			lightType = LIGHT_TYPE::COLOR_5;
+			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_5);
 			break;
 		case COLOR_5:
-			lightType = LIGHT_TYPE::COLOR_6;
+			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_6);
 			break;
 		case COLOR_6:
-			lightType = LIGHT_TYPE::COLOR_7;
+			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_7);
 			break;
 		case COLOR_7:
-			lightType = LIGHT_TYPE::COLOR_8;
+			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_8);
 			break;
 		case COLOR_8:
-			lightType = LIGHT_TYPE::COLOR_9;
+			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_9);
 			break;
 		case COLOR_9:
-			lightType = LIGHT_TYPE::COLOR_10;
+			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_10);
 			break;
 		case COLOR_10:
-			lightType = LIGHT_TYPE::COLOR_11;
+			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_11);
 			break;
 		case COLOR_11:
-			lightType = LIGHT_TYPE::COLOR_12;
+			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_12);
 			break;
 		case COLOR_12:
-			lightType = LIGHT_TYPE::COLOR_MAX;
+			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_MAX);
 			break;
 		case COLOR_MAX:
-			lightType = LIGHT_TYPE::COLOR_1;
+			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_1);
 			break;
 		default:
 			break;
 		}
 
-		ChangeLightTexture(lightType);
 	}
 
 #endif // _DEBUG
+
+	// ライトの設定に変更があったら設定し直し
+	if (LightManager::GetInstance().GetLightType() != lightType_)
+	{
+		ChangeLightTexture(LightManager::GetInstance().GetLightType());
+	}
 }
 
 void Wisp::Draw3D(void)
@@ -166,7 +172,9 @@ bool Wisp::GetIsRangeMax(void)
 
 void Wisp::ChangeLightTexture(LIGHT_TYPE lightType)
 {
-	if (lightType == LIGHT_TYPE::COLOR_MAX)
+	lightType_ = lightType;
+
+	if (lightType_ == LIGHT_TYPE::COLOR_MAX)
 	{
 		// テクスチャをデフォルトに戻す
 		MV1SetTextureGraphHandle(wispModelId_, 0, -1, false);
@@ -182,10 +190,10 @@ void Wisp::ChangeLightTexture(LIGHT_TYPE lightType)
 		return;
 	}
 
-	auto lightData = LightTable::Table.find(lightType);
+	auto lightData = LightTable::Table.find(lightType_);
 
 	// テクスチャを変更
-	MV1SetTextureGraphHandle(wispModelId_, 0, textureId_[static_cast<int>(lightType)], false);
+	MV1SetTextureGraphHandle(wispModelId_, 0, textureId_[static_cast<int>(lightType_)], false);
 	// ライトの色を変更
 	SetLightDifColorHandle(pointLightHandle_,
 		GetColorF(

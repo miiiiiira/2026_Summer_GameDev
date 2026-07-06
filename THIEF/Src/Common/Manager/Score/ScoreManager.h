@@ -7,7 +7,7 @@ class Item;
 class ScoreManager
 {
 public:
-	// 目標金額をアイテム全体の金額の60パーセントとする
+	// 目標金額をアイテム全体の金額の50パーセントとする
 	static constexpr float TARGET_PRICE_RATIO = 0.5f;
 
 	// 明示的にインステンスを生成する
@@ -71,8 +71,11 @@ private:
 	// ゲームクリア後のショップで使える金額
 	int totalPrice_;
 
-	// 操作デバイス(true = マウス操作 / false = ゲームパッド操作）
-	bool isDeviceMouse_;
+	// アイテムの全金額
+	int itemAllPrice_;
+
+	// 警告文出すか　true / 警告文を出す , false / 警告文を出さない
+	bool showWarning_;
 
 	// デフォルトコンストラクタをprivateにして、
 	// 外部から生成できない様にする

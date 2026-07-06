@@ -90,7 +90,8 @@ private:
 	// モデルの大きさ
 	VECTOR scale_;
 
-	LIGHT_TYPE lightType;
+	// 使用中のライトの種類
+	LIGHT_TYPE lightType_;
 
 	// 座標更新処理
 	void UpdatePos(void);

@@ -34,6 +34,12 @@ void ScoreManager::Update(void)
 		totalPrice += item->GetInfo().price_;
 	}
 
+	// 生存中のアイテムの全金額が目標金額に近づいてきたら
+	if (!showWarning_ && totalPrice < itemAllPrice_ * 0.7f)
+	{
+		showWarning_ = true;
+	}
+
 	//// 生存中のアイテムが目標金額より下回ってしまったら
 	//if (totalPrice < targetPrice_)
 	//{
@@ -50,6 +56,13 @@ void ScoreManager::Draw(void)
 	DrawFormatStringToHandle(Application::SCREEN_SIZE_X - strWidth , 50, 0xffffff, font,
 		"%d　/　%d",
 		deliveryPrice_, targetPrice_);
+
+	// 生存中のアイテムが目標金額より下回ってしまったら
+	if (showWarning_)
+	{
+		strWidth = GetDrawStringWidthToHandle( "目標金額を下回る可能性があります。ご注意ください。",25, font);
+		DrawStringToHandle(Application::SCREEN_SIZE_X - strWidth, 65,"目標金額を下回る可能性があります。ご注意ください。", 0xff0000, font);
+	}
 }
 
 void ScoreManager::Destroy()
@@ -61,6 +74,7 @@ void ScoreManager::Destroy()
 void ScoreManager::ResetGame()
 {
 	deliveryPrice_ = 0;
+	showWarning_ = false;
 }
 
 void ScoreManager::ResetTotalPrice(void)
@@ -76,10 +90,13 @@ void ScoreManager::SetItems(std::vector<Item*> items)
 	if (items_.empty())return;
 
 	int allPrice = 0;
+	itemAllPrice_ = 0;
 	for (Item* item : items_)
 	{
 		allPrice += item->GetInfo().price_;
 	}
+
+	itemAllPrice_ = allPrice;
 
 	// 60パーセントにする
 	allPrice *= TARGET_PRICE_RATIO;
