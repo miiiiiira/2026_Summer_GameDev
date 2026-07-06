@@ -214,7 +214,13 @@ void DebugScene::PlayerCreate(void)
 
 	// 当たり判定の設定
 	auto col = player->AddComponent<CapsuleCollider>();
-	col->radius_ = 20.0f;
+
+	// カプセルの当たり判定を登録
+	col->AddCapsule(
+		PlayerController::STANDING_CAP_START_OFFSET,
+		PlayerController::STANDING_CAP_END_OFFSET,
+		40.0f
+	);
 
 	// ステージの取得
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);

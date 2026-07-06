@@ -71,6 +71,9 @@ void Item::Update(void)
 	// 生存していなかったら描画しない
 	if (!info_.isAlive_)return;
 
+	// 当たり判定更新
+	MV1RefreshCollInfo(info_.modelId_, -1);
+
 	// 無敵時間の更新処理
 	UpdateInvincibility();
 
@@ -86,10 +89,8 @@ void Item::Update(void)
 	}
 	else
 	{
-
 		// 重力をかける
 		Gravity();
-
 	}
 
 	// 一定の座標いったら

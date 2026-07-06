@@ -16,10 +16,10 @@ class ItemCollider : public Component
 {
 private:
 	// めり込み防止
-	static constexpr float SKIN = 0.2f;
+	static constexpr float SKIN = 0.01f;
 
 	// 壁スライド反復回数
-	static constexpr int MAX_BOUNCE = 4;
+	static constexpr int MAX_BOUNCE = 8;
 
 	// どの角度までを床として扱うか
 	static constexpr float FLOOR_NORMAL_Y = 0.95f;

@@ -37,11 +37,11 @@ void ItemCollider::Update(void)
 	// プレイヤーの掴み機能との当たり判定
 	PlayerGrabCollision();
 
-	// ステージとの当たり判定
-	StageCollision();
-
 	// アイテムとカートの当たり判定
 	ItemToCartCollision();
+
+	// ステージとの当たり判定
+	StageCollision();
 }
 
 void ItemCollider::CameraRayCollision(void)
@@ -143,7 +143,7 @@ void ItemCollider::ItemToCartCollision(void)
 	// カート移動量
 	VECTOR cartMove = VSub(cartCurrentPos, cartPrevPos);
 
-	// アイテムのトータルの移動量  (自身の移動 - ステージの移動)
+	// アイテムのトータルの移動量  (自身の移動 - カートの移動)
 	VECTOR move = VSub(itemMove, cartMove);
 
 	// 衝突判定開始座標
@@ -164,7 +164,7 @@ void ItemCollider::ItemToCartCollision(void)
 
 		// 高速移動時のすり抜け防止のため、
 		// 移動経路を細かく分割して判定する
-		int stepCount = (int)(length / (radius * 0.5f)) + 1;
+		int stepCount = (int)(length / (radius * 0.15f)) + 1;
 
 		// 分割数の上限・下限を設定
 		stepCount = std::clamp(stepCount, 1, 32);
@@ -258,23 +258,21 @@ void ItemCollider::ItemToCartCollision(void)
 
 		isHitCart = true;
 
+		// 衝突していない最後の座標へ戻す
+		pos = safePos;
+
+		// 少しだけ法線の方向へ押し出してめり込みを防止する
+		pos = VAdd(pos, VScale(hitNormal, SKIN));
+
 		// 床に当たった
 		if (hitNormal.y > FLOOR_NORMAL_Y)
 		{
 			// 下方向の加速度を0にする
 			item_->SetVelocityYZero();
 		}
-		else
-		{
-			// 衝突していない最後の座標へ戻す
-			pos = safePos;
-
-			// 少しだけ法線の方向へ押し出してめり込みを防止する
-			pos = VAdd(pos, VScale(hitNormal, SKIN));
-		}
 
 		// 衝突後に残っている移動割合
-		float remainRatio = (float)(stepCount - hitStep - 1) / stepCount;
+		float remainRatio = (float)(stepCount - hitStep) / stepCount;
 		VECTOR remainMove = VScale(move, remainRatio);
 
 		// 壁スライド処理
@@ -290,11 +288,8 @@ void ItemCollider::ItemToCartCollision(void)
 		move = remainMove;
 	}
 
-	if (isHitCart)
-	{
-		// 最終位置を反映
-		item_->SetPos(VAdd(pos, cartMove));
-	}
+	// 最終位置を反映
+	item_->SetPos(VAdd(pos, cartMove));
 }
 
 void ItemCollider::StageCollision(void)
@@ -329,7 +324,7 @@ void ItemCollider::StageCollision(void)
 
 		// 高速移動時のすり抜け防止のため、
 		// 移動経路を細かく分割して判定する
-		int stepCount = (int)(length / (radius * 0.5f)) + 1;
+		int stepCount = (int)(length / (radius * 0.1f)) + 1;
 
 		// 分割数の上限・下限を設定
 		stepCount = std::clamp(stepCount, 1, 32);
@@ -423,23 +418,21 @@ void ItemCollider::StageCollision(void)
 
 		isHitStage = true;
 
+		// 衝突していない最後の座標へ戻す
+		pos = safePos;
+
+		// 少しだけ法線の方向へ押し出してめり込みを防止する
+		pos = VAdd(pos, VScale(hitNormal, SKIN));
+
 		// 床に当たった
 		if (hitNormal.y > FLOOR_NORMAL_Y)
 		{
 			// 下方向の加速度を0にする
 			item_->SetVelocityYZero();
 		}
-		else
-		{
-			// 衝突していない最後の座標へ戻す
-			pos = safePos;
-
-			// 少しだけ法線の方向へ押し出してめり込みを防止する
-			pos = VAdd(pos, VScale(hitNormal, SKIN));
-		}
 
 		// 衝突後に残っている移動割合
-		float remainRatio = (float)(stepCount - hitStep - 1) / stepCount;
+		float remainRatio = (float)(stepCount - hitStep) / stepCount;
 		VECTOR remainMove = VScale(move, remainRatio);
 
 		// 壁スライド処理

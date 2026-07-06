@@ -3,6 +3,8 @@
 #include "../../Object.h"
 #include "../../../Common/CameraUtility/CameraUtility.h"
 #include "../../../Common/Math/Math.h"
+#include "../Collider/StageCollider/StageCollider.h"
+#include "../Collider/3DCollider/CapsuleCollider.h"
 
 Cart::~Cart(void)
 {
@@ -41,6 +43,18 @@ void Cart::Update(void)
 	{
 		TrackingPlayer();
 	}
+
+	// ステージコライダー取得
+	auto stageCol = owner_->GetComponent<StageCollider>();
+
+	if (!stageCol) return;
+
+	// ステージの当たり判定の計算処理
+	stageCol->StageColl(velocityY_);
+
+	// 当たり判定情報を最新の状態に更新
+	MV1RefreshCollInfo(modelId_, -1);
+	MV1RefreshCollInfo(modelId_, 1);
 }
 
 void Cart::Draw3D(void)
@@ -77,7 +91,7 @@ void Cart::TrackingPlayer(void)
 
 	// 線形補間で滑らかにする
 	trans_->pos_ = Math::Lerp(prePos, trans_->pos_, COEFFICIENT);
-	trans_->pos_.y = 0.0f;
+	trans_->pos_.y = 5.0f;
 
 	// モデルに座標を反映
 	MV1SetPosition(modelId_, trans_->pos_);
@@ -112,4 +126,37 @@ void Cart::DrawDebug(void)
 	endPos.z += CART_SIZE_DEPTH_RAD;
 
 	DrawCube3D(startPos, endPos, 0xffff00, 0xffff00, false);
+
+	//auto capsule = owner_->GetComponent<CapsuleCollider>();
+
+	//if (!capsule) return;
+
+	//for (const auto& cap : capsule->GetCapsules())
+	//{
+	//	VECTOR start = VAdd(trans_->pos_, cap.startOffset);
+	//	VECTOR end = VAdd(trans_->pos_, cap.endOffset);
+
+	//	// 両端
+	//	DrawSphere3D(
+	//		start,
+	//		cap.radius,
+	//		12,
+	//		GetColor(255, 0, 0),
+	//		GetColor(255, 0, 0),
+	//		TRUE);
+
+	//	DrawSphere3D(
+	//		end,
+	//		cap.radius,
+	//		12,
+	//		GetColor(255, 0, 0),
+	//		GetColor(255, 0, 0),
+	//		TRUE);
+
+	//	// 中心線
+	//	DrawLine3D(
+	//		start,
+	//		end,
+	//		GetColor(0, 255, 0));
+	//}
 }

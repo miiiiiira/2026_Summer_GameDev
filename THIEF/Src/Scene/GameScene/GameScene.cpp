@@ -363,9 +363,13 @@ void GameScene::PlayerCreate(void)
 
 	// 当たり判定の設定
 	auto col = player->AddComponent<CapsuleCollider>();
-	col->startOffset_ = PlayerController::STANDING_CAP_START_OFFSET;
-	col->endOffset_ = PlayerController::STANDING_CAP_END_OFFSET;
-	col->radius_ = 40.0f;
+
+	// カプセルの当たり判定を登録
+	col->AddCapsule(
+		PlayerController::STANDING_CAP_START_OFFSET,
+		PlayerController::STANDING_CAP_END_OFFSET,
+		40.0f
+	);
 
 	// ステージの取得
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
@@ -373,6 +377,8 @@ void GameScene::PlayerCreate(void)
 	// ステージの当たり判定
 	auto stageCol = player->AddComponent<StageCollider>();
 	stageCol->SetStage(stage);
+	stageCol->SetGroundNormalY(0.9f);
+	stageCol->SetStepHeight(5.0f);
 
 	// プレイヤー取得
 	auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
@@ -429,14 +435,49 @@ void GameScene::CartCreate(void)
 	auto render = cart->AddComponent<Render3D>();
 	render->SetModel("Data/Model/Cart/Cart.mv1");
 
-	// ステージ機能
+	// カプセルコライダー
+	auto capsule = cart->AddComponent<CapsuleCollider>();
+
+	const float HEIGHT = 150.0f;
+	const float BOTTOM = 30.0f;
+
+	const float WIDTH = 70.0f;
+	const float DEPTH = 70.0f;
+	const float RADIUS = 40.0f;
+
+	// 左列
+	capsule->AddCapsule(VGet(-WIDTH, HEIGHT, -DEPTH), VGet(-WIDTH, BOTTOM, -DEPTH), RADIUS);
+	capsule->AddCapsule(VGet(-WIDTH, HEIGHT, 0.0f), VGet(-WIDTH, BOTTOM, 0.0f), RADIUS);
+	capsule->AddCapsule(VGet(-WIDTH, HEIGHT, DEPTH), VGet(-WIDTH, BOTTOM, DEPTH), RADIUS);
+
+	// 中央列
+	capsule->AddCapsule(VGet(0.0f, HEIGHT, -DEPTH), VGet(0.0f, BOTTOM, -DEPTH), RADIUS);
+	capsule->AddCapsule(VGet(0.0f, HEIGHT, DEPTH), VGet(0.0f, BOTTOM, DEPTH), RADIUS);
+
+	// 右列
+	capsule->AddCapsule(VGet(WIDTH, HEIGHT, -DEPTH), VGet(WIDTH, BOTTOM, -DEPTH), RADIUS);
+	capsule->AddCapsule(VGet(WIDTH, HEIGHT, 0.0f), VGet(WIDTH, BOTTOM, 0.0f), RADIUS);
+	capsule->AddCapsule(VGet(WIDTH, HEIGHT, DEPTH), VGet(WIDTH, BOTTOM, DEPTH), RADIUS);
+
+	// ステージコライダー
+	auto stageCol = cart->AddComponent<StageCollider>();
+	stageCol->SetGroundNormalY(0.90f);
+	stageCol->SetStepHeight(5.0f);
+	stageCol->SetSkin(0.5f);
+
+	// ステージ取得
+	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+	stageCol->SetStage(stage);
+
+	// カート機能
 	cart->AddComponent<Cart>();
 
 	// カートの当たり判定追加
 	auto cartColl = cart->AddComponent<CartCollider>();
+
 	// ステージの取得
-	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 	cartColl->SetStage(stage);
+
 	// プレイヤーの取得
 	auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
 	cartColl->SetPlayer(player);
@@ -589,7 +630,7 @@ void GameScene::CheckEnemyAttack(void)
 			auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
 			VECTOR startPos = player->GetOwner()->GetComponent<CapsuleCollider>()->GetStart();
 			VECTOR endPos = player->GetOwner()->GetComponent<CapsuleCollider>()->GetEnd();
-			float radius = player->GetOwner()->GetComponent<CapsuleCollider>()->radius_;
+			float radius = player->GetOwner()->GetComponent<CapsuleCollider>()->GetRadius();
 
 			if (Collision::HitSphereCapsule(useWeapon->GetPos(), useWeapon->GetCollisionRadius(),
 				startPos, endPos, radius))
@@ -861,7 +902,7 @@ void GameScene::CollisionEnemy2Player(void)
 	auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
 	VECTOR playerPos = player->GetTransform()->pos_;
 	VECTOR playerTop = player->GetCapsule()->GetStart();
-	float playerRad = player->GetCapsule()->radius_;
+	float playerRad = player->GetCapsule()->GetRadius();
 
 	for (auto enemy : enemyManager_->GetEnemys())
 	{

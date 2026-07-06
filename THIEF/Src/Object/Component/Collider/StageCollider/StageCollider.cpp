@@ -48,7 +48,12 @@ void StageCollider::StageColl(float& velocityY)
 		if (length < 0.01f)
 			break;
 
-		float radius = capsule_->radius_;
+		float radius = 1.0f;
+
+		for (const auto& cap : capsule_->GetCapsules())
+		{
+			radius = max(radius, cap.radius);
+		}
 
 		// 高速移動時のすり抜け防止のため、
 		// 移動経路を細かく分割して判定する
@@ -76,58 +81,56 @@ void StageCollider::StageColl(float& velocityY)
 			// 次に移動する座標
 			VECTOR nextPos = VAdd(safePos, stepMove);
 
-			// カプセル始点・終点を算出
-			VECTOR capStart = VAdd(nextPos, capsule_->startOffset_);
-			VECTOR capEnd = VAdd(nextPos, capsule_->endOffset_);
-
-			// ステージとカプセルの衝突判定
-			auto result =
-				MV1CollCheck_Capsule(
-					stage_->GetModelId(),
-					-1,
-					capStart,
-					capEnd,
-					radius);
-
-			float bestPush = 0.0f;
-			VECTOR bestNormal = VGet(0, 0, 0);
-
 			bool collision = false;
 
-			// ヒットしたポリゴンを調べる
-			for (int i = 0; i < result.HitNum; i++)
+			VECTOR normalSum = VGet(0.0f, 0.0f, 0.0f);
+			float totalWeight = 0.0f;
+
+			for (const auto& cap : capsule_->GetCapsules())
 			{
-				auto& poly = result.Dim[i];
+				// カプセル始点・終点を算出
+				VECTOR capStart = VAdd(nextPos, cap.startOffset);
+				VECTOR capEnd = VAdd(nextPos, cap.endOffset);
 
-				// ポリゴン法線
-				VECTOR normal = VNorm(poly.Normal);
+				// ステージとカプセルの衝突判定
+				auto result =
+					MV1CollCheck_Capsule(
+						stage_->GetModelId(),
+						-1,
+						capStart,
+						capEnd,
+						cap.radius);
 
-				// 現在の移動方向と法線の向きから
-				// 正面衝突している度合いを求める
-				float push = -VDot(VNorm(move), normal);
-
-				// 背面や平行な面は無視
-				if (push <= 0.0f)
-					continue;
-
-				// 最も正面から当たっている面を採用
-				if (push > bestPush)
+				// ヒットしたポリゴンを調べる
+				for (int i = 0; i < result.HitNum; i++)
 				{
-					bestPush = push;
-					bestNormal = normal;
+					auto& poly = result.Dim[i];
+
+					// ポリゴン法線
+					VECTOR normal = VNorm(poly.Normal);
+
+					// 現在の移動方向と法線の向きから
+					// 正面衝突している度合いを求める
+					float push = -VDot(VNorm(move), normal);
+
+					// 背面や平行な面は無視
+					if (push <= 0.0f)
+						continue;
+
+					normalSum = VAdd(normalSum, VScale(normal, push));
+					totalWeight += push;
+
+					collision = true;
 				}
 
-				collision = true;
+				// 衝突結果を解放
+				MV1CollResultPolyDimTerminate(result);
 			}
 
-			// 衝突結果を解放
-			MV1CollResultPolyDimTerminate(result);
-
-			// 衝突したら探索終了
-			if (collision)
+			if (collision && totalWeight > 0.0f)
 			{
 				hit = true;
-				hitNormal = bestNormal;
+				hitNormal = VNorm(VScale(normalSum, 1.0f / totalWeight));
 				hitStep = step;
 				break;
 			}
@@ -144,16 +147,16 @@ void StageCollider::StageColl(float& velocityY)
 		}
 
 		// 壁に衝突した場合は段差として登れるか確認する(y成分が小さい法線は壁として扱う)
-		if (hitNormal.y < 0.5f)
+		if (hitNormal.y < groundNormalY_)
 		{
 			// 段差判定
-			if (CanStepUp(safePos, stepMove, STEP_HEIGHT))
+			if (CanStepUp(safePos, stepMove, stepHeight_))
 			{
 				// 衝突していない最後の位置へ戻す
 				pos = safePos;
 
 				// 段差の高さ分だけ上へ移動（階段を1段上がるイメージ）
-				pos.y += STEP_HEIGHT;
+				pos.y += stepHeight_;
 
 				// 今回消費した移動量を残り移動量から除外
 				move = VSub(move, stepMove);
@@ -168,10 +171,10 @@ void StageCollider::StageColl(float& velocityY)
 
 		// 少しだけ法線の方向へ押し出して
 		// めり込みを防止する
-		pos = VAdd(pos, VScale(hitNormal, SKIN));
+		pos = VAdd(pos, VScale(hitNormal, skin_));
 
 		// 床判定
-		if (hitNormal.y > 0.6f)
+		if (hitNormal.y > groundNormalY_)
 		{
 			// 接地フラグを立てる
 			isGround_ = true;
@@ -228,7 +231,7 @@ bool StageCollider::CeilingColl(void)
 	const VECTOR crouchingPos = VAdd(currentPos, PlayerController::CROUCHING_CAP_START_OFFSET);
 
 	// 半径を取得
-	const float capsuleRadius = capsule_->radius_ + RADIUS_OFFSET;
+	const float capsuleRadius = capsule_->GetRadius() + RADIUS_OFFSET;
 
 	// 天井に当たっているかどうかのフラグ
 	bool isCeiling = false;
@@ -272,20 +275,30 @@ bool StageCollider::CanStepUp(const VECTOR& pos, const VECTOR& move, float stepH
 	// その状態で前方へ移動してみる
 	testPos = VAdd(testPos, move);
 
-	// 持ち上げた状態でカプセルとステージの衝突判定を行う
-	auto result =
-		MV1CollCheck_Capsule(
-			stage_->GetModelId(),
-			-1,
-			VAdd(testPos, capsule_->startOffset_),
-			VAdd(testPos, capsule_->endOffset_),
-			capsule_->radius_);
+	bool hit = false;
 
-	// 1つでもポリゴンに当たっていれば衝突
-	bool hit = result.HitNum > 0;
+	for (const auto& cap : capsule_->GetCapsules())
+	{
+		// 持ち上げた状態でカプセルとステージの衝突判定を行う
+		auto result =
+			MV1CollCheck_Capsule(
+				stage_->GetModelId(),
+				-1,
+				VAdd(testPos, cap.startOffset),
+				VAdd(testPos, cap.endOffset),
+				cap.radius);
 
-	// 衝突結果のメモリを解放
-	MV1CollResultPolyDimTerminate(result);
+		// 1つでもポリゴンに当たっていれば衝突
+		if (result.HitNum > 0)
+		{
+			hit = true;
+		}
+
+		// 衝突結果のメモリを解放
+		MV1CollResultPolyDimTerminate(result);
+
+		if (hit) break;
+	}
 
 	// 衝突していなければ段差を登れる
 	return !hit;

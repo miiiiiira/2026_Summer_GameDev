@@ -84,7 +84,7 @@ public:
 
 protected:
 
-	static constexpr int DAMAGE_MULT = 10;
+	static constexpr int DAMAGE_MULT = 15;
 
 	static constexpr int FONT_SIZE = 21;
 

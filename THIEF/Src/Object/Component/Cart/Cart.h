@@ -54,6 +54,8 @@ private:
 	// Transform
 	Transform* trans_;
 
+	float velocityY_ = 0.0f;
+
 	// カートの向き(Y軸回転のみ使用)
 	float angleY_;
 

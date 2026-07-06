@@ -471,7 +471,7 @@ void PlayerController::InputSliding(void)
 		auto cap = owner_->GetComponent<CapsuleCollider>();
 		if (cap != nullptr)
 		{
-			cap->startOffset_ = CROUCHING_CAP_START_OFFSET;
+			cap->SetStartOffset(CROUCHING_CAP_START_OFFSET);
 		}
 
 		// プレイヤーのスライディングの移動速度とダッシュ移動速度を加算
@@ -813,7 +813,7 @@ void PlayerController::IdleInit(void)
 	auto cap = owner_->GetComponent<CapsuleCollider>();
 	if (cap != nullptr)
 	{
-		cap->startOffset_ = STANDING_CAP_START_OFFSET;
+		cap->SetStartOffset(STANDING_CAP_START_OFFSET);
 	}
 
 	// ライトの範囲設定が最大値でなければ
@@ -833,7 +833,7 @@ void PlayerController::CrouchingInit(void)
 	auto cap = owner_->GetComponent<CapsuleCollider>();
 	if (cap != nullptr)
 	{
-		cap->startOffset_ = CROUCHING_CAP_START_OFFSET;
+		cap->SetStartOffset(CROUCHING_CAP_START_OFFSET);
 	}
 }
 
