@@ -81,6 +81,8 @@ namespace SoundTable_Game
 		{ SoundID::SE_ENEMY_SPAWN_2, {"Data/Sound/Game/Enemy/SE_ENEMY_SPAWN_2.wav", SoundType::SE_3D, 255} },
 		{ SoundID::SE_ENEMY_SPAWN_3, {"Data/Sound/Game/Enemy/SE_ENEMY_SPAWN_3.wav", SoundType::SE_3D, 255} },
 		{ SoundID::SE_ENEMY_SPAWN_4, {"Data/Sound/Game/Enemy/SE_ENEMY_SPAWN_4.wav", SoundType::SE_3D, 255} },
+
+		{ SoundID::SE_ENEMY_GIGGLE, {"Data/Sound/Game/Enemy/Giggle.mp3", SoundType::SE_2D, 100} },
 	};
 }
 

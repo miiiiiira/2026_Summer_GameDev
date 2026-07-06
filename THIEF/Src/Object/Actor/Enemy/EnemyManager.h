@@ -16,7 +16,12 @@ public:
 	~EnemyManager(void);
 
 	void Init(PlayerController* player, int id = -1);
-	void Load(void);
+	void CreateEnemyStage1(void);
+	void CreateEnemyStage2(void);
+	void CreateEnemyStage3(void);
+	void LoadStage1(void);
+	void LoadStage2(void);
+	void LoadStage3(void);
 	void Update(void);
 	void Draw(void);
 	void Release(void);

@@ -16,16 +16,16 @@ class EnemyBase
 public:
 	
 	// コンストラクタ
-	EnemyBase(int modelId);
+	EnemyBase(int modelId = -1);
 	// デストラクタ
 	virtual ~EnemyBase(void);
 
 	// 読み込み処理
 	virtual void Load(void);
 	// 初期化処理
-	void Init(PlayerController* player,int stageId,
-		const std::vector<WAYPOINT>& way,
-		const std::vector<std::vector<EDGE>>& edgeList);
+	void Init(PlayerController* player = nullptr,int stageId = -1,
+		const std::vector<WAYPOINT>& way = {},
+		const std::vector<std::vector<EDGE>>& edgeList = {});
 	virtual void OnInitialize(void) = 0;
 
 	// 更新処理

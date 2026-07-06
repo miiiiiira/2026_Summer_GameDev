@@ -79,6 +79,25 @@ void GameScene::Init(void)
 	auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
 	enemyManager_->Init(player,stage->GetModelId());
 
+	// 現在のステージ数を見て生成する敵を変更
+	switch (SceneManager::GetInstance()->GetCurrentStage())
+	{
+	case STAGE_NUM::STAGE_1:
+		// ステージ1
+		enemyManager_->CreateEnemyStage1();
+		break;
+	case STAGE_NUM::STAGE_2:
+		// ステージ2
+		enemyManager_->CreateEnemyStage2();
+		break;
+	case STAGE_NUM::STAGE_3:
+		// ステージ3
+		enemyManager_->CreateEnemyStage3();
+		break;
+	default:
+		break;
+	}
+
 	// BGM再生
 	AudioManager::GetInstance()->PlayBGM(SoundID::BGM_GAME_1);
 }
@@ -90,10 +109,6 @@ void GameScene::Load(void)
 
 	// オブジェクトマネージャーの生成
 	objectManger_ = new ObjectManager();
-
-	// 敵作成
-	enemyManager_ = new EnemyManager();
-	enemyManager_->Load();
 
 	// クロスヘアの作成
 	crosshair_ = new Crosshair();
@@ -280,7 +295,7 @@ void GameScene::CameraCreate(void)
 	camera->ChangeMode(Camera::MODE::FOLLOW);
 }
 
-void GameScene::StageCreate(void)
+void GameScene::StageCreate(std::string path)
 {
 	// ステージの作成
 	auto stage = objectManger_->CreateObject();
@@ -294,7 +309,7 @@ void GameScene::StageCreate(void)
 
 	// 描画
 	auto render = stage->AddComponent<Render3D>();
-	render->SetModel("Data/Model/Stage/Stage.mv1");
+	render->SetModel(path);
 
 	// ステージ機能
 	stage->AddComponent<Stage>();
@@ -464,7 +479,7 @@ void GameScene::Stage1Init(void)
 	CameraUtility::SetCameraPoint(objectManger_->FindComponentWithTag<Camera>(Tag::Camera));
 
 	// ステージの作成
-	StageCreate();
+	StageCreate("Data/Model/Stage/Stage.mv1");
 
 	// ライトの作成
 	WispCreate();
@@ -474,6 +489,10 @@ void GameScene::Stage1Init(void)
 
 	// 敵の作成
 	EnemyCreate();
+
+	// 敵作成
+	enemyManager_ = new EnemyManager();
+	enemyManager_->LoadStage1();
 
 	// カートの作成
 	CartCreate();
@@ -491,7 +510,7 @@ void GameScene::Stage2Init(void)
 	CameraUtility::SetCameraPoint(objectManger_->FindComponentWithTag<Camera>(Tag::Camera));
 
 	// ステージの作成
-	StageCreate();
+	StageCreate("Data/Model/Stage/Stage2.mv1");
 
 	// ライトの作成
 	WispCreate();
@@ -501,6 +520,10 @@ void GameScene::Stage2Init(void)
 
 	// 敵の作成
 	EnemyCreate();
+
+	// 敵作成
+	enemyManager_ = new EnemyManager();
+	enemyManager_->LoadStage2();
 
 	// アイテムの作成
 	ItemCreateStage2();
@@ -515,7 +538,7 @@ void GameScene::Stage3Init(void)
 	CameraUtility::SetCameraPoint(objectManger_->FindComponentWithTag<Camera>(Tag::Camera));
 
 	// ステージの作成
-	StageCreate();
+	StageCreate("Data/Model/Stage/Stage.mv1");
 
 	// ライトの作成
 	WispCreate();
@@ -525,6 +548,9 @@ void GameScene::Stage3Init(void)
 
 	// 敵の作成
 	EnemyCreate();
+	// 敵作成
+	enemyManager_ = new EnemyManager();
+	enemyManager_->LoadStage3();
 
 	// アイテムの作成
 	ItemCreateStage3();

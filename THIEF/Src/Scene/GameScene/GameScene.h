@@ -2,6 +2,7 @@
 
 #include <DxLib.h>
 #include <vector>
+#include <string>
 
 #include "../../Object/Tag.h"
 #include "../SceneBase.h"
@@ -36,7 +37,7 @@ public:
 	void Release(void)	override;	// 解放
 
 	void CameraCreate(void);		// カメラの作成
-	void StageCreate(void);			// ステージの作成
+	void StageCreate(std::string path);			// ステージの作成
 	void WispCreate(void);			// ライトの作成
 	void PlayerCreate(void);		// プレイヤーの作成
 	void EnemyCreate(void);			// 敵の作成

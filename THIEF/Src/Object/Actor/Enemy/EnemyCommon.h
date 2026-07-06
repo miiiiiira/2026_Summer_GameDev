@@ -22,6 +22,7 @@ namespace EnemyCommon
         MUSHNUB,
         SKELETON,
         STATUE,
+        GIGGLE,
         MAX,
     };
 }
