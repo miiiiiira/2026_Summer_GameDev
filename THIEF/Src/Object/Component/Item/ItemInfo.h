@@ -75,7 +75,7 @@ struct ItemData
 	ITEM_SIZE size;
 };
 
-namespace ItemTable_Stage1
+namespace ItemTable
 {
 	extern const std::unordered_map<Tag,ItemData> Table;
 }

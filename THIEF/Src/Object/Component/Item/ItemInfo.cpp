@@ -7,7 +7,7 @@
 #include "Mug/Mug.h"
 #include "Skull/Skull.h"
 
-namespace ItemTable_Stage1
+namespace ItemTable
 {
 	const std::unordered_map<Tag, ItemData> Table =
 	{

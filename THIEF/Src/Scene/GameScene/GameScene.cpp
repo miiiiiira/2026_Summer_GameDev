@@ -429,7 +429,22 @@ void GameScene::CartCreate(void)
 
 	// 座標の設定
 	auto trans = cart->AddComponent<Transform>();
-	trans->pos_ = { 500.0f,0.0f,0.0f };
+
+	// ステージ情報を取ってきて初期化処理を行う
+	auto stageNum = SceneManager::GetInstance()->GetCurrentStage();
+	switch (stageNum)
+	{
+	case STAGE_1:
+		trans->pos_ = { 500.0f,0.0f,0.0f };
+		break;
+	case STAGE_2:
+		trans->pos_ = { 0.0f,5.0f,500.0f };
+		break;
+	case STAGE_3:
+		break;
+	default:
+		break;
+	}
 
 	// 描画
 	auto render = cart->AddComponent<Render3D>();
@@ -567,6 +582,9 @@ void GameScene::Stage2Init(void)
 	enemyManager_ = new EnemyManager();
 	enemyManager_->LoadStage2();
 
+	// カートの作成
+	CartCreate();
+
 	// アイテムの作成
 	ItemCreateStage2();
 }
@@ -593,6 +611,9 @@ void GameScene::Stage3Init(void)
 	// 敵作成
 	enemyManager_ = new EnemyManager();
 	enemyManager_->LoadStage3();
+
+	// カートの作成
+	CartCreate();
 
 	// アイテムの作成
 	ItemCreateStage3();
@@ -985,7 +1006,7 @@ void GameScene::CollisionEnemy2PlayerGrab(void)
 
 void GameScene::ItemCreate(Tag tag, VECTOR pos)
 {
-	auto itemData = ItemTable_Stage1::Table.find(tag);
+	auto itemData = ItemTable::Table.find(tag);
 
 	// アイテムの作成
 	auto item = objectManger_->CreateObject();

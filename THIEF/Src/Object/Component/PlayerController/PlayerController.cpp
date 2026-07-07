@@ -709,8 +709,11 @@ void PlayerController::Grabbing(void)
 				grabObject_ = std::monostate{};
 			}
 		}
+				
 
-		// 中身がアイテムだったら
+
+
+		// 中身が空では無かったら(アイテム)
 		if (GetGrabItem() != nullptr)
 		{
 			// つかめる範囲に変更があったら
@@ -718,6 +721,25 @@ void PlayerController::Grabbing(void)
 			{
 				// アイテムに反映させる
 				GetGrabItem()->SetLocalPosZ(range_);
+			}
+		}
+		// 中身が空では無かったら(カート)
+		else if (GetGrabCart() != nullptr)
+		{
+			// カートとプレイヤーの距離を取る
+			float distance = VSize(VSub(transform_->pos_, GetGrabCart()->GetTransform()->pos_));
+
+			// カートとプレイヤーの距離が一定距離超えたら
+			if (distance > END_GRAB_CART_DISTANCE)
+			{
+				// 掴み動作を終わる
+				grabState_ = GRABBING_STATE::NOT_GRABBING;
+
+				// 強制的にカートを離させる
+				GetGrabCart()->EndGrabbed();
+
+				// 空状態にする
+				grabObject_ = std::monostate{};
 			}
 		}
 

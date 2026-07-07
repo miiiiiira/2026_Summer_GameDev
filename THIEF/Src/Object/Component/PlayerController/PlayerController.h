@@ -87,6 +87,9 @@ public:
 	// 無敵時間
 	static constexpr int  INVINCIBLE_TIME = 60;
 
+	// カートを離す距離
+	static constexpr float  END_GRAB_CART_DISTANCE = 800.0f;
+
 public:
 	void Init() override;		// 初期化
 	void Update() override;		// 更新

@@ -2,7 +2,9 @@
 
 #include "../Render/Render3D.h"
 #include "../Collider/DeliveryLocationCollider/DeliveryLocationCollider.h"
+#include "../../../Scene/SceneManager.h"
 #include "../../Object.h"
+#include "DeliveryInfo.h"
 
 Stage::~Stage(void)
 {
@@ -27,13 +29,17 @@ void Stage::Init()
 	// 衝突情報構築
 	MV1SetupCollInfo(modelId_, -1);
 
+	// ステージ情報を取ってきて初期化処理を行う
+	auto stageNum = SceneManager::GetInstance()->GetCurrentStage();
+	auto deliveryData = DeliveryTable::Table.find(stageNum);
+
 	// 納品場所の座標
 	deliveryPos_ = trans->pos_;
-	deliveryPos_ = VAdd(deliveryPos_, DELIVERY_LOCAL_POS);
+	deliveryPos_ = VAdd(deliveryPos_, deliveryData->second.deliveryLocalPos_);
 
 	// 納品完了スイッチの座標
 	doneSwitchPos_ = trans->pos_;
-	doneSwitchPos_ = VAdd(doneSwitchPos_, DONE_SWITCH_LOCAL_POS);
+	doneSwitchPos_ = VAdd(doneSwitchPos_, deliveryData->second.doneSwitchLocalPos_);
 }
 
 void Stage::Draw3D(void)
