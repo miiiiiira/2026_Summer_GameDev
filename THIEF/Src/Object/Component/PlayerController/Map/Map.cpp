@@ -4,13 +4,30 @@
 #include "../PlayerController.h"
 #include "../../Transform/Transform.h"
 #include "../../../../Application.h"
-#include "Map.h"
 #include "../../../../Common/CameraUtility/CameraUtility.h"
+#include "../../../../Scene/SceneManager.h"
+#include "MapInfo.h"
+#include "Map.h"
 
 Map::Map(void)
 {
+	// ステージ情報を取ってきて初期化処理を行う
+	auto stageNum = SceneManager::GetInstance()->GetCurrentStage();
+	auto mapData = MapTable::Table.find(stageNum);
+
 	// 地図画像の読み込み
-	mapImg_ = LoadGraph("Data/Image/GameScene/Map.png");
+	mapImg_ = LoadGraph(mapData->second.path.c_str());
+
+	mapImgSizeX = mapData->second.mapImgSizeX;
+	mapImgSizeY = mapData->second.mapImgSizeY;
+
+	playerSpawnPosX = mapData->second.playerSpawnPosX;
+	playerSpawnPosY = mapData->second.playerSpawnPosY;
+
+	// マップ画像の位置初期化
+	mapImgPosX_ = MAP_CENTER_POS_X + (mapImgSizeX / 2 - playerSpawnPosX);
+	mapImgPosY_ = MAP_CENTER_POS_Y + (mapImgSizeY / 2 - playerSpawnPosY);
+
 	// プレイヤー画像の読み込み
 	playerImg_ = LoadGraph("Data/Image/GameScene/MapPlayer.png");
 }
@@ -26,10 +43,6 @@ Map::~Map(void)
 
 void Map::Init(void)
 {
-	// マップ画像の位置初期化
-	mapImgPosX_ = MAP_IMG_DEFAULT_POS_X;
-	mapImgPosY_ = MAP_IMG_DEFAULT_POS_Y;
-
 	isDraw_ = false;
 }
 
@@ -41,8 +54,8 @@ void Map::Update(void)
 	// プレイヤーの3D座標を2D座標に変換して移動分マップの位置を動かす
 	auto* player = owner_->GetComponent<PlayerController>();
 	VECTOR plaPos = player->GetTransform()->pos_;
-	mapImgPosX_ = PLAYER_SPAWN_POS_X + (plaPos.x * 0.1f);
-	mapImgPosY_ = PLAYER_SPAWN_POS_Y - (plaPos.z * 0.1f);
+	mapImgPosX_ = playerSpawnPosX + (plaPos.x * 0.1f);
+	mapImgPosY_ = playerSpawnPosY - (plaPos.z * 0.1f);
 
 }
 

@@ -17,7 +17,7 @@ public:
 	void Update(void)override;
 	void Draw2D(void)override;
 
-	// 発見されたアイテムを格納する
+	// アイテムたちのポインタを格納
 	void SetItems(std::vector<Item*> items);
 
 	// 描画するかを設定
@@ -36,20 +36,6 @@ private:
 	static constexpr int MAP_CENTER_POS_X = Application::SCREEN_SIZE_X / 2;
 	static constexpr int MAP_CENTER_POS_Y = Application::SCREEN_SIZE_Y / 2;
 
-	// マップ画像サイズ
-	static constexpr int MAP_IMG_SIZE_X = 843;
-	static constexpr int MAP_IMG_SIZE_Y = 1024;
-
-	// マップ上のプレイヤーの初期位置
-	static constexpr int PLAYER_SPAWN_POS_X = 610;
-	static constexpr int PLAYER_SPAWN_POS_Y = 982;
-
-	// マップ画像の初期位置
-	static constexpr int MAP_IMG_DEFAULT_POS_X =
-		MAP_CENTER_POS_X + (MAP_IMG_SIZE_X / 2 - PLAYER_SPAWN_POS_X);
-	static constexpr int MAP_IMG_DEFAULT_POS_Y =
-		MAP_CENTER_POS_Y + (MAP_IMG_SIZE_Y / 2 - PLAYER_SPAWN_POS_Y);
-
 	// アイテムのサイズによって表示する大きさを変更
 	static constexpr int BIG_RAD = 15;
 	static constexpr int MEDIUM_RAD = 10;
@@ -64,6 +50,14 @@ private:
 	// 地図画像の位置
 	int mapImgPosX_;
 	int mapImgPosY_;
+	
+	// 地図画像の大きさ
+	int mapImgSizeX;
+	int mapImgSizeY;
+
+	// 地図上でのプレイヤーのスポーン位置
+	int playerSpawnPosX;
+	int playerSpawnPosY;
 
 	// 地図画像
 	int mapImg_;

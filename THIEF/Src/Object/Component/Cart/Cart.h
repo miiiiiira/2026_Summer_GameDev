@@ -21,7 +21,7 @@ public:
 	static constexpr float CART_SIZE_DEPTH_RAD = 50.0f;
 	
 	// プレイヤーとの相対座標
-	static constexpr VECTOR CART_LOCAL_POS = {0.0f,0.0f,300.0f};
+	static constexpr VECTOR CART_LOCAL_POS = {0.0f,5.0f,300.0f};
 
 	// 線形補間の係数
 	static constexpr float COEFFICIENT = 0.15f;
