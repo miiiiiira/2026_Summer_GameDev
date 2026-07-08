@@ -20,9 +20,6 @@ public:
 	// カートのサイズ奥行  
 	static constexpr float CART_SIZE_DEPTH_RAD = 50.0f;
 	
-	// プレイヤーとの相対座標
-	static constexpr VECTOR CART_LOCAL_POS = {0.0f,5.0f,300.0f};
-
 	// 線形補間の係数
 	static constexpr float COEFFICIENT = 0.15f;
 
@@ -42,10 +39,13 @@ public:
 	Transform* GetTransform();
 
 	// 掴まれた状態にする
-	void StartGrabbing(void);
+	void StartGrabbing(VECTOR localPos);
 
 	// 掴まれた状態を終了する
 	void EndGrabbed(void);
+
+	// 相対座標を変更
+	void SetLocalPos(VECTOR localPos);
 
 private:
 	// モデルID
@@ -61,6 +61,9 @@ private:
 
 	// 掴まれているか　true / 掴まれている, false / 掴まれていない
 	bool isGrabbed_;
+
+	// プレイヤーとのローカル座標
+	VECTOR localPos_;
 
 	// プレイヤーの位置をみて移動処理を行う
 	void TrackingPlayer(void);

@@ -740,7 +740,16 @@ void PlayerController::Grabbing(void)
 
 				// ‹óó‘Ô‚É‚·‚é
 				grabObject_ = std::monostate{};
+				return;
 			}
+
+			auto capdistance = 
+				VSize(VSub(owner_->GetComponent<CapsuleCollider>()->GetStart() ,
+					owner_->GetComponent<CapsuleCollider>()->GetEnd()));
+
+			capdistance += (owner_->GetComponent<CapsuleCollider>()->GetRadius()+5.0f);
+
+			GetGrabCart()->SetLocalPos({ 0.0f,capdistance ,CART_DISTANCE });
 		}
 
 		break;

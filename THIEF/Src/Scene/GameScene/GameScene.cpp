@@ -378,7 +378,7 @@ void GameScene::PlayerCreate(void)
 	auto stageCol = player->AddComponent<StageCollider>();
 	stageCol->SetStage(stage);
 	stageCol->SetGroundNormalY(0.9f);
-	stageCol->SetStepHeight(5.0f);
+	stageCol->SetStepHeight(9.0f);
 
 	// プレイヤー取得
 	auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
@@ -476,8 +476,8 @@ void GameScene::CartCreate(void)
 
 	// ステージコライダー
 	auto stageCol = cart->AddComponent<StageCollider>();
-	stageCol->SetGroundNormalY(0.90f);
-	stageCol->SetStepHeight(5.0f);
+	stageCol->SetGroundNormalY(0.9f);
+	stageCol->SetStepHeight(9.0f);
 	stageCol->SetSkin(0.5f);
 
 	// ステージ取得
@@ -520,7 +520,16 @@ void GameScene::ItemCreateStage1(void)
 
 void GameScene::ItemCreateStage2(void)
 {
-	ItemCreateStage1();
+	ItemCreate(Tag::Item_Potion_Green, { -689.0f,314.0f,672.0f });
+	ItemCreate(Tag::Item_Potion_Green, { 567.0f,350.0f,1037.0f });
+	ItemCreate(Tag::Item_Potion_Green, { 192.0f,135.0f,3260.0f });
+	ItemCreate(Tag::Item_Potion_Green, { -586.0f,8.0f,2592.0f });
+	ItemCreate(Tag::Item_Potion_Green, { -2257.0f,145.0f,1324.0f });
+	ItemCreate(Tag::Item_Potion_Green, { -8108.0f,9.0f,1416.0f });
+	ItemCreate(Tag::Item_Potion_Green, { 6080.0f,418.0f,5728.0f });
+	ItemCreate(Tag::Item_Potion_Green, { -7419.0f,417.0f,5645.0f });
+	ItemCreate(Tag::Item_Potion_Green, { -7312.0f,9.0f,4863.0f });
+	ItemCreate(Tag::Item_Potion_Green, { -7478.0f,9.0f,3568.0f });
 }
 
 void GameScene::ItemCreateStage3(void)

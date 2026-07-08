@@ -69,10 +69,11 @@ Transform* Cart::GetTransform(void)
 	return trans_;
 }
 
-void Cart::StartGrabbing(void)
+void Cart::StartGrabbing(VECTOR localPos)
 {
 	// 掴まれた状態にする
 	isGrabbed_ = true;
+	localPos_ = localPos;
 }
 
 void Cart::EndGrabbed(void)
@@ -81,17 +82,22 @@ void Cart::EndGrabbed(void)
 	isGrabbed_ = false;
 }
 
+void Cart::SetLocalPos(VECTOR localPos)
+{
+	localPos_ = localPos;
+}
+
 void Cart::TrackingPlayer(void)
 {
 	// 前の座標を保持しておく
 	VECTOR prePos = trans_->pos_;
 
 	// ローカル座標に
-	trans_->pos_ = CameraUtility::AddCameraPosLocalPos(CART_LOCAL_POS);
-
+	trans_->pos_ = CameraUtility::AddCameraPosLocalPos(localPos_);
+	trans_->pos_.y = CameraUtility::GetCameraPos().y - localPos_.y;
 	// 線形補間で滑らかにする
 	trans_->pos_ = Math::Lerp(prePos, trans_->pos_, COEFFICIENT);
-	trans_->pos_.y = 5.0f;
+	//trans_->pos_.y = 5.0f;
 
 	// モデルに座標を反映
 	MV1SetPosition(modelId_, trans_->pos_);

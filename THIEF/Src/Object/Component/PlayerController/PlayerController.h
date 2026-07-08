@@ -87,6 +87,8 @@ public:
 	// 無敵時間
 	static constexpr int  INVINCIBLE_TIME = 60;
 
+	// カートとの距離
+	static constexpr float  CART_DISTANCE = 300.0f;
 	// カートを離す距離
 	static constexpr float  END_GRAB_CART_DISTANCE = 800.0f;
 

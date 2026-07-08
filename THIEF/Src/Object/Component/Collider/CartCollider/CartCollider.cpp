@@ -4,6 +4,7 @@
 #include "../../Stage/Stage.h"
 #include "../../PlayerController/PlayerController.h"
 #include "../../../../Common/Crosshair/Crosshair.h"
+#include "../../../../Common/CameraUtility/CameraUtility.h"
 
 void CartCollider::Init(void)
 {
@@ -61,7 +62,7 @@ void CartCollider::CartToPlayerGrabbingCollision(void)
 	if (player_->GetGrabbingState() == GRABBING_STATE::TRY_GRABBING)
 	{
 		// アイテムの追従モードをオンにする
-		cart_->StartGrabbing();
+		cart_->StartGrabbing({ 0.0f,CameraUtility::GetCameraPos().y ,PlayerController::CART_DISTANCE });
 		// 掴み状態にする
 		player_->StartGrabbing(0);
 		player_->SetGrabObject(cart_);
