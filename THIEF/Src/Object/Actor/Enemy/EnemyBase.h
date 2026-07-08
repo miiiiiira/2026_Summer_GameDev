@@ -44,6 +44,8 @@ public:
 	int GetModelId(void);
 	VECTOR GetPos(void);
 	void SetPos(VECTOR pos);
+	VECTOR GetAngle(void);
+	void SetAngle(VECTOR angle);
 	float GetRadius(void);
 	VECTOR GetPrevPos(void);
 	VECTOR GetStart(void);

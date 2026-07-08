@@ -211,6 +211,16 @@ void EnemyBase::SetPos(VECTOR pos)
 	MV1RefreshCollInfo(modelId_, -1);
 }
 
+VECTOR EnemyBase::GetAngle(void)
+{
+	return angle_;
+}
+
+void EnemyBase::SetAngle(VECTOR angle)
+{
+	angle_ = angle;
+}
+
 float EnemyBase::GetRadius(void)
 {
 	return radius_;

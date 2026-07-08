@@ -1,4 +1,3 @@
-#include "../../../../Application.h"
 #include "../../../../Scene/SceneManager.h"
 #include "../../../../Common/Math/Math.h"
 #include "../../../../Common/Transform/MatrixUtility.h"
