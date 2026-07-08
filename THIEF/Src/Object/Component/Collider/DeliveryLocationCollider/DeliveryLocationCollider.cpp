@@ -47,9 +47,7 @@ void DeliveryLocationCollider::ItemToDeliveryLocationCollision(void)
 	VECTOR deliveryPos = stage_->GetDeliveryPos();
 
 	// 納品場所のサイズ
-	VECTOR deliverySize = { Stage::DELIVERY_SIZE_WID_RAD
-		,Stage::DELIVERY_SIZE_HIG_RAD
-		,Stage::DELIVERY_SIZE_WID_RAD };
+	VECTOR deliverySize = stage_->GetDeliverySize();
 
 	// 判定をするアイテムのポインタ
 	std::vector<Item*> items = stage_->GetItems();
@@ -170,9 +168,7 @@ void DeliveryLocationCollider::DebugDraw(void)
 		VECTOR deliveryPos = stage_->GetDeliveryPos();
 
 		// 納品場所のサイズ
-		VECTOR deliverySize = { Stage::DELIVERY_SIZE_HIG_RAD
-			,Stage::DELIVERY_SIZE_HIG_RAD
-			,Stage::DELIVERY_SIZE_WID_RAD };
+		VECTOR deliverySize = stage_->GetDeliverySize();
 
 		// アイテムの座標
 		VECTOR itemPos = item->GetTransform()->pos_;

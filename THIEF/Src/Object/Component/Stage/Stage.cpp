@@ -33,6 +33,9 @@ void Stage::Init()
 	auto stageNum = SceneManager::GetInstance()->GetCurrentStage();
 	auto deliveryData = DeliveryTable::Table.find(stageNum);
 
+	// ”[•iêŠ‚Ì‘å‚«‚³
+	deliverySize_ = deliveryData->second.deliverySize_;
+
 	// ”[•iêŠ‚ÌÀ•W
 	deliveryPos_ = trans->pos_;
 	deliveryPos_ = VAdd(deliveryPos_, deliveryData->second.deliveryLocalPos_);
@@ -56,6 +59,11 @@ void Stage::Draw3D(void)
 Transform* Stage::GetTransform()
 {
 	return owner_->GetComponent<Transform>();
+}
+
+VECTOR Stage::GetDeliverySize(void)
+{
+	return deliverySize_;
 }
 
 void Stage::SetItem(Item* items)
@@ -96,13 +104,9 @@ void Stage::DrawDebug(void)
 	VECTOR startPos, endPos;
 	startPos = endPos = deliveryPos_;
 
-	startPos.x -= DELIVERY_SIZE_WID_RAD;
-	startPos.y -= DELIVERY_SIZE_HIG_RAD;
-	startPos.z -= DELIVERY_SIZE_DEPTH_RAD;
+	startPos = VSub(startPos, deliverySize_);
 
-	endPos.x += DELIVERY_SIZE_WID_RAD;
-	endPos.y += DELIVERY_SIZE_HIG_RAD;
-	endPos.z += DELIVERY_SIZE_DEPTH_RAD;
+	endPos = VAdd(endPos, deliverySize_);
 
 	DrawCube3D(startPos, endPos, 0x0000ff, 0x0000ff, false);
 

@@ -18,9 +18,11 @@ Map::Map(void)
 	// 地図画像の読み込み
 	mapImg_ = LoadGraph(mapData->second.path.c_str());
 
+	// 地図画像のサイズを取得
 	mapImgSizeX = mapData->second.mapImgSizeX;
 	mapImgSizeY = mapData->second.mapImgSizeY;
 
+	// 地図画像上でのプレイヤー座標を取得
 	playerSpawnPosX = mapData->second.playerSpawnPosX;
 	playerSpawnPosY = mapData->second.playerSpawnPosY;
 

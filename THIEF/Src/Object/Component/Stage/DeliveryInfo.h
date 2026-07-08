@@ -5,6 +5,8 @@
 
 struct DeliveryData
 {
+	// 納品場所の大きさ
+	VECTOR deliverySize_;
 	// ステージと納品場所までの相対座標
 	VECTOR deliveryLocalPos_;
 	// ステージと納品完了スイッチまでの相対座標

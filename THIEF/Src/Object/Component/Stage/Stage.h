@@ -14,13 +14,6 @@ class Stage : public Component
 {
 public:
 
-	// 納品場所のサイズ横幅
-	static constexpr float DELIVERY_SIZE_WID_RAD = 255.0f;
-	// 納品場所のサイズ縦幅
-	static constexpr float DELIVERY_SIZE_HIG_RAD = 220.0f;
-	// 納品場所のサイズ奥行
-	static constexpr float DELIVERY_SIZE_DEPTH_RAD = 285.0f;
-
 	// 納品完了スイッチの半径
 	static constexpr float DONE_SWITCH_RAD= 20.0f;
 
@@ -35,6 +28,9 @@ public:
 
 	// Transformを返す
 	Transform* GetTransform();
+
+	// 納品場所の大きさを返す
+	VECTOR GetDeliverySize(void);
 
 	// 納品場所の座標を返す
 	VECTOR GetDeliveryPos(void);
@@ -58,6 +54,9 @@ private:
 	int modelId_ = -1;
 
 	std::vector<Item*> items_;
+
+	// 納品場所の大きさ
+	VECTOR deliverySize_;
 
 	// 納品場所の座標
 	VECTOR deliveryPos_;
