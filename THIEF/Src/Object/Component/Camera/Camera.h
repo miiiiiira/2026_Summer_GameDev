@@ -66,9 +66,6 @@ public:
 	// プレイヤーの情報をもらう　※プレイヤーの場合
 	void SetPlayerController(PlayerController* playerController);
 
-	// 向きの取得
-	VECTOR& GetAngle(void) { return angle_; }
-
 	// Transformを返す
 	Transform* GetTransform();
 
@@ -98,7 +95,6 @@ private:
 
 	MODE mode_ = MODE::FOLLOW;
 
-	VECTOR angle_{};
 	VECTOR targetPos_{};
 
 	int mousePosX_ = 0;

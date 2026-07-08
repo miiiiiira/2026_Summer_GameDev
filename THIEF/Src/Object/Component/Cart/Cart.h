@@ -38,8 +38,8 @@ public:
 	// Transformを返す
 	Transform* GetTransform();
 
-	// Y軸回転を返す
-	float GetAngleY(void);
+	// Transformを返す
+	float GetVelocityY(void);
 
 	// 掴まれた状態にする
 	void StartGrabbing(VECTOR localPos);
@@ -51,6 +51,12 @@ public:
 	void SetLocalPos(VECTOR localPos);
 
 private:
+	// 重力加速度
+	const float GRAVITY = -0.3f;
+
+	// 最大落下速度
+	const float MAX_FALL = -5.0f;
+
 	// モデルID
 	int modelId_ = -1;
 
@@ -58,9 +64,6 @@ private:
 	Transform* trans_;
 
 	float velocityY_ = 0.0f;
-
-	// カートの向き(Y軸回転のみ使用)
-	float angleY_;
 
 	// 掴まれているか　true / 掴まれている, false / 掴まれていない
 	bool isGrabbed_;
@@ -70,6 +73,9 @@ private:
 
 	// プレイヤーの位置をみて移動処理を行う
 	void TrackingPlayer(void);
+
+	// 重力処理
+	void ApplyGravity(void);
 
 	// デバック用描画
 	void DrawDebug(void);

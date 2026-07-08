@@ -20,9 +20,6 @@ struct ItemInfo
 	// ‘å‚«‚³
 	VECTOR scale_;
 
-	// Œü‚«
-	VECTOR angle_;
-
 	// —£‚³‚ê‚½Žž‚ÌÀ•W
 	VECTOR grabbedPos_;
 

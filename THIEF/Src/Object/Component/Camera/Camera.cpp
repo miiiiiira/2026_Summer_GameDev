@@ -13,13 +13,13 @@ void Camera::Init(void)
 	transform_ = owner_->GetComponent<Transform>();
 
 	transform_->pos_ = DERFAULT_POS;
-	angle_ = DERFAULT_ANGLES;
+	transform_->angle_ = DERFAULT_ANGLES;
 	angleMoveCount = 0.0f;
 	SetCameraPositionAndAngle(
 		transform_->pos_,
-		angle_.x,
-		angle_.y,
-		angle_.z
+		transform_->angle_.x,
+		transform_->angle_.y,
+		transform_->angle_.z
 	);
 }
 
@@ -31,9 +31,9 @@ void Camera::Update(void)
 	// 座標とアングルを更新
 	SetCameraPositionAndAngle(
 		transform_->pos_,
-		angle_.x,
-		angle_.y,
-		angle_.z
+		transform_->angle_.x,
+		transform_->angle_.y,
+		transform_->angle_.z
 	);
 }
 
@@ -69,9 +69,9 @@ void Camera::SetBeforeDrawFixedPoint()
 {
 	SetCameraPositionAndAngle(
 		transform_->pos_,
-		angle_.x,
-		angle_.y,
-		angle_.z
+		transform_->angle_.x,
+		transform_->angle_.y,
+		transform_->angle_.z
 	);
 }
 
@@ -79,9 +79,9 @@ void Camera::SetBeforeDrawFree()
 {
 	SetCameraPositionAndAngle(
 		transform_->pos_,
-		angle_.x,
-		angle_.y,
-		angle_.z
+		transform_->angle_.x,
+		transform_->angle_.y,
+		transform_->angle_.z
 	);
 }
 
@@ -91,8 +91,8 @@ void Camera::SetBeforeDrawFollow()
 
 	// カメラの回転行列を作成
 	MATRIX mat = MGetIdent();
-	mat = MMult(mat, MGetRotX(angle_.x));
-	mat = MMult(mat, MGetRotY(angle_.y));
+	mat = MMult(mat, MGetRotX(transform_->angle_.x));
+	mat = MMult(mat, MGetRotY(transform_->angle_.y));
 
 	// 追従対象の座標
 	VECTOR followPos = target_->pos_;
@@ -218,27 +218,27 @@ void Camera::RotKeyboard(bool isLimit)
 	// isLimitがtrueだった場合カメラの視点操作(上下)に上限を付ける
 	if (InputManager::GetInstance()->IsNew(KEY_INPUT_DOWN))
 	{
-		angle_.x += rotPow;
+		transform_->angle_.x += rotPow;
 
-		if (isLimit && angle_.x > LIMIT_X_DW_RAD)
+		if (isLimit && transform_->angle_.x > LIMIT_X_DW_RAD)
 		{
-			angle_.x = LIMIT_X_DW_RAD;
+			transform_->angle_.x = LIMIT_X_DW_RAD;
 		}
 	}
 
 	if (InputManager::GetInstance()->IsNew(KEY_INPUT_UP))
 	{
-		angle_.x -= rotPow;
+		transform_->angle_.x -= rotPow;
 
-		if (isLimit && angle_.x < LIMIT_X_UP_RAD)
+		if (isLimit && transform_->angle_.x < LIMIT_X_UP_RAD)
 		{
-			angle_.x = LIMIT_X_UP_RAD;
+			transform_->angle_.x = LIMIT_X_UP_RAD;
 		}
 	}
 
 	// 視点操作(左右)
-	if (InputManager::GetInstance()->IsNew(KEY_INPUT_RIGHT)) { angle_.y += rotPow; }
-	if (InputManager::GetInstance()->IsNew(KEY_INPUT_LEFT)) { angle_.y -= rotPow; }
+	if (InputManager::GetInstance()->IsNew(KEY_INPUT_RIGHT)) { transform_->angle_.y += rotPow; }
+	if (InputManager::GetInstance()->IsNew(KEY_INPUT_LEFT)) { transform_->angle_.y -= rotPow; }
 }
 
 void Camera::RotGamePad(bool isLimit)
@@ -257,21 +257,21 @@ void Camera::RotGamePad(bool isLimit)
 	dir = InputManager::GetInstance()->GetDirectionXZAKey(padState.AKeyRX, padState.AKeyRY);
 
 	// 右スティック左右の傾き
-	angle_.y += dir.x * rotPow;
+	transform_->angle_.y += dir.x * rotPow;
 
 	// 右スティック上下の傾き
-	angle_.x -= dir.z * rotPow;
+	transform_->angle_.x -= dir.z * rotPow;
 
 	// 角度制限
 	if (!isLimit)return;
 
-	if (angle_.x > LIMIT_X_DW_RAD)
+	if (transform_->angle_.x > LIMIT_X_DW_RAD)
 	{
-		angle_.x = LIMIT_X_DW_RAD;
+		transform_->angle_.x = LIMIT_X_DW_RAD;
 	}
-	if (angle_.x < LIMIT_X_UP_RAD)
+	if (transform_->angle_.x < LIMIT_X_UP_RAD)
 	{
-		angle_.x = LIMIT_X_UP_RAD;
+		transform_->angle_.x = LIMIT_X_UP_RAD;
 	}
 }
 
@@ -293,17 +293,17 @@ void Camera::RotMouse(bool isLimit)
 	}
 
 	// マウスの移動量からカメラの回転量を更新する
-	angle_.y += deltaX * SystemManager::GetInstance().GetMouseSensitivity();
-	angle_.x += deltaY * SystemManager::GetInstance().GetMouseSensitivity();
+	transform_->angle_.y += deltaX * SystemManager::GetInstance().GetMouseSensitivity();
+	transform_->angle_.x += deltaY * SystemManager::GetInstance().GetMouseSensitivity();
 
 	// ピッチ角の角度制限（真上や真下を向きすぎないようにする）
-	if (isLimit && angle_.x > LIMIT_X_DW_RAD)
+	if (isLimit && transform_->angle_.x > LIMIT_X_DW_RAD)
 	{
-		angle_.x = LIMIT_X_DW_RAD;
+		transform_->angle_.x = LIMIT_X_DW_RAD;
 	}
-	if (isLimit && angle_.x < LIMIT_X_UP_RAD)
+	if (isLimit && transform_->angle_.x < LIMIT_X_UP_RAD)
 	{
-		angle_.x = LIMIT_X_UP_RAD;
+		transform_->angle_.x = LIMIT_X_UP_RAD;
 	}
 
 	//// マウスカーソルを画面中央に戻す

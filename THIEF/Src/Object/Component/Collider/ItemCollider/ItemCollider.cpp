@@ -168,7 +168,7 @@ void ItemCollider::ItemToCartCollision(void)
 
 		// 高速移動時のすり抜け防止のため、
 		// 移動経路を細かく分割して判定する
-		int stepCount = (int)(length / (radius * 0.15f)) + 1;
+		int stepCount = (int)(length / (radius * 0.05f)) + 1;
 
 		// 分割数の上限・下限を設定
 		stepCount = std::clamp(stepCount, 1, 32);
@@ -292,8 +292,13 @@ void ItemCollider::ItemToCartCollision(void)
 		move = remainMove;
 	}
 
-	// 最終位置を反映
-	item_->SetPos(VAdd(pos, cartMove));
+	if (isHitCart)
+	{
+		// 最終位置を反映
+		item_->SetPos(VAdd(VAdd(pos, cartMove), { 0.0f,-cart_->GetVelocityY() ,0.0f }));
+		item_->SetPrevPos(item_->GetTransform()->pos_);
+		item_->OnFloor();
+	}
 }
 
 void ItemCollider::ItemInCartCollision(void)
@@ -301,9 +306,11 @@ void ItemCollider::ItemInCartCollision(void)
 	// カートの座標と回転角
 	VECTOR cartPos = cart_->GetTransform()->pos_;
 	cartPos.y += Cart::CART_SIZE_HIG_RAD;
-	float cartAngleY = cart_->GetAngleY(); // カートのY軸回転角を取得できるようにしておく
 
-	// カートの元のサイズ
+	// カートのY軸回転角
+	float cartAngleY = cart_->GetTransform()->angle_.y; 
+
+	// カートのサイズ
 	VECTOR cartSize = VGet(Cart::CART_SIZE_WID_RAD, Cart::CART_SIZE_HIG_RAD, Cart::CART_SIZE_DEPTH_RAD);
 
 	// アイテムの座標
@@ -311,9 +318,11 @@ void ItemCollider::ItemInCartCollision(void)
 
 	// アイテムを「カートを中心としたローカル座標」に変換し、逆回転させる
 	VECTOR localItemPos = VSub(itemPos, cartPos);
-	MATRIX invMat = MGetRotY(-cartAngleY); // 逆方向に回転させる行列
+	// 逆方向に回転させる行列
+	MATRIX invMat = MGetRotY(-cartAngleY); 
 	localItemPos = VTransform(localItemPos, invMat);
 
+	// アイテムのサイズ
 	VECTOR itemSize = { item_->GetInfo().collisionRadiusX_
 			, item_->GetInfo().collisionRadiusY_
 			,item_->GetInfo().collisionRadiusX_ };
@@ -408,8 +417,8 @@ void ItemCollider::StageCollision(void)
 					capEnd,
 					radius);
 
-			float bestPush = 0.0f;
-			VECTOR bestNormal = VGet(0, 0, 0);
+			VECTOR normalSum = VGet(0, 0, 0);
+			float totalWeight = 0.0f;
 
 			bool collision = false;
 
@@ -428,12 +437,9 @@ void ItemCollider::StageCollision(void)
 				if (push <= 0.0f)
 					continue;
 
-				// 最も正面から当たっている面を採用
-				if (push > bestPush)
-				{
-					bestPush = push;
-					bestNormal = normal;
-				}
+				normalSum = VAdd(normalSum, VScale(normal, push));
+
+				totalWeight += push;
 
 				collision = true;
 			}
@@ -442,10 +448,10 @@ void ItemCollider::StageCollision(void)
 			MV1CollResultPolyDimTerminate(result);
 
 			// 衝突したら探索終了
-			if (collision)
+			if (collision && totalWeight > 0.0f)
 			{
 				hit = true;
-				hitNormal = bestNormal;
+				hitNormal = VNorm(VScale(normalSum, 1.0f / totalWeight));
 				hitStep = step;
 				break;
 			}
@@ -494,7 +500,7 @@ void ItemCollider::StageCollision(void)
 	}
 
 	// 最終位置を反映
-	item_->SetPos(VAdd(pos,move));
+	item_->SetPos(VAdd(pos, move));
 
 	// 空中にいるならダメージ処理しない
 	if (!isHitStage)

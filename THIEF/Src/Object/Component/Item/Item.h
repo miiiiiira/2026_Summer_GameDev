@@ -63,6 +63,9 @@ public:
 	// 指定された座標をアイテムの座標に反映
 	void SetPos(const VECTOR& pos);
 
+	// 指定された座標をアイテムの前回座標に反映
+	void SetPrevPos(const VECTOR& prevPos);
+
 	// ローカル座標を設定
 	// Z軸のみ
 	void SetLocalPosZ(float localPosZ);
@@ -84,6 +87,9 @@ public:
 
 	// 発見したことにする
 	void TrueIsFound(void) { info_.isFound_ = true; }
+
+	// 地面についた
+	void OnFloor(void);
 
 protected:
 
