@@ -256,6 +256,21 @@ ENEMY_TAG EnemyBase::GetTag(void)
 	return tag_;
 }
 
+float EnemyBase::GetAttackMoveSpeed(void)
+{
+	return attackMoveSpeed_;
+}
+
+float EnemyBase::GetAttackJumpPow(void)
+{
+	return attackJumpPow_;
+}
+
+float EnemyBase::GetAttackDamagePow(void)
+{
+	return attackDamagePow_;
+}
+
 void EnemyBase::DelayRotate(void)
 {
 	// ˆÚ“®•ûŒü‚©‚çŠp“x‚É•ÏŠ·‚·‚é

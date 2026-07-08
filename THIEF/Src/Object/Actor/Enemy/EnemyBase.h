@@ -53,6 +53,9 @@ public:
 	void SetVelocity(float velocityY);
 	void SetTag(ENEMY_TAG tag);
 	ENEMY_TAG GetTag(void);
+	float GetAttackMoveSpeed(void);
+	float GetAttackJumpPow(void);
+	float GetAttackDamagePow(void);
 
 protected:
 
@@ -94,6 +97,9 @@ protected:
 	bool isGround_;	
 	float velocityY_ = 0.0f;	// 現在の落下速度
 	ENEMY_TAG tag_;
+	float attackMoveSpeed_ = 0.0f;
+	float attackJumpPow_ = 0.0f;
+	float attackDamagePow_ = 0.0f;
 
 	// 開始位置
 	VECTOR startOffset_;

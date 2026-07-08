@@ -61,8 +61,22 @@ void DebugScene::Load(void)
 	// カメラユーティリティにカメラのポインタを渡す
 	CameraUtility::SetCameraPoint(objectManger_->FindComponentWithTag<Camera>(Tag::Camera));
 
-	// ライトの作成
-	Wisp();
+	// 火生成
+	auto wisp = objectManger_->CreateObject();
+
+	// タグを付与
+	wisp->SetTagAndPriority(Tag::Wisp);
+
+	// 座標の設定
+	auto trans = wisp->AddComponent<Transform>();
+	trans->pos_ = { 0.0f,0.0f,0.0f };
+
+	// 描画
+	auto render = wisp->AddComponent<Render3D>();
+	render->SetModel("Data/Model/Player/Light/Wisp.mv1");
+
+	// 火機能
+	auto cont = wisp->AddComponent<Wisp>();
 
 	// プレイヤーの作成
 	PlayerCreate();
@@ -79,20 +93,10 @@ void DebugScene::LoadEnd(void)
 void DebugScene::Update(void)
 {
 
-	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_C))
+	if (InputManager::GetInstance()->PauseButtons())
 	{
-		// ゲームクリアへ
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameClear>());
-	}
-
-	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_O))
-	{
-		// ゲームオーバーへ
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameOver>());
-	}
-
-	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_ESCAPE))
-	{
+		// ポーズ画面を開いたサウンド
+		AudioManager::GetInstance()->PlaySE(SoundID::SYS_PAUSE_ON);
 		// ポーズモードへ
 		SceneManager::GetInstance()->PushScene(std::make_shared<Pause>());
 		return;
@@ -235,7 +239,7 @@ void DebugScene::PlayerCreate(void)
 	// ランタン取得
 	auto wisp = objectManger_->FindComponentWithTag<Wisp>(Tag::Wisp);
 
-	// プレイヤークラスにランタンのポインタを渡す
+	// ライトのポインタを渡す
 	playerController->SetWisp(wisp);
 }
 
@@ -274,7 +278,7 @@ void DebugScene::StageCreate(void)
 
 	// 描画
 	auto render = stage->AddComponent<Render3D>();
-	render->SetModel("Data/Model/Stage/Stage1.mv1");
+	render->SetModel("Data/Model/Stage/Stage2.mv1");
 
 	// ステージ機能
 	stage->AddComponent<Stage>();
@@ -460,7 +464,7 @@ void DebugScene::SavePoints(void)
 
 void DebugScene::SaveEnemyNodePoints(void)
 {
-	std::ofstream ofs("Data/EnemyPointSave.csv");
+	std::ofstream ofs("Data/EnemyPointSave2.csv");
 
 	if (!ofs) return;
 

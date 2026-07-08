@@ -656,13 +656,14 @@ void GameScene::CheckEnemyAttack(void)
 			if (Collision::HitSphereCapsule(useWeapon->GetPos(), useWeapon->GetCollisionRadius(),
 				startPos, endPos, radius))
 			{
-				player->SetDamage(50);
+				player->SetDamage(enemy->GetAttackDamagePow());
 
 				// 画面を赤くするエフェクトを付ける
 				redEffect_->SetEffect(DAMAGE_EFFECT_ALPHA, DAMAGE_EFFECT_COLOR);
 
 				VECTOR moveDir = VNorm(VSub(startPos, useWeapon->GetPos()));
-				player->SetHitReact(moveDir, 30.0f, 25.0f);
+				moveDir.y = 0.0f;
+				player->SetHitReact(moveDir, enemy->GetAttackMoveSpeed(), enemy->GetAttackJumpPow());
 				useWeapon->SetAlive(false);
 			}
 		}
@@ -940,8 +941,7 @@ void GameScene::CollisionEnemy2Player(void)
 		if (enemy->GetTag() == ENEMY_TAG::MUSHNUB && 
 			(pushVector.x > 0.1f || pushVector.y > 0.1f || pushVector.z > 0.1f))
 		{
-			// プレイヤーにダメージを与える
-			player->SetDamage(10);
+			player->SetDamage(enemy->GetAttackDamagePow());
 
 			// 画面を赤くするエフェクトを付ける
 			redEffect_->SetEffect(DAMAGE_EFFECT_ALPHA, DAMAGE_EFFECT_COLOR);

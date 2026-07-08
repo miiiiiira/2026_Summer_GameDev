@@ -45,6 +45,8 @@ void Mushnub::OnInitialize(void)
 
 	isGround_ = false;
 
+	attackDamagePow_ = 10.0f;
+
 	// 初期アニメーション再生
 	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
 

@@ -70,7 +70,7 @@ void WeaponPunch::SetParam(void)
 	speed_ = 8.0f;
 
 	// 衝突判定用半径
-	collisionRadius_ = 60.0f;
+	collisionRadius_ = 100.0f;
 
 	// 使用時の位置調整
 	localPos_ = { 0.0f, 90.0f, 0.0f };

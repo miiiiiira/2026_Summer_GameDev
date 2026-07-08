@@ -51,6 +51,10 @@ void Yeti::OnInitialize(void)
 
 	isGround_ = false;
 
+	attackMoveSpeed_ = 30.0f;
+	attackJumpPow_ = 50.0f;
+	attackDamagePow_ = 50.0f;
+
 	// •Ší‚Ì‰Šú‰»
 	weaponPunch_ = new WeaponPunch();
 	weaponPunch_->Init(WeaponBase::TYPE::PUNCH);
@@ -363,7 +367,7 @@ void Yeti::UpdateChase(void)
 		targetLostTimer_ = 0.0f;
 
 		//@UŒ‚”ÍˆÍ“à‚É‚¢‚½‚çAUŒ‚ó‘Ô‚É‚·‚é
-		if (distance <= 300)
+		if (distance <= 300.0f)
 		{
 			ChangeState(STATE::ATTACK);
 			return;

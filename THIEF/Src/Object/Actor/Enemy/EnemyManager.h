@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <unordered_map>
+#include <string>
 #include <DxLib.h>
 #include "EnemyCommon.h"
 
@@ -47,6 +48,6 @@ private:
 
 	void AddEdge(int fromId, int toId);
 
-	void LoadCsvData(void);
+	void LoadCsvData(std::string path);
 };
 
