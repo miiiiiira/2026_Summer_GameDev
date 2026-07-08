@@ -106,19 +106,19 @@ void EnemyManager::LoadStage1(void)
 	enemyModelIds_[ENEMY_TAG::YETI] = MV1LoadModel((Application::PATH_MODEL + "Enemy/Yeti.mv1").c_str());
 	enemyModelIds_[ENEMY_TAG::MUSHNUB] = MV1LoadModel((Application::PATH_MODEL + "Enemy/Mushnub_Evolved.mv1").c_str());
 
-	LoadCsvData();
+	LoadCsvData("Data/pointSave.csv");
 }
 
 void EnemyManager::LoadStage2(void)
 {
 	enemyModelIds_[ENEMY_TAG::STATUE] = MV1LoadModel((Application::PATH_MODEL + "Enemy/Statue.mv1").c_str());
 
-	LoadCsvData();
+	LoadCsvData("Data/pointSave2.csv");
 }
 
 void EnemyManager::LoadStage3(void)
 {
-	LoadCsvData();
+	LoadCsvData("Data/pointSave.csv");
 }
 
 void EnemyManager::Update(void)
@@ -187,11 +187,11 @@ void EnemyManager::AddEdge(int fromId, int toId)
 	MV1CollResultPolyDimTerminate(res);
 }
 
-void EnemyManager::LoadCsvData(void)
+void EnemyManager::LoadCsvData(std::string path)
 {
 	// 初期化
 	way_.clear();
-	std::ifstream ifs = std::ifstream("Data/PointSave.csv");
+	std::ifstream ifs = std::ifstream(path);
 
 	if (!ifs) return;
 	//ファイルを１行ずつ読み込む
