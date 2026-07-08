@@ -508,11 +508,11 @@ void GameScene::ItemCreateStage1(void)
 	ItemCreate(Tag::Item_Goblet, { 2161.0f,9.0f,9648.0f });
 	ItemCreate(Tag::Item_Potion_Blue, { 2232.0f,452.0f,5346.0f });
 	ItemCreate(Tag::Item_Potion_Red, { -3111.0f,19.0f,4386.0f });
-	ItemCreate(Tag::Item_Amphora, { -3704.0f,40.0f,4724.0f });
+	ItemCreate(Tag::Item_Amphora, { -3704.0f,18.0f,4724.0f });
 	ItemCreate(Tag::Item_Bottle, { -2421.0f,173.0f,2476.0f });
 	ItemCreate(Tag::Item_Jar, { -1196.0f,162.0f,5059.0f });
 	ItemCreate(Tag::Item_Potion_Green, { -1952.0f,4.0f,7835.0f });
-	ItemCreate(Tag::Item_Amphora, { -3717.0f,36.0f,6319.0f });
+	ItemCreate(Tag::Item_Amphora, { -3717.0f,14.0f,6319.0f });
 	ItemCreate(Tag::Item_Potion_Red, { -3563.0f,250.0f,7697.0f });
 	ItemCreate(Tag::Item_Goblet, { -5775,154.0f,7690.0f });
 	ItemCreate(Tag::Item_Skull, { -5578.0f,200.0f,7785.0f });
@@ -521,15 +521,15 @@ void GameScene::ItemCreateStage1(void)
 void GameScene::ItemCreateStage2(void)
 {
 	ItemCreate(Tag::Item_Potion_Green, { -689.0f,314.0f,672.0f });
-	ItemCreate(Tag::Item_Potion_Green, { 567.0f,350.0f,1037.0f });
-	ItemCreate(Tag::Item_Potion_Green, { 192.0f,135.0f,3260.0f });
-	ItemCreate(Tag::Item_Potion_Green, { -586.0f,8.0f,2592.0f });
-	ItemCreate(Tag::Item_Potion_Green, { -2257.0f,145.0f,1324.0f });
-	ItemCreate(Tag::Item_Potion_Green, { -8108.0f,9.0f,1416.0f });
-	ItemCreate(Tag::Item_Potion_Green, { 6080.0f,418.0f,5728.0f });
-	ItemCreate(Tag::Item_Potion_Green, { -7419.0f,417.0f,5645.0f });
-	ItemCreate(Tag::Item_Potion_Green, { -7312.0f,9.0f,4863.0f });
-	ItemCreate(Tag::Item_Potion_Green, { -7478.0f,9.0f,3568.0f });
+	ItemCreate(Tag::Item_Potion_Red, { 567.0f,350.0f,1037.0f });
+	ItemCreate(Tag::Item_Amphora, { -586.0f,8.0f,2592.0f });
+	ItemCreate(Tag::Item_Bottle, { 192.0f,135.0f,3260.0f });
+	ItemCreate(Tag::Item_Mug, { -2257.0f,145.0f,1324.0f });
+	ItemCreate(Tag::Item_Amphora, { -8108.0f,9.0f,1416.0f });
+	ItemCreate(Tag::Item_Potion_Blue, { -5949.0f,417.0f,5841.0f });
+	ItemCreate(Tag::Item_Goblet, { -7419.0f,417.0f,5645.0f });
+	ItemCreate(Tag::Item_Jar, { -7312.0f,9.0f,4863.0f });
+	ItemCreate(Tag::Item_Skull, { -7478.0f,9.0f,3568.0f });
 }
 
 void GameScene::ItemCreateStage3(void)
