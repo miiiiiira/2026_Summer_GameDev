@@ -69,6 +69,11 @@ Transform* Cart::GetTransform(void)
 	return trans_;
 }
 
+float Cart::GetAngleY(void)
+{
+	return angleY_;
+}
+
 void Cart::StartGrabbing(VECTOR localPos)
 {
 	// ’Í‚Ü‚ê‚½ó‘Ô‚É‚·‚é
@@ -122,16 +127,18 @@ void Cart::DrawDebug(void)
 	// ”[•iêŠ‚Ì“–‚½‚è”»’è‚ÌŽ‹Šo‰»
 	VECTOR startPos, endPos;
 	startPos = endPos = trans_->pos_;
-
-	startPos.x -= CART_SIZE_WID_RAD;
-	startPos.y -= CART_SIZE_HIG_RAD;
-	startPos.z -= CART_SIZE_DEPTH_RAD;
-
-	endPos.x += CART_SIZE_WID_RAD;
+	startPos.y += CART_SIZE_HIG_RAD;
 	endPos.y += CART_SIZE_HIG_RAD;
-	endPos.z += CART_SIZE_DEPTH_RAD;
 
-	DrawCube3D(startPos, endPos, 0xffff00, 0xffff00, false);
+	MATRIX mat = MGetRotY(angleY_);
+
+	VECTOR startLotPos = VTransform(VGet(-CART_SIZE_WID_RAD, -CART_SIZE_HIG_RAD, -CART_SIZE_DEPTH_RAD), mat);
+	startPos = VAdd(startLotPos, startPos);
+
+	VECTOR endLotPos = VTransform(VGet(CART_SIZE_WID_RAD, CART_SIZE_HIG_RAD, CART_SIZE_DEPTH_RAD), mat);
+	endPos = VAdd(endLotPos, endPos);
+
+	DrawCube3D(endPos, startPos,  0xffff00, 0xffff00, false);
 
 	//auto capsule = owner_->GetComponent<CapsuleCollider>();
 

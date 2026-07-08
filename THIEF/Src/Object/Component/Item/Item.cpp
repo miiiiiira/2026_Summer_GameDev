@@ -214,6 +214,9 @@ void Item::SetDamage(VECTOR pos)
 	// 納品場所にはいっているなら処理をしない
 	if (info_.hasTouchedDeliveryLocation_)return;
 
+	// カートに入っているなら処理をしない
+	if (info_.hasTouchedCart_)return;
+
 	int damage = 0;
 
 	// アイテムが掴まれていたら

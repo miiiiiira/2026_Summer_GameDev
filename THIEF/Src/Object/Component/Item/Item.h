@@ -76,6 +76,9 @@ public:
 	// 納品場所に入ったかどうかを変更
 	void SetHasTouchedDelivery(bool flg) { info_.hasTouchedDeliveryLocation_ = flg; }
 
+	// かーとに入ったかどうかを変更
+	void SetHasTouchedCart(bool flg) { info_.hasTouchedCart_ = flg; }
+
 	// 下方向の加速度を0にする
 	void SetVelocityYZero(void) { info_.velocity_.y = 0.0f; }
 

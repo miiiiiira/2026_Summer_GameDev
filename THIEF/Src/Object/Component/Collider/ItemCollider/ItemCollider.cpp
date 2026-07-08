@@ -7,6 +7,7 @@
 #include "../../Wisp/Wisp.h"
 #include "../../../../Common/Transform/MatrixUtility.h"
 #include "../../../../Common/CameraUtility/CameraUtility.h"
+#include "../../../../Common/Manager/Audio/AudioManager.h"
 #include "../../../../Common/Collision/Collision.h"
 #include "../../../../Common/Crosshair/Crosshair.h"
 #include "../../../../Application.h"
@@ -39,6 +40,9 @@ void ItemCollider::Update(void)
 
 	// アイテムとカートの当たり判定
 	ItemToCartCollision();
+
+	// アイテムがカートに入っているかの当たり判定
+	ItemInCartCollision();
 
 	// ステージとの当たり判定
 	StageCollision();
@@ -290,6 +294,47 @@ void ItemCollider::ItemToCartCollision(void)
 
 	// 最終位置を反映
 	item_->SetPos(VAdd(pos, cartMove));
+}
+
+void ItemCollider::ItemInCartCollision(void)
+{
+	// カートの座標と回転角
+	VECTOR cartPos = cart_->GetTransform()->pos_;
+	cartPos.y += Cart::CART_SIZE_HIG_RAD;
+	float cartAngleY = cart_->GetAngleY(); // カートのY軸回転角を取得できるようにしておく
+
+	// カートの元のサイズ
+	VECTOR cartSize = VGet(Cart::CART_SIZE_WID_RAD, Cart::CART_SIZE_HIG_RAD, Cart::CART_SIZE_DEPTH_RAD);
+
+	// アイテムの座標
+	VECTOR itemPos = item_->GetTransform()->pos_;
+
+	// アイテムを「カートを中心としたローカル座標」に変換し、逆回転させる
+	VECTOR localItemPos = VSub(itemPos, cartPos);
+	MATRIX invMat = MGetRotY(-cartAngleY); // 逆方向に回転させる行列
+	localItemPos = VTransform(localItemPos, invMat);
+
+	VECTOR itemSize = { item_->GetInfo().collisionRadiusX_
+			, item_->GetInfo().collisionRadiusY_
+			,item_->GetInfo().collisionRadiusX_ };
+
+	// カートが真っ直ぐな状態（ローカル空間）で、アイテムが箱の中にあるか判定
+	bool isHit = (abs(localItemPos.x) <= (cartSize.x + itemSize.x) &&
+		abs(localItemPos.y) <= (cartSize.y + itemSize.y) &&
+		abs(localItemPos.z) <= (cartSize.z + itemSize.z));
+
+	// 当たっているかつ、カートに入っていないフラグが立っていたら
+	if (isHit && !item_->GetInfo().hasTouchedCart_)
+	{
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_ITEM_ON);
+		item_->SetHasTouchedCart(true);
+	}
+	// 当たっていないかつ、カートに入っているフラグが立っていたら
+	else if (!isHit && item_->GetInfo().hasTouchedCart_)
+	{
+		item_->SetHasTouchedCart(false);
+	}
+
 }
 
 void ItemCollider::StageCollision(void)

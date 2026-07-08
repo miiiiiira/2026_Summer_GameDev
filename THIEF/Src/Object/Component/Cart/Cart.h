@@ -14,11 +14,11 @@ class Cart : public Component
 public:
 
 	// カートのサイズ横幅
-	static constexpr float CART_SIZE_WID_RAD = 50.0f;
+	static constexpr float CART_SIZE_WID_RAD = 75.0f;
 	// カートのサイズ縦幅  
-	static constexpr float CART_SIZE_HIG_RAD = 110.0f;
+	static constexpr float CART_SIZE_HIG_RAD = 50.0f;
 	// カートのサイズ奥行  
-	static constexpr float CART_SIZE_DEPTH_RAD = 50.0f;
+	static constexpr float CART_SIZE_DEPTH_RAD = 95.0f;
 	
 	// 線形補間の係数
 	static constexpr float COEFFICIENT = 0.15f;
@@ -37,6 +37,9 @@ public:
 
 	// Transformを返す
 	Transform* GetTransform();
+
+	// Y軸回転を返す
+	float GetAngleY(void);
 
 	// 掴まれた状態にする
 	void StartGrabbing(VECTOR localPos);
