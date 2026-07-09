@@ -63,6 +63,7 @@ namespace SoundTable_Game
 		{ SoundID::SE_DELIVERY_ITEM_ON,	{"Data/Sound/Game/Delivery/SE_DELIVERY_ITEM_ON.mp3", SoundType::SE_2D, 180} },
 		{ SoundID::SE_DELIVERY_BUTTON_SUC, {"Data/Sound/Game/Delivery/SE_DELIVERY_BUTTON_SUC.mp3", SoundType::SE_2D, 200} },
 		{ SoundID::SE_DELIVERY_BUTTON_FAI, {"Data/Sound/Game/Delivery/SE_DELIVERY_BUTTON_FAI.mp3", SoundType::SE_2D, 200} },
+		{ SoundID::SE_CART_ON_ITEM,	{"Data/Sound/Game/Delivery/SE_DELIVERY_ITEM_ON.mp3", SoundType::SE_3D, 150} },
 
 		{ SoundID::SE_ITEM_DAMAGE_1, {"Data/Sound/Game/Item/SE_ITEM_DAMAGE_1.mp3", SoundType::SE_3D, 100} },
 		{ SoundID::SE_ITEM_DAMAGE_2, {"Data/Sound/Game/Item/SE_ITEM_DAMAGE_2.mp3", SoundType::SE_3D, 100} },

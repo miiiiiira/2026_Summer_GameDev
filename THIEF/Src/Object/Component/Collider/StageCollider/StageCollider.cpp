@@ -97,7 +97,7 @@ void StageCollider::StageColl(float& velocityY)
 				// ステージとカプセルの衝突判定
 				auto result =
 					MV1CollCheck_Capsule(
-						stage_->GetModelId(),
+						stage_->GetCollModelId() == -1 ?  stage_->GetModelId(): stage_->GetCollModelId(),
 						-1,
 						capStart,
 						capEnd,
@@ -112,7 +112,7 @@ void StageCollider::StageColl(float& velocityY)
 					VECTOR normal = VNorm(poly.Normal);
 
 					// 床の細かい凹凸は無視する
-					if (normal.y >= slopeNormalY_)
+					if (normal.y >= floorNormalY_)
 					{
 						normal = VGet(0.0f, 1.0f, 0.0f);
 					}
@@ -188,7 +188,7 @@ void StageCollider::StageColl(float& velocityY)
 		}
 
 		// 床判定
-		if (hitNormal.y >= floorNormalY_)
+		if (hitNormal.y >= slopeNormalY_)
 		{
 			// 接地フラグを立てる
 			isGround_ = true;
@@ -217,11 +217,39 @@ void StageCollider::StageColl(float& velocityY)
 
 		// 壁スライド処理
 		// 法線方向成分を除去して壁に沿って移動させる
-		float dot = VDot(remainMove, hitNormal);
-
-		if (dot < 0.0f)
+		// 坂の場合
+		if (hitNormal.y >= wallNormalY_ &&
+			hitNormal.y < floorNormalY_)
 		{
-			remainMove = VSub(remainMove, VScale(hitNormal, dot));
+			// 坂方向へ移動できるようにする
+
+			VECTOR slopeMove = remainMove;
+
+			// 法線方向の押し込みだけ削除
+			float dot = VDot(slopeMove, hitNormal);
+
+			if (dot < 0.0f)
+			{
+				slopeMove = VSub(
+					slopeMove,
+					VScale(hitNormal, dot)
+				);
+			}
+
+			remainMove = slopeMove;
+		}
+		// 壁の場合
+		else
+		{
+			float dot = VDot(remainMove, hitNormal);
+
+			if (dot < 0.0f)
+			{
+				remainMove = VSub(
+					remainMove,
+					VScale(hitNormal, dot)
+				);
+			}
 		}
 
 		// 次の反復で残り移動量を処理
@@ -258,7 +286,7 @@ bool StageCollider::CeilingColl(void)
 
 	// 立っている場合としゃがんでいる場合の頭座標同士でのカプセルがステージと衝突するかチェック
 	MV1_COLL_RESULT_POLY_DIM hitResult = MV1CollCheck_Capsule(
-		stage_->GetModelId(),
+		stage_->GetCollModelId() == -1 ? stage_->GetModelId() : stage_->GetCollModelId(),
 		-1,
 		standingPos,
 		crouchingPos,
@@ -308,7 +336,7 @@ bool StageCollider::CanStepUp(const VECTOR& pos, const VECTOR& move, float stepH
 			VECTOR end = VAdd(checkPos, VTransform(cap.endOffset, mat));
 
 			auto result = MV1CollCheck_Capsule(
-				stage_->GetModelId(),
+				stage_->GetCollModelId() == -1 ? stage_->GetModelId() : stage_->GetCollModelId(),
 				-1,
 				start,
 				end,
@@ -363,7 +391,7 @@ bool StageCollider::CanStepUp(const VECTOR& pos, const VECTOR& move, float stepH
 
 			// ステージとの衝突確認
 			auto result = MV1CollCheck_Capsule(
-				stage_->GetModelId(),
+				stage_->GetCollModelId() == -1 ? stage_->GetModelId() : stage_->GetCollModelId(),
 				-1,
 				start,
 				end,

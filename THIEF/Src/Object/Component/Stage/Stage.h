@@ -25,6 +25,7 @@ public:
 	
 	// モデルIDを返す
 	int GetModelId() const { return modelId_; }
+	int GetCollModelId() const { return collModelId_; }
 
 	// Transformを返す
 	Transform* GetTransform();
@@ -43,6 +44,9 @@ public:
 	// アイテム設定
 	void SetItem(Item* items);
 
+	// 当たり判定用のモデルを設定
+	void SetCollModel(std::string path);
+
 	// ワールド座標に変換
 	VECTOR ToWorldPos(VECTOR local);
 
@@ -52,6 +56,8 @@ public:
 private:
 	// モデルID
 	int modelId_ = -1;
+
+	int collModelId_ = -1;
 
 	std::vector<Item*> items_;
 

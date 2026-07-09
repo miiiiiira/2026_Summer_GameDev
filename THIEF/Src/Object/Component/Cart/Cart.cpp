@@ -52,6 +52,9 @@ void Cart::Update(void)
 	// ステージの当たり判定の計算処理
 	stageCol->StageColl(velocityY_);
 
+	// 座標の更新
+	MV1SetPosition(modelId_, trans_->pos_);
+
 	// 当たり判定情報を最新の状態に更新
 	MV1RefreshCollInfo(modelId_, -1);
 	MV1RefreshCollInfo(modelId_, 1);

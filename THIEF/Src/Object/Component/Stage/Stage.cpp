@@ -71,6 +71,26 @@ void Stage::SetItem(Item* items)
 	items_.push_back(items);
 }
 
+void Stage::SetCollModel(std::string path)
+{
+	// Šù‚É“Ç‚İ‚İÏ‚İ‚¾‚Á‚½‚çíœ‚µ‚Ä“Ç‚İ‚İ
+	if (collModelId_ != -1)
+	{
+		// ƒ‚ƒfƒ‹ƒnƒ“ƒhƒ‹‚ğíœ
+		MV1DeleteModel(collModelId_);
+		collModelId_ = -1;
+	}
+
+	if (path == "NoData")
+	{
+		collModelId_ = -1;
+	}
+	else
+	{
+		collModelId_ = MV1LoadModel(path.c_str());
+	}
+}
+
 VECTOR Stage::GetDeliveryPos(void)
 {
 	return deliveryPos_;

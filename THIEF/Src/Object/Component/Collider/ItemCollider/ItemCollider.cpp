@@ -370,7 +370,7 @@ bool ItemCollider::ItemInCartCollision(void)
 	// 当たっているかつ、カートに入っていないフラグが立っていたら
 	if (isHit && !item_->GetInfo().hasTouchedCart_)
 	{
-		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_ITEM_ON);
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_CART_ON_ITEM, &cartPos);
 		item_->SetHasTouchedCart(true);
 	}
 	// 当たっていないかつ、カートに入っているフラグが立っていたら

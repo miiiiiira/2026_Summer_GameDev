@@ -314,7 +314,7 @@ void GameScene::CameraCreate(void)
 	camera->ChangeMode(Camera::MODE::FOLLOW);
 }
 
-void GameScene::StageCreate(std::string path)
+void GameScene::StageCreate(std::string path, std::string collPath)
 {
 	// ステージの作成
 	auto stage = objectManger_->CreateObject();
@@ -331,7 +331,8 @@ void GameScene::StageCreate(std::string path)
 	render->SetModel(path);
 
 	// ステージ機能
-	stage->AddComponent<Stage>();
+	auto stageCom = stage->AddComponent<Stage>();
+	stageCom->SetCollModel(collPath);
 
 	// 納品場所の当たり判定追加
 	auto delivery = stage->AddComponent<DeliveryLocationCollider>();
@@ -396,11 +397,11 @@ void GameScene::PlayerCreate(void)
 	// ステージの当たり判定
 	auto stageCol = player->AddComponent<StageCollider>();
 	stageCol->SetStage(stage);
-	stageCol->SetFloorNormalY(0.55f);
-	stageCol->SetWallNormalY(0.25f);
-	stageCol->SetSlopeNormalY(0.75f);
+	stageCol->SetFloorNormalY(0.85f);
+	stageCol->SetWallNormalY(0.20f);
+	stageCol->SetSlopeNormalY(0.65f);
 
-	stageCol->SetStepHeight(45.0f);
+	stageCol->SetStepHeight(25.0f);
 
 	// プレイヤー取得
 	auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
@@ -498,11 +499,11 @@ void GameScene::CartCreate(void)
 
 	// ステージコライダー
 	auto stageCol = cart->AddComponent<StageCollider>();
-	stageCol->SetFloorNormalY(0.58f);
-	stageCol->SetWallNormalY(0.28f);
-	stageCol->SetSlopeNormalY(0.78f);
+	stageCol->SetFloorNormalY(0.85f);
+	stageCol->SetWallNormalY(0.20f);
+	stageCol->SetSlopeNormalY(0.65f);
 
-	stageCol->SetStepHeight(45.0f);
+	stageCol->SetStepHeight(25.0f);
 
 	// ステージ取得
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
@@ -548,7 +549,7 @@ void GameScene::ItemCreateStage2(void)
 	ItemCreate(Tag::Item_Potion_Red, { 567.0f,350.0f,1037.0f });
 	ItemCreate(Tag::Item_Amphora, { -586.0f,8.0f,2592.0f });
 	ItemCreate(Tag::Item_Bottle, { 192.0f,135.0f,3260.0f });
-	ItemCreate(Tag::Item_Mug, { -2257.0f,145.0f,1324.0f });
+	ItemCreate(Tag::Item_Mug, { -2346.0f,182.0f,1348.0f });
 	ItemCreate(Tag::Item_Amphora, { -8108.0f,9.0f,1416.0f });
 	ItemCreate(Tag::Item_Potion_Blue, { -5949.0f,417.0f,5841.0f });
 	ItemCreate(Tag::Item_Goblet, { -7419.0f,417.0f,5645.0f });
@@ -600,7 +601,7 @@ void GameScene::Stage2Init(void)
 	CameraUtility::SetCameraPoint(objectManger_->FindComponentWithTag<Camera>(Tag::Camera));
 
 	// ステージの作成
-	StageCreate("Data/Model/Stage/Stage2.mv1");
+	StageCreate("Data/Model/Stage/Stage2.mv1", "Data/Model/Stage/Stage2Coll.mv1");
 
 	// ライトの作成
 	WispCreate();
