@@ -7,9 +7,6 @@ public:
 	// ‘å‚«‚³
 	static constexpr VECTOR SCALE = { 1.0f,1.0f,1.0f };
 
-	// Œü‚«
-	static constexpr VECTOR DEFAULT_ANGLE = { 0.0f,0.0f,0.0f };
-
 	// ‹àŠz
 	static constexpr int PRICE = 3000;
 

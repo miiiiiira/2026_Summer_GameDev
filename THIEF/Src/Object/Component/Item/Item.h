@@ -63,6 +63,9 @@ public:
 	// 指定された座標をアイテムの座標に反映
 	void SetPos(const VECTOR& pos);
 
+	// 指定された座標をアイテムの前回座標に反映
+	void SetPrevPos(const VECTOR& prevPos);
+
 	// ローカル座標を設定
 	// Z軸のみ
 	void SetLocalPosZ(float localPosZ);
@@ -76,11 +79,17 @@ public:
 	// 納品場所に入ったかどうかを変更
 	void SetHasTouchedDelivery(bool flg) { info_.hasTouchedDeliveryLocation_ = flg; }
 
+	// かーとに入ったかどうかを変更
+	void SetHasTouchedCart(bool flg) { info_.hasTouchedCart_ = flg; }
+
 	// 下方向の加速度を0にする
 	void SetVelocityYZero(void) { info_.velocity_.y = 0.0f; }
 
 	// 発見したことにする
 	void TrueIsFound(void) { info_.isFound_ = true; }
+
+	// 地面についた
+	void OnFloor(void);
 
 protected:
 

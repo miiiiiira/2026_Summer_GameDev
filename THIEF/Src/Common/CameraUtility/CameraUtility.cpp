@@ -15,13 +15,13 @@ VECTOR CameraUtility::GetCameraPos(void)
 
 VECTOR CameraUtility::GetCameraAngle(void)
 {
-	return camera_->GetAngle();
+	return camera_->GetTransform()->angle_;
 }
 
 MATRIX CameraUtility::GetCameraMatrix(void)
 {
 	// ƒJƒƒ‰‚Ì‰ñ“]s—ñ
-	VECTOR vec = { camera_->GetAngle().x,camera_->GetAngle().y,0.0f };
+	VECTOR vec = { camera_->GetTransform()->angle_.x,camera_->GetTransform()->angle_.y,0.0f };
 	MATRIX matRot = Matrix::GetMatrixRotateXYZ(vec);
 
 	return matRot;

@@ -31,6 +31,9 @@ void Item::Init(void)
 	// 座標の更新
 	MV1SetPosition(info_.modelId_, trans_->pos_);
 
+	// 向きの更新
+	MV1SetPosition(info_.modelId_, trans_->angle_);
+
 	// 衝突情報構築
 	MV1SetupCollInfo(info_.modelId_, -1);
 
@@ -214,6 +217,9 @@ void Item::SetDamage(VECTOR pos)
 	// 納品場所にはいっているなら処理をしない
 	if (info_.hasTouchedDeliveryLocation_)return;
 
+	// カートに入っているなら処理をしない
+	if (info_.hasTouchedCart_)return;
+
 	int damage = 0;
 
 	// アイテムが掴まれていたら
@@ -289,6 +295,11 @@ void Item::SetPos(const VECTOR& pos)
 	MV1RefreshCollInfo(info_.modelId_, -1);
 }
 
+void Item::SetPrevPos(const VECTOR& prevPos)
+{
+	trans_->prevPos_ = prevPos;
+}
+
 void Item::SetLocalPosZ(float localPosZ)
 {
 	info_.localPos_.z = localPosZ;
@@ -321,11 +332,17 @@ void Item::EndGrabbed(void)
 	float forwardX = CameraUtility::GetCameraMatrix().m[2][0];
 	float forwardZ = CameraUtility::GetCameraMatrix().m[2][2];
 	// ベクトルから角度を出す
-	info_.angle_.y = atan2f(forwardX, forwardZ);
-	MV1SetRotationXYZ(info_.modelId_, info_.angle_);
+	trans_->angle_.y = atan2f(forwardX, forwardZ);
+	MV1SetRotationXYZ(info_.modelId_, trans_->angle_);
 
 	// 重力を初期化する
 	info_.velocity_.y = 0.0f;
+}
+
+void Item::OnFloor(void)
+{
+	info_.grabbedPos_ = trans_->pos_;
+	info_.hasTouchedStage_ = false;
 }
 
 void Item::Gravity(void)

@@ -476,9 +476,8 @@ void GameScene::CartCreate(void)
 
 	// ステージコライダー
 	auto stageCol = cart->AddComponent<StageCollider>();
-	stageCol->SetGroundNormalY(0.9f);
-	stageCol->SetStepHeight(9.0f);
-	stageCol->SetSkin(0.5f);
+	stageCol->SetGroundNormalY(0.95f);
+	stageCol->SetStepHeight(5.0f);
 
 	// ステージ取得
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);

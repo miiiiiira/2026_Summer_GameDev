@@ -25,10 +25,8 @@ void Cart::Init(void)
 	// 座標の更新
 	MV1SetPosition(modelId_, trans_->pos_);
 
-	// 向きの初期化
-	angleY_ = 0.0f;
 	// モデルに座標を反映
-	MV1SetRotationXYZ(modelId_, { 0.0f,angleY_,0.0f });
+	MV1SetRotationXYZ(modelId_, trans_->angle_);
 
 	isGrabbed_ = false;
 
@@ -43,6 +41,8 @@ void Cart::Update(void)
 	{
 		TrackingPlayer();
 	}
+
+	ApplyGravity();
 
 	// ステージコライダー取得
 	auto stageCol = owner_->GetComponent<StageCollider>();
@@ -69,6 +69,11 @@ Transform* Cart::GetTransform(void)
 	return trans_;
 }
 
+float Cart::GetVelocityY(void)
+{
+	return velocityY_;
+}
+
 void Cart::StartGrabbing(VECTOR localPos)
 {
 	// 掴まれた状態にする
@@ -93,24 +98,62 @@ void Cart::TrackingPlayer(void)
 	VECTOR prePos = trans_->pos_;
 
 	// ローカル座標に
-	trans_->pos_ = CameraUtility::AddCameraPosLocalPos(localPos_);
-	trans_->pos_.y = CameraUtility::GetCameraPos().y - localPos_.y;
+	VECTOR a = CameraUtility::AddCameraPosLocalPos(localPos_);
+	trans_->pos_.x = a.x;
+	trans_->pos_.z = a.z;
+
 	// 線形補間で滑らかにする
 	trans_->pos_ = Math::Lerp(prePos, trans_->pos_, COEFFICIENT);
-	//trans_->pos_.y = 5.0f;
 
 	// モデルに座標を反映
 	MV1SetPosition(modelId_, trans_->pos_);
 
 	// 前の座標を保持しておく
-	float preAngleY = angleY_;
+	float preAngleY = trans_->angle_.y;
 	// カメラのアングルを適用
-	angleY_ = CameraUtility::GetCameraAngle().y;
+	trans_->angle_.y = CameraUtility::GetCameraAngle().y;
 	// 線形補間で滑らかにする
-	angleY_ = Math::Lerp(preAngleY, angleY_, COEFFICIENT);
+	trans_->angle_.y = Math::Lerp(preAngleY, trans_->angle_.y, COEFFICIENT);
 
 	// モデルに座標を反映
-	MV1SetRotationXYZ(modelId_, { 0.0f,angleY_,0.0f });
+	MV1SetRotationXYZ(modelId_, trans_->angle_);
+
+	// 当たり判定情報を最新の状態に更新
+	MV1RefreshCollInfo(modelId_, -1);
+	MV1RefreshCollInfo(modelId_, 1);
+}
+
+void Cart::ApplyGravity(void)
+{
+	// StageCollider取得
+	auto stageCol = owner_->GetComponent<StageCollider>();
+
+	if (!stageCol) return;
+
+	// Y座標へ反映
+	trans_->pos_.y += velocityY_;
+
+	// 接地判定
+
+	// 空中
+	if (!stageCol->IsGround())
+	{
+		// 重力加算
+		velocityY_ += GRAVITY;
+
+		// 最大落下速度
+		if (velocityY_ < MAX_FALL)
+			velocityY_ = MAX_FALL;
+	}
+	else
+	{
+		// 地面上なら少し下方向に押す
+		// 0だと浮く場合があるため
+		velocityY_ = -0.1f;
+	}
+
+	// モデルに座標を反映
+	MV1SetPosition(modelId_, trans_->pos_);
 
 	// 当たり判定情報を最新の状態に更新
 	MV1RefreshCollInfo(modelId_, -1);
@@ -122,47 +165,49 @@ void Cart::DrawDebug(void)
 	// 納品場所の当たり判定の視覚化
 	VECTOR startPos, endPos;
 	startPos = endPos = trans_->pos_;
-
-	startPos.x -= CART_SIZE_WID_RAD;
-	startPos.y -= CART_SIZE_HIG_RAD;
-	startPos.z -= CART_SIZE_DEPTH_RAD;
-
-	endPos.x += CART_SIZE_WID_RAD;
+	startPos.y += CART_SIZE_HIG_RAD;
 	endPos.y += CART_SIZE_HIG_RAD;
-	endPos.z += CART_SIZE_DEPTH_RAD;
 
-	DrawCube3D(startPos, endPos, 0xffff00, 0xffff00, false);
+	MATRIX mat = MGetRotY(trans_->angle_.y);
 
-	//auto capsule = owner_->GetComponent<CapsuleCollider>();
+	VECTOR startLotPos = VTransform(VGet(-CART_SIZE_WID_RAD, -CART_SIZE_HIG_RAD, -CART_SIZE_DEPTH_RAD), mat);
+	startPos = VAdd(startLotPos, startPos);
 
-	//if (!capsule) return;
+	VECTOR endLotPos = VTransform(VGet(CART_SIZE_WID_RAD, CART_SIZE_HIG_RAD, CART_SIZE_DEPTH_RAD), mat);
+	endPos = VAdd(endLotPos, endPos);
 
-	//for (const auto& cap : capsule->GetCapsules())
-	//{
-	//	VECTOR start = VAdd(trans_->pos_, cap.startOffset);
-	//	VECTOR end = VAdd(trans_->pos_, cap.endOffset);
+	DrawCube3D(endPos, startPos,  0xffff00, 0xffff00, false);
 
-	//	// 両端
-	//	DrawSphere3D(
-	//		start,
-	//		cap.radius,
-	//		12,
-	//		GetColor(255, 0, 0),
-	//		GetColor(255, 0, 0),
-	//		TRUE);
+	auto capsule = owner_->GetComponent<CapsuleCollider>();
 
-	//	DrawSphere3D(
-	//		end,
-	//		cap.radius,
-	//		12,
-	//		GetColor(255, 0, 0),
-	//		GetColor(255, 0, 0),
-	//		TRUE);
+	if (!capsule) return;
 
-	//	// 中心線
-	//	DrawLine3D(
-	//		start,
-	//		end,
-	//		GetColor(0, 255, 0));
-	//}
+	for (const auto& cap : capsule->GetCapsules())
+	{
+		VECTOR start = VAdd(trans_->pos_, VTransform(cap.startOffset, mat));
+		VECTOR end = VAdd(trans_->pos_, VTransform(cap.endOffset,mat));
+
+		// 両端
+		DrawSphere3D(
+			start,
+			cap.radius,
+			12,
+			GetColor(255, 0, 0),
+			GetColor(255, 0, 0),
+			TRUE);
+
+		DrawSphere3D(
+			end,
+			cap.radius,
+			12,
+			GetColor(255, 0, 0),
+			GetColor(255, 0, 0),
+			TRUE);
+
+		// 中心線
+		DrawLine3D(
+			start,
+			end,
+			GetColor(0, 255, 0));
+	}
 }

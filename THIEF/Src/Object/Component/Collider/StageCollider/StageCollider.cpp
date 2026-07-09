@@ -23,6 +23,8 @@ void StageCollider::StageColl(float& velocityY)
 	if (!capsule_) return;
 	if (!stage_) return;
 
+	MATRIX mat = MGetRotY(transform_->angle_.y);
+
 	// 現在座標
 	VECTOR currentPos = transform_->pos_;
 
@@ -89,8 +91,8 @@ void StageCollider::StageColl(float& velocityY)
 			for (const auto& cap : capsule_->GetCapsules())
 			{
 				// カプセル始点・終点を算出
-				VECTOR capStart = VAdd(nextPos, cap.startOffset);
-				VECTOR capEnd = VAdd(nextPos, cap.endOffset);
+				VECTOR capStart = VAdd(nextPos, VTransform(cap.startOffset, mat));
+				VECTOR capEnd = VAdd(nextPos, VTransform(cap.endOffset, mat));
 
 				// ステージとカプセルの衝突判定
 				auto result =

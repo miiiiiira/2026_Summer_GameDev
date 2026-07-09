@@ -17,10 +17,6 @@ void Bottle::SetParam(void)
 	info_.scale_ = SCALE;
 	MV1SetScale(info_.modelId_, info_.scale_);
 
-	// Œü‚«‰Šú‰»
-	info_.angle_ = DEFAULT_ANGLE;
-	MV1SetRotationXYZ(info_.modelId_, info_.angle_);
-
 	// ‹àŠz(ƒAƒCƒeƒ€‚ÌHP)‰Šú‰»
 	info_.price_ = PRICE;
 

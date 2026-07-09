@@ -20,9 +20,6 @@ struct ItemInfo
 	// 大きさ
 	VECTOR scale_;
 
-	// 向き
-	VECTOR angle_;
-
 	// 離された時の座標
 	VECTOR grabbedPos_;
 
@@ -54,11 +51,14 @@ struct ItemInfo
 	// 掴まれているか　true / 掴まれている, false / 掴まれていない
 	bool isGrabbed_;
 
-	// 空中から1度でもステージに接触したかどうか　true / 接触した , false / 接触していない
+	// 空中から1度でもステージに接触したか　true / 接触した , false / 接触していない
 	bool hasTouchedStage_;
 
-	// 納品場所に入っているかどうか		true / 入っている , false / 入っていない
+	// 納品場所に入っているか	true / 入っている , false / 入っていない
 	bool hasTouchedDeliveryLocation_;
+
+	// カートに入っているか	true / 入っている , false / 入っていない
+	bool hasTouchedCart_;
 
 	// 一度でも発見したか　true / 見つけた , false / 見つけてない
 	bool isFound_;

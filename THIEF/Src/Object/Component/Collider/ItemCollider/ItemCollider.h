@@ -60,6 +60,9 @@ private:
 	// アイテムとカートの当たり判定
 	void ItemToCartCollision(void);
 
+	// アイテムがカートに入っているかの当たり判定
+	void ItemInCartCollision(void);
+
 	// ステージとの当たり判定
 	void StageCollision(void);
 

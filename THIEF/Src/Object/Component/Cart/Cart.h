@@ -14,11 +14,11 @@ class Cart : public Component
 public:
 
 	// カートのサイズ横幅
-	static constexpr float CART_SIZE_WID_RAD = 50.0f;
+	static constexpr float CART_SIZE_WID_RAD = 75.0f;
 	// カートのサイズ縦幅  
-	static constexpr float CART_SIZE_HIG_RAD = 110.0f;
+	static constexpr float CART_SIZE_HIG_RAD = 50.0f;
 	// カートのサイズ奥行  
-	static constexpr float CART_SIZE_DEPTH_RAD = 50.0f;
+	static constexpr float CART_SIZE_DEPTH_RAD = 95.0f;
 	
 	// 線形補間の係数
 	static constexpr float COEFFICIENT = 0.15f;
@@ -38,6 +38,9 @@ public:
 	// Transformを返す
 	Transform* GetTransform();
 
+	// Transformを返す
+	float GetVelocityY(void);
+
 	// 掴まれた状態にする
 	void StartGrabbing(VECTOR localPos);
 
@@ -48,6 +51,12 @@ public:
 	void SetLocalPos(VECTOR localPos);
 
 private:
+	// 重力加速度
+	const float GRAVITY = -0.3f;
+
+	// 最大落下速度
+	const float MAX_FALL = -5.0f;
+
 	// モデルID
 	int modelId_ = -1;
 
@@ -55,9 +64,6 @@ private:
 	Transform* trans_;
 
 	float velocityY_ = 0.0f;
-
-	// カートの向き(Y軸回転のみ使用)
-	float angleY_;
 
 	// 掴まれているか　true / 掴まれている, false / 掴まれていない
 	bool isGrabbed_;
@@ -67,6 +73,9 @@ private:
 
 	// プレイヤーの位置をみて移動処理を行う
 	void TrackingPlayer(void);
+
+	// 重力処理
+	void ApplyGravity(void);
 
 	// デバック用描画
 	void DrawDebug(void);
