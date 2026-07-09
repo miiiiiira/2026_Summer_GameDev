@@ -50,45 +50,45 @@ void EnemyBase::Draw(void)
 	MV1DrawModel(modelId_);
 
 #ifdef _DEBUG
-	MATRIX mat = MGetIdent();
-	mat = Matrix::GetMatrixRotateXYZ(angle_);
+	//MATRIX mat = MGetIdent();
+	//mat = Matrix::GetMatrixRotateXYZ(angle_);
 
-	const VECTOR dirForwardBase = VGet(0.0f, 0.0f, 1.0f);
+	//const VECTOR dirForwardBase = VGet(0.0f, 0.0f, 1.0f);
 
-	// 前方方向
-	VECTOR forward = VTransform(dirForwardBase, mat);
+	//// 前方方向
+	//VECTOR forward = VTransform(dirForwardBase, mat);
 
-	// 右
-	MATRIX rightMat = MMult(mat, MGetRotY(Math::Deg2Rad(30.0f)));
-	VECTOR right = VTransform(dirForwardBase, rightMat);
-	// 左
-	MATRIX leftMat = MMult(mat, MGetRotY(Math::Deg2Rad(-30.0f)));
-	VECTOR left = VTransform(dirForwardBase, leftMat);
+	//// 右
+	//MATRIX rightMat = MMult(mat, MGetRotY(Math::Deg2Rad(30.0f)));
+	//VECTOR right = VTransform(dirForwardBase, rightMat);
+	//// 左
+	//MATRIX leftMat = MMult(mat, MGetRotY(Math::Deg2Rad(-30.0f)));
+	//VECTOR left = VTransform(dirForwardBase, leftMat);
 
-	VECTOR pos0 = pos_;
+	//VECTOR pos0 = pos_;
 
-	VECTOR pos1 = VAdd(pos0, VScale(forward, 1000.0f));
-	VECTOR pos2 = VAdd(pos0, VScale(left, 1000.0f));
-	VECTOR pos3 = VAdd(pos0, VScale(right, 1000.0f));
+	//VECTOR pos1 = VAdd(pos0, VScale(forward, 1000.0f));
+	//VECTOR pos2 = VAdd(pos0, VScale(left, 1000.0f));
+	//VECTOR pos3 = VAdd(pos0, VScale(right, 1000.0f));
 
-	pos0.y = pos1.y = pos2.y = pos3.y = 10.0f;
+	//pos0.y = pos1.y = pos2.y = pos3.y = 10.0f;
 
-	if (isNotice_)
-	{
-		DrawTriangle3D(pos0, pos2, pos1,
-			0xcc44cc, true);
+	//if (isNotice_)
+	//{
+	//	DrawTriangle3D(pos0, pos2, pos1,
+	//		0xcc44cc, true);
 
-		DrawTriangle3D(pos0, pos1, pos3,
-			0xcc44cc, true);
-	}
-	else
-	{
-		DrawTriangle3D(pos0, pos2, pos1,
-			0x00ff00, true);
+	//	DrawTriangle3D(pos0, pos1, pos3,
+	//		0xcc44cc, true);
+	//}
+	//else
+	//{
+	//	DrawTriangle3D(pos0, pos2, pos1,
+	//		0x00ff00, true);
 
-		DrawTriangle3D(pos0, pos1, pos3,
-			0x00ff00, true);
-	}
+	//	DrawTriangle3D(pos0, pos1, pos3,
+	//		0x00ff00, true);
+	//}
 
 #endif //_DEBUG
 }
@@ -279,6 +279,11 @@ float EnemyBase::GetAttackJumpPow(void)
 float EnemyBase::GetAttackDamagePow(void)
 {
 	return attackDamagePow_;
+}
+
+void EnemyBase::SetCollisionStage(bool isCollision)
+{
+	isCollisionStage_ = isCollision;
 }
 
 void EnemyBase::DelayRotate(void)

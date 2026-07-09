@@ -56,8 +56,8 @@ private:
 	static constexpr VECTOR DEFAULT_ANGLE = { 0.0f, 0.0f,0.0f };
 
 	// 座標
-	static constexpr VECTOR LOOK_POS = { -3962.0f, 10.0f, 1393.0f };
-	static constexpr VECTOR SCARE_POS = { -4687.0f, 10.0f, 1393.0f };
+	static constexpr VECTOR LOOK_POS = { -3700.0f, 10.0f, 1393.0f };
+	static constexpr VECTOR SCARE_POS = { -4000.0f, 10.0f, 1393.0f };
 	// 特定のポイントからの反応距離
 	static constexpr float TRIGGER_RANGE = 100.0f * 100.0f;
 

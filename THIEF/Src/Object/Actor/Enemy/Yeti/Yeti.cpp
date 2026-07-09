@@ -1,5 +1,6 @@
 #include "../../../../Application.h"
 #include "../../../../Scene/SceneManager.h"
+#include "../../../../Common/Manager/Audio/AudioManager.h"
 #include "../../../../Common/Math/Math.h"
 #include "../../../../Common/Transform/MatrixUtility.h"
 #include "../../../Common/AnimationController.h"
@@ -230,6 +231,7 @@ void Yeti::ChangeSurprise(void)
 {
 	step_ = 2.0f;
 	LookPlayer();
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_YETI);
 	animationController_->Play(static_cast<int>(ANIM_TYPE::HIT_REACT), false);
 }
 

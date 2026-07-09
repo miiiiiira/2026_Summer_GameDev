@@ -94,8 +94,8 @@ void EnemyManager::CreateEnemyStage2(void)
 	// Skeletonを生成
 	float startX = -4000.0f;	// 檻の並びの開始X座標
 	float spacingX = 200.0f;	// 敵と敵の間隔（X軸方向）
-	float leftZ = 2097.0f;		// 左側の檻のZ座標
-	float rightZ = 708.0f;		// 右側の檻のZ座標
+	float leftZ = 2197.0f;		// 左側の檻のZ座標
+	float rightZ = 680.0f;		// 右側の檻のZ座標
 	float posY = 12.0f;			// 地面のY座標
 
 	// 右側のスケルトン
@@ -158,6 +158,7 @@ void EnemyManager::LoadStage2(void)
 {
 	enemyModelIds_[ENEMY_TAG::STATUE] = MV1LoadModel((Application::PATH_MODEL + "Enemy/Statue.mv1").c_str());
 	enemyModelIds_[ENEMY_TAG::SKELETON] = MV1LoadModel((Application::PATH_MODEL + "Enemy/Skeleton.mv1").c_str());
+	enemyModelIds_[ENEMY_TAG::GUNMAN] = MV1LoadModel((Application::PATH_MODEL + "Enemy/gunman/gunman.mv1").c_str());
 
 	LoadCsvData("Data/pointSave2.csv");
 }

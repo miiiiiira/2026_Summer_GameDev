@@ -1,4 +1,5 @@
 #include "../../../../Scene/SceneManager.h"
+#include "../../../../Common/Manager/Audio/AudioManager.h"
 #include "../../../../Common/Math/Math.h"
 #include "../../../../Common/Transform/MatrixUtility.h"
 #include "../../../Common/AnimationController.h"
@@ -21,8 +22,6 @@ Skeleton::~Skeleton(void)
 
 void Skeleton::OnInitialize(void)
 {
-	modelId_ = MV1DuplicateModel(baseModelId_);
-
 	scale_ = SCALE;
 	MV1SetScale(modelId_, scale_);
 
@@ -50,11 +49,12 @@ void Skeleton::OnInitialize(void)
 
 void Skeleton::Load(void)
 {
+	modelId_ = MV1DuplicateModel(baseModelId_);
 	// モデルアニメーション制御の初期化
 	animationController_ = new AnimationController(modelId_);
 	for (int i = 0; i < static_cast<int>(ANIM_TYPE::MAX); i++)
 	{
-		animationController_->AddInFbx(i, 0.5f, i);
+		animationController_->AddInFbx(i, 1.0f, i);
 	}
 }
 
@@ -100,6 +100,8 @@ void Skeleton::SetSide(SIDE side)
 
 void Skeleton::ChangeState(STATE state)
 {
+	if (state_ == state) return;
+
 	state_ = state;
 
 	switch (state_)
@@ -123,7 +125,19 @@ void Skeleton::ChangeLook(void)
 
 void Skeleton::ChangeScare(void)
 {
-	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
+	switch (side_)
+	{
+	case SIDE::RIGHT:
+		moveDir_ = { 0.0f, 0.0f, 1.0f };
+		break;
+	case SIDE::LEFT:
+		moveDir_ = { 0.0f, 0.0f, -1.0f };
+		break;
+	}
+
+	moveSpeed_ = 20.0f;
+
+	animationController_->Play(static_cast<int>(ANIM_TYPE::ATTACK), false);
 }
 
 void Skeleton::ChangeEnd(void)
@@ -157,7 +171,14 @@ void Skeleton::UpdateLook(void)
 
 void Skeleton::UpdateScare(void)
 {
+	Move();
 
+	if (isCollisionStage_)
+	{
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_SKELETON);
+		ChangeState(STATE::END);
+		return;
+	}
 }
 
 void Skeleton::UpdateEnd(void)
