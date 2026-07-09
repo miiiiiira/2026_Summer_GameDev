@@ -44,6 +44,8 @@ public:
 	int GetModelId(void);
 	VECTOR GetPos(void);
 	void SetPos(VECTOR pos);
+	VECTOR GetAngle(void);
+	void SetAngle(VECTOR angle);
 	float GetRadius(void);
 	VECTOR GetPrevPos(void);
 	VECTOR GetStart(void);
@@ -56,6 +58,7 @@ public:
 	float GetAttackMoveSpeed(void);
 	float GetAttackJumpPow(void);
 	float GetAttackDamagePow(void);
+	void SetCollisionStage(bool isCollision);
 
 protected:
 
@@ -100,6 +103,7 @@ protected:
 	float attackMoveSpeed_ = 0.0f;
 	float attackJumpPow_ = 0.0f;
 	float attackDamagePow_ = 0.0f;
+	bool isCollisionStage_ = false;
 
 	// ŠJŽnˆÊ’u
 	VECTOR startOffset_;

@@ -1,4 +1,5 @@
 #include "../../../../Scene/SceneManager.h"
+#include "../../../../Common/Manager/Audio/AudioManager.h"
 #include "../../../../Common/Math/Math.h"
 #include "../../../../Common/Transform/MatrixUtility.h"
 #include "../../../Component/PlayerController/PlayerController.h"
@@ -46,13 +47,14 @@ void Statue::OnInitialize(void)
 	attackJumpPow_ = 25.0f;
 	attackDamagePow_ = 80.0f;
 
+	seTimer_ = 0.0f;
+
 	// 武器の初期化
 	weaponPunch_ = new WeaponPunch();
 	weaponPunch_->Init(WeaponBase::TYPE::PUNCH);
 
 	// Statueの攻撃はパンチ
 	useWeapon_ = weaponPunch_;
-
 
 	candidates_.reserve(way_->size());
 
@@ -235,22 +237,24 @@ void Statue::UpdateChase(void)
 	VECTOR playerHead = player_->GetCapsule()->GetStart();
 	float distance = VSize(VSub(playerPos, enemyPos));
 
+	// 画面内に入っているかをチェックする
+	bool isLookedByPlayer1 = !CheckCameraViewClip(enemyPos);
+	enemyPos.y += 100.0f;
+	bool isLookedByPlayer2 = !CheckCameraViewClip(enemyPos);
+	enemyPos.y += 100.0f;
+	bool isLookedByPlayer3 = !CheckCameraViewClip(enemyPos);
+	enemyPos.y += 100.0f;
+	bool isLookedByPlayer4 = !CheckCameraViewClip(enemyPos);
+	enemyPos.y += 100.0f;
+	bool isLookedByPlayer5 = !CheckCameraViewClip(enemyPos);
+
+	bool isLooked = (isLookedByPlayer1 || isLookedByPlayer2 || isLookedByPlayer3 || isLookedByPlayer4 || isLookedByPlayer5);
+
 	// プレイヤーがエリア内にいるなら
 	if (IsPlayerInArea(MIN_AREA_POS, MAX_AREA_POS))
 	{
 		// 視線チェック
 		bool isPlayerVisible = !CheckChaseLineCollision(enemyHead, playerHead, 40.0f);
-
-		// 画面内に入っているかをチェックする
-		bool isLookedByPlayer1 = !CheckCameraViewClip(enemyPos);
-		enemyPos.y += 100.0f;
-		bool isLookedByPlayer2 = !CheckCameraViewClip(enemyPos);
-		enemyPos.y += 100.0f;
-		bool isLookedByPlayer3 = !CheckCameraViewClip(enemyPos);
-		enemyPos.y += 100.0f;
-		bool isLookedByPlayer4 = !CheckCameraViewClip(enemyPos);
-		enemyPos.y += 100.0f;
-		bool isLookedByPlayer5 = !CheckCameraViewClip(enemyPos);
 
 		//　攻撃範囲内にいたら、攻撃状態にする
 		if (distance <= 200.0f)
@@ -260,7 +264,7 @@ void Statue::UpdateChase(void)
 		}
 
 		// プレイヤーに見られているなら
-		if (isLookedByPlayer1 || isLookedByPlayer2 || isLookedByPlayer3 || isLookedByPlayer4 || isLookedByPlayer5)
+		if (isLooked)
 		{
 			path_.clear();
 			return;
@@ -289,12 +293,12 @@ void Statue::UpdateChase(void)
 			{
 				if (nextNodeId_ >= static_cast<int>(path_.size()))
 				{
-					path_.clear(); 
+					path_.clear();
 					nextNodeId_ = 0;
 				}
 				else
 				{
-					ChaseNode(); 
+					ChaseNode();
 				}
 			}
 		}
@@ -302,7 +306,9 @@ void Statue::UpdateChase(void)
 		{
 			path_.clear();
 			ChaseDirect();
+
 		}
+
 	}
 	else
 	{
@@ -369,6 +375,23 @@ void Statue::UpdateChase(void)
 
 	// 重力処理
 	ApplyGravity();
+
+	// 移動しているか
+	bool isMoving = (VSize(moveDir_) > 0.001f);
+
+	if (!isLooked && isMoving)
+	{
+		seTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
+		if (seTimer_ <= 0.0f)
+		{
+			AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_STATUE);
+			seTimer_ = 1.0f;
+		}
+	}
+	else
+	{
+		seTimer_ = 0.0f;
+	}
 
 }
 

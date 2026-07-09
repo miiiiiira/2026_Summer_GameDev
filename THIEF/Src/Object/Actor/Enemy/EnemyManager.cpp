@@ -1,12 +1,14 @@
-#include "../../../Application.h"
 #include <string>
 #include <fstream>
 #include <sstream>
+#include "../../../Application.h"
+#include "../../../Common/Math/Math.h"
 #include "EnemyBase.h"
 #include "Yeti/Yeti.h"
 #include "Mushnub/Mushnub.h"
 #include "Giggle/Giggle.h"
 #include "Statue/Statue.h"
+#include "Skeleton/Skeleton.h"
 #include "EnemyManager.h"
 
 EnemyManager::EnemyManager(void)
@@ -88,6 +90,49 @@ void EnemyManager::CreateEnemyStage2(void)
 	newEnemy->Init(player_, stageId_, way_, edgeList_);
 	// リストに追加
 	enemys_.push_back(newEnemy);
+
+	// Skeletonを生成
+	float startX = -4000.0f;	// 檻の並びの開始X座標
+	float spacingX = 200.0f;	// 敵と敵の間隔（X軸方向）
+	float leftZ = 2197.0f;		// 左側の檻のZ座標
+	float rightZ = 680.0f;		// 右側の檻のZ座標
+	float posY = 12.0f;			// 地面のY座標
+
+	// 右側のスケルトン
+	for (int i = 0; i < 8; ++i)
+	{
+		Skeleton* skeleton = new Skeleton(enemyModelIds_[ENEMY_TAG::SKELETON]);
+		skeleton->Load();
+		skeleton->SetTag(ENEMY_TAG::SKELETON);
+
+		VECTOR pos = { startX - (i * spacingX), posY, rightZ };
+		skeleton->SetPos(pos);
+		float random = static_cast<float>(GetRand(360));
+		VECTOR angle = { 0.0f, Math::Deg2Rad(random), 0.0f };
+		skeleton->SetAngle(angle);
+
+		skeleton->SetSide(Skeleton::SIDE::RIGHT);
+		skeleton->Init(player_, stageId_);
+		enemys_.push_back(skeleton);
+	}
+
+	// 左側のスケルトン
+	for (int i = 0; i < 8; ++i)
+	{
+		Skeleton* skeleton = new Skeleton(enemyModelIds_[ENEMY_TAG::SKELETON]);
+		skeleton->Load();
+		skeleton->SetTag(ENEMY_TAG::SKELETON);
+
+		VECTOR pos = { startX - (i * spacingX), posY, leftZ };
+		skeleton->SetPos(pos);
+		float random = static_cast<float>(GetRand(360));
+		VECTOR angle = { 0.0f, Math::Deg2Rad(random), 0.0f };
+		skeleton->SetAngle(angle);
+
+		skeleton->SetSide(Skeleton::SIDE::LEFT);
+		skeleton->Init(player_, stageId_);
+		enemys_.push_back(skeleton);
+	}
 }
 
 void EnemyManager::CreateEnemyStage3(void)
@@ -112,6 +157,8 @@ void EnemyManager::LoadStage1(void)
 void EnemyManager::LoadStage2(void)
 {
 	enemyModelIds_[ENEMY_TAG::STATUE] = MV1LoadModel((Application::PATH_MODEL + "Enemy/Statue.mv1").c_str());
+	enemyModelIds_[ENEMY_TAG::SKELETON] = MV1LoadModel((Application::PATH_MODEL + "Enemy/Skeleton.mv1").c_str());
+	enemyModelIds_[ENEMY_TAG::GUNMAN] = MV1LoadModel((Application::PATH_MODEL + "Enemy/gunman/gunman.mv1").c_str());
 
 	LoadCsvData("Data/pointSave2.csv");
 }
