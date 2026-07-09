@@ -52,10 +52,10 @@ public:
 
 private:
 	// 重力加速度
-	const float GRAVITY = -0.3f;
+	const float GRAVITY = -0.25f;
 
 	// 最大落下速度
-	const float MAX_FALL = -5.0f;
+	const float MAX_FALL = -10.0f;
 
 	// モデルID
 	int modelId_ = -1;

@@ -42,10 +42,14 @@ void ItemCollider::Update(void)
 	ItemToCartCollision();
 
 	// アイテムがカートに入っているかの当たり判定
-	ItemInCartCollision();
+	bool inCart = ItemInCartCollision();
 
-	// ステージとの当たり判定
-	StageCollision();
+	// アイテムがカートに入っていないならステージの当たり判定を取る
+	if (!inCart)
+	{
+		// ステージとの当たり判定
+		StageCollision();
+	}
 }
 
 void ItemCollider::CameraRayCollision(void)
@@ -128,9 +132,10 @@ void ItemCollider::PlayerGrabCollision(void)
 
 void ItemCollider::ItemToCartCollision(void)
 {
+	// カートが存在しない場合は判定できないため終了
 	if (!cart_) return;
 
-	// 接触したかどうか
+	// カートに接触したかどうかのフラグ
 	bool isHitCart = false;
 
 	// 現在の座標
@@ -164,14 +169,14 @@ void ItemCollider::ItemToCartCollision(void)
 			break;
 
 		// カプセル半径
-		float radius = item_->GetInfo().collisionRadiusX_;
+		float radius = item_->GetInfo().collisionRadiusX_ + 5.0f;
 
 		// 高速移動時のすり抜け防止のため、
 		// 移動経路を細かく分割して判定する
 		int stepCount = (int)(length / (radius * 0.05f)) + 1;
 
 		// 分割数の上限・下限を設定
-		stepCount = std::clamp(stepCount, 1, 32);
+		stepCount = std::clamp(stepCount, 1, 128);
 
 		// 1ステップ当たりの移動量
 		VECTOR stepMove = VScale(move, 1.0f / static_cast<float>(stepCount));
@@ -207,8 +212,9 @@ void ItemCollider::ItemToCartCollision(void)
 					capEnd,
 					radius);
 
-			float bestPush = 0.0f;
+			// 一番強く当たっている面を保存する
 			VECTOR bestNormal = VGet(0, 0, 0);
+			float bestPush = 0.0f;
 
 			bool collision = false;
 
@@ -217,10 +223,10 @@ void ItemCollider::ItemToCartCollision(void)
 			{
 				auto& poly = result.Dim[i];
 
-				// ポリゴン法線
+				// ポリゴンの法線を正規化
 				VECTOR normal = VNorm(poly.Normal);
 
-				// このステップの進行方向と法線から、正面衝突している度合いを求める
+				// 移動方向と法線から正面衝突している強さを計算
 				float push = -VDot(VNorm(stepMove), normal);
 
 				// 背面や平行な面は無視
@@ -260,19 +266,26 @@ void ItemCollider::ItemToCartCollision(void)
 			break;
 		}
 
+		// カートに接触した
 		isHitCart = true;
 
 		// 衝突していない最後の座標へ戻す
 		pos = safePos;
 
 		// 少しだけ法線の方向へ押し出してめり込みを防止する
-		pos = VAdd(pos, VScale(hitNormal, SKIN));
+		if (hitNormal.y < FLOOR_NORMAL_Y)
+		{
+			pos = VAdd(pos, VScale(hitNormal, CART_SKIN));
+		}
 
 		// 床に当たった
 		if (hitNormal.y > FLOOR_NORMAL_Y)
 		{
-			// 下方向の加速度を0にする
+			// 落下速度をリセット
 			item_->SetVelocityYZero();
+
+			// 床に乗った状態へ変更
+			item_->OnFloor();
 		}
 
 		// 衝突後に残っている移動割合
@@ -281,11 +294,24 @@ void ItemCollider::ItemToCartCollision(void)
 
 		// 壁スライド処理
 		// 法線方向成分を除去して壁に沿って移動させる
+		constexpr float SLIDE = 0.25f;
+
 		float dot = VDot(remainMove, hitNormal);
 
 		if (dot < 0.0f)
 		{
-			remainMove = VSub(remainMove, VScale(hitNormal, dot));
+			// 法線方向への押し込み成分を除去
+			VECTOR slide = VSub(remainMove, VScale(hitNormal, dot));
+
+			// 床の場合はこれ以上移動しない
+			if (hitNormal.y > FLOOR_NORMAL_Y)
+			{
+				move = VGet(0, 0, 0);
+				break;
+			}
+
+			// 壁方向への移動を弱めてスライド
+			remainMove = VScale(slide, SLIDE);
 		}
 
 		// 次の反復で残り移動量を処理
@@ -294,14 +320,23 @@ void ItemCollider::ItemToCartCollision(void)
 
 	if (isHitCart)
 	{
-		// 最終位置を反映
-		item_->SetPos(VAdd(VAdd(pos, cartMove), { 0.0f,-cart_->GetVelocityY() ,0.0f }));
-		item_->SetPrevPos(item_->GetTransform()->pos_);
+		// カート移動分を戻す相対座標で判定していたため、最後にカートの移動を足し戻す
+		VECTOR cartDelta = VSub(cart_->GetTransform()->pos_, cart_->GetTransform()->prevPos_);
+
+		// アイテム位置更新
+		item_->SetPos(VAdd(pos, cartDelta));
+
+		// カートに乗った場合は落下速度を止める
+		item_->SetVelocityYZero();
+
+		// 床扱いにする
 		item_->OnFloor();
+
+		return;
 	}
 }
 
-void ItemCollider::ItemInCartCollision(void)
+bool ItemCollider::ItemInCartCollision(void)
 {
 	// カートの座標と回転角
 	VECTOR cartPos = cart_->GetTransform()->pos_;
@@ -337,13 +372,14 @@ void ItemCollider::ItemInCartCollision(void)
 	{
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_ITEM_ON);
 		item_->SetHasTouchedCart(true);
+		return true;
 	}
 	// 当たっていないかつ、カートに入っているフラグが立っていたら
 	else if (!isHit && item_->GetInfo().hasTouchedCart_)
 	{
 		item_->SetHasTouchedCart(false);
+		return false;
 	}
-
 }
 
 void ItemCollider::StageCollision(void)

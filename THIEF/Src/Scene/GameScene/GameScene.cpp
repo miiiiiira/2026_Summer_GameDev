@@ -377,8 +377,11 @@ void GameScene::PlayerCreate(void)
 	// ステージの当たり判定
 	auto stageCol = player->AddComponent<StageCollider>();
 	stageCol->SetStage(stage);
-	stageCol->SetGroundNormalY(0.9f);
-	stageCol->SetStepHeight(9.0f);
+	stageCol->SetFloorNormalY(0.55f);
+	stageCol->SetWallNormalY(0.25f);
+	stageCol->SetSlopeNormalY(0.75f);
+
+	stageCol->SetStepHeight(45.0f);
 
 	// プレイヤー取得
 	auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
@@ -453,11 +456,11 @@ void GameScene::CartCreate(void)
 	// カプセルコライダー
 	auto capsule = cart->AddComponent<CapsuleCollider>();
 
-	const float HEIGHT = 150.0f;
+	const float HEIGHT = 80.0f;
 	const float BOTTOM = 30.0f;
 
-	const float WIDTH = 70.0f;
-	const float DEPTH = 70.0f;
+	const float WIDTH = 50.0f;
+	const float DEPTH = 60.0f;
 	const float RADIUS = 40.0f;
 
 	// 左列
@@ -476,8 +479,11 @@ void GameScene::CartCreate(void)
 
 	// ステージコライダー
 	auto stageCol = cart->AddComponent<StageCollider>();
-	stageCol->SetGroundNormalY(0.95f);
-	stageCol->SetStepHeight(5.0f);
+	stageCol->SetFloorNormalY(0.58f);
+	stageCol->SetWallNormalY(0.28f);
+	stageCol->SetSlopeNormalY(0.78f);
+
+	stageCol->SetStepHeight(45.0f);
 
 	// ステージ取得
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);

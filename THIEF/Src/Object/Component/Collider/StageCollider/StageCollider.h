@@ -24,8 +24,23 @@ public:
 	// ステージ設定
 	void SetStage(Stage* stage) { stage_ = stage; }
 
-	// 坂判定の設定
-	void SetGroundNormalY(float y) { groundNormalY_ = y; }
+	// 床と判定する法線の設定
+	void SetFloorNormalY(float y)
+	{
+		floorNormalY_ = y;
+	}
+
+	// 壁と判定する法線の設定
+	void SetWallNormalY(float y)
+	{
+		wallNormalY_ = y;
+	}
+
+	// 急斜面と判定する法線の設定
+	void SetSlopeNormalY(float y)
+	{
+		slopeNormalY_ = y;
+	}
 
 	// 段差の設定
 	void SetStepHeight(float h) { stepHeight_ = h; }
@@ -54,8 +69,14 @@ private:
 	// 接地フラグ
 	bool isGround_ = false;
 
-	// 坂の上限
-	float groundNormalY_ = 0.6f;
+	// 床と判定する法線
+	float floorNormalY_ = 0.65f;
+
+	// 壁と判定する法線
+	float wallNormalY_ = 0.50f;
+
+	// 急斜面と判定する法線
+	float slopeNormalY_ = 0.80f;
 
 	// 段差の設定
 	float stepHeight_ = 15.0f;

@@ -178,36 +178,36 @@ void Cart::DrawDebug(void)
 
 	DrawCube3D(endPos, startPos,  0xffff00, 0xffff00, false);
 
-	auto capsule = owner_->GetComponent<CapsuleCollider>();
+	//auto capsule = owner_->GetComponent<CapsuleCollider>();
 
-	if (!capsule) return;
+	//if (!capsule) return;
 
-	for (const auto& cap : capsule->GetCapsules())
-	{
-		VECTOR start = VAdd(trans_->pos_, VTransform(cap.startOffset, mat));
-		VECTOR end = VAdd(trans_->pos_, VTransform(cap.endOffset,mat));
+	//for (const auto& cap : capsule->GetCapsules())
+	//{
+	//	VECTOR start = VAdd(trans_->pos_, VTransform(cap.startOffset, mat));
+	//	VECTOR end = VAdd(trans_->pos_, VTransform(cap.endOffset,mat));
 
-		// 両端
-		DrawSphere3D(
-			start,
-			cap.radius,
-			12,
-			GetColor(255, 0, 0),
-			GetColor(255, 0, 0),
-			TRUE);
+	//	// 両端
+	//	DrawSphere3D(
+	//		start,
+	//		cap.radius,
+	//		12,
+	//		GetColor(255, 0, 0),
+	//		GetColor(255, 0, 0),
+	//		TRUE);
 
-		DrawSphere3D(
-			end,
-			cap.radius,
-			12,
-			GetColor(255, 0, 0),
-			GetColor(255, 0, 0),
-			TRUE);
+	//	DrawSphere3D(
+	//		end,
+	//		cap.radius,
+	//		12,
+	//		GetColor(255, 0, 0),
+	//		GetColor(255, 0, 0),
+	//		TRUE);
 
-		// 中心線
-		DrawLine3D(
-			start,
-			end,
-			GetColor(0, 255, 0));
-	}
+	//	// 中心線
+	//	DrawLine3D(
+	//		start,
+	//		end,
+	//		GetColor(0, 255, 0));
+	//}
 }

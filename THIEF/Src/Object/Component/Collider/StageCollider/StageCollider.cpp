@@ -111,6 +111,12 @@ void StageCollider::StageColl(float& velocityY)
 					// ポリゴン法線
 					VECTOR normal = VNorm(poly.Normal);
 
+					// 床の細かい凹凸は無視する
+					if (normal.y >= slopeNormalY_)
+					{
+						normal = VGet(0.0f, 1.0f, 0.0f);
+					}
+
 					// 現在の移動方向と法線の向きから
 					// 正面衝突している度合いを求める
 					float push = -VDot(VNorm(move), normal);
@@ -149,19 +155,18 @@ void StageCollider::StageColl(float& velocityY)
 		}
 
 		// 壁に衝突した場合は段差として登れるか確認する(y成分が小さい法線は壁として扱う)
-		if (hitNormal.y < groundNormalY_)
+		if (!isGround_ && hitNormal.y < floorNormalY_)
 		{
 			// 段差判定
 			if (CanStepUp(safePos, stepMove, stepHeight_))
 			{
 				// 衝突していない最後の位置へ戻す
 				pos = safePos;
-
-				// 段差の高さ分だけ上へ移動（階段を1段上がるイメージ）
 				pos.y += stepHeight_;
 
 				// 今回消費した移動量を残り移動量から除外
-				move = VSub(move, stepMove);
+				VECTOR consumed = VSub(pos, prevPos);
+				move = VSub(move, consumed);
 
 				// 次のループで残り移動を処理する
 				continue;
@@ -173,10 +178,17 @@ void StageCollider::StageColl(float& velocityY)
 
 		// 少しだけ法線の方向へ押し出して
 		// めり込みを防止する
-		pos = VAdd(pos, VScale(hitNormal, skin_));
+		if (hitNormal.y >= floorNormalY_)
+		{
+			pos.y += skin_;
+		}
+		else
+		{
+			pos = VAdd(pos, VScale(hitNormal, skin_));
+		}
 
 		// 床判定
-		if (hitNormal.y > groundNormalY_)
+		if (hitNormal.y >= floorNormalY_)
 		{
 			// 接地フラグを立てる
 			isGround_ = true;
@@ -265,43 +277,120 @@ bool StageCollider::CeilingColl(void)
 	return isCeiling;
 }
 
-// 小さな段差を登れるか判定する
 bool StageCollider::CanStepUp(const VECTOR& pos, const VECTOR& move, float stepHeight)
 {
-	// テスト用の座標
-	VECTOR testPos = pos;
+	// 必要なコンポーネントが存在しない場合は判定不可
+	if (!capsule_ || !stage_)
+		return false;
 
-	// 段差の高さ分だけ上へ持ち上げる(階段の1段上に乗れるか確認するため）
+	// カプセルのオフセットをワールド座標へ変換するために使用
+	MATRIX mat = MGetRotY(transform_->angle_.y);
+
+	// 一旦持ち上げる
+	VECTOR testPos = pos;
 	testPos.y += stepHeight;
 
-	// その状態で前方へ移動してみる
-	testPos = VAdd(testPos, move);
+	// 前進を少しずつ試す
+	const int FORWARD_STEP = 8;
 
-	bool hit = false;
-
-	for (const auto& cap : capsule_->GetCapsules())
+	for (int s = 1; s <= FORWARD_STEP; s++)
 	{
-		// 持ち上げた状態でカプセルとステージの衝突判定を行う
-		auto result =
-			MV1CollCheck_Capsule(
+		float rate = (float)s / FORWARD_STEP;
+
+		VECTOR checkPos = testPos;
+		checkPos = VAdd(checkPos, VScale(move, rate));
+
+		bool hitWall = false;
+
+		for (const auto& cap : capsule_->GetCapsules())
+		{
+			VECTOR start = VAdd(checkPos, VTransform(cap.startOffset, mat));
+			VECTOR end = VAdd(checkPos, VTransform(cap.endOffset, mat));
+
+			auto result = MV1CollCheck_Capsule(
 				stage_->GetModelId(),
 				-1,
-				VAdd(testPos, cap.startOffset),
-				VAdd(testPos, cap.endOffset),
+				start,
+				end,
 				cap.radius);
 
-		// 1つでもポリゴンに当たっていれば衝突
-		if (result.HitNum > 0)
-		{
-			hit = true;
+			for (int i = 0; i < result.HitNum; i++)
+			{
+				VECTOR normal = VNorm(result.Dim[i].Normal);
+
+				// 壁だけを見る
+				if (normal.y <= wallNormalY_)
+				{
+					hitWall = true;
+					break;
+				}
+			}
+
+			MV1CollResultPolyDimTerminate(result);
+
+			if (hitWall)
+				break;
 		}
 
-		// 衝突結果のメモリを解放
-		MV1CollResultPolyDimTerminate(result);
-
-		if (hit) break;
+		// 少しでも前へ進めないなら失敗
+		if (hitWall)
+			return false;
 	}
 
-	// 衝突していなければ段差を登れる
-	return !hit;
+	// 最後まで壁が無ければ
+	testPos = VAdd(testPos, move);
+
+	// 下へ少しずつ落として床を探す
+	const float DROP_STEP = 1.0f;
+
+	// 現在どれだけ下降したか
+	float dropped = 0.0f;
+
+	while (dropped <= stepHeight)
+	{
+		// 落下後の判定位置
+		VECTOR dropPos = testPos;
+
+		// 少しずつ下げる
+		dropPos.y -= dropped;
+
+		// 全カプセルで床判定
+		for (const auto& cap : capsule_->GetCapsules())
+		{
+			// カプセルをワールド座標へ変換
+			VECTOR start = VAdd(dropPos, VTransform(cap.startOffset, mat));
+			VECTOR end = VAdd(dropPos, VTransform(cap.endOffset, mat));
+
+			// ステージとの衝突確認
+			auto result = MV1CollCheck_Capsule(
+				stage_->GetModelId(),
+				-1,
+				start,
+				end,
+				cap.radius);
+
+			// ヒットした面が床か確認
+			for (int i = 0; i < result.HitNum; i++)
+			{
+				// ポリゴン法線
+				VECTOR normal = VNorm(result.Dim[i].Normal);
+
+				// Y方向の法線が大きければ床
+				if (normal.y >= floorNormalY_)
+				{
+					MV1CollResultPolyDimTerminate(result);
+					return true;
+				}
+			}
+
+			// 衝突結果解放
+			MV1CollResultPolyDimTerminate(result);
+		}
+
+		// 次の高さを調べる
+		dropped += DROP_STEP;
+	}
+
+	// どの高さでも床を見つけられなかった
+	return false;
 }

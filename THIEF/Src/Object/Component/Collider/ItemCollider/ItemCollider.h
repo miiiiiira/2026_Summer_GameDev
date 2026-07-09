@@ -17,6 +17,7 @@ class ItemCollider : public Component
 private:
 	// めり込み防止
 	static constexpr float SKIN = 0.01f;
+	static constexpr float CART_SKIN = 0.5f;
 
 	// 壁スライド反復回数
 	static constexpr int MAX_BOUNCE = 8;
@@ -61,7 +62,7 @@ private:
 	void ItemToCartCollision(void);
 
 	// アイテムがカートに入っているかの当たり判定
-	void ItemInCartCollision(void);
+	bool ItemInCartCollision(void);
 
 	// ステージとの当たり判定
 	void StageCollision(void);

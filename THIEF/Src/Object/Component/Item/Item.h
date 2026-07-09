@@ -12,7 +12,7 @@ class Item :public Component
 protected:
 
 	// アイテムにかける重力
-	static constexpr float GRAVITY = -0.25f;
+	static constexpr float GRAVITY = -0.5f;
 
 	// 最大落下速度
 	static constexpr float MAX_FALL = -15.0f;
