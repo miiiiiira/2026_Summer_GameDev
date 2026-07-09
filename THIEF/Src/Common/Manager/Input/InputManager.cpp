@@ -238,6 +238,11 @@ bool InputManager::PauseButtons(void)
 	return IsTrgDown(KEY_INPUT_ESCAPE) || IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::START);
 }
 
+bool InputManager::MenuToTitleButtons(void)
+{
+	return IsTrgDown(KEY_INPUT_ESCAPE) || IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::START);
+}
+
 bool InputManager::DashButtons(void)
 {
 	return IsNew(KEY_INPUT_LSHIFT) || IsPadBtnNew(JOYPAD_NO::PAD1, JOYPAD_BTN::RB);
@@ -291,7 +296,7 @@ bool InputManager::PushLightButtons(void)
 
 bool InputManager::MapButtons(void)
 {
-	return IsTrgDown(KEY_INPUT_TAB);
+	return IsTrgDown(KEY_INPUT_TAB) || IsPadBtnNew(JOYPAD_NO::PAD1, JOYPAD_BTN::BACK);
 }
 
 InputManager::InputManager(void)
@@ -416,6 +421,9 @@ InputManager::JOYPAD_IN_STATE InputManager::GetJPadInputState(JOYPAD_NO no)
 
 		idx = static_cast<int>(JOYPAD_BTN::START);
 		ret.ButtonsNew[idx] = x.Buttons[XINPUT_BUTTON_START];// START
+
+		idx = static_cast<int>(JOYPAD_BTN::BACK);
+		ret.ButtonsNew[idx] = x.Buttons[XINPUT_BUTTON_BACK];// BACK
 
 		idx = static_cast<int>(JOYPAD_BTN::LB);
 		ret.ButtonsNew[idx] = x.Buttons[XINPUT_BUTTON_LEFT_SHOULDER];// LB

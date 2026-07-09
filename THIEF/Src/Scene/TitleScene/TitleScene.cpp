@@ -30,16 +30,8 @@ void TitleScene::Init(void)
 	alpha_ = 255.0f;
 	isIncreasing_ = false;
 
-	// 走査線
-	SceneManager::GetInstance()->GetShader()->SetScanlineIntensity(0.5f);
-	// グリッチ
-	SceneManager::GetInstance()->GetShader()->SetGlitchAmount(0.004f);
-	// 歪み
-	SceneManager::GetInstance()->GetShader()->SetCurvatureAmount(0.3f, false);
-	// ノイズ
-	SceneManager::GetInstance()->GetShader()->SetNoisePower(0.5f);
-	// 色ずれ
-	SceneManager::GetInstance()->GetShader()->SetRgbShift(0.004f);
+	// シェーダーの初期化処理
+	ShaderInit();
 }
 
 void TitleScene::Load(void)
@@ -64,7 +56,7 @@ void TitleScene::Update(void)
 		{
 			// ボタン音
 			AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_2);
-			alpha_ = ALPHA_MAX;
+			alpha_ = 0.0f;
 			isPlaySoundSE_ = true;
 		}
 
@@ -75,6 +67,7 @@ void TitleScene::Update(void)
 	if (SceneManager::GetInstance()->GetShader()->IsDefault())
 	{
 		SceneManager::GetInstance()->PushScene(std::make_shared<MainMenu>());
+		return;
 	}
 
 	// ボタンを押されたら動きを止める
@@ -121,4 +114,19 @@ void TitleScene::Release(void)
 
 	DeleteGraph(handle_);
 	DeleteGraph(buttonHandle_);
+}
+
+void TitleScene::ShaderInit(void)
+{
+
+	// 走査線
+	SceneManager::GetInstance()->GetShader()->SetScanlineIntensity(0.5f);
+	// グリッチ
+	SceneManager::GetInstance()->GetShader()->SetGlitchAmount(0.004f);
+	// 歪み
+	SceneManager::GetInstance()->GetShader()->SetCurvatureAmount(0.3f, false);
+	// ノイズ
+	SceneManager::GetInstance()->GetShader()->SetNoisePower(0.5f);
+	// 色ずれ
+	SceneManager::GetInstance()->GetShader()->SetRgbShift(0.004f);
 }

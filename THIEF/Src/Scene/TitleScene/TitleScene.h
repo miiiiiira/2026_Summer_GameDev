@@ -38,4 +38,7 @@ private:
 	bool isIncreasing_;				// ボタンのアルファ値が増加しているかどうか
 
 	bool isPlaySoundSE_;			// サウンドを鳴らしたか
+
+	// シェーダー初期化処理
+	void ShaderInit(void);
 };

@@ -126,19 +126,23 @@ void Upgrade::Update(void)
 
 void Upgrade::Draw2D(void)
 {
+	int font = Application::GetInstance()->GetFont();
 	for (int i = 0; i < selectUpgrades_.size(); ++i)
 	{
 		// âÊëúÇÃï`âÊ
 		DrawGraphF(pos_[i].x, pos_[i].y,
 			imgHandle_[static_cast<int>(selectUpgrades_[i].first.type)], true);
-		// ã‡äz
-		DrawFormatStringF(pos_[i].x + OFFSET, pos_[i].y,
-			0x000000, "%d", selectUpgrades_[i].first.price, true);
 
+		// ã‡äzÇÃï`âÊ
+		DrawFormatStringToHandle(pos_[i].x + OFFSET / 2, pos_[i].y, 0x000000, font,
+			"%d", selectUpgrades_[i].first.price);
+
+		// îÑÇËêÿÇÍÇƒÇ¢ÇΩÇÁ
 		if (!selectUpgrades_[i].second)
 		{
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
 
+			// âÊëúÇ…îñÇ¢É{ÉbÉNÉXÇèdÇÀÇÈ
 			DrawBox(static_cast<int>(pos_[i].x)
 				, static_cast<int>(pos_[i].y),
 				static_cast<int>(pos_[i].x + COL_SIZE_X)
@@ -182,14 +186,12 @@ void Upgrade::Draw2D(void)
 
 	// éùÇ¡ÇƒÇ¢ÇÈã‡äz
 	int price = ScoreManager::GetInstance().GetTotalPrice();
-	int font = Application::GetInstance()->GetFont();
 	int strWidth = GetDrawFormatStringWidthToHandle(font, "%d", price);
 	DrawFormatStringToHandle((Application::SCREEN_SIZE_X - strWidth) / 2, 50, 0xffffff, font,
 		"%d", price);
-	//DrawFormatString(Application::SCREEN_SIZE_X - 150, 50, 0xffffff, "%d", price);
 
 #ifdef _DEBUG
-	auto status = PlayerStatusManager::GetInstance().GetPlayerStatus();
+	/*auto status = PlayerStatusManager::GetInstance().GetPlayerStatus();
 
 		DrawFormatStringF(10, 30,
 			0xffffff, "HpMax : %.0f", status.hpMax_, true);
@@ -204,7 +206,7 @@ void Upgrade::Draw2D(void)
 			0xffffff, "jumpNumMax : %d", status.jumpNumMax_, true);
 
 		DrawFormatStringF(10, 110,
-			0xffffff, "rangeMax : %f", status.rangeMax_, true);
+			0xffffff, "rangeMax : %f", status.rangeMax_, true);*/
 #endif // _DEBUG
 }
 

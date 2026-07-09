@@ -343,7 +343,7 @@ bool ItemCollider::ItemInCartCollision(void)
 	cartPos.y += Cart::CART_SIZE_HIG_RAD;
 
 	// カートのY軸回転角
-	float cartAngleY = cart_->GetTransform()->angle_.y; 
+	float cartAngleY = cart_->GetTransform()->angle_.y;
 
 	// カートのサイズ
 	VECTOR cartSize = VGet(Cart::CART_SIZE_WID_RAD, Cart::CART_SIZE_HIG_RAD, Cart::CART_SIZE_DEPTH_RAD);
@@ -354,7 +354,7 @@ bool ItemCollider::ItemInCartCollision(void)
 	// アイテムを「カートを中心としたローカル座標」に変換し、逆回転させる
 	VECTOR localItemPos = VSub(itemPos, cartPos);
 	// 逆方向に回転させる行列
-	MATRIX invMat = MGetRotY(-cartAngleY); 
+	MATRIX invMat = MGetRotY(-cartAngleY);
 	localItemPos = VTransform(localItemPos, invMat);
 
 	// アイテムのサイズ
@@ -372,14 +372,14 @@ bool ItemCollider::ItemInCartCollision(void)
 	{
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_ITEM_ON);
 		item_->SetHasTouchedCart(true);
-		return true;
 	}
 	// 当たっていないかつ、カートに入っているフラグが立っていたら
 	else if (!isHit && item_->GetInfo().hasTouchedCart_)
 	{
 		item_->SetHasTouchedCart(false);
-		return false;
 	}
+
+	return item_->GetInfo().hasTouchedCart_;
 }
 
 void ItemCollider::StageCollision(void)

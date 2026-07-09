@@ -288,6 +288,24 @@ void GameScene::CameraCreate(void)
 
 	// 座標の設定
 	auto cameraTrans = cameraObj->AddComponent<Transform>();
+	cameraTrans->pos_ = { 0.0f,0.0f,0.0f };
+
+	// ステージ情報を取ってきて初期化処理を行う
+	auto stageNum = SceneManager::GetInstance()->GetCurrentStage();
+	switch (stageNum)
+	{
+	case STAGE_1:
+		cameraTrans->angle_ = { 0.0f, 90.0f * DX_PI_F / 180.0f, 0.0f };
+		break;
+	case STAGE_2:
+		cameraTrans->angle_ = { 0.0f,0.0f,0.0f };
+		break;
+	case STAGE_3:
+		cameraTrans->angle_ = { 0.0f,0.0f,0.0f };
+		break;
+	default:
+		break;
+	}
 
 	// カメラコンポーネントの付与
 	auto camera = cameraObj->AddComponent<Camera>();
@@ -331,6 +349,7 @@ void GameScene::WispCreate(void)
 	// 座標の設定
 	auto trans = wisp->AddComponent<Transform>();
 	trans->pos_ = { 0.0f,0.0f,0.0f };
+	trans->angle_ = { 0.0f,0.0f,0.0f };
 
 	// 描画
 	auto render = wisp->AddComponent<Render3D>();

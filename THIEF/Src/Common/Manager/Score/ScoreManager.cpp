@@ -35,17 +35,45 @@ void ScoreManager::Update(void)
 	}
 
 	// 生存中のアイテムの全金額が目標金額に近づいてきたら
-	if (!showWarning_ && totalPrice < itemAllPrice_ * 0.7f)
+	if (!showWarning_ && totalPrice < warningPrice_)
 	{
 		showWarning_ = true;
 	}
 
-	//// 生存中のアイテムが目標金額より下回ってしまったら
-	//if (totalPrice < targetPrice_)
-	//{
-	//	// ゲームオーバーにする
-	//	SceneManager::GetInstance()->TrueGameOver();
-	//}
+	// 生存中のアイテムが目標金額より下回ってしまったら
+	if (totalPrice < targetPrice_)
+	{
+		// ゲームオーバーにする
+		SceneManager::GetInstance()->TrueGameOver();
+		return;
+	}
+
+	// 警告文を表示中でなければ処理を行わない
+	if (!showWarning_)return;
+
+	// ボタンのアルファ値を変化させる
+	if (isIncreasing_)
+	{
+		alpha_ += ALPHA_SPEED; // 増加速度
+
+		// 増加が最大になったら減少に切り替える
+		if (alpha_ >= ALPHA_MAX)
+		{
+			alpha_ = ALPHA_MAX;
+			isIncreasing_ = false;
+		}
+	}
+	else
+	{
+		alpha_ -= ALPHA_SPEED; // 減少速度
+
+		// 減少が最小になったら増加に切り替える
+		if (alpha_ <= ALPHA_MIN)
+		{
+			alpha_ = ALPHA_MIN;
+			isIncreasing_ = true;
+		}
+	}
 }
 
 void ScoreManager::Draw(void)
@@ -60,8 +88,12 @@ void ScoreManager::Draw(void)
 	// 生存中のアイテムが目標金額より下回ってしまったら
 	if (showWarning_)
 	{
-		strWidth = GetDrawStringWidthToHandle( "目標金額を下回る可能性があります。ご注意ください。",25, font);
-		DrawStringToHandle(Application::SCREEN_SIZE_X - strWidth, 65,"目標金額を下回る可能性があります。ご注意ください。", 0xff0000, font);
+		strWidth = GetDrawStringWidthToHandle( "Target Score at Risk!",22, font);
+
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(alpha_));
+		// 警告文を付ける
+		DrawStringToHandle(Application::SCREEN_SIZE_X - strWidth, 90,"Target Score at Risk!", 0xff0000, font);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 }
 
@@ -75,6 +107,8 @@ void ScoreManager::ResetGame()
 {
 	deliveryPrice_ = 0;
 	showWarning_ = false;
+	alpha_ = ALPHA_MAX;
+	isIncreasing_ = false;
 }
 
 void ScoreManager::ResetTotalPrice(void)
@@ -90,23 +124,23 @@ void ScoreManager::SetItems(std::vector<Item*> items)
 	if (items_.empty())return;
 
 	int allPrice = 0;
-	itemAllPrice_ = 0;
+	targetPrice_ = 0;
+	warningPrice_ = 0;
 	for (Item* item : items_)
 	{
 		allPrice += item->GetInfo().price_;
 	}
 
-	itemAllPrice_ = allPrice;
-
-	// 60パーセントにする
-	allPrice *= TARGET_PRICE_RATIO;
+	//	目標金額を50%にする
+	targetPrice_ = allPrice * TARGET_PRICE_RATIO;
 
 	// 100円以下は切り捨て
-	int price = allPrice % 100;
-	allPrice -= price;
-
+	int price = targetPrice_ % 100;
 	// 目標金額を設定
-	targetPrice_ = allPrice;
+	targetPrice_ -= price;
+
+	//	警告文を出す目安金額を70%にする
+	warningPrice_ = allPrice * SHOW_WARNING_PRICE_RATIO;
 }
 
 ScoreManager::ScoreManager(void)

@@ -41,6 +41,7 @@ public:
 		X,
 		Y,
 		START,
+		BACK,
 		LB,
 		RB,
 		R_TRIGGER,
@@ -181,6 +182,9 @@ public:
 	// ポーズボタン
 	bool PauseButtons(void);
 
+	// メニューからタイトルに戻すボタン
+	bool MenuToTitleButtons(void);
+
 	// プレイヤー操作
 	// ダッシュ
 	bool DashButtons(void);
@@ -202,7 +206,7 @@ public:
 	// ライトとの距離を伸ばす
 	bool PushLightButtons(void);
 
-	// ライトとの距離を伸ばす
+	// マップを開く
 	bool MapButtons(void);
 
 private:

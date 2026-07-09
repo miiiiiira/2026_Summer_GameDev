@@ -70,13 +70,13 @@ void Wisp::Init(void)
 	wispModelId_ = render->GetHandle();
 
 	// オーナーからTransformを取得
-	auto trans = owner_->GetComponent<Transform>();
+	trans_ = owner_->GetComponent<Transform>();
 
 	// モデルに大きさ、向き、座標を設定
 	MV1SetScale(wispModelId_, scale_);
-	MV1SetPosition(wispModelId_, trans->pos_);
-	// 回転行列をモデルに反映
-	MV1SetRotationMatrix(wispModelId_, CameraUtility::GetCameraMatrix());
+	MV1SetPosition(wispModelId_, trans_->pos_);
+	// プレイヤー側を向くようにする
+	LookPlayer();
 
 	// 衝突情報構築
 	MV1SetupCollInfo(wispModelId_, -1);
@@ -90,7 +90,6 @@ void Wisp::Update(void)
 	// ライトの範囲を更新
 	UpdateRange();
 
-#ifdef _DEBUG
 
 	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_H))
 	{
@@ -140,8 +139,6 @@ void Wisp::Update(void)
 		}
 
 	}
-
-#endif // _DEBUG
 
 	// ライトの設定に変更があったら設定し直し
 	if (LightManager::GetInstance().GetLightType() != lightType_)
@@ -245,8 +242,8 @@ void Wisp::UpdatePos(void)
 	// モデルに座標を反映
 	MV1SetPosition(wispModelId_, trans->pos_);
 
-	// 回転行列をモデルに反映
-	MV1SetRotationMatrix(wispModelId_, CameraUtility::GetCameraMatrix());
+	// プレイヤー側を向くようにする
+	LookPlayer();
 }
 
 void Wisp::UpdateRange(void)
@@ -298,6 +295,36 @@ void Wisp::UpdateRange(void)
 			lightPow_,
 			ATTEN_2);
 	}
+}
+
+void Wisp::LookPlayer(void)
+{
+	// カメラの座標
+	VECTOR cameraPos = CameraUtility::GetCameraPos();
+
+	// 相手へのベクトルを計算(引き算)
+	VECTOR vec;
+	vec.x = cameraPos.x - trans_->pos_.x;
+	vec.y = cameraPos.y - trans_->pos_.y;
+	vec.z = cameraPos.z - trans_->pos_.z;
+
+	// ベクトルの正規化で単位ベクトル(方向)を取得する
+	float length = sqrtf(vec.x * vec.x + vec.z * vec.z);
+
+	// Y軸の回転
+	trans_->angle_.y = atan2f(vec.x, vec.z);
+
+	// 今回のモデルのY軸向きが逆なので向きを反転させる
+	trans_->angle_.y += 180.0f * (DX_PI_F / 180.0f);
+
+	// X軸の回転
+	trans_->angle_.x = atan2f(vec.y, length);
+
+	// Z軸は回転させない
+	trans_->angle_.z = 0.0f;
+
+	// モデルに向きを設定
+	MV1SetRotationXYZ(wispModelId_, trans_->angle_);
 }
 
 void Wisp::DebugDraw(void)

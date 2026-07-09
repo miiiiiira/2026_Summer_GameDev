@@ -13,6 +13,7 @@
 #include "../Confirm/Confirm.h"
 #include "../GameScene/GameScene.h"
 #include "../DebugScene.h"
+#include "../TitleScene/TitleScene.h"
 
 MainMenu::MainMenu(void)
 {
@@ -69,6 +70,13 @@ void MainMenu::Update(void)
 		return;
 	}
 #endif //_DEBUG
+
+	// メニューからタイトルに戻すボタン
+	if (InputManager::GetInstance()->MenuToTitleButtons())
+	{
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(), true);
+		return;
+	}
 
 	// 選択処理
 	SelectUpgrade();

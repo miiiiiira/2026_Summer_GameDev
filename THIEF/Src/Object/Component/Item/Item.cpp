@@ -339,6 +339,17 @@ void Item::EndGrabbed(void)
 	info_.velocity_.y = 0.0f;
 }
 
+void Item::TrueIsFound(void)
+{
+	// 発見フラグを立てる
+	info_.isFound_ = true; 
+
+	// TODO アイテムを見つけたとの音
+
+	// TODO 見つけたためアイテムにハイライト
+
+}
+
 void Item::OnFloor(void)
 {
 	info_.grabbedPos_ = trans_->pos_;

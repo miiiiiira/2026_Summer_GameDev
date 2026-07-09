@@ -56,7 +56,7 @@ namespace SoundTable_Game
 		{ SoundID::SE_LANTERN_ON,	{"Data/Sound/Game/Player/SE_LANTERN_ON.wav",	SoundType::SE_2D, 127} },
 		{ SoundID::SE_LANTERN_OFF,	{"Data/Sound/Game/Player/SE_LANTERN_OFF.wav",	SoundType::SE_2D, 200} },
 		{ SoundID::SE_GRAB,			{"Data/Sound/Game/Player/SE_GRAB.wav",			SoundType::SE_2D, 255} },
-		{ SoundID::SE_DAMAGE,		{"Data/Sound/Game/Player/SE_DAMAGE.wav",		SoundType::SE_2D, 255} },
+		{ SoundID::SE_DAMAGE,		{"Data/Sound/Game/Player/SE_DAMAGE.mp3",		SoundType::SE_2D, 200} },
 		{ SoundID::SE_MOVE,			{"Data/Sound/Game/Player/SE_MOVE.wav",			SoundType::SE_2D, 100} },
 		{ SoundID::SE_DASH,			{"Data/Sound/Game/Player/SE_DASH.wav",			SoundType::SE_2D, 255} },
 

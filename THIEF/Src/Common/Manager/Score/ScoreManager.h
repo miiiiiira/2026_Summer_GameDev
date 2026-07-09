@@ -7,8 +7,18 @@ class Item;
 class ScoreManager
 {
 public:
-	// 目標金額をアイテム全体の金額の50パーセントとする
+	// 目標金額をアイテム全体の金額の50%とする
 	static constexpr float TARGET_PRICE_RATIO = 0.5f;
+
+	// 警告文を出すときは全体の金額の70%とする
+	static constexpr float SHOW_WARNING_PRICE_RATIO = 0.7f;
+
+	// ボタンのアルファ値の変化速度
+	static constexpr float ALPHA_SPEED = 3.0f;
+
+	// ボタンのアルファ値の最大値と最小値
+	static constexpr float ALPHA_MAX = 255.0f;
+	static constexpr float ALPHA_MIN = 0.0f;
 
 	// 明示的にインステンスを生成する
 	static void CreateInstance(void);
@@ -71,11 +81,14 @@ private:
 	// ゲームクリア後のショップで使える金額
 	int totalPrice_;
 
-	// アイテムの全金額
-	int itemAllPrice_;
+	// 警告文を出すときの目安金額
+	int warningPrice_;
 
 	// 警告文出すか　true / 警告文を出す , false / 警告文を出さない
 	bool showWarning_;
+
+	float alpha_;
+	bool isIncreasing_;				// ボタンのアルファ値が増加しているかどうか
 
 	// デフォルトコンストラクタをprivateにして、
 	// 外部から生成できない様にする

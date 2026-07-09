@@ -12,9 +12,11 @@ void Camera::Init(void)
 {
 	transform_ = owner_->GetComponent<Transform>();
 
-	transform_->pos_ = DERFAULT_POS;
-	transform_->angle_ = DERFAULT_ANGLES;
 	angleMoveCount = 0.0f;
+
+	// マウスカーソルを画面中央に戻す
+	SetMousePoint(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2);
+
 	SetCameraPositionAndAngle(
 		transform_->pos_,
 		transform_->angle_.x,

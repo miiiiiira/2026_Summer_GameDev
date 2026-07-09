@@ -67,6 +67,9 @@ public:
 	void ChangeLightTexture(LIGHT_TYPE lightType);
 
 private:
+	// Transform
+	Transform* trans_;
+
 	// ポイントライトのハンドル
 	int pointLightHandle_ = -1;
 
@@ -97,6 +100,9 @@ private:
 	void UpdatePos(void);
 	// 範囲更新処理
 	void UpdateRange(void);
+
+	// プレイヤー側を向く
+	void LookPlayer(void);
 
 	// デバッグ用の描画処理
 	void DebugDraw(void);

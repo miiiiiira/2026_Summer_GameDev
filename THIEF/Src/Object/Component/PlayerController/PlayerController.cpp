@@ -225,7 +225,8 @@ void PlayerController::SetDamage(int damage)
 
 	hp_ -= damage;
 
-	// TODO プレイヤーのダメージSE
+	// プレイヤーのダメージ音
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_DAMAGE);
 
 	if (hp_ <= 0)
 	{
