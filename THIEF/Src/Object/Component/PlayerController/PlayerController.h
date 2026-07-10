@@ -85,7 +85,7 @@ public:
 	static constexpr float PLAYER_ITEM_SEARCH_RADIUS = 800.0f;
 
 	// –³“GŠÔ
-	static constexpr int  INVINCIBLE_TIME = 60;
+	static constexpr int  INVINCIBLE_TIME = 120;
 
 	// ƒJ[ƒg‚Æ‚Ì‹——£
 	static constexpr float  CART_DISTANCE = 300.0f;

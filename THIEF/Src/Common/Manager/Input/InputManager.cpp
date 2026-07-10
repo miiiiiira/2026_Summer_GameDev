@@ -296,7 +296,7 @@ bool InputManager::PushLightButtons(void)
 
 bool InputManager::MapButtons(void)
 {
-	return IsTrgDown(KEY_INPUT_TAB) || IsPadBtnNew(JOYPAD_NO::PAD1, JOYPAD_BTN::BACK);
+	return IsTrgDown(KEY_INPUT_TAB) || IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::BACK);
 }
 
 InputManager::InputManager(void)

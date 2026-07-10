@@ -655,6 +655,12 @@ void GameScene::Stage3Init(void)
 
 void GameScene::CheckEnemyAttack(void)
 {
+	// プレイヤーと敵の攻撃の当たり判定
+	auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
+	VECTOR startPos = player->GetOwner()->GetComponent<CapsuleCollider>()->GetStart();
+	VECTOR endPos = player->GetOwner()->GetComponent<CapsuleCollider>()->GetEnd();
+	float radius = player->GetOwner()->GetComponent<CapsuleCollider>()->GetRadius();
+
 	for (auto enemy : enemyManager_->GetEnemys())
 	{
 		// 武器の情報
@@ -664,6 +670,9 @@ void GameScene::CheckEnemyAttack(void)
 		// 攻撃中（描画されている）なら
 		if (useWeapon->IsAlive())
 		{
+			// 無敵時間が
+			if (player->GetInvincibleTime() > 0)continue;
+
 			auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 			// 敵の攻撃とステージのの当たり判定
 			MV1_COLL_RESULT_POLY_DIM hits = MV1CollCheck_Sphere
@@ -681,15 +690,10 @@ void GameScene::CheckEnemyAttack(void)
 			}
 			MV1CollResultPolyDimTerminate(hits);
 
-			// プレイヤーと敵の攻撃の当たり判定
-			auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
-			VECTOR startPos = player->GetOwner()->GetComponent<CapsuleCollider>()->GetStart();
-			VECTOR endPos = player->GetOwner()->GetComponent<CapsuleCollider>()->GetEnd();
-			float radius = player->GetOwner()->GetComponent<CapsuleCollider>()->GetRadius();
-
 			if (Collision::HitSphereCapsule(useWeapon->GetPos(), useWeapon->GetCollisionRadius(),
 				startPos, endPos, radius))
 			{
+				// プレイヤーにダメージを与える
 				player->SetDamage(enemy->GetAttackDamagePow());
 
 				// 画面を赤くするエフェクトを付ける
