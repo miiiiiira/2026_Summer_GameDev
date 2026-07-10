@@ -8,6 +8,7 @@
 #include "../../../../Scene/SceneManager.h"
 #include "MapInfo.h"
 #include "Map.h"
+#include "../../../../Common/Manager/Audio/AudioManager.h"
 
 Map::Map(void)
 {
@@ -164,6 +165,17 @@ void Map::SetIsDraw(bool flg)
 {
 	// 描画するかを設定
 	isDraw_ = flg;
+
+	if (isDraw_)
+	{
+		// マップ表示音
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_MAP_OPEN);
+	}
+	else
+	{
+		// マップ非表示音
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_MAP_CLOSE);
+	}
 }
 
 bool Map::GetIsDraw(void)

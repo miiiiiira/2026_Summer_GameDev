@@ -59,6 +59,8 @@ namespace SoundTable_Game
 		{ SoundID::SE_DAMAGE,		{"Data/Sound/Game/Player/SE_DAMAGE.mp3",		SoundType::SE_2D, 200} },
 		{ SoundID::SE_MOVE,			{"Data/Sound/Game/Player/SE_MOVE.wav",			SoundType::SE_2D, 100} },
 		{ SoundID::SE_DASH,			{"Data/Sound/Game/Player/SE_DASH.wav",			SoundType::SE_2D, 255} },
+		{ SoundID::SE_MAP_OPEN,		{"Data/Sound/Game/Player/SE_MAP_OPEN.mp3",		SoundType::SE_2D, 127} },
+		{ SoundID::SE_MAP_CLOSE,	{"Data/Sound/Game/Player/SE_MAP_CLOSE.mp3",		SoundType::SE_2D, 127} },
 
 		{ SoundID::SE_DELIVERY_ITEM_ON,	{"Data/Sound/Game/Delivery/SE_DELIVERY_ITEM_ON.mp3", SoundType::SE_2D, 180} },
 		{ SoundID::SE_DELIVERY_BUTTON_SUC, {"Data/Sound/Game/Delivery/SE_DELIVERY_BUTTON_SUC.mp3", SoundType::SE_2D, 200} },

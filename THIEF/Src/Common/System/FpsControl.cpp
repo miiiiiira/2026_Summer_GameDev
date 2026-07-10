@@ -84,6 +84,8 @@ void FpsControl::CalcFrameRate()
 // フレームレートを表示(デバッグ用)
 void FpsControl::DrawFrameRate()
 {
+#ifdef _DEBUG
+
 	// スクリーンの右端に来るように設定
 	DrawFormatString(
 		Application::SCREEN_SIZE_X - 90,
@@ -92,4 +94,6 @@ void FpsControl::DrawFrameRate()
 		"FPS[%.2f]",
 		frameRate
 	);
+#endif // _DEBUG
+
 }
