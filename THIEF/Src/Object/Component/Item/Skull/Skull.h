@@ -30,5 +30,8 @@ public:
 
 	// ”j‰ó‚Ìˆ—
 	void Break(void) override;
+
+	// ƒ_ƒ[ƒW‚Ìˆ—
+	void Damage(void) override;
 };
 
