@@ -233,9 +233,10 @@ void Statue::UpdateChase(void)
 	VECTOR playerPos = player_->GetTransform()->pos_;
 
 	// 視線位置
-	VECTOR enemyHead = VAdd(pos_, startOffset_);
+	VECTOR start = { 0.0f, 100.0f, 0.0f };
+	VECTOR enemyHead = VAdd(pos_, start);
 	VECTOR playerHead = player_->GetCapsule()->GetStart();
-	float distance = VSize(VSub(playerPos, enemyPos));
+	float distance = VSize(VSub(playerPos, pos_));
 
 	// 画面内に入っているかをチェックする
 	bool isLookedByPlayer1 = !CheckCameraViewClip(enemyPos);
@@ -247,15 +248,16 @@ void Statue::UpdateChase(void)
 	bool isLookedByPlayer4 = !CheckCameraViewClip(enemyPos);
 	enemyPos.y += 100.0f;
 	bool isLookedByPlayer5 = !CheckCameraViewClip(enemyPos);
+	enemyPos.y -= 350.0f;
 
 	bool isLooked = (isLookedByPlayer1 || isLookedByPlayer2 || isLookedByPlayer3 || isLookedByPlayer4 || isLookedByPlayer5);
+
+	// 視線チェック
+	bool isPlayerVisible = !CheckChaseLineCollision(enemyHead, playerHead, 40.0f);
 
 	// プレイヤーがエリア内にいるなら
 	if (IsPlayerInArea(MIN_AREA_POS, MAX_AREA_POS))
 	{
-		// 視線チェック
-		bool isPlayerVisible = !CheckChaseLineCollision(enemyHead, playerHead, 40.0f);
-
 		//　攻撃範囲内にいたら、攻撃状態にする
 		if (distance <= 200.0f)
 		{
@@ -313,15 +315,16 @@ void Statue::UpdateChase(void)
 	else
 	{
 		// 見られていないなら帰還開始
-		if (CheckCameraViewClip(enemyPos)) // true なら見られていない
+		if (CheckCameraViewClip(enemyPos))
 		{
+
 			// 帰還先との間に障害物があるかチェック
-			if (CheckChaseLineCollision(pos_, DEFAULT_POS, 40.0f))
+			if (CheckChaseLineCollision(enemyPos, DEFAULT_POS, 40.0f))
 			{
 				// 障害物あり
 				if (path_.empty())
 				{
-					int enemyNearNode = FindNearestNode(pos_);
+					int enemyNearNode = FindNearestNode(enemyPos);
 					int defaultNearNode = FindNearestNode(DEFAULT_POS);
 					FindPath(enemyNearNode, defaultNearNode);
 					if (path_.size() > 1)
@@ -347,7 +350,7 @@ void Statue::UpdateChase(void)
 			else
 			{
 				// 相手へのベクトルを計算
-				VECTOR diff = VSub(DEFAULT_POS, pos_);
+				VECTOR diff = VSub(DEFAULT_POS, enemyPos);
 				diff.y = 0.0f;
 
 				// ベクトルの正規化で単位ベクトル（方向）を取得
@@ -356,7 +359,7 @@ void Statue::UpdateChase(void)
 				// 回転はY軸のみ
 				angle_.x = angle_.z = 0.0f;
 
-				float enemyDist2 = GetDistance(pos_, DEFAULT_POS);
+				float enemyDist2 = GetDistance(enemyPos, DEFAULT_POS);
 
 				if (enemyDist2 <= 100.0f * 100.0f)
 				{
@@ -367,7 +370,62 @@ void Statue::UpdateChase(void)
 		}
 		else
 		{
-			moveDir_ = { 0.0f, 0.0f, 0.0f };
+
+			path_.clear();
+
+			if (isPlayerVisible)
+			{
+				moveDir_ = { 0.0f, 0.0f, 0.0f };
+			}
+			// 帰還先との間に障害物があるかチェック
+			else if (CheckChaseLineCollision(enemyPos, DEFAULT_POS, 40.0f))
+			{
+				// 障害物あり
+				if (path_.empty())
+				{
+					int enemyNearNode = FindNearestNode(enemyPos);
+					int defaultNearNode = FindNearestNode(DEFAULT_POS);
+					FindPath(enemyNearNode, defaultNearNode);
+					if (path_.size() > 1)
+					{
+						nextNodeId_ = 1;
+					}
+					else
+					{
+						nextNodeId_ = 0;
+					}
+				}
+
+				if (nextNodeId_ >= static_cast<int>(path_.size()))
+				{
+					path_.clear();
+					nextNodeId_ = 0;
+				}
+				else
+				{
+					ChaseNode();
+				}
+			}
+			else
+			{
+				// 相手へのベクトルを計算
+				VECTOR diff = VSub(DEFAULT_POS, enemyPos);
+				diff.y = 0.0f;
+
+				// ベクトルの正規化で単位ベクトル（方向）を取得
+				moveDir_ = VNorm(diff);
+
+				// 回転はY軸のみ
+				angle_.x = angle_.z = 0.0f;
+
+				float enemyDist2 = GetDistance(enemyPos, DEFAULT_POS);
+
+				if (enemyDist2 <= 100.0f * 100.0f)
+				{
+					ChangeState(STATE::IDLE);
+					return;
+				}
+			}
 		}
 	}
 
@@ -384,7 +442,7 @@ void Statue::UpdateChase(void)
 		seTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
 		if (seTimer_ <= 0.0f)
 		{
-			AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_STATUE);
+			AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_STATUE, &pos_);
 			seTimer_ = 1.0f;
 		}
 	}
@@ -397,7 +455,6 @@ void Statue::UpdateChase(void)
 
 void Statue::UpdateAttack(void)
 {
-
 	step_ -= SceneManager::GetInstance()->GetDeltaTime();
 
 	// 攻撃処理の更新

@@ -23,7 +23,6 @@ namespace EnemyCommon
         SKELETON,
         STATUE,
         GIGGLE,
-        GUNMAN,
         MAX,
     };
 }

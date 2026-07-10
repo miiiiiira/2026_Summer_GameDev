@@ -135,7 +135,7 @@ void Mushnub::ChangeSurprise(void)
 {
 	step_ = 2.0f;
 	LookPlayer();
-	AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_MUSHNUB);
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_MUSHNUB, & pos_);
 	animationController_->Play(static_cast<int>(ANIM_TYPE::HIT_REACT), false);
 }
 

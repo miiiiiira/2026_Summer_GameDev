@@ -36,7 +36,6 @@ void Yeti::OnInitialize(void)
 	// ‰ñ“]s—ñ‚ðƒ‚ƒfƒ‹‚É”½‰f
 	MV1SetRotationMatrix(modelId_, mat);
 
-	pos_ = DEFAULT_POS;
 	MV1SetPosition(modelId_, pos_);
 	prevPos_ = pos_;
 
@@ -231,7 +230,7 @@ void Yeti::ChangeSurprise(void)
 {
 	step_ = 2.0f;
 	LookPlayer();
-	AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_YETI);
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_YETI, & pos_);
 	animationController_->Play(static_cast<int>(ANIM_TYPE::HIT_REACT), false);
 }
 

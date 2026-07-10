@@ -816,6 +816,10 @@ void GameScene::CollisionEnemyToStage(void)
 					}
 
 					collision = true;
+
+					// “G‚Ìí—Ş‚ªƒXƒPƒ‹ƒgƒ“‚¶‚á‚È‚©‚Á‚½‚çˆ—‚ğ‚µ‚È‚¢
+					if (enemy->GetTag() != ENEMY_TAG::SKELETON) continue;
+					enemy->SetCollisionStage(collision);
 				}
 
 				// Õ“ËŒ‹‰Ê‚ğ‰ğ•ú

@@ -121,6 +121,7 @@ void Skeleton::ChangeIdle(void)
 
 void Skeleton::ChangeLook(void)
 {
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_SKELETON_LOOK);
 }
 
 void Skeleton::ChangeScare(void)
