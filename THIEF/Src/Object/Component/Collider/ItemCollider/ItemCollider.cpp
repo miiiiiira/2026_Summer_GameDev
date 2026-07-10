@@ -154,6 +154,10 @@ void ItemCollider::ItemToCartCollision(void)
 
 	// アイテムのトータルの移動量  (自身の移動 - カートの移動)
 	VECTOR move = VSub(itemMove, cartMove);
+	if(cartMove.y < -2.0f)
+	{
+		move.y = itemMove.y * 1.1f;
+	}
 
 	// 衝突判定開始座標
 	VECTOR pos = itemPrevPos;
