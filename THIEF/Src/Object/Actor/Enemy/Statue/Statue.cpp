@@ -235,7 +235,7 @@ void Statue::UpdateChase(void)
 	// 視線位置
 	VECTOR enemyHead = VAdd(pos_, startOffset_);
 	VECTOR playerHead = player_->GetCapsule()->GetStart();
-	float distance = VSize(VSub(playerPos, enemyPos));
+	float distance = VSize(VSub(playerPos, pos_));
 
 	// 画面内に入っているかをチェックする
 	bool isLookedByPlayer1 = !CheckCameraViewClip(enemyPos);
@@ -247,6 +247,7 @@ void Statue::UpdateChase(void)
 	bool isLookedByPlayer4 = !CheckCameraViewClip(enemyPos);
 	enemyPos.y += 100.0f;
 	bool isLookedByPlayer5 = !CheckCameraViewClip(enemyPos);
+	enemyPos.y -= 350.0f;
 
 	bool isLooked = (isLookedByPlayer1 || isLookedByPlayer2 || isLookedByPlayer3 || isLookedByPlayer4 || isLookedByPlayer5);
 
@@ -315,13 +316,14 @@ void Statue::UpdateChase(void)
 		// 見られていないなら帰還開始
 		if (CheckCameraViewClip(enemyPos)) // true なら見られていない
 		{
+
 			// 帰還先との間に障害物があるかチェック
-			if (CheckChaseLineCollision(pos_, DEFAULT_POS, 40.0f))
+			if (CheckChaseLineCollision(enemyPos, DEFAULT_POS, 40.0f))
 			{
 				// 障害物あり
 				if (path_.empty())
 				{
-					int enemyNearNode = FindNearestNode(pos_);
+					int enemyNearNode = FindNearestNode(enemyPos);
 					int defaultNearNode = FindNearestNode(DEFAULT_POS);
 					FindPath(enemyNearNode, defaultNearNode);
 					if (path_.size() > 1)
@@ -347,7 +349,7 @@ void Statue::UpdateChase(void)
 			else
 			{
 				// 相手へのベクトルを計算
-				VECTOR diff = VSub(DEFAULT_POS, pos_);
+				VECTOR diff = VSub(DEFAULT_POS, enemyPos);
 				diff.y = 0.0f;
 
 				// ベクトルの正規化で単位ベクトル（方向）を取得
@@ -356,7 +358,7 @@ void Statue::UpdateChase(void)
 				// 回転はY軸のみ
 				angle_.x = angle_.z = 0.0f;
 
-				float enemyDist2 = GetDistance(pos_, DEFAULT_POS);
+				float enemyDist2 = GetDistance(enemyPos, DEFAULT_POS);
 
 				if (enemyDist2 <= 100.0f * 100.0f)
 				{
@@ -379,11 +381,6 @@ void Statue::UpdateChase(void)
 	// 移動しているか
 	bool isMoving = (VSize(moveDir_) > 0.001f);
 
-	if (IsPlayerInArea(MIN_AREA_POS, MAX_AREA_POS))
-	{
-
-	}
-
 	if (!isLooked && isMoving)
 	{
 		seTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
@@ -402,7 +399,6 @@ void Statue::UpdateChase(void)
 
 void Statue::UpdateAttack(void)
 {
-
 	step_ -= SceneManager::GetInstance()->GetDeltaTime();
 
 	// 攻撃処理の更新

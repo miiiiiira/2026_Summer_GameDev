@@ -37,7 +37,7 @@ private:
 	static constexpr VECTOR DEFAULT_ANGLE = { 0.0f, 50.0f,0.0f };
 
 	// 座標
-	static constexpr VECTOR DEFAULT_POS = { -7444.0f,0.0f,3570.0f };
+	static constexpr VECTOR DEFAULT_POS = { -7444.0f,90.0f,3570.0f };
 
 	// 特定エリアの最大、最小値
 	static constexpr VECTOR MIN_AREA_POS = { -7690.0f, 1.0f, 3450.0f };

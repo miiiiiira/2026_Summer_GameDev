@@ -36,7 +36,6 @@ void Yeti::OnInitialize(void)
 	// ‰ñ“]s—ñ‚ğƒ‚ƒfƒ‹‚É”½‰f
 	MV1SetRotationMatrix(modelId_, mat);
 
-	pos_ = DEFAULT_POS;
 	MV1SetPosition(modelId_, pos_);
 	prevPos_ = pos_;
 

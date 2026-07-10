@@ -60,6 +60,8 @@ void EnemyManager::CreateEnemyStage1(void)
 	newEnemy = new Yeti(enemyModelIds_[ENEMY_TAG::YETI]);
 	newEnemy->Load();
 	newEnemy->SetTag(ENEMY_TAG::YETI);
+	VECTOR pos = { -5617.04f,10.0f,6573.71f };
+	newEnemy->SetPos(pos);
 	newEnemy->Init(player_, stageId_, way_, edgeList_);
 	// リストに追加
 	enemys_.push_back(newEnemy);
@@ -80,6 +82,16 @@ void EnemyManager::CreateEnemyStage2(void)
 	newEnemy->Load();
 	newEnemy->SetTag(ENEMY_TAG::GIGGLE);
 	newEnemy->Init();
+	// リストに追加
+	enemys_.push_back(newEnemy);
+
+	// Yetiを生成
+	newEnemy = new Yeti(enemyModelIds_[ENEMY_TAG::YETI]);
+	newEnemy->Load();
+	newEnemy->SetTag(ENEMY_TAG::YETI);
+	VECTOR pos = { -6811.0f,10.0f,1372.0f };
+	newEnemy->SetPos(pos);
+	newEnemy->Init(player_, stageId_, way_, edgeList_);
 	// リストに追加
 	enemys_.push_back(newEnemy);
 
@@ -156,9 +168,9 @@ void EnemyManager::LoadStage1(void)
 
 void EnemyManager::LoadStage2(void)
 {
+	enemyModelIds_[ENEMY_TAG::YETI] = MV1LoadModel((Application::PATH_MODEL + "Enemy/Yeti.mv1").c_str());
 	enemyModelIds_[ENEMY_TAG::STATUE] = MV1LoadModel((Application::PATH_MODEL + "Enemy/Statue.mv1").c_str());
 	enemyModelIds_[ENEMY_TAG::SKELETON] = MV1LoadModel((Application::PATH_MODEL + "Enemy/Skeleton.mv1").c_str());
-	enemyModelIds_[ENEMY_TAG::GUNMAN] = MV1LoadModel((Application::PATH_MODEL + "Enemy/gunman/gunman.mv1").c_str());
 
 	LoadCsvData("Data/pointSave2.csv");
 }
