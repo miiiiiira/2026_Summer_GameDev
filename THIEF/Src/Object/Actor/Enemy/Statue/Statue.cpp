@@ -251,12 +251,12 @@ void Statue::UpdateChase(void)
 
 	bool isLooked = (isLookedByPlayer1 || isLookedByPlayer2 || isLookedByPlayer3 || isLookedByPlayer4 || isLookedByPlayer5);
 
+	// 視線チェック
+	bool isPlayerVisible = !CheckChaseLineCollision(enemyHead, playerHead, 40.0f);
+
 	// プレイヤーがエリア内にいるなら
 	if (IsPlayerInArea(MIN_AREA_POS, MAX_AREA_POS))
 	{
-		// 視線チェック
-		bool isPlayerVisible = !CheckChaseLineCollision(enemyHead, playerHead, 40.0f);
-
 		//　攻撃範囲内にいたら、攻撃状態にする
 		if (distance <= 200.0f)
 		{
@@ -314,7 +314,7 @@ void Statue::UpdateChase(void)
 	else
 	{
 		// 見られていないなら帰還開始
-		if (CheckCameraViewClip(enemyPos)) // true なら見られていない
+		if (CheckCameraViewClip(enemyPos))
 		{
 
 			// 帰還先との間に障害物があるかチェック
@@ -369,7 +369,30 @@ void Statue::UpdateChase(void)
 		}
 		else
 		{
-			moveDir_ = { 0.0f, 0.0f, 0.0f };
+			if (isPlayerVisible)
+			{
+				moveDir_ = { 0.0f, 0.0f, 0.0f };
+			}
+			else
+			{
+				// 相手へのベクトルを計算
+				VECTOR diff = VSub(DEFAULT_POS, enemyPos);
+				diff.y = 0.0f;
+
+				// ベクトルの正規化で単位ベクトル（方向）を取得
+				moveDir_ = VNorm(diff);
+
+				// 回転はY軸のみ
+				angle_.x = angle_.z = 0.0f;
+
+				float enemyDist2 = GetDistance(enemyPos, DEFAULT_POS);
+
+				if (enemyDist2 <= 100.0f * 100.0f)
+				{
+					ChangeState(STATE::IDLE);
+					return;
+				}
+			}
 		}
 	}
 
