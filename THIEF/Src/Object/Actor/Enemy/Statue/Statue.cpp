@@ -233,7 +233,8 @@ void Statue::UpdateChase(void)
 	VECTOR playerPos = player_->GetTransform()->pos_;
 
 	// 視線位置
-	VECTOR enemyHead = VAdd(pos_, startOffset_);
+	VECTOR start = { 0.0f, 100.0f, 0.0f };
+	VECTOR enemyHead = VAdd(pos_, start);
 	VECTOR playerHead = player_->GetCapsule()->GetStart();
 	float distance = VSize(VSub(playerPos, pos_));
 
@@ -369,9 +370,41 @@ void Statue::UpdateChase(void)
 		}
 		else
 		{
+
+			path_.clear();
+
 			if (isPlayerVisible)
 			{
 				moveDir_ = { 0.0f, 0.0f, 0.0f };
+			}
+			// 帰還先との間に障害物があるかチェック
+			else if (CheckChaseLineCollision(enemyPos, DEFAULT_POS, 40.0f))
+			{
+				// 障害物あり
+				if (path_.empty())
+				{
+					int enemyNearNode = FindNearestNode(enemyPos);
+					int defaultNearNode = FindNearestNode(DEFAULT_POS);
+					FindPath(enemyNearNode, defaultNearNode);
+					if (path_.size() > 1)
+					{
+						nextNodeId_ = 1;
+					}
+					else
+					{
+						nextNodeId_ = 0;
+					}
+				}
+
+				if (nextNodeId_ >= static_cast<int>(path_.size()))
+				{
+					path_.clear();
+					nextNodeId_ = 0;
+				}
+				else
+				{
+					ChaseNode();
+				}
 			}
 			else
 			{
