@@ -379,12 +379,17 @@ void Statue::UpdateChase(void)
 	// ˆÚ“®‚µ‚Ä‚¢‚é‚©
 	bool isMoving = (VSize(moveDir_) > 0.001f);
 
+	if (IsPlayerInArea(MIN_AREA_POS, MAX_AREA_POS))
+	{
+
+	}
+
 	if (!isLooked && isMoving)
 	{
 		seTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
 		if (seTimer_ <= 0.0f)
 		{
-			AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_STATUE);
+			AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_STATUE, &pos_);
 			seTimer_ = 1.0f;
 		}
 	}

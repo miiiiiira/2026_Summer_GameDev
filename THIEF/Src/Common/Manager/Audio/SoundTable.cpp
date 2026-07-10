@@ -84,10 +84,11 @@ namespace SoundTable_Game
 		{ SoundID::SE_ENEMY_SPAWN_4, {"Data/Sound/Game/Enemy/SE_ENEMY_SPAWN_4.wav", SoundType::SE_3D, 255} },
 
 		{ SoundID::SE_ENEMY_GIGGLE, {"Data/Sound/Game/Enemy/Giggle.mp3", SoundType::SE_2D, 100} },
-		{ SoundID::SE_ENEMY_YETI, {"Data/Sound/Game/Enemy/roar.mp3", SoundType::SE_2D, 150} },
-		{ SoundID::SE_ENEMY_MUSHNUB, {"Data/Sound/Game/Enemy/duck.mp3", SoundType::SE_2D, 150} },
+		{ SoundID::SE_ENEMY_YETI, {"Data/Sound/Game/Enemy/roar.mp3", SoundType::SE_3D, 255} },
+		{ SoundID::SE_ENEMY_MUSHNUB, {"Data/Sound/Game/Enemy/duck.mp3", SoundType::SE_3D, 255} },
 		{ SoundID::SE_ENEMY_SKELETON, {"Data/Sound/Game/Enemy/Destruction.mp3", SoundType::SE_2D, 100} },
-		{ SoundID::SE_ENEMY_STATUE, {"Data/Sound/Game/Enemy/Dragging.mp3", SoundType::SE_2D, 150} },
+		{ SoundID::SE_ENEMY_STATUE, {"Data/Sound/Game/Enemy/Dragging.mp3", SoundType::SE_3D, 255} },
+		{ SoundID::SE_ENEMY_SKELETON_LOOK, {"Data/Sound/Game/Enemy/Skeleton_look.mp3", SoundType::SE_2D, 80} },
 	};
 }
 
