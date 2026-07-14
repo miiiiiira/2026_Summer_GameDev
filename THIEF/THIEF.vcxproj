@@ -93,6 +93,7 @@
     <ClCompile Include="Src\Object\Actor\Enemy\Weapon\WeaponBase.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\Weapon\WeaponPunch.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\Statue\Statue.cpp" />
+    <ClCompile Include="Src\Scene\Tutorial\TutorialScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Object\Component\Stage\DeliveryInfo.h" />
@@ -182,6 +183,8 @@
     <ClInclude Include="Src\Object\Actor\Enemy\Weapon\WeaponBase.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\Weapon\WeaponPunch.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\Statue\Statue.h" />
+    <ClInclude Include="Src\Scene\Tutorial\TutorialInfo.h" />
+    <ClInclude Include="Src\Scene\Tutorial\TutorialScene.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Src\Common\Shader\CtrShader.hlsl">
