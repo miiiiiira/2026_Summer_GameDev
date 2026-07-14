@@ -37,7 +37,7 @@ private:
 	static constexpr float ATTEN_2 = 0.0f;
 
 	// デフォルトのライトカラー
-	static constexpr VECTOR DEFAULT_LIGHT_COLOR = { 0x41 , 0x69, 0xe1 };
+	static constexpr VECTOR DEFAULT_LIGHT_COLOR = { 0xe0,0xe0,0xe0 };
 
 public:
 
@@ -87,8 +87,11 @@ private:
 	// ライトの範囲
 	float range_;
 
-	// 範囲設定を最大値にしているか　true = 最大値にする処理が行われる / false = 最小値にする処理が行われる
+	// 範囲設定を最大値にしているか　true / 最大値にする処理が行われる , false / 最小値にする処理が行われる
 	bool isRangeMax_;
+
+	// ライトを奥にしているか　true / 奥 , false / 手前
+	bool isPushLight_;
 
 	// モデルの大きさ
 	VECTOR scale_;

@@ -21,6 +21,7 @@ public:
 
 	// 初期化
 	void Init(void) override;
+	void Update(void) override;
 	void Draw3D(void) override;
 	
 	// モデルIDを返す
@@ -53,13 +54,24 @@ public:
 	// ローカル座標に変換
 	VECTOR ToLocalPos(VECTOR world);
 
+	// カウントが開始されているか
+	bool GetStartClearCount(void);
+	// クリアカウントを開始させる
+	void StartClearCount(void);
+
 private:
+	// クリアカウントの規定値
+	static constexpr int CLEAR_COUNT_MAX = 180;
+
 	// モデルID
 	int modelId_ = -1;
 
 	int collModelId_ = -1;
 
 	std::vector<Item*> items_;
+
+	// クリアカウント
+	int clearCount_ = 0;
 
 	// 納品場所の大きさ
 	VECTOR deliverySize_;

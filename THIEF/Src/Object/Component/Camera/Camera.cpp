@@ -30,13 +30,19 @@ void Camera::Update(void)
 	// カメラの回転処理
 	ProcessRot(true);
 
-	// 座標とアングルを更新
-	SetCameraPositionAndAngle(
-		transform_->pos_,
-		transform_->angle_.x,
-		transform_->angle_.y,
-		transform_->angle_.z
-	);
+	switch (mode_)
+	{
+	case Camera::MODE::FIXED:
+		break;
+	case Camera::MODE::FREE:
+		break;
+	case Camera::MODE::FOLLOW:
+		UpdateFollow();
+		break;
+	case Camera::MODE::NONE:
+	default:
+		break;
+	}
 }
 
 void Camera::PreDraw(void)
@@ -67,30 +73,8 @@ void Camera::SetBeforeDraw(void)
 	}
 }
 
-void Camera::SetBeforeDrawFixedPoint()
+void Camera::UpdateFollow(void)
 {
-	SetCameraPositionAndAngle(
-		transform_->pos_,
-		transform_->angle_.x,
-		transform_->angle_.y,
-		transform_->angle_.z
-	);
-}
-
-void Camera::SetBeforeDrawFree()
-{
-	SetCameraPositionAndAngle(
-		transform_->pos_,
-		transform_->angle_.x,
-		transform_->angle_.y,
-		transform_->angle_.z
-	);
-}
-
-void Camera::SetBeforeDrawFollow()
-{
-	if (!target_) return;
-
 	// カメラの回転行列を作成
 	MATRIX mat = MGetIdent();
 	mat = MMult(mat, MGetRotX(transform_->angle_.x));
@@ -160,6 +144,39 @@ void Camera::SetBeforeDrawFollow()
 	// カメラ座標との高さを一致させるためカメラ座標から回転させた相対座標を足す
 	targetPos_ = VAdd(transform_->pos_, targetLocalRotPos);
 
+	// 3Dサウンドのリスナーの位置とリスナーの前方位置を設定する
+	Set3DSoundListenerPosAndFrontPos_UpVecY(transform_->pos_, targetPos_);
+}
+
+void Camera::SetBeforeDrawFixedPoint()
+{
+	SetCameraPositionAndAngle(
+		transform_->pos_,
+		transform_->angle_.x,
+		transform_->angle_.y,
+		transform_->angle_.z
+	);
+}
+
+void Camera::SetBeforeDrawFree()
+{
+	SetCameraPositionAndAngle(
+		transform_->pos_,
+		transform_->angle_.x,
+		transform_->angle_.y,
+		transform_->angle_.z
+	);
+}
+
+void Camera::SetBeforeDrawFollow()
+{
+	if (!target_) return;
+
+	// カメラの回転行列を作成
+	MATRIX mat = MGetIdent();
+	mat = MMult(mat, MGetRotX(transform_->angle_.x));
+	mat = MMult(mat, MGetRotY(transform_->angle_.y));
+
 	// カメラの上方向を計算
 	VECTOR up = VTransform(Math::DIR_U, mat);
 
@@ -170,8 +187,6 @@ void Camera::SetBeforeDrawFollow()
 		up
 	);
 
-	// 3Dサウンドのリスナーの位置とリスナーの前方位置を設定する
-	Set3DSoundListenerPosAndFrontPos_UpVecY(transform_->pos_, targetPos_);
 }
 
 void Camera::ChangeMode(MODE mode)
@@ -210,6 +225,14 @@ void Camera::ProcessRot(bool isLimit)
 		// 方向回転によるXYZの移動(ゲームパッド)
 		RotGamePad(isLimit);
 	}
+
+		// 座標とアングルを更新
+	SetCameraPositionAndAngle(
+		transform_->pos_,
+		transform_->angle_.x,
+		transform_->angle_.y,
+		transform_->angle_.z
+	);
 }
 
 void Camera::RotKeyboard(bool isLimit)

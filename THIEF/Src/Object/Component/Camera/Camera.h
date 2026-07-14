@@ -64,6 +64,9 @@ public:
 	Transform* GetTransform();
 
 private:
+	// フォローモードの更新処理
+	void UpdateFollow(void);
+
 	// 描画前のカメラ設定
 	void SetBeforeDrawFixedPoint();
 	void SetBeforeDrawFree();

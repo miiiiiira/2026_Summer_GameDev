@@ -5,6 +5,8 @@
 #include "../../../Scene/SceneManager.h"
 #include "../../Object.h"
 #include "DeliveryInfo.h"
+#include "../../../Common/Manager/Score/ScoreManager.h"
+#include "../../../Common/Manager/Audio/AudioManager.h"
 
 Stage::~Stage(void)
 {
@@ -45,6 +47,45 @@ void Stage::Init()
 	doneSwitchPos_ = VAdd(doneSwitchPos_, deliveryData->second.doneSwitchLocalPos_);
 }
 
+void Stage::Update(void)
+{
+	// クリアカウントが開始されていなければ処理を行わない
+	if (clearCount_ <= 0)return;
+	// クリアまでのカウントを進める
+	clearCount_++;
+
+	// クリアカウントが規定量に達したらステージクリアへ
+	if (clearCount_ >= CLEAR_COUNT_MAX)
+	{
+		// ステージクリアへ
+		SceneManager::GetInstance()->TrueStageClear();
+		// TODO 完全納品完了音
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_SUC);
+		return;
+	}
+
+	// 一秒ごとにカウント音を出す
+	if (clearCount_ % 60 == 0)
+	{
+		// TODO 納品完了待ち時間のカウント音
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_SUC);
+	}
+
+	// 納品済みの金額を確認
+	int deliveryPrice = ScoreManager::GetInstance().GetDeliveryPrice();
+	// 目標金額を確認
+	int targetPrice = ScoreManager::GetInstance().GetTargetPrice();
+
+	// 目標金額を達成していなかったら
+	if (deliveryPrice < targetPrice)
+	{
+		// カウントを終了
+		clearCount_ = 0;
+		// TODO 納品失敗音長めのやつ
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_FAI);
+	}
+}
+
 void Stage::Draw3D(void)
 {
 
@@ -81,12 +122,15 @@ void Stage::SetCollModel(std::string path)
 		collModelId_ = -1;
 	}
 
+	// 当たり判定モデルが入ってなかったら
 	if (path == "NoData")
 	{
 		collModelId_ = -1;
 	}
+	// 当たり判定モデルが入っていたら
 	else
 	{
+		// 当たり判定モデルを読み込み
 		collModelId_ = MV1LoadModel(path.c_str());
 	}
 }
@@ -116,6 +160,17 @@ VECTOR Stage::ToLocalPos(VECTOR world)
 {
 	auto trans = owner_->GetComponent<Transform>();
 	return VSub(world, trans->pos_);
+}
+
+bool Stage::GetStartClearCount(void)
+{
+	return clearCount_ > 0;
+}
+
+void Stage::StartClearCount(void)
+{
+	// クリアカウントを開始させる
+	clearCount_++;
 }
 
 void Stage::DrawDebug(void)

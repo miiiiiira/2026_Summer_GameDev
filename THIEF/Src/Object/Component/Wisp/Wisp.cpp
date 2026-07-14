@@ -80,6 +80,9 @@ void Wisp::Init(void)
 
 	// 衝突情報構築
 	MV1SetupCollInfo(wispModelId_, -1);
+
+	// ライトを手前に初期化
+	isPushLight_ = false;
 }
 
 void Wisp::Update(void)
@@ -217,19 +220,25 @@ void Wisp::UpdatePos(void)
 	// カメラの方向を算出
 	VECTOR cameraDir = CameraUtility::CameraRotToPos(forward);
 
-	// 座標
-	// 方向と同じ要領で、相対座標を回転
+	// ライトの距離
 	if (InputManager::GetInstance()->PushLightButtons())
 	{
-		// 座標に反映
+		// 反転させる
+		isPushLight_ = !isPushLight_;
+	}
+
+	if (isPushLight_)
+	{
+
+		// 座標に反映 奥
 		trans->pos_ = CameraUtility::AddCameraPosLocalPos(REACH_MAX_LIGHT);
 		pointPos_ = CameraUtility::AddCameraPosLocalPos(VAdd(REACH_MAX_LIGHT, POINTLIGHT_OFFSET));
 	}
 	else
 	{
-		// 座標に反映
+		// 座標に反映 手前
 		trans->pos_ = CameraUtility::AddCameraPosLocalPos(REACH_DEFAULT_LIGHT);
-		pointPos_ = CameraUtility::AddCameraPosLocalPos(VAdd(REACH_DEFAULT_LIGHT, POINTLIGHT_OFFSET ));
+		pointPos_ = CameraUtility::AddCameraPosLocalPos(VAdd(REACH_DEFAULT_LIGHT, POINTLIGHT_OFFSET));
 	}
 
 	// 線形補間で滑らかにする

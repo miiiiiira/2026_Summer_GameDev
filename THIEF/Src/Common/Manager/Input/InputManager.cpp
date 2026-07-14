@@ -291,7 +291,7 @@ bool InputManager::PullItemButtons(int wheel)
 
 bool InputManager::PushLightButtons(void)
 {
-	return IsNew(KEY_INPUT_Q)||IsPadBtnNew(JOYPAD_NO::PAD1, JOYPAD_BTN::L_TRIGGER);
+	return IsTrgDown(KEY_INPUT_Q)|| IsPadBtnTrgDown(JOYPAD_NO::PAD1, JOYPAD_BTN::L_TRIGGER);
 }
 
 bool InputManager::MapButtons(void)

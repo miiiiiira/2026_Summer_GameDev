@@ -96,6 +96,9 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 	// プレイヤーが何かを掴んでいる状態だったら処理を行わない
 	if (player_->GetGrabbingState() == GRABBING_STATE::IS_GRABBING)return;
 
+	// クリアカウントが開始されていたら処理を行わない
+	if (stage_->GetStartClearCount())return;
+
 	// 納品完了スイッチの座標
 	VECTOR doneSwitchPos = stage_->GetDoneSwitchPos();
 
@@ -141,8 +144,8 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 			// 納品完了音
 			AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_SUC);
 
-			// ステージクリアへ
-			SceneManager::GetInstance()->TrueStageClear();
+			// クリアカウントを開始
+			stage_->StartClearCount();
 			return;
 		}
 		else
