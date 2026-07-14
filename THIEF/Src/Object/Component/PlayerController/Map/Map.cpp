@@ -101,8 +101,7 @@ void Map::Draw2D(void)
 		true);
 
 	// プレイヤーの位置は必ずマップの中心
-	DrawCircle(MAP_CENTER_POS_X, MAP_CENTER_POS_Y,3,0xffffff);
-	//DrawRotaGraphF(MAP_CENTER_POS_X, MAP_CENTER_POS_Y, 1.0, 0.0, playerImg_, true);
+	DrawRotaGraphF(MAP_CENTER_POS_X, MAP_CENTER_POS_Y, 1.0, 0.0, playerImg_, true);
 
 	int size = 0;
 	// 見つけたアイテムの数分回す
