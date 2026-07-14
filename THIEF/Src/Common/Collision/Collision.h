@@ -46,8 +46,18 @@ namespace Collision
         const Vector2& pointPos,
         const Vector2& boxPos, const float& sizeX, const float& sizeY);
 
+    // 箱と箱の衝突判定(座標は左上同士)
+    bool HitBox2Box(
+        const Vector2& boxPos1, const float& sizeX1, const float& sizeY1,
+        const Vector2& boxPos2, const float& sizeX2, const float& sizeY2);
+
     // マウスと箱の衝突判定
     bool HitMouse2Box(
+        const Vector2& boxPos, const float& sizeX, const float& sizeY);
+
+    // マウス画像と箱の衝突判定
+    bool HitMouseImg2Box(
+        const float& mouseSizeX, const float& mouseSizeY,
         const Vector2& boxPos, const float& sizeX, const float& sizeY);
 
 #pragma endregion

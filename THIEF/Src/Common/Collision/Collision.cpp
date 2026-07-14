@@ -269,11 +269,35 @@ namespace Collision
         return ret;
     }
 
+    bool HitBox2Box(const Vector2& boxPos1, const float& sizeX1, const float& sizeY1, const Vector2& boxPos2, const float& sizeX2, const float& sizeY2)
+    {
+        bool ret = false;
+
+        if (boxPos1.x + sizeX1 > boxPos2.x &&
+            boxPos1.x  < boxPos2.x + sizeX2 &&
+            boxPos1.y + sizeY1 > boxPos2.y &&
+            boxPos1.y < boxPos2.y + sizeY2)
+        {
+            ret = true;
+        }
+
+        return ret;
+    }
+
     bool HitMouse2Box(
         const Vector2& boxPos, const float& sizeX, const float& sizeY)
     {
         // マウスの位置を調べる
         Vector2 mousePos = InputManager::GetInstance()->GetMousePos();
         return  HitPoint2Box(mousePos, boxPos, sizeX, sizeY);
+    }
+
+    bool HitMouseImg2Box(const float& mouseSizeX, const float& mouseSizeY, const Vector2& boxPos, const float& sizeX, const float& sizeY)
+    {
+        // マウスの位置を調べる
+        Vector2 mousePos = InputManager::GetInstance()->GetMousePos();
+        mousePos.x -= (mouseSizeX / 2);
+        mousePos.y -= (mouseSizeY / 2);
+        return  HitBox2Box(mousePos, mouseSizeX, mouseSizeY, boxPos, sizeX, sizeY);
     }
 }
