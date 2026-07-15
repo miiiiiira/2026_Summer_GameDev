@@ -96,9 +96,6 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 	// プレイヤーが何かを掴んでいる状態だったら処理を行わない
 	if (player_->GetGrabbingState() == GRABBING_STATE::IS_GRABBING)return;
 
-	// クリアカウントが開始されていたら処理を行わない
-	if (stage_->GetStartClearCount())return;
-
 	// 納品完了スイッチの座標
 	VECTOR doneSwitchPos = stage_->GetDoneSwitchPos();
 
@@ -119,12 +116,8 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 		return;
 	}
 
-	// 線分とステージモデルの衝突判定
-	MV1_COLL_RESULT_POLY stageHitResult =
-		MV1CollCheck_Line(stage_->GetModelId(), -1, lineStartPos, doneSwitchPos);
-
-	// ステージに当たっていたら
-	if (stageHitResult.HitFlag)return;
+	// クリアカウントが開始されていたら処理を行わない
+	if (stage_->GetStartClearCount())return;
 
 	// 当たっている
 	// クロスヘアの種類を掴めるに変更
@@ -153,6 +146,9 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 			// 納品失敗音
 			AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_FAI);
 		}
+
+		// ボタンを押したことを伝える
+		stage_->TrueIsDoneSwitch();
 	}
 }
 

@@ -23,6 +23,7 @@ void Animation::Update(void)
 			playAnim_.step = 0.0f;
 		else
 			playAnim_.step = playAnim_.totalTime;
+			playType_ = -1;
 	}
 
 	MV1SetAttachAnimTime(render_->GetHandle(), playAnim_.attackNo, playAnim_.step);

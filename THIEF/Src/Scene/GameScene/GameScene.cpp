@@ -331,6 +331,9 @@ void GameScene::StageCreate(std::string path, std::string collPath)
 	auto render = stage->AddComponent<Render3D>();
 	render->SetModel(path);
 
+	// 描画
+	stage->AddComponent<Animation>();
+
 	// ステージ機能
 	auto stageCom = stage->AddComponent<Stage>();
 	stageCom->SetCollModel(collPath);

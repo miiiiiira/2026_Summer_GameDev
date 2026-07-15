@@ -59,6 +59,9 @@ public:
 	// クリアカウントを開始させる
 	void StartClearCount(void);
 
+	// 納品完了スイッチを押したことを知らせる
+	void TrueIsDoneSwitch(void);
+
 private:
 	// クリアカウントの規定値
 	static constexpr int CLEAR_COUNT_MAX = 180;
@@ -81,6 +84,9 @@ private:
 
 	// 納品完了スイッチの座標
 	VECTOR doneSwitchPos_;
+
+	// 納品完了スイッチが押されたか　true / 押された , false / 押されていない
+	bool isDoneSwitch_;
 
 	// デバック用描画
 	void DrawDebug(void);

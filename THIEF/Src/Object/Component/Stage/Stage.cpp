@@ -7,6 +7,7 @@
 #include "DeliveryInfo.h"
 #include "../../../Common/Manager/Score/ScoreManager.h"
 #include "../../../Common/Manager/Audio/AudioManager.h"
+#include "../Animation/Animation.h"
 
 Stage::~Stage(void)
 {
@@ -31,6 +32,13 @@ void Stage::Init()
 	// 衝突情報構築
 	MV1SetupCollInfo(modelId_, -1);
 
+	// オーナーからアニメーションコンポーネントを取得
+	auto anim = owner_->GetComponent<Animation>();
+	if (anim != nullptr)
+	{
+		anim->AddInFbx(0, 0.5f, 0);
+	}
+
 	// ステージ情報を取ってきて初期化処理を行う
 	auto stageNum = SceneManager::GetInstance()->GetCurrentStage();
 	auto deliveryData = DeliveryTable::Table.find(stageNum);
@@ -45,10 +53,27 @@ void Stage::Init()
 	// 納品完了スイッチの座標
 	doneSwitchPos_ = trans->pos_;
 	doneSwitchPos_ = VAdd(doneSwitchPos_, deliveryData->second.doneSwitchLocalPos_);
+
+	// 納品完了スイッチフラグ
+	isDoneSwitch_ = false;
 }
 
 void Stage::Update(void)
 {
+	// 納品完了スイッチが押されていたら
+	if (isDoneSwitch_)
+	{
+		auto anim = owner_->GetComponent<Animation>();
+		if (anim != nullptr)
+		{
+			// アニメーションを再生
+			anim->Play(0, false);
+		}
+
+		// 納品完了スイッチフラグを折る
+		isDoneSwitch_ = false;
+	}
+
 	// クリアカウントが開始されていなければ処理を行わない
 	if (clearCount_ <= 0)return;
 	// クリアまでのカウントを進める
@@ -167,6 +192,12 @@ void Stage::StartClearCount(void)
 {
 	// クリアカウントを開始させる
 	clearCount_++;
+}
+
+void Stage::TrueIsDoneSwitch(void)
+{
+	// 押されたことを知らせる
+	isDoneSwitch_ = true;
 }
 
 void Stage::DrawDebug(void)
