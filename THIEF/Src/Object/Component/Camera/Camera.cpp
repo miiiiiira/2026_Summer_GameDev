@@ -226,6 +226,20 @@ void Camera::ProcessRot(bool isLimit)
 		RotGamePad(isLimit);
 	}
 
+	// Y軸回転の上限値
+	float rad360 = 360.0f * (DX_PI_F / 180.0f);
+
+	// 上限値を超えていたら
+	if (transform_->angle_.y > rad360)
+	{
+		transform_->angle_.y -= rad360;
+	}
+	// 0以下になっていたら
+	else if (transform_->angle_.y < 0)
+	{
+		transform_->angle_.y += rad360;
+	}
+
 		// 座標とアングルを更新
 	SetCameraPositionAndAngle(
 		transform_->pos_,
