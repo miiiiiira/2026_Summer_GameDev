@@ -7,10 +7,18 @@ Fader* Fader::instance_ = nullptr;
 
 Fader::Fader(void)
 {
+	for (int i = 0; i < SHUTTER_IMG_NUM; ++i)
+	{
+		shutterImg_[i] = LoadGraph("Data/Image/Fade/shutter.png");
+	}
 }
 
 Fader::~Fader(void)
 {
+	for (int i = 0; i < SHUTTER_IMG_NUM; ++i)
+	{
+		DeleteGraph( shutterImg_[i]);
+	}
 }
 
 void Fader::Init(void)
@@ -87,10 +95,15 @@ void Fader::Draw(void)
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		break;
 	case Fader::TYPE::SHUTTER:
-		h =	static_cast<int>(Application::SCREEN_SIZE_Y * 0.5f * rate);
+	{
+		int sizeX = SHUTTER_SIZE_WID / 2;
+		int sizeY = SHUTTER_SIZE_HIG / 2;
+		h = static_cast<int>(Application::SCREEN_SIZE_Y * 0.5 * rate);
 
-		DrawBox(0, 0, screenX, h, color_,true);
-		DrawBox(0, screenY - h, screenX, screenY, color_, true);
+		// シャッターの画像
+		DrawRotaGraph(sizeX, -sizeY + h, 1.0, 0.0, shutterImg_[0], true);
+		DrawRotaGraph(sizeX, Application::SCREEN_SIZE_Y + sizeY - h, 1.0, 0.0, shutterImg_[1], true);
+	}
 		break;
 	case Fader::TYPE::WIPE:
 		w = static_cast<int>(screenX * 0.5f * rate);

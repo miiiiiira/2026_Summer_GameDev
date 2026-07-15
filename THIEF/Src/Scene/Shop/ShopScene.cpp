@@ -26,6 +26,9 @@ void ShopScene::Init(void)
 
 void ShopScene::Load(void)
 {
+	// ”wŒi“Ç‚Ýž‚Ý
+	backImg_ = LoadGraph("Data/Image/Shop/shopBackScreen.png");
+
 	UpgradeManager::GetInstance().Load();
 
 	AudioManager::GetInstance()->LoadSceneSound(LoadScene::SHOP);
@@ -44,6 +47,7 @@ void ShopScene::Update(void)
 
 void ShopScene::Draw(void)
 {
+	DrawGraph(0, 0, backImg_, false);
 #ifdef _DEBUG
 
 	DrawString(10, 10, "ShopScene", 0xff0000);
@@ -55,6 +59,7 @@ void ShopScene::Draw(void)
 
 void ShopScene::Release(void)
 {
+	DeleteGraph(backImg_);
 	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::SHOP);
 	UpgradeManager::GetInstance().Release();
 }

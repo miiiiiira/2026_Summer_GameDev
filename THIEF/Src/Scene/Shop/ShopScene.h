@@ -15,5 +15,10 @@ public:
 	void Update(void)	override;	// XV
 	void Draw(void)		override;	// •`‰æ
 	void Release(void)	override;	// ‰ğ•ú
+
+private:
+
+	// ”wŒi
+	int backImg_ = -1;
 };
 

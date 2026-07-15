@@ -43,6 +43,11 @@ public:
 
 private:
 
+	// シャッター画像のサイズ
+	static constexpr int SHUTTER_SIZE_WID = 1024;
+	static constexpr int SHUTTER_SIZE_HIG = 320;
+	static constexpr int SHUTTER_IMG_NUM = 2;
+
 	// コンストラクタ・デストラクタ
 	Fader(void);
 	~Fader(void);
@@ -61,4 +66,7 @@ private:
 
 	// 透明度
 	float alpha_;
+
+	// シャッター画像
+	int shutterImg_[SHUTTER_IMG_NUM];
 };

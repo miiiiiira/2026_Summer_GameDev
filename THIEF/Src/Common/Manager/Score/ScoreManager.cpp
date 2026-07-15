@@ -81,7 +81,15 @@ void ScoreManager::Draw(void)
 	// î[ïiã‡äz / ñ⁄ïWã‡äzÇÃï`âÊ
 	int font = Application::GetInstance()->GetFont();
 	int strWidth = GetDrawFormatStringWidthToHandle(font, "%dÅ@/Å@%d", deliveryPrice_, targetPrice_);
-	DrawFormatStringToHandle(Application::SCREEN_SIZE_X - strWidth , 50, 0xffffff, font,
+	
+	unsigned int priceCol = 0xffffff;
+
+	if (deliveryPrice_ >= targetPrice_)
+	{
+		priceCol = 0xffff00;
+	}
+
+	DrawFormatStringToHandle(Application::SCREEN_SIZE_X - strWidth , 50, priceCol, font,
 		"%dÅ@/Å@%d",
 		deliveryPrice_, targetPrice_);
 
