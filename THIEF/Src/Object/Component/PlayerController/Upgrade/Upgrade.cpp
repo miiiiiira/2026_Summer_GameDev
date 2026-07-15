@@ -499,8 +499,6 @@ void Upgrade::ConfirmUpgrade(void)
 	{
 		// アップグレードを終了させる
 		UpgradeManager::GetInstance().TrueIsUpgradeEnd();
-		// ゲームシーンへ
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameScene>(), false, Fader::TYPE::SHUTTER);
 
 		return;
 	}

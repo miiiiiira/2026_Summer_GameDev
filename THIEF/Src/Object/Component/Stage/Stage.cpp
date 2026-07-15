@@ -88,10 +88,6 @@ void Stage::Update(void)
 
 void Stage::Draw3D(void)
 {
-
-	// 納品完了スイッチの当たり判定視覚化
-	DrawSphere3D(doneSwitchPos_, DONE_SWITCH_RAD, 10, 0x00ff00, 0x00ff00, true);
-
 #ifdef _DEBUG
 	DrawDebug();
 #endif // _DEBUG
@@ -175,6 +171,9 @@ void Stage::StartClearCount(void)
 
 void Stage::DrawDebug(void)
 {
+	// 納品完了スイッチの当たり判定視覚化
+	DrawSphere3D(doneSwitchPos_, DONE_SWITCH_RAD, 10, 0x00ff00, 0x00ff00, true);
+
 	// 納品場所の当たり判定の視覚化
 	VECTOR startPos, endPos;
 	startPos = endPos = deliveryPos_;

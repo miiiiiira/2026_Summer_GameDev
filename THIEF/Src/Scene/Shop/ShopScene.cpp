@@ -43,6 +43,13 @@ void ShopScene::LoadEnd(void)
 void ShopScene::Update(void)
 {
 	UpgradeManager::GetInstance().Update();
+
+	// アップグレードの終了フラグが立っていたら
+	if (UpgradeManager::GetInstance().GetIsUpgradeEnd())
+	{
+		// ゲームシーンへ
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameScene>(), false, Fader::TYPE::SHUTTER);
+	}
 }
 
 void ShopScene::Draw(void)
