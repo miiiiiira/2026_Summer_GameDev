@@ -10,12 +10,13 @@
 #include "../../Common/Collision/Collision.h"
 #include "../GameScene/GameScene.h"
 #include "../TitleScene/TitleScene.h"
+#include "../../Common/MouseCursor/MouseCursor.h"
 
 GameOver::GameOver(void)
 {
 	handle_ = -1;
 	// マウスの表示する
-	SetMouseDispFlag(true);
+	MouseCursor::GetInstance().SetMouseDraw(true);
 	currentType_ = NONE;
 }
 
@@ -143,7 +144,7 @@ void GameOver::MouseSelect(void)
 	// 衝突判定
 	for (const auto& button : buttons_)
 	{
-		if (Collision::HitMouse2Box({ static_cast<float>(button.x), static_cast<float>(button.y) },
+		if (Collision::HitMouseImg2Box({ static_cast<float>(button.x), static_cast<float>(button.y) },
 			static_cast<float>(button.sizeX), static_cast<float>(button.sizeY)))
 		{
 			nextType = button.type;

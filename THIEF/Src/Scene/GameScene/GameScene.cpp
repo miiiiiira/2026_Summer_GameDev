@@ -47,12 +47,13 @@
 
 #include "../../Common/Collision/Collision.h"
 #include "../../Object/Component/Collider/CartCollider/CartCollider.h"
+#include "../../Common/MouseCursor/MouseCursor.h"
 
 
 GameScene::GameScene(void)
 {
 	// マウスの表示を消す
-	SetMouseDispFlag(false);
+	MouseCursor::GetInstance().SetMouseDraw(false);
 	crosshair_ = nullptr;
 	redEffect_ = nullptr;
 }

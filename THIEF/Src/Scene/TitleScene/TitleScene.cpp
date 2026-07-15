@@ -9,6 +9,7 @@
 #include "../GameScene/GameScene.h"
 #include "../MainMenu/MainMenu.h"
 #include "../../Common/Shader/Shader.h"
+#include "../../Common/MouseCursor/MouseCursor.h"
 
 TitleScene::TitleScene(void)
 {
@@ -18,7 +19,7 @@ TitleScene::TitleScene(void)
 	isIncreasing_ = false;
 	isPlaySoundSE_ = false;
 	// マウスの表示する
-	SetMouseDispFlag(true);
+	MouseCursor::GetInstance().SetMouseDraw(true);
 }
 
 TitleScene::~TitleScene(void)

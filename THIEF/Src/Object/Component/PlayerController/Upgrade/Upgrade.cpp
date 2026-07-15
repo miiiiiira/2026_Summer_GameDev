@@ -315,7 +315,7 @@ void Upgrade::MouseSelect(void)
 	for (int i = 0; i < selectUpgrades_.size(); i++)
 	{
 		// 当たっていなかったら次の処理へ
-		if (!Collision::HitMouse2Box(pos_[i], COL_SIZE_X, COL_SIZE_Y))continue;
+		if (!Collision::HitMouseImg2Box(pos_[i], COL_SIZE_X, COL_SIZE_Y))continue;
 
 		// スロットの変更
 		ChangeShopSlot(static_cast<SHOP_SLOT>(i));
@@ -325,7 +325,7 @@ void Upgrade::MouseSelect(void)
 	}
 
 	// 終了ボタンに当たっていたら
-	if (Collision::HitMouse2Box({ END_BUTTON_POS_X ,END_BUTTON_POS_Y }, COL_SIZE_X, COL_SIZE_Y))
+	if (Collision::HitMouseImg2Box({ END_BUTTON_POS_X ,END_BUTTON_POS_Y }, COL_SIZE_X, COL_SIZE_Y))
 	{
 		ChangeShopSlot(SHOP_SLOT::END);
 	}

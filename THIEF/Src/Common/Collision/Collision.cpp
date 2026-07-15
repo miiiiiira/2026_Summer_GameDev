@@ -3,6 +3,7 @@
 
 #include "Collision.h"
 #include "../Math/Math.h"
+#include "../MouseCursor/MouseCursor.h"
 
 namespace Collision
 {
@@ -292,12 +293,14 @@ namespace Collision
         return  HitPoint2Box(mousePos, boxPos, sizeX, sizeY);
     }
 
-    bool HitMouseImg2Box(const float& mouseSizeX, const float& mouseSizeY, const Vector2& boxPos, const float& sizeX, const float& sizeY)
+    bool HitMouseImg2Box(const Vector2& boxPos, const float& sizeX, const float& sizeY)
     {
         // マウスの位置を調べる
         Vector2 mousePos = InputManager::GetInstance()->GetMousePos();
-        mousePos.x -= (mouseSizeX / 2);
-        mousePos.y -= (mouseSizeY / 2);
-        return  HitBox2Box(mousePos, mouseSizeX, mouseSizeY, boxPos, sizeX, sizeY);
+        // 左上座標にする
+        mousePos.x -= (MouseCursor::MOUSE_IMG_SIZE_WID / 2);
+        mousePos.y -= (MouseCursor::MOUSE_IMG_SIZE_HIG / 2);
+
+        return  HitBox2Box(mousePos, MouseCursor::MOUSE_IMG_SIZE_WID, MouseCursor::MOUSE_IMG_SIZE_HIG, boxPos, sizeX, sizeY);
     }
 }

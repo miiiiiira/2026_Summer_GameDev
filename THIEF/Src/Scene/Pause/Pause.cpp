@@ -11,6 +11,7 @@
 #include "../../Common/Collision/Collision.h"
 #include "../../Application.h"
 #include "../Confirm/Confirm.h"
+#include "../../Common/MouseCursor/MouseCursor.h"
 
 Pause::Pause(void)
 {
@@ -18,7 +19,7 @@ Pause::Pause(void)
 	confirm_ = nullptr;
 
 	// マウスの表示する
-	SetMouseDispFlag(true);
+	MouseCursor::GetInstance().SetMouseDraw(true);
 }
 
 Pause::~Pause(void)
@@ -63,9 +64,8 @@ void Pause::Update(void)
 	// Escape押したら
 	if (InputManager::GetInstance()->PauseButtons())
 	{
-		// ゲームシーンへ戻る(ポーズモードを終了する)
-		AudioManager::GetInstance()->PlaySE(SoundID::SYS_PAUSE_OFF);
-		SceneManager::GetInstance()->PopScene();
+		// ポーズモード終了しゲームシーンへ戻る
+		UpdateContinue();
 	}
 
 	// 選択処理
@@ -145,7 +145,10 @@ void Pause::UpdateContinue(void)
 	SetMousePoint(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2);
 
 	// マウスの表示を消す
-	SetMouseDispFlag(false);
+	MouseCursor::GetInstance().SetMouseDraw(false);
+
+	// ゲームシーンへ戻る(ポーズモードを終了する)
+	AudioManager::GetInstance()->PlaySE(SoundID::SYS_PAUSE_OFF);
 
 	// ゲームシーンへ
 	SceneManager::GetInstance()->PopScene();
@@ -202,7 +205,7 @@ void Pause::MouseSelect(void)
 	// 衝突判定
 	for (const auto& button : menuButtons_)
 	{
-		if (Collision::HitMouse2Box({ static_cast<float>(button.x), static_cast<float>(button.y) },
+		if (Collision::HitMouseImg2Box({ static_cast<float>(button.x), static_cast<float>(button.y) },
 			static_cast<float>(button.sizeX), static_cast<float>(button.sizeY)))
 		{
 			nextSelect = button.type;

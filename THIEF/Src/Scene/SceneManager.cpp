@@ -13,6 +13,7 @@
 #include "../Common/FrameRenderer/FrameRenderer.h"
 #include "../Object/Component/PlayerController/Upgrade/UpgradeManager.h"
 #include "../Common/Shader/Shader.h"
+#include "../Common/MouseCursor/MouseCursor.h"
 
 SceneManager* SceneManager::instance_ = nullptr;
 
@@ -53,6 +54,11 @@ void SceneManager::Init(void)
 	Fader::GetInstance()->CreateInstance();
 	Fader::GetInstance()->Init();
 
+	// マウスカーソルクラスを生成
+	MouseCursor::CreateInstance();
+	MouseCursor::GetInstance().Load();
+	MouseCursor::GetInstance().Init();
+
 	// フレーム画像のロード
 	FrameRenderer::Load();
 
@@ -82,6 +88,8 @@ void SceneManager::Init(void)
 	// 最初はタイトル画面から
 	ChangeScene(std::make_shared<TitleScene>());
 
+	// 既存のマウスカーソルは描画しない
+	SetMouseDispFlag(false);
 }
 
 void SceneManager::Init3D(void)
@@ -151,6 +159,8 @@ void SceneManager::Update(void)
 		{
 			// 現在のシーンの更新
 			scenes_.back()->Update();
+			// マウスカーソルの座標更新処理
+			MouseCursor::GetInstance().Update();
 		}
 	}
 
@@ -242,6 +252,9 @@ void SceneManager::Draw(void)
 		{
 			DrawGraph(0, 0, mainScreen_, false);
 		}
+
+		// マウスカーソルの描画
+		MouseCursor::GetInstance().Draw();
 	}
 
 	// フェード描画
@@ -273,6 +286,9 @@ void SceneManager::Delete(void)
 
 	// フェーダー解放
 	Fader::GetInstance()->DeleteInstance();
+
+	// マウスカーソル解放
+	MouseCursor::GetInstance().Destroy();
 
 	// ロード画面の削除
 	load_->Release();

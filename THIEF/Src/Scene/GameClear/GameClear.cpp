@@ -6,12 +6,13 @@
 #include "../../Common/Manager/Audio/AudioManager.h"
 #include "../SceneManager.h"
 #include "../TitleScene/TitleScene.h"
+#include "../../Common/MouseCursor/MouseCursor.h"
 
 GameClear::GameClear(void)
 {
 	handle_ = -1;
 	// マウスの表示する
-	SetMouseDispFlag(true);
+	MouseCursor::GetInstance().SetMouseDraw(true);
 	tiHandle_ = -1;
 }
 

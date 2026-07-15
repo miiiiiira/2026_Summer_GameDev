@@ -57,7 +57,6 @@ namespace Collision
 
     // ƒ}ƒEƒX‰æ‘œ‚Æ” ‚ÌÕ“Ë”»’è
     bool HitMouseImg2Box(
-        const float& mouseSizeX, const float& mouseSizeY,
         const Vector2& boxPos, const float& sizeX, const float& sizeY);
 
 #pragma endregion

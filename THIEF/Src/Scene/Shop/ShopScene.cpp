@@ -7,11 +7,12 @@
 #include "../../Object/Component/PlayerController/Upgrade/UpgradeManager.h"
 #include "../../Common/Collision/Collision.h"
 #include "../GameScene/GameScene.h"
+#include "../../Common/MouseCursor/MouseCursor.h"
 
 ShopScene::ShopScene(void)
 {
 	// マウスを表示させる
-	SetMouseDispFlag(true);
+	MouseCursor::GetInstance().SetMouseDraw(true);
 }
 
 ShopScene::~ShopScene(void)
