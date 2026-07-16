@@ -1,5 +1,6 @@
 #include <fstream>
 #include <sstream>
+#include "../../Application.h"
 #include "../../Common/Manager/Input/InputManager.h"
 #include "../SceneManager.h"
 #include "../Pause/Pause.h"
@@ -12,7 +13,7 @@ TutorialScene::TutorialScene(void)
 	// 状態の登録
 	stateTable_[MOVE] = &TutorialScene::Move;
 	stateTable_[JUMP] = &TutorialScene::Jump;
-	stateTable_[DUSH] = &TutorialScene::Dush;
+	stateTable_[DASH] = &TutorialScene::Dash;
 	stateTable_[CROUCH] = &TutorialScene::Crouch;
 	stateTable_[SLIDING] = &TutorialScene::Sliding;
 	stateTable_[LIGHT] = &TutorialScene::Light;
@@ -58,7 +59,8 @@ void TutorialScene::Update(void)
 		return;
 	}
 
-	if (currentPlayCount_ == totalPlayCount_)
+	//　ステップ10まで終わったら遷移する
+	if (currentPlayCount_ == totalPlayCount_ + 1)
 	{
 		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameScene>());
 		return;
@@ -85,14 +87,32 @@ void TutorialScene::Update(void)
 
 void TutorialScene::Draw(void)
 {
-	switch (currentState_)
+#ifdef _DEBUG
+	if (currentState_ == STATE::CLEAR)
 	{
-	case STATE::CLEAR:
-		DrawString(200, 450, "good job!", 0xffffff);
+		DrawStringToHandle(200, 450, "good job!", 0xffffff, Application::GetInstance()->GetFont());
 	}
-
-	DrawFormatString(10, 250, 0xffffff, "パーセント： %.2f ％", currentStepValue_);
-	DrawFormatString(10, 270, 0xffffff, "現在のステップ：%d / %d", currentPlayCount_, totalPlayCount_);
+	// CLEAR以外の時は、CSVから読み込む
+	else
+	{
+		int index = currentPlayCount_ - 1;
+		if (index >= 0 && index < static_cast<int>(steps_.size()))
+		{
+			// steps_ から取得し、描画
+			// テキスト表示
+			DrawStringToHandle(200, 450, steps_[index].text.c_str(), 0xffffff, Application::GetInstance()->GetFont());
+			// ステート表示
+			DrawFormatStringToHandle(10, 230, 0xffffff, 
+					Application::GetInstance()->GetFont(), "ステート： %s", steps_[index].type.c_str());
+		}
+	}
+	// パーセント表示
+	DrawFormatStringToHandle(10, 250, 0xffffff,
+		Application::GetInstance()->GetFont(), "パーセント： %.2f ％", currentStepValue_);
+	// ステップ表示
+	DrawFormatStringToHandle(10, 270, 0xffffff,
+		Application::GetInstance()->GetFont(), "ステップ：%d / %d", currentPlayCount_, totalPlayCount_);
+#endif //_DEBUG
 }
 
 void TutorialScene::Release(void)
@@ -108,7 +128,6 @@ void TutorialScene::SetState(STATE newState)
 	currentState_ = newState;
 	currentStepValue_ = 0.0f;
 }
-
 
 void TutorialScene::LoadCsvData(void)
 {
@@ -194,7 +213,7 @@ void TutorialScene::Jump(void)
 #endif //_DEBUG
 }
 
-void TutorialScene::Dush(void)
+void TutorialScene::Dash(void)
 {
 
 #ifdef _DEBUG

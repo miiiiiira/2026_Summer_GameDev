@@ -12,7 +12,7 @@ public:
 	{
 		MOVE = 1,
 		JUMP,
-		DUSH,
+		DASH,
 		CROUCH,
 		SLIDING,
 		LIGHT,
@@ -58,9 +58,10 @@ private:
 	
 	StateFunction stateTable_[MAX];
 
+	// ステート別Update処理
 	void Move(void);
 	void Jump(void);
-	void Dush(void);
+	void Dash(void);
 	void Crouch(void);
 	void Sliding(void);
 	void Light(void);
@@ -69,7 +70,6 @@ private:
 	void Cart(void);
 	void Deliver(void);
 	void Clear(void);
-
 
 	void LoadCsvData(void);
 };
