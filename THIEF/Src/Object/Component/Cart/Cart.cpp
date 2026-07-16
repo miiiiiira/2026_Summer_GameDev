@@ -115,8 +115,9 @@ void Cart::TrackingPlayer(void)
 	float preAngleY = trans_->angle_.y;
 	// カメラのアングルを適用
 	trans_->angle_.y = CameraUtility::GetCameraAngle().y;
+
 	// 線形補間で滑らかにする
-	trans_->angle_.y = Math::Lerp(preAngleY, trans_->angle_.y, COEFFICIENT);
+	trans_->angle_.y = Math::LerpAngle(preAngleY, trans_->angle_.y, COEFFICIENT);
 
 	// モデルに座標を反映
 	MV1SetRotationXYZ(modelId_, trans_->angle_);
