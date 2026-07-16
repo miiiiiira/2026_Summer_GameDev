@@ -109,6 +109,7 @@ namespace SoundTable_Shop
 		{ SoundID::SE_SHOP_BUY_HEAL_25, {"Data/Sound/Game/Shop/SE_SHOP_BUY_HEAL_25.mp3", SoundType::SE_2D, 200} },
 		{ SoundID::SE_SHOP_BUY_HEAL_50, {"Data/Sound/Game/Shop/SE_SHOP_BUY_HEAL_50.mp3", SoundType::SE_2D, 150} },
 		{ SoundID::SE_SHOP_NOT_MONEY, {"Data/Sound/Game/Shop/SE_SHOP_NOT_MONEY.mp3", SoundType::SE_2D, 200} },
+		{ SoundID::SE_SHOP_SHUTTER, {"Data/Sound/Game/Shop/SE_SHOP_SHUTTER.mp3", SoundType::SE_2D, 130} },
 
 	};
 }
