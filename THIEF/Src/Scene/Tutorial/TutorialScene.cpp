@@ -90,7 +90,7 @@ void TutorialScene::Draw(void)
 #ifdef _DEBUG
 	if (currentState_ == STATE::CLEAR)
 	{
-		DrawStringToHandle(200, 450, "good job!", 0xffffff, Application::GetInstance()->GetFont());
+		DrawStringToHandle(150, 500, "good job!", 0xffffff, Application::GetInstance()->GetFont());
 	}
 	// CLEAR以外の時は、CSVから読み込む
 	else
@@ -100,18 +100,18 @@ void TutorialScene::Draw(void)
 		{
 			// steps_ から取得し、描画
 			// テキスト表示
-			DrawStringToHandle(200, 450, steps_[index].text.c_str(), 0xffffff, Application::GetInstance()->GetFont());
+			DrawStringToHandle(150, 500, steps_[index].text.c_str(), 0xffffff, Application::GetInstance()->GetFont());
 			// ステート表示
 			DrawFormatStringToHandle(10, 230, 0xffffff, 
-					Application::GetInstance()->GetFont(), "ステート： %s", steps_[index].type.c_str());
+					Application::GetInstance()->GetFont(), "ステート：　%s", steps_[index].type.c_str());
 		}
 	}
 	// パーセント表示
 	DrawFormatStringToHandle(10, 250, 0xffffff,
-		Application::GetInstance()->GetFont(), "パーセント： %.2f ％", currentStepValue_);
+		Application::GetInstance()->GetFont(), "パーセント：　%.2f ％", currentStepValue_);
 	// ステップ表示
 	DrawFormatStringToHandle(10, 270, 0xffffff,
-		Application::GetInstance()->GetFont(), "ステップ：%d / %d", currentPlayCount_, totalPlayCount_);
+		Application::GetInstance()->GetFont(), "ステップ：　%d / %d", currentPlayCount_, totalPlayCount_);
 #endif //_DEBUG
 }
 
