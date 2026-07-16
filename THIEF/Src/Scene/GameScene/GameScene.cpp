@@ -463,9 +463,11 @@ void GameScene::CartCreate(void)
 	{
 	case STAGE_1:
 		trans->pos_ = { 500.0f,0.0f,0.0f };
+		trans->angle_ = { 0.0f,90.0f * (DX_PI_F / 180.0f),0.0f };
 		break;
 	case STAGE_2:
 		trans->pos_ = { 0.0f,5.0f,500.0f };
+		trans->angle_ = { 0.0f,0.0f,0.0f };
 		break;
 	case STAGE_3:
 		break;
