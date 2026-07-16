@@ -126,6 +126,9 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 	// ’Í‚à‚¤‚Æ‚µ‚Ä‚¢‚½‚ç
 	if (player_->GetGrabbingState() == GRABBING_STATE::TRY_GRABBING)
 	{
+		// ƒ{ƒ^ƒ“‚ð‰Ÿ‚µ‚½‚±‚Æ‚ð“`‚¦‚é
+		stage_->TrueIsDoneSwitch();
+
 		// ”[•iÏ‚Ý‚Ì‹àŠz‚ðŠm”F
 		int deliveryPrice = ScoreManager::GetInstance().GetDeliveryPrice();
 		// –Ú•W‹àŠz‚ðŠm”F
@@ -146,9 +149,6 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 			// ”[•iŽ¸”s‰¹
 			AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_FAI);
 		}
-
-		// ƒ{ƒ^ƒ“‚ð‰Ÿ‚µ‚½‚±‚Æ‚ð“`‚¦‚é
-		stage_->TrueIsDoneSwitch();
 	}
 }
 
