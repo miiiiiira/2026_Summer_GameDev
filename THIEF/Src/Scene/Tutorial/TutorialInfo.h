@@ -4,8 +4,7 @@
 struct TutorialInfo
 {
 	int id;
-	int type;
-	float target;
+	std::string type;
 	float  value;
 	std::string text;
 };

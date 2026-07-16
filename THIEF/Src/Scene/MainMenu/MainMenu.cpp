@@ -13,6 +13,7 @@
 #include "../Confirm/Confirm.h"
 #include "../GameScene/GameScene.h"
 #include "../DebugScene.h"
+#include "../Tutorial/TutorialScene.h"
 #include "../TitleScene/TitleScene.h"
 
 MainMenu::MainMenu(void)
@@ -67,6 +68,13 @@ void MainMenu::Update(void)
 	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_L))
 	{
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<DebugScene>(), true);
+		return;
+	}
+
+	// Lキーを押したらデバッグシーン
+	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
+	{
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TutorialScene>(), true);
 		return;
 	}
 #endif //_DEBUG
