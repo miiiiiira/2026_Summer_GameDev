@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Scene\LightSelectScene\LightSelectInfo.cpp" />
+    <ClCompile Include="Src\Scene\LightSelectScene\LightSelectScene.cpp" />
     <ClCompile Include="Src\Common\MouseCursor\MouseCursor.cpp" />
     <ClCompile Include="Src\Object\Component\Stage\DeliveryInfo.cpp" />
     <ClCompile Include="Src\Object\Component\PlayerController\Map\MapInfo.cpp" />
@@ -97,6 +99,8 @@
     <ClCompile Include="Src\Scene\Tutorial\TutorialScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Scene\LightSelectScene\LightSelectInfo.h" />
+    <ClInclude Include="Src\Scene\LightSelectScene\LightSelectScene.h" />
     <ClInclude Include="Src\Common\MouseCursor\MouseCursor.h" />
     <ClInclude Include="Src\Object\Component\Stage\DeliveryInfo.h" />
     <ClInclude Include="Src\Object\Component\PlayerController\Map\MapInfo.h" />

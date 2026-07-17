@@ -23,7 +23,7 @@ void LightManager::Destroy(void)
 void LightManager::ResetLight(void)
 {
 	// デフォルト状態にする
-	nowLightType_ = LIGHT_TYPE::COLOR_MAX;
+	nowLightType_ = LIGHT_TYPE::COLOR_0;
 }
 
 LIGHT_TYPE LightManager::GetLightType(void)

@@ -2,6 +2,7 @@
 
 #include "../Component.h"
 #include <DxLib.h>
+#include <map>
 #include "LightInfo.h"
 
 // 前方宣言
@@ -79,7 +80,7 @@ private:
 	int wispModelId_ = -1;
 
 	// テクスチャId
-	int textureId_[static_cast<int>(LIGHT_TYPE::COLOR_MAX)];
+	std::map<LIGHT_TYPE, int> textures_;
 
 	// ライトの光量(小さいほど光量が増す)
 	float lightPow_;

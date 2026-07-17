@@ -37,7 +37,7 @@ Wisp::Wisp(void)
 	 // テクスチャをロード
 	for (auto table : LightTable::Table)
 	{
-		textureId_[static_cast<int>(table.first)] = LoadGraph(table.second.path.c_str());
+		textures_.emplace(table.first, LoadGraph(table.second.path.c_str()));
 	}
 
 	lightType_ = LightManager::GetInstance().GetLightType();
@@ -132,9 +132,9 @@ void Wisp::Update(void)
 			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_12);
 			break;
 		case COLOR_12:
-			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_MAX);
+			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_0);
 			break;
-		case COLOR_MAX:
+		case COLOR_0:
 			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_1);
 			break;
 		default:
@@ -174,7 +174,7 @@ void Wisp::ChangeLightTexture(LIGHT_TYPE lightType)
 {
 	lightType_ = lightType;
 
-	if (lightType_ == LIGHT_TYPE::COLOR_MAX)
+	if (lightType_ == LIGHT_TYPE::COLOR_0)
 	{
 		// テクスチャをデフォルトに戻す
 		MV1SetTextureGraphHandle(wispModelId_, 0, -1, false);
@@ -193,7 +193,7 @@ void Wisp::ChangeLightTexture(LIGHT_TYPE lightType)
 	auto lightData = LightTable::Table.find(lightType_);
 
 	// テクスチャを変更
-	MV1SetTextureGraphHandle(wispModelId_, 0, textureId_[static_cast<int>(lightType_)], false);
+	MV1SetTextureGraphHandle(wispModelId_, 0, textures_.find(lightType)->second, false);
 	// ライトの色を変更
 	SetLightDifColorHandle(pointLightHandle_,
 		GetColorF(
