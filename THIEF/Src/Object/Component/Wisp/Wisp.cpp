@@ -48,11 +48,13 @@ Wisp::~Wisp(void)
 	// ポイントライトのハンドルを解放
 	DeleteLightHandle(pointLightHandle_);
 
-	for (auto table : LightTable::Table)
+	for ( auto texture:textures_)
 	{
 		// テクスチャの解放
-		DeleteGraph(static_cast<int>(table.first));
+		DeleteGraph(texture.second);
 	}
+
+	textures_.clear();
 }
 
 void Wisp::Init(void)
@@ -98,6 +100,9 @@ void Wisp::Update(void)
 	{
 		switch (lightType_)
 		{
+		case COLOR_0:
+			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_1);
+			break;
 		case COLOR_1:
 			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_2);
 			break;
@@ -133,9 +138,6 @@ void Wisp::Update(void)
 			break;
 		case COLOR_12:
 			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_0);
-			break;
-		case COLOR_0:
-			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_1);
 			break;
 		default:
 			break;
