@@ -30,6 +30,8 @@ void InputManager::Init(void)
 	SetActionMouse(INPUT_INFO::ACTION::GRAB, INPUT_INFO::MouseBtn::LEFT);
 	SetActionMouse(INPUT_INFO::ACTION::ITEM_PUSH, INPUT_INFO::MouseBtn::WHEEL_UP);
 	SetActionMouse(INPUT_INFO::ACTION::ITEM_PULL, INPUT_INFO::MouseBtn::WHEEL_DOWN);
+	SetActionMouse(INPUT_INFO::ACTION::LOOK_CAMERA_V, INPUT_INFO::MouseBtn::MOVE_X);
+	SetActionMouse(INPUT_INFO::ACTION::LOOK_CAMERA_H, INPUT_INFO::MouseBtn::MOVE_Y);
 
 	
 	// --- UI・システム系 ---
@@ -37,19 +39,52 @@ void InputManager::Init(void)
 	SetActionKey(INPUT_INFO::ACTION::UI_MOVE_DOWN, { KEY_INPUT_S });
 	SetActionKey(INPUT_INFO::ACTION::UI_MOVE_LEFT, { KEY_INPUT_A });
 	SetActionKey(INPUT_INFO::ACTION::UI_MOVE_RIGHT, { KEY_INPUT_D });
-	SetActionKey(INPUT_INFO::ACTION::DECIDE, { KEY_INPUT_SPACE });
-	SetActionKey(INPUT_INFO::ACTION::CANCEL, { KEY_INPUT_BACK });
+
+	SetActionMouse(INPUT_INFO::ACTION::DECIDE, INPUT_INFO::MouseBtn::LEFT);
+	SetActionKey(INPUT_INFO::ACTION::CANCEL, { KEY_INPUT_ESCAPE });
+
 	SetActionKey(INPUT_INFO::ACTION::PAUSE, { KEY_INPUT_ESCAPE });
 
-	// --- マウス ---
-	SetActionMouse(INPUT_INFO::ACTION::DECIDE, INPUT_INFO::MouseBtn::LEFT);
-	SetActionMouse(INPUT_INFO::ACTION::CANCEL, INPUT_INFO::MouseBtn::RIGHT);
 
 	// --- パッド ---
-	SetActionPadDir(INPUT_INFO::ACTION::MOVE_FORWARD, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_DIR::UP);
-	SetActionPadDir(INPUT_INFO::ACTION::MOVE_BACK, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_DIR::DOWN);
-	SetActionPadDir(INPUT_INFO::ACTION::MOVE_LEFT, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_DIR::LEFT);
-	SetActionPadDir(INPUT_INFO::ACTION::MOVE_RIGHT, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_DIR::RIGHT);
+	// --- プレイヤーアクション ---
+	BindInput stickInput;
+	stickInput.type = BindType::PAD_STICK;
+	stickInput.pad = INPUT_INFO::JOYPAD_NO::PAD1;
+	// 前進アクションのパッド側スロット1に割り当て
+	stickInput.code = (int)INPUT_INFO::PAD_STICK::LEFT_UP;
+	AddBind(INPUT_INFO::ACTION::MOVE_FORWARD, 0, stickInput);
+	// 後退アクションのパッド側スロット1に割り当て
+	stickInput.code = (int)INPUT_INFO::PAD_STICK::LEFT_DOWN;
+	AddBind(INPUT_INFO::ACTION::MOVE_BACK, 0, stickInput);
+	// 左アクションのパッド側スロット1に割り当て
+	stickInput.code = (int)INPUT_INFO::PAD_STICK::LEFT_LEFT;
+	AddBind(INPUT_INFO::ACTION::MOVE_LEFT, 0, stickInput);
+	// 右アクションのパッド側スロット1に割り当て
+	stickInput.code = (int)INPUT_INFO::PAD_STICK::LEFT_RIGHT;
+	AddBind(INPUT_INFO::ACTION::MOVE_RIGHT, 0, stickInput);
+	SetActionPadBtn(INPUT_INFO::ACTION::DASH, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_BTN::RB);
+	SetActionPadBtn(INPUT_INFO::ACTION::JUMP, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_BTN::Y);
+	SetActionPadBtn(INPUT_INFO::ACTION::CROUCH, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_BTN::LB);
+	SetActionPadTrigger(INPUT_INFO::ACTION::LIGHT, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_TRIGGER::RT);
+	SetActionPadBtn(INPUT_INFO::ACTION::MAP, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_BTN::START);
+	SetActionPadTrigger(INPUT_INFO::ACTION::GRAB, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_TRIGGER::LT);
+	SetActionPadDir(INPUT_INFO::ACTION::ITEM_PUSH, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_DIR::UP);
+	SetActionPadDir(INPUT_INFO::ACTION::ITEM_PULL, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_DIR::DOWN);
+	// 前進アクションのパッド側スロット1に割り当て
+	stickInput.code = (int)INPUT_INFO::PAD_STICK::RIGHT_UP;
+	AddBind(INPUT_INFO::ACTION::LOOK_CAMERA_H, 0, stickInput);
+	// 後退アクションのパッド側スロット2に割り当て
+	stickInput.code = (int)INPUT_INFO::PAD_STICK::RIGHT_DOWN;
+	AddBind(INPUT_INFO::ACTION::LOOK_CAMERA_H, 1, stickInput);
+	// 左アクションのパッド側スロット1に割り当て
+	stickInput.code = (int)INPUT_INFO::PAD_STICK::RIGHT_LEFT;
+	AddBind(INPUT_INFO::ACTION::LOOK_CAMERA_V, 0, stickInput);
+	// 右アクションのパッド側スロット2に割り当て
+	stickInput.code = (int)INPUT_INFO::PAD_STICK::RIGHT_RIGHT;
+	AddBind(INPUT_INFO::ACTION::LOOK_CAMERA_V, 1, stickInput);
+
+
 
 	SetActionPadBtn(INPUT_INFO::ACTION::JUMP, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_BTN::A);
 	SetActionPadBtn(INPUT_INFO::ACTION::DECIDE, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_BTN::A);
