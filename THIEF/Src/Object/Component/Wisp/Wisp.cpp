@@ -85,6 +85,9 @@ void Wisp::Init(void)
 
 	// ライトを手前に初期化
 	isPushLight_ = false;
+
+	// 設定されているライトの種類を適用
+	ChangeLightTexture(lightType_);
 }
 
 void Wisp::Update(void)
@@ -231,7 +234,6 @@ void Wisp::UpdatePos(void)
 
 	if (isPushLight_)
 	{
-
 		// 座標に反映 奥
 		trans->pos_ = CameraUtility::AddCameraPosLocalPos(REACH_MAX_LIGHT);
 		pointPos_ = CameraUtility::AddCameraPosLocalPos(VAdd(REACH_MAX_LIGHT, POINTLIGHT_OFFSET));

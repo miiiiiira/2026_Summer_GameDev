@@ -20,16 +20,25 @@ public:
 
 private:
 
+	enum ARROW_TYPE
+	{
+		RIGHT,
+		LEFT,
+
+		MAX
+	};
+
 	// ライトの種類とそれに対応した画像ハンドルをもつ
 	std::map<LIGHT_TYPE,int> wispImgs_;
 
-	// 選択時のフレーム画像
-	int wispSelectFrameImg_;
-
-	// ゲームスタート画像
-	int gameStartImg_;
+	// 使用中のライトの種類
+	LIGHT_TYPE lightType_;
 
 	// 選択矢印画像
-	int selectArrowImg_;
+	int selectArrowImg_[ARROW_TYPE::MAX];
+
+	// ゲームスタート画像
+	int gameStartImg_ = -1;
+
 };
 

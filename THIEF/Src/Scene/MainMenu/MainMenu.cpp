@@ -15,6 +15,7 @@
 #include "../DebugScene.h"
 #include "../Tutorial/TutorialScene.h"
 #include "../TitleScene/TitleScene.h"
+#include "../LightSelectScene/LightSelectScene.h"
 
 MainMenu::MainMenu(void)
 {
@@ -77,7 +78,14 @@ void MainMenu::Update(void)
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TutorialScene>(), true);
 		return;
 	}
+
 #endif //_DEBUG
+	// Lキーを押したらデバッグシーン
+	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_H))
+	{
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<LightSelectScene>(), true);
+		return;
+	}
 
 	// メニューからタイトルに戻すボタン
 	if (InputManager::GetInstance()->MenuToTitleButtons())
