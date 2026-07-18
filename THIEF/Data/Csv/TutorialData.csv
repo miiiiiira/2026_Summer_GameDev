@@ -1,11 +1,12 @@
-ID,TYPE,PERCENTAGE,TEXT
-1,MOVE,2,Use %MOVE% to move.
-2,JUMP,25,Press %JUMP% to jump.
-3,DASH,2,Press %DASH% to dash.
-4,CROUCH,2,Press %CROUCH% to crouch and hide.
-5,SLIDE,20,Press %DASH% + %CROUCH% to slide.
-6,LIGHT,25,Use %LIGHT% to move the light.
-7,GRAB,20,Press %GRAB% to pick up the item.
-8,ITEM,25,Use %WHEEL% to move the item.
-9,CART,25,Put the item into the cart.
-10,DELIVER,100,Move to the delivery point and press %DELIVER%.
+ID,TYPE,PERCENTAGE,ENTEXT,JPTEXT
+1,MOVE,2,Use %MOVE% to move.,(%MOVE%で移動。)
+2,JUMP,25,Press %JUMP% to jump.,(%JUMP%でジャンプ。)
+3,DASH,2,Press %DASH% to dash.,(%DASH%でダッシュ。)
+4,CROUCH,2,Press %CROUCH% to crouch and hide.,(%CROUCH%でしゃがんで隠れる。)
+5,SLIDE,20,Press %DASH% + %CROUCH% to slide.,(%DASH% + %CROUCH%でスライディング。)
+6,LIGHT,25,Use %LIGHT% to move the light.,(%LIGHT%でライトを動かす。)
+7,MAP,25,Press %MAP% to open the map.,(％MAP％でマップを開く。)
+8,GRAB,20,Press %GRAB% to pick up the item.,(%GRAB%でアイテムを拾う。)
+9,ITEM,25,Use %WHEEL% to move the item.,(%WHEEL%でアイテムを動かす。)
+10,CART,25,Put the item into the cart.,(アイテムをカートに入れる。)
+11,DELIVER,100,Move to the delivery point and press %DELIVER%.,(配達場所まで移動し、%DELIVER%を押す。)
