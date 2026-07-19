@@ -16,6 +16,7 @@ public:
 		CROUCH,
 		SLIDING,
 		LIGHT,
+		MAP,
 		GRAB,
 		RANGE,
 		CART,
@@ -65,6 +66,7 @@ private:
 	void Crouch(void);
 	void Sliding(void);
 	void Light(void);
+	void Map(void);
 	void Grab(void);
 	void Range(void);
 	void Cart(void);

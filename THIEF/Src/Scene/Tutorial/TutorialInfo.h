@@ -6,5 +6,6 @@ struct TutorialInfo
 	int id;
 	std::string type;
 	float  value;
-	std::string text;
+	std::string textEN;
+	std::string textJP;
 };

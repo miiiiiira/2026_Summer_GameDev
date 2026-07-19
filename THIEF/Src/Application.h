@@ -66,6 +66,7 @@ public:
 
 	// ÉQÉbÉ^Å[
 	int GetFont(void);
+	int GetDefaultFont(void);
 
 private:
 
@@ -82,4 +83,5 @@ private:
 	bool isEnd_;
 
 	int font_;
+	int defaultFont_;
 };
