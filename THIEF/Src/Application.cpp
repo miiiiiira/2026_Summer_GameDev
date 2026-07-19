@@ -73,6 +73,7 @@ void Application::Init(void)
 
 	// フォントの追加
 	font_ = CreateFontToHandle("Shikakufuto_Free", FONT_SIZE, 1, DX_FONTTYPE_ANTIALIASING);
+	defaultFont_ = CreateFontToHandle("HG創英角ﾎﾟｯﾌﾟ体", FONT_SIZE, 9, DX_FONTTYPE_ANTIALIASING);
 }
 
 // ゲームループ
@@ -118,6 +119,7 @@ void Application::Delete(void)
 
 	// フォントの削除
 	DeleteFontToHandle(font_);
+	DeleteFontToHandle(defaultFont_);
 
 	// DxLib終了
 	if (DxLib_End() == -1)
@@ -144,4 +146,9 @@ void Application::SetEnd(bool isEnd)
 int Application::GetFont(void)
 {
 	return font_;
+}
+
+int Application::GetDefaultFont(void)
+{
+	return defaultFont_;
 }

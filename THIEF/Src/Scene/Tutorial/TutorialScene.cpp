@@ -17,6 +17,7 @@ TutorialScene::TutorialScene(void)
 	stateTable_[CROUCH] = &TutorialScene::Crouch;
 	stateTable_[SLIDING] = &TutorialScene::Sliding;
 	stateTable_[LIGHT] = &TutorialScene::Light;
+	stateTable_[MAP] = &TutorialScene::Map;
 	stateTable_[GRAB] = &TutorialScene::Grab;
 	stateTable_[RANGE] = &TutorialScene::Range;
 	stateTable_[CART] = &TutorialScene::Cart;
@@ -90,7 +91,7 @@ void TutorialScene::Draw(void)
 #ifdef _DEBUG
 	if (currentState_ == STATE::CLEAR)
 	{
-		DrawStringToHandle(150, 500, "good job!", 0xffffff, Application::GetInstance()->GetFont());
+		DrawStringToHandle(150, 500, "Good job!", 0xffffff, Application::GetInstance()->GetFont());
 	}
 	// CLEAR以外の時は、CSVから読み込む
 	else
@@ -100,7 +101,8 @@ void TutorialScene::Draw(void)
 		{
 			// steps_ から取得し、描画
 			// テキスト表示
-			DrawStringToHandle(150, 500, steps_[index].text.c_str(), 0xffffff, Application::GetInstance()->GetFont());
+			DrawStringToHandle(150, 500, steps_[index].textEN.c_str(), 0xffffff, Application::GetInstance()->GetFont());
+			DrawStringToHandle(150, 540, steps_[index].textJP.c_str(), 0xffffff, Application::GetInstance()->GetDefaultFont());
 			// ステート表示
 			DrawFormatStringToHandle(10, 230, 0xffffff, 
 					Application::GetInstance()->GetFont(), "ステート：　%s", steps_[index].type.c_str());
@@ -166,7 +168,7 @@ void TutorialScene::LoadCsvData(void)
 			strSplit.push_back(field);
 		}
 
-		if (strSplit.size() != 4)
+		if (strSplit.size() != 5)
 		{
 			continue;
 		}
@@ -184,7 +186,8 @@ void TutorialScene::LoadCsvData(void)
 		data.value = std::stof(strSplit[index++]);
 
 		// テキスト
-		data.text = strSplit[index++];
+		data.textEN = strSplit[index++];
+		data.textJP = strSplit[index++];
 
 		steps_.push_back(data);
 	}
@@ -250,6 +253,16 @@ void TutorialScene::Sliding(void)
 void TutorialScene::Light(void)
 {
 
+#ifdef _DEBUG
+	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
+	{
+		currentStepValue_ += steps_[currentPlayCount_ - 1].value;
+	}
+#endif //_DEBUG
+}
+
+void TutorialScene::Map(void)
+{
 #ifdef _DEBUG
 	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
 	{
