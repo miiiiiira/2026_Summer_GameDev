@@ -79,13 +79,13 @@ void MainMenu::Update(void)
 		return;
 	}
 
-#endif //_DEBUG
 	// Lキーを押したらデバッグシーン
 	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_H))
 	{
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<LightSelectScene>(), true);
 		return;
 	}
+#endif //_DEBUG
 
 	// メニューからタイトルに戻すボタン
 	if (InputManager::GetInstance()->MenuToTitleButtons())
@@ -161,7 +161,7 @@ void MainMenu::ChangeSelect(MENU menu)
 void MainMenu::UpdatePlay(void)
 {
 	// ゲームシーンへ
-	SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameScene>(), true);
+	SceneManager::GetInstance()->NextChangeScene(std::make_shared<LightSelectScene>(), true);
 }
 
 void MainMenu::UpdateOption(void)

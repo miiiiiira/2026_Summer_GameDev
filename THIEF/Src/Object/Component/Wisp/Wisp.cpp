@@ -7,6 +7,7 @@
 #include "../../../Common/Manager/Light/LightManager.h"
 #include "../Render/Render3D.h"
 #include "../../Object.h"
+#include "../Animation/Animation.h"
 
 Wisp::Wisp(void)
 {
@@ -74,6 +75,15 @@ void Wisp::Init(void)
 	// オーナーからTransformを取得
 	trans_ = owner_->GetComponent<Transform>();
 
+	// アニメーションの追加
+	anim_ = owner_->AddComponent<Animation>();
+	anim_->Init();
+	anim_->AddInFbx((int)ANIM::NORMAL, 1, 0);
+	anim_->AddInFbx((int)ANIM::SMALL, 1, 1);
+
+	// 通常アニメーションを再生
+	SetAnimation(ANIM::NORMAL);
+
 	// モデルに大きさ、向き、座標を設定
 	MV1SetScale(wispModelId_, scale_);
 	MV1SetPosition(wispModelId_, trans_->pos_);
@@ -98,6 +108,7 @@ void Wisp::Update(void)
 	// ライトの範囲を更新
 	UpdateRange();
 
+#ifdef _DEBUG
 
 	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_H))
 	{
@@ -147,6 +158,7 @@ void Wisp::Update(void)
 		}
 
 	}
+#endif // _DEBUG
 
 	// ライトの設定に変更があったら設定し直し
 	if (LightManager::GetInstance().GetLightType() != lightType_)
@@ -206,6 +218,29 @@ void Wisp::ChangeLightTexture(LIGHT_TYPE lightType)
 			lightData->second.color.y / 255.0f,
 			lightData->second.color.z / 255.0f,
 			1.0f));
+}
+
+void Wisp::SetAnimation(ANIM anim)
+{
+	switch (anim)
+	{
+	case Wisp::ANIM::NORMAL:
+		anim_->Play((int)ANIM::NORMAL);
+
+		// 指定シェイプの有効率を設定する( Rate  0.0f:0% ～ 1.0f:100% )
+		MV1SetShapeRate(wispModelId_, 2, 0.0f);
+		MV1SetShapeRate(wispModelId_, 3, 0.0f);
+		break;
+	case Wisp::ANIM::SMALL:
+		anim_->Play((int)ANIM::SMALL);
+		
+		// 指定シェイプの有効率を設定する( Rate  0.0f:0% ～ 1.0f:100% )
+		MV1SetShapeRate(wispModelId_, 2, 1.0f);
+		MV1SetShapeRate(wispModelId_, 3, 1.0f);
+		break;
+	default:
+		break;
+	}
 }
 
 void Wisp::UpdatePos(void)

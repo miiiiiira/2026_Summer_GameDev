@@ -489,6 +489,9 @@ void PlayerController::InputSliding(void)
 
 		// ランタンOFFサウンド
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_OFF);
+
+		// Wispの火を小さく
+		wisp_->SetAnimation(Wisp::ANIM::SMALL);
 	}
 }
 
@@ -536,6 +539,9 @@ void PlayerController::Crouching(void)
 
 			// 前回しゃがみフラグon
 			prevCrouching_ = true;
+
+			// Wispの火を小さく
+			wisp_->SetAnimation(Wisp::ANIM::SMALL);
 		}
 	}
 
@@ -554,6 +560,9 @@ void PlayerController::UnCrouch(void)
 		// しゃがみ復帰時
 		if (prevCrouching_)
 		{
+			// Wispの火を小さく
+			wisp_->SetAnimation(Wisp::ANIM::NORMAL);
+
 			// ランタンONサウンド
 			AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_ON);
 		}

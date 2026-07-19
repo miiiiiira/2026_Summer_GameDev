@@ -8,6 +8,7 @@ enum class SoundID
 
 	SYS_BUTTON_1,
 	SYS_BUTTON_2,
+	SYS_BUTTON_3,
 	SYS_SELECT_ON,
 	SYS_SELECT_CLICK,
 	SYS_ENTER,
@@ -17,6 +18,7 @@ enum class SoundID
 
 	BGM_TITLE,
 	BGM_MAINMENU,
+	BGM_LIGHT_SELECT,
 	BGM_GAME_1,
 	BGM_GAME_2,
 	BGM_GAME_3,
@@ -84,11 +86,12 @@ enum class SoundID
 // 読み込むシーン
 enum class LoadScene
 {
-	SYSTEM,		// システム
-	TITLE,		// タイトル
-	MAIN_MENU,	// メインメニュー
-	GAME,		// ゲーム
-	SHOP,		// ゲーム
+	SYSTEM,			// システム
+	TITLE,			// タイトル
+	MAIN_MENU,		// メインメニュー
+	LIGHT_SELECT,	// ライト選択
+	GAME,			// ゲーム
+	SHOP,			// ゲーム
 };
 
 // サウンドのタイプ

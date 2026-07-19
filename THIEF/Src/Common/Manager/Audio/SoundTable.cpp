@@ -9,6 +9,7 @@ namespace SoundTable_System
 	{
 		{ SoundID::SYS_BUTTON_1,	{"Data/Sound/System/SYS_BUTTON_1.wav",	SoundType::SE_2D, 200 } },
 		{ SoundID::SYS_BUTTON_2,	{"Data/Sound/System/SYS_BUTTON_2.wav",	SoundType::SE_2D, 200 } },
+		{ SoundID::SYS_BUTTON_3,	{"Data/Sound/System/SYS_BUTTON_3.mp3",	SoundType::SE_2D, 200 } },
 		{ SoundID::SYS_SELECT_ON,	{"Data/Sound/System/SYS_SELECT_ON.ogg",	SoundType::SE_2D, 200 } },
 		{ SoundID::SYS_SELECT_CLICK,{"Data/Sound/System/system.mp3",		SoundType::SE_2D, 255 } },
 		{ SoundID::SYS_ENTER,		{"Data/Sound/System/system.mp3",		SoundType::SE_2D, 255 } },
@@ -33,6 +34,15 @@ namespace SoundTable_MainMenu
 	const std::unordered_map<SoundID, SoundData> Table =
 	{
 		{ SoundID::BGM_MAINMENU, {"Data/Sound/MainMenu/BGM_MAINMENU.wav", SoundType::BGM, 127} },
+	};
+}
+
+// ライトの種類選択画面用
+namespace SoundTable_LightSelect
+{
+	const std::unordered_map<SoundID, SoundData> Table =
+	{
+		{ SoundID::BGM_LIGHT_SELECT, {"Data/Sound/LightSelect/BGM_LIGHT_SELECT.wav", SoundType::BGM, 127} },
 	};
 }
 

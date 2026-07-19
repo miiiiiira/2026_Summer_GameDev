@@ -1056,6 +1056,9 @@ void GameScene::ItemCreate(Tag tag, VECTOR pos)
 {
 	auto itemData = ItemTable::Table.find(tag);
 
+	// データの中身が無ければ処理を行わない
+	if (itemData == ItemTable::Table.end())return;
+
 	// アイテムの作成
 	auto item = objectManger_->CreateObject();
 

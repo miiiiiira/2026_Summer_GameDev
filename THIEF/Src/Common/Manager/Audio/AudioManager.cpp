@@ -41,6 +41,7 @@ void AudioManager::LoadSceneSound(LoadScene scene)
 	case LoadScene::SYSTEM: table = &SoundTable_System::Table; break;
 	case LoadScene::TITLE: table = &SoundTable_Title::Table; break;
 	case LoadScene::MAIN_MENU:  table = &SoundTable_MainMenu::Table; break;
+	case LoadScene::LIGHT_SELECT:  table = &SoundTable_LightSelect::Table; break;
 	case LoadScene::GAME:  table = &SoundTable_Game::Table; break;
 	case LoadScene::SHOP:  table = &SoundTable_Shop::Table; break;
 	}
@@ -90,6 +91,7 @@ void AudioManager::DeleteSceneSound(LoadScene scene)
 	case LoadScene::SYSTEM: table = &SoundTable_System::Table; break;
 	case LoadScene::TITLE: table = &SoundTable_Title::Table; break;
 	case LoadScene::MAIN_MENU:  table = &SoundTable_MainMenu::Table; break;
+	case LoadScene::LIGHT_SELECT:  table = &SoundTable_LightSelect::Table; break;
 	case LoadScene::GAME:  table = &SoundTable_Game::Table; break;
 	case LoadScene::SHOP:  table = &SoundTable_Shop::Table; break;
 	}

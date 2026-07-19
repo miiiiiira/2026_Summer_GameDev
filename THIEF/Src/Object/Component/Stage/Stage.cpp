@@ -43,16 +43,24 @@ void Stage::Init()
 	auto stageNum = SceneManager::GetInstance()->GetCurrentStage();
 	auto deliveryData = DeliveryTable::Table.find(stageNum);
 
-	// 納品場所の大きさ
-	deliverySize_ = deliveryData->second.deliverySize_;
+	if (deliveryData != DeliveryTable::Table.end())
+	{
+		// 納品場所の大きさ
+		deliverySize_ = deliveryData->second.deliverySize_;
 
-	// 納品場所の座標
-	deliveryPos_ = trans->pos_;
-	deliveryPos_ = VAdd(deliveryPos_, deliveryData->second.deliveryLocalPos_);
+		// 納品場所の座標
+		deliveryPos_ = trans->pos_;
+		deliveryPos_ = VAdd(deliveryPos_, deliveryData->second.deliveryLocalPos_);
 
-	// 納品完了スイッチの座標
-	doneSwitchPos_ = trans->pos_;
-	doneSwitchPos_ = VAdd(doneSwitchPos_, deliveryData->second.doneSwitchLocalPos_);
+		// 納品完了スイッチの座標
+		doneSwitchPos_ = trans->pos_;
+		doneSwitchPos_ = VAdd(doneSwitchPos_, deliveryData->second.doneSwitchLocalPos_);
+	}
+	else
+	{
+		// データがなかった場合は0初期化
+		deliverySize_ = deliveryPos_ = doneSwitchPos_ = {};
+	}
 
 	// 納品完了スイッチフラグ
 	isDoneSwitch_ = false;

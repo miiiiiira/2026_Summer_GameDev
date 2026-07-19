@@ -19,6 +19,11 @@ namespace SoundTable_MainMenu
 	extern const std::unordered_map<SoundID, SoundData> Table;
 }
 
+namespace SoundTable_LightSelect
+{
+	extern const std::unordered_map<SoundID, SoundData> Table;
+}
+
 namespace SoundTable_Game
 {
 	extern const std::unordered_map<SoundID, SoundData> Table;

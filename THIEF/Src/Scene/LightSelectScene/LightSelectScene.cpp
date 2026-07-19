@@ -1,9 +1,11 @@
 #include "LightSelectScene.h"
-#include "LightSelectInfo.h"
 #include "../../Common/Manager/Light/LightManager.h"
 #include "../../Common/Manager/Input/InputManager.h"
 #include "../SceneManager.h"
 #include "../../Application.h"
+#include "../../Common/Manager/System/SystemManager.h"
+#include "../../Common/Manager/Audio/AudioManager.h"
+#include "../../Common/Collision/Collision.h"
 
 LightSelectScene::LightSelectScene(void)
 {
@@ -17,98 +19,59 @@ void LightSelectScene::Init(void)
 {
 	// デフォルト
 	lightType_ = COLOR_0;
+
+	// マウスが現在選択している画像の種類
+	mouseSelectType_ = MouseSelectTypeTable::MOUSE_SELECT_TYPE::NON;
+
+	// BGMを再生
+	AudioManager::GetInstance()->PlayBGM(SoundID::BGM_LIGHT_SELECT);
 }
 
 void LightSelectScene::Load(void)
 {
+	// ライトセレクトシーンで使用するサウンドをロード
+	AudioManager::GetInstance()->LoadSceneSound(LoadScene::LIGHT_SELECT);
+
+	// 「カラーを選んでね」の画像読み込む
+	selectLightColorTextImg_ = LoadGraph("Data/Image/LightSelectScene/SelectLightColorText.png");
+
+	// 「Best」の画像読み込み
+	BestTextImg_ = LoadGraph("Data/Image/LightSelectScene/BestText.png");
+
 	// ライトのプレビュー画像を読み込む
-	for (auto table : LightSelectSceneTable::Table)
+	for (auto table : LightSelectSceneWispTable::Table)
 	{
 		wispImgs_.emplace(table.first, LoadGraph(table.second.c_str()));
 	}
 
 	// 選択矢印画像を読み込む
-	selectArrowImg_[RIGHT] = LoadGraph("Data/Image/LightSelectScene/arrow.png");
-	selectArrowImg_[LEFT] = LoadGraph("Data/Image/LightSelectScene/arrow.png");
-
-	// ゲームスタートボタン画像を読み込む
-	gameStartImg_ = LoadGraph("Data/Image/LightSelectScene/GameStart.png");
+	for (auto selectTypeTable : MouseSelectTypeTable::Table)
+	{
+		mouseSelectTypeImg_[selectTypeTable.first] = LoadGraph(selectTypeTable.second.path.c_str());
+		mouseSelectTypeFrameImg_[selectTypeTable.first] = LoadGraph(selectTypeTable.second.framePath.c_str());
+	}
 }
 
 void LightSelectScene::LoadEnd(void)
 {
+	// 初期化処理
 	Init();
 }
 
 void LightSelectScene::Update(void)
 {
+	// 選択処理
+	SelectUpgrade();
 
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_SPACE))
-	{
-		// ライトの設定をする
-		LightManager::GetInstance().SetLightType(lightType_);
-
-		// ゲームシーンへ移行
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameScene>());
-		return;
-	}
-
-
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_H))
-	{
-		switch (lightType_)
-		{
-		case COLOR_0:
-			lightType_ = LIGHT_TYPE::COLOR_1;
-			break;
-		case COLOR_1:
-			lightType_ = LIGHT_TYPE::COLOR_2;
-			break;
-		case COLOR_2:
-			lightType_ = LIGHT_TYPE::COLOR_3;
-			break;
-		case COLOR_3:
-			lightType_ = LIGHT_TYPE::COLOR_4;
-			break;
-		case COLOR_4:
-			lightType_ = LIGHT_TYPE::COLOR_5;
-			break;
-		case COLOR_5:
-			lightType_ = LIGHT_TYPE::COLOR_6;
-			break;
-		case COLOR_6:
-			lightType_ = LIGHT_TYPE::COLOR_7;
-			break;
-		case COLOR_7:
-			lightType_ = LIGHT_TYPE::COLOR_8;
-			break;
-		case COLOR_8:
-			lightType_ = LIGHT_TYPE::COLOR_9;
-			break;
-		case COLOR_9:
-			lightType_ = LIGHT_TYPE::COLOR_10;
-			break;
-		case COLOR_10:
-			lightType_ = LIGHT_TYPE::COLOR_11;
-			break;
-		case COLOR_11:
-			lightType_ = LIGHT_TYPE::COLOR_12;
-			break;
-		case COLOR_12:
-			lightType_ = LIGHT_TYPE::COLOR_0;
-			break;
-		default:
-			break;
-		}
-
-	}
-
-
-
+	// 確定処理
+	ConfirmUpgrade();
 }
 
 void LightSelectScene::Draw(void)
 {
+	// 「カラーを選んでね」の画像描画
+	DrawGraph(0, 0, selectLightColorTextImg_, true);
+
 	// ライトの選ばれている種類によって描画変更
 	DrawGraph(0, 0, wispImgs_.find(lightType_)->second, true);
 	
@@ -116,32 +79,218 @@ void LightSelectScene::Draw(void)
 	if (lightType_ == COLOR_0)
 	{
 		// おすすめふきだし描画
+		DrawGraph(0, 0, BestTextImg_, true);
 	}
 
-	// 矢印ボタン
-	DrawRotaGraph(Application::SCREEN_SIZE_X / 2 - 44-80, Application::SCREEN_SIZE_Y / 2, 1.0, 0.0,
-		selectArrowImg_[RIGHT], true);
+	for (auto selectTypeTable : MouseSelectTypeTable::Table)
+	{
+		DrawRotaGraph(
+			selectTypeTable.second.pos.x,
+			selectTypeTable.second.pos.y,
+			1.0,
+			0.0,
+			mouseSelectTypeImg_[selectTypeTable.first],
+			true);
+	}
 
-	// 矢印ボタン
-	DrawRotaGraph(44 + 10, Application::SCREEN_SIZE_Y / 2, 1.0, 0.0, selectArrowImg_[LEFT], true, true);
+	// マウスの状態を使ってテーブルの情報を取ってくる
+	auto typeTable = MouseSelectTypeTable::Table.find(mouseSelectType_);
 
-	// ゲームスタートボタン
-	DrawGraph(Application::SCREEN_SIZE_X / 2 - 166, Application::SCREEN_SIZE_Y - 58 - 30, gameStartImg_, true);
-
-
+	// 中身があったら
+	if (typeTable != MouseSelectTypeTable::Table.end())
+	{
+		DrawRotaGraph(
+			typeTable->second.pos.x,
+			typeTable->second.pos.y,
+			1.0,
+			0.0,
+			mouseSelectTypeFrameImg_[typeTable->first],
+			true);
+	}
 }
 
 void LightSelectScene::Release(void)
 {
 	// 画像を解放する
+	DeleteGraph(selectLightColorTextImg_);
+	DeleteGraph(BestTextImg_);
+
 	for (auto wisp : wispImgs_)
 	{
 		DeleteGraph(wisp.second);
 	}
 	wispImgs_.clear();
 
-	DeleteGraph(selectArrowImg_[ARROW_TYPE::RIGHT]);
-	DeleteGraph(selectArrowImg_[ARROW_TYPE::LEFT]);
+	for (auto selectTypeTable : MouseSelectTypeTable::Table)
+	{
+		DeleteGraph(mouseSelectTypeImg_[selectTypeTable.first]);
+	}
 
-	DeleteGraph(gameStartImg_);
+	// ライトセレクトシーンで使用するサウンドを削除
+	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::LIGHT_SELECT);
+}
+
+void LightSelectScene::SelectUpgrade(void)
+{
+	// 前回の選択物を入れておく
+	MouseSelectTypeTable::MOUSE_SELECT_TYPE type = mouseSelectType_;
+
+	// 使っているデバイスによって変更
+	if (SystemManager::GetInstance().GetIsDevice())
+	{
+		// マウス選択
+		MouseSelect();
+	}
+	else
+	{
+		// パッド選択
+		PadSelect();
+	}
+
+	// 中身がNONじゃないかつ、選択物が変わっていたら
+	if (mouseSelectType_ != MouseSelectTypeTable::MOUSE_SELECT_TYPE::NON
+		&& mouseSelectType_ != type)
+	{
+		// ボタンに乗ったサウンドを出す
+		AudioManager::GetInstance()->PlaySE(SoundID::SYS_SELECT_ON);
+	}
+}
+
+void LightSelectScene::MouseSelect(void)
+{
+	mouseSelectType_ = MouseSelectTypeTable::MOUSE_SELECT_TYPE::NON;
+
+	// 当たり判定取る
+	for (auto selectTypeTable : MouseSelectTypeTable::Table)
+	{
+		// 左上座標にする
+		Vector2 pos = selectTypeTable.second.pos;
+		pos.x -= selectTypeTable.second.size.x / 2;
+		pos.y -= selectTypeTable.second.size.y / 2;
+
+		// 当たっていなかったら次の処理へ
+		if (!Collision::HitMouseImg2Box(pos, selectTypeTable.second.size.x, selectTypeTable.second.size.y))continue;
+
+		// 選択しているマウス変更
+		ChangeMouseSelect(selectTypeTable.first);
+	}
+}
+
+void LightSelectScene::PadSelect(void)
+{
+	switch (mouseSelectType_)
+	{
+	case MouseSelectTypeTable::RIGHT_ARROW:
+
+		if (InputManager::GetInstance()->SelectLeft())
+		{
+			ChangeMouseSelect(MouseSelectTypeTable::LEFT_ARROW);
+		}
+
+		if (InputManager::GetInstance()->SelectDown())
+		{
+			ChangeMouseSelect(MouseSelectTypeTable::GAME_START);
+		}
+
+		break;
+	case MouseSelectTypeTable::LEFT_ARROW:
+
+		if (InputManager::GetInstance()->SelectRight())
+		{
+			ChangeMouseSelect(MouseSelectTypeTable::RIGHT_ARROW);
+		}
+
+		if (InputManager::GetInstance()->SelectDown())
+		{
+			ChangeMouseSelect(MouseSelectTypeTable::GAME_START);
+		}
+
+		break;
+	case MouseSelectTypeTable::GAME_START:
+
+		if (InputManager::GetInstance()->SelectUp())
+		{
+			ChangeMouseSelect(MouseSelectTypeTable::LEFT_ARROW);
+		}
+
+		break;
+	case MouseSelectTypeTable::MAX:
+	case MouseSelectTypeTable::NON:
+		ChangeMouseSelect(MouseSelectTypeTable::LEFT_ARROW);
+		break;
+	default:
+		break;
+	}
+}
+
+void LightSelectScene::ConfirmUpgrade(void)
+{
+	// 決定ボタンが押されていなかったら処理を行わない
+	if (!InputManager::GetInstance()->ConfirmButton())return;
+
+	// ライトの種類を整数型にして足し引き算出来るようにする
+	int nowlightType = static_cast<int>(lightType_);
+
+	switch (mouseSelectType_)
+	{
+	case MouseSelectTypeTable::RIGHT_ARROW:
+
+		// ボタンクリック音を再生
+		AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_3);
+
+		// 次のライトの種類にする
+		nowlightType++;
+
+		// 上限値を超えていたら
+		if (nowlightType > static_cast<int>(LIGHT_TYPE::COLOR_12))
+		{
+			// 最初のライトの種類に戻す
+			nowlightType = static_cast<int>(LIGHT_TYPE::COLOR_0);
+		}
+
+		break;
+	case MouseSelectTypeTable::LEFT_ARROW:
+
+		// ボタンクリック音を再生
+		AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_3);
+
+		// 前のライトの種類にする
+		nowlightType--;
+
+		// 下限値を超えていたら
+		if (nowlightType < static_cast<int>(LIGHT_TYPE::COLOR_0))
+		{
+			// 最後のライトの種類に戻す
+			nowlightType = static_cast<int>(LIGHT_TYPE::COLOR_12);
+		}
+
+		break;
+	case MouseSelectTypeTable::GAME_START:
+
+		// ボタンクリック音を再生
+		AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_2);
+
+		// ライトの設定をする
+		LightManager::GetInstance().SetLightType(lightType_);
+
+		// ゲームシーンへ移行
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameScene>());
+		return;
+
+		break;
+	case MouseSelectTypeTable::MAX:
+		break;
+	case MouseSelectTypeTable::NON:
+		break;
+	default:
+		break;
+	}
+
+	// 設定されたライトの種類を適用
+	lightType_ = static_cast<LIGHT_TYPE>(nowlightType);
+}
+
+void LightSelectScene::ChangeMouseSelect(MouseSelectTypeTable::MOUSE_SELECT_TYPE type)
+{
+	mouseSelectType_ = type;
 }

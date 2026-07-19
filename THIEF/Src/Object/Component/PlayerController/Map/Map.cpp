@@ -16,16 +16,26 @@ Map::Map(void)
 	auto stageNum = SceneManager::GetInstance()->GetCurrentStage();
 	auto mapData = MapTable::Table.find(stageNum);
 
-	// 地図画像の読み込み
-	mapImg_ = LoadGraph(mapData->second.path.c_str());
+	// データがあれば処理を行う
+	if (mapData != MapTable::Table.end())
+	{
+		// 地図画像の読み込み
+		mapImg_ = LoadGraph(mapData->second.path.c_str());
 
-	// 地図画像のサイズを取得
-	mapImgSizeX = mapData->second.mapImgSizeX;
-	mapImgSizeY = mapData->second.mapImgSizeY;
+		// 地図画像のサイズを取得
+		mapImgSizeX = mapData->second.mapImgSizeX;
+		mapImgSizeY = mapData->second.mapImgSizeY;
 
-	// 地図画像上でのプレイヤー座標を取得
-	playerSpawnPosX = mapData->second.playerSpawnPosX;
-	playerSpawnPosY = mapData->second.playerSpawnPosY;
+		// 地図画像上でのプレイヤー座標を取得
+		playerSpawnPosX = mapData->second.playerSpawnPosX;
+		playerSpawnPosY = mapData->second.playerSpawnPosY;
+	}
+	else
+	{
+		// データがなかった場合は0初期化
+		mapImgSizeX = mapImgSizeY = 0;
+		playerSpawnPosX = playerSpawnPosY = 0;
+	}
 
 	// マップ画像の位置初期化
 	mapImgPosX_ = MAP_CENTER_POS_X + (mapImgSizeX / 2 - playerSpawnPosX);

@@ -1,8 +1,9 @@
 #pragma once
 
 #include "../SceneBase.h"
-#include <map>
 #include "../../Object/Component/Wisp/LightInfo.h"
+#include "LightSelectInfo.h"
+#include <map>
 
 class LightSelectScene : public SceneBase
 {
@@ -20,13 +21,11 @@ public:
 
 private:
 
-	enum ARROW_TYPE
-	{
-		RIGHT,
-		LEFT,
+	// 「カラーを選んでね」の画像
+	int selectLightColorTextImg_;
 
-		MAX
-	};
+	// 「Best」の画像
+	int BestTextImg_;
 
 	// ライトの種類とそれに対応した画像ハンドルをもつ
 	std::map<LIGHT_TYPE,int> wispImgs_;
@@ -34,11 +33,26 @@ private:
 	// 使用中のライトの種類
 	LIGHT_TYPE lightType_;
 
-	// 選択矢印画像
-	int selectArrowImg_[ARROW_TYPE::MAX];
+	// マウス選択できる画像のハンドル
+	int mouseSelectTypeImg_[MouseSelectTypeTable::MOUSE_SELECT_TYPE::MAX];
+	// マウス選択できる画像のフレーム画像ハンドル
+	int mouseSelectTypeFrameImg_[MouseSelectTypeTable::MOUSE_SELECT_TYPE::MAX];
 
-	// ゲームスタート画像
-	int gameStartImg_ = -1;
+	// マウスが現在選択している画像の種類
+	MouseSelectTypeTable::MOUSE_SELECT_TYPE mouseSelectType_;
 
+	// どの能力をアップグレードするか選択を行う
+	void SelectUpgrade(void);
+
+	// マウスの選択処理
+	void MouseSelect(void);
+
+	// パッドの選択処理
+	void PadSelect(void);
+
+	// 決定処理
+	void ConfirmUpgrade(void);
+
+	// 変更処理
+	void ChangeMouseSelect(MouseSelectTypeTable::MOUSE_SELECT_TYPE type);
 };
-
