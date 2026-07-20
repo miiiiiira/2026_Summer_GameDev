@@ -5,24 +5,25 @@
 #include "../SceneManager.h"
 #include "../Pause/Pause.h"
 #include "../GameScene/GameScene.h"
+#include "../MainMenu/MainMenu.h"
 #include "../../Common/Manager/Audio/AudioManager.h"
+#include "../../Common/Manager/PlayerActionCounter/PlayerActionCounter.h"
 #include "TutorialScene.h"
 
 TutorialScene::TutorialScene(void)
 {
 	// 状態の登録
-	stateTable_[MOVE] = &TutorialScene::Move;
-	stateTable_[JUMP] = &TutorialScene::Jump;
-	stateTable_[DASH] = &TutorialScene::Dash;
-	stateTable_[CROUCH] = &TutorialScene::Crouch;
-	stateTable_[SLIDING] = &TutorialScene::Sliding;
-	stateTable_[LIGHT] = &TutorialScene::Light;
-	stateTable_[MAP] = &TutorialScene::Map;
-	stateTable_[GRAB] = &TutorialScene::Grab;
-	stateTable_[RANGE] = &TutorialScene::Range;
-	stateTable_[CART] = &TutorialScene::Cart;
-	stateTable_[DELIVER] = &TutorialScene::Deliver;
-	stateTable_[CLEAR] = &TutorialScene::Clear;
+	stateTable_[Tutorial::MOVE] = &TutorialScene::Move;
+	stateTable_[Tutorial::JUMP] = &TutorialScene::Jump;
+	stateTable_[Tutorial::DASH] = &TutorialScene::Dash;
+	stateTable_[Tutorial::CROUCH] = &TutorialScene::Crouch;
+	stateTable_[Tutorial::SLIDING] = &TutorialScene::Sliding;
+	stateTable_[Tutorial::LIGHT] = &TutorialScene::Light;
+	stateTable_[Tutorial::MAP] = &TutorialScene::Map;
+	stateTable_[Tutorial::GRAB] = &TutorialScene::Grab;
+	stateTable_[Tutorial::RANGE] = &TutorialScene::Range;
+	stateTable_[Tutorial::CART] = &TutorialScene::Cart;
+	stateTable_[Tutorial::DELIVER] = &TutorialScene::Deliver;
 }
 
 TutorialScene::~TutorialScene(void)
@@ -31,12 +32,17 @@ TutorialScene::~TutorialScene(void)
 
 void TutorialScene::Init(void)
 {
-	currentState_ = STATE::MOVE;
-	nextState_ = STATE::MOVE;
-	currentPlayCount_ = steps_[0].id;
-	currentStepValue_ = 0.0f;
-	totalPlayCount_ = static_cast<int>(STATE::MAX) - 2;
-	
+	// 現在の確認項目を移動に設定
+	currentState_ = Tutorial::MOVE;
+
+	// 確認項目のクリアフラグ初期化
+	isClearState_ = false;
+
+	// クリアカウント初期化
+	clearStateEndCount_ = 0;
+
+	// プレイヤーの行動カウンタクラスの初期化
+	PlayerActionCounter::GetInstance()->Init();
 }
 
 void TutorialScene::Load(void)
@@ -60,43 +66,39 @@ void TutorialScene::Update(void)
 		return;
 	}
 
-	//　ステップ10まで終わったら遷移する
-	if (currentPlayCount_ == totalPlayCount_ + 1)
+	// 確認項目がクリア判定になっていたら「Good job!」のための時間を取る
+	if (isClearState_)
 	{
-		SceneManager::GetInstance()->ChangeScene(std::make_shared<GameScene>());
-		return;
+		Clear();
 	}
-
-	if (currentState_ != STATE::CLEAR)
+	else
 	{
-		// 100％に達したら、クリアに遷移
-		if (currentStepValue_ >= MAX_VALUE)
+		if (stateTable_[currentState_])
 		{
-			int nextVal = static_cast<int>(currentState_) + 1;
-			nextState_ = static_cast<STATE>(nextVal);
-
-			SetState(STATE::CLEAR);
-			return;
-		}		
+			(this->*stateTable_[currentState_])();
+		}
 	}
 
-	if (stateTable_[currentState_])
+	//　ステップ10まで終わったら遷移する
+	if (currentState_ == Tutorial::MAX)
 	{
-		(this->*stateTable_[currentState_])();
+		currentState_ = Tutorial::MOVE;
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<MainMenu>());
+		return;
 	}
 }
 
 void TutorialScene::Draw(void)
 {
 #ifdef _DEBUG
-	if (currentState_ == STATE::CLEAR)
+	if (isClearState_)
 	{
 		DrawStringToHandle(150, 500, "Good job!", 0xffffff, Application::GetInstance()->GetFont());
 	}
 	// CLEAR以外の時は、CSVから読み込む
 	else
 	{
-		int index = currentPlayCount_ - 1;
+		int index = static_cast<int>(currentState_);
 		if (index >= 0 && index < static_cast<int>(steps_.size()))
 		{
 			// steps_ から取得し、描画
@@ -110,10 +112,10 @@ void TutorialScene::Draw(void)
 	}
 	// パーセント表示
 	DrawFormatStringToHandle(10, 250, 0xffffff,
-		Application::GetInstance()->GetFont(), "パーセント：　%.2f ％", currentStepValue_);
-	// ステップ表示
+		Application::GetInstance()->GetFont(), "パーセント：　%.2f ％", PlayerActionCounter::GetInstance()->GetCounter(currentState_));
+	// ステップ表示  ステートが0から始まるため、+1で補正
 	DrawFormatStringToHandle(10, 270, 0xffffff,
-		Application::GetInstance()->GetFont(), "ステップ：　%d / %d", currentPlayCount_, totalPlayCount_);
+		Application::GetInstance()->GetFont(), "ステップ：　%d / %d", static_cast<int>(currentState_) + 1, static_cast<int>(Tutorial::STATE::MAX));
 #endif //_DEBUG
 }
 
@@ -125,10 +127,19 @@ void TutorialScene::Release(void)
 	}
 }
 
-void TutorialScene::SetState(STATE newState)
+void TutorialScene::SetState(Tutorial::STATE newState)
 {
+	// 指定されたステートへ変更
 	currentState_ = newState;
-	currentStepValue_ = 0.0f;
+
+	// 指定されたステートのカウントを初期化
+	PlayerActionCounter::GetInstance()->ResetCounter(currentState_);
+
+	// クリアカウント初期化
+	clearStateEndCount_ = 0;
+
+	// 確認項目クリアフラグを立てる
+	isClearState_ = true;
 }
 
 void TutorialScene::LoadCsvData(void)
@@ -173,7 +184,7 @@ void TutorialScene::LoadCsvData(void)
 			continue;
 		}
 
-		TutorialInfo data{};
+		Tutorial::TutorialInfo data{};
 		int index = 0;
 
 		// ID
@@ -191,6 +202,8 @@ void TutorialScene::LoadCsvData(void)
 
 		steps_.push_back(data);
 	}
+
+	ifs.close();
 }
 
 void TutorialScene::Move(void)
@@ -199,7 +212,16 @@ void TutorialScene::Move(void)
 #ifdef _DEBUG
 	if (InputManager::GetInstance()->IsNew(KEY_INPUT_B))
 	{
-		currentStepValue_ += steps_[currentPlayCount_ - 1].value;
+		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
+	}
+
+	// 100％に達したら、クリアに遷移
+	// TODO PlayerActionCounter::GetInstance()::GetMoveCount()
+	if (PlayerActionCounter::GetInstance()->GetCounter(currentState_) >= MAX_VALUE)
+	{
+		// 次の項目をジャンプにする
+		SetState(Tutorial::STATE::JUMP);
+		return;
 	}
 #endif //_DEBUG
 
@@ -211,7 +233,15 @@ void TutorialScene::Jump(void)
 #ifdef _DEBUG
 	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
 	{
-		currentStepValue_ += steps_[currentPlayCount_ - 1].value;
+		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
+	}
+
+	// 100％に達したら、クリアに遷移
+	if (PlayerActionCounter::GetInstance()->GetCounter(currentState_) >= MAX_VALUE)
+	{
+		// 次の項目をダッシュにする
+		SetState(Tutorial::STATE::DASH);
+		return;
 	}
 #endif //_DEBUG
 }
@@ -222,7 +252,15 @@ void TutorialScene::Dash(void)
 #ifdef _DEBUG
 	if (InputManager::GetInstance()->IsNew(KEY_INPUT_B))
 	{
-		currentStepValue_ += steps_[currentPlayCount_ - 1].value;
+		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
+	}
+
+	// 100％に達したら、クリアに遷移
+	if (PlayerActionCounter::GetInstance()->GetCounter(currentState_) >= MAX_VALUE)
+	{
+		// 次の項目をしゃがみにする
+		SetState(Tutorial::STATE::CROUCH);
+		return;
 	}
 #endif //_DEBUG
 
@@ -234,7 +272,15 @@ void TutorialScene::Crouch(void)
 #ifdef _DEBUG
 	if (InputManager::GetInstance()->IsNew(KEY_INPUT_B))
 	{
-		currentStepValue_ += steps_[currentPlayCount_ - 1].value;
+		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
+	}
+
+	// 100％に達したら、クリアに遷移
+	if (PlayerActionCounter::GetInstance()->GetCounter(currentState_) >= MAX_VALUE)
+	{
+		// 次の項目をスライディングにする
+		SetState(Tutorial::STATE::SLIDING);
+		return;
 	}
 #endif //_DEBUG
 }
@@ -245,7 +291,15 @@ void TutorialScene::Sliding(void)
 #ifdef _DEBUG
 	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
 	{
-		currentStepValue_ += steps_[currentPlayCount_ - 1].value;
+		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
+	}
+
+	// 100％に達したら、クリアに遷移
+	if (PlayerActionCounter::GetInstance()->GetCounter(currentState_) >= MAX_VALUE)
+	{
+		// 次の項目をライトの動かし方にする
+		SetState(Tutorial::STATE::LIGHT);
+		return;
 	}
 #endif //_DEBUG
 }
@@ -256,7 +310,15 @@ void TutorialScene::Light(void)
 #ifdef _DEBUG
 	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
 	{
-		currentStepValue_ += steps_[currentPlayCount_ - 1].value;
+		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
+	}
+
+	// 100％に達したら、クリアに遷移
+	if (PlayerActionCounter::GetInstance()->GetCounter(currentState_) >= MAX_VALUE)
+	{
+		// 次の項目をマップの開き方にする
+		SetState(Tutorial::STATE::MAP);
+		return;
 	}
 #endif //_DEBUG
 }
@@ -266,7 +328,15 @@ void TutorialScene::Map(void)
 #ifdef _DEBUG
 	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
 	{
-		currentStepValue_ += steps_[currentPlayCount_ - 1].value;
+		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
+	}
+
+	// 100％に達したら、クリアに遷移
+	if (PlayerActionCounter::GetInstance()->GetCounter(currentState_) >= MAX_VALUE)
+	{
+		// 次の項目を掴み方にする
+		SetState(Tutorial::STATE::GRAB);
+		return;
 	}
 #endif //_DEBUG
 }
@@ -277,7 +347,15 @@ void TutorialScene::Grab(void)
 #ifdef _DEBUG
 	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
 	{
-		currentStepValue_ += steps_[currentPlayCount_ - 1].value;
+		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
+	}
+
+	// 100％に達したら、クリアに遷移
+	if (PlayerActionCounter::GetInstance()->GetCounter(currentState_) >= MAX_VALUE)
+	{
+		// 次の項目をアイテムの動かし方にする
+		SetState(Tutorial::STATE::RANGE);
+		return;
 	}
 #endif //_DEBUG
 }
@@ -288,7 +366,15 @@ void TutorialScene::Range(void)
 #ifdef _DEBUG
 	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
 	{
-		currentStepValue_ += steps_[currentPlayCount_ - 1].value;
+		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
+	}
+
+	// 100％に達したら、クリアに遷移
+	if (PlayerActionCounter::GetInstance()->GetCounter(currentState_) >= MAX_VALUE)
+	{
+		// 次の項目をカートへの入れ方にする
+		SetState(Tutorial::STATE::CART);
+		return;
 	}
 #endif //_DEBUG
 }
@@ -299,7 +385,15 @@ void TutorialScene::Cart(void)
 #ifdef _DEBUG
 	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
 	{
-		currentStepValue_ += steps_[currentPlayCount_ - 1].value;
+		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
+	}
+
+	// 100％に達したら、クリアに遷移
+	if (PlayerActionCounter::GetInstance()->GetCounter(currentState_) >= MAX_VALUE)
+	{
+		// 次の項目を納品の仕方にする
+		SetState(Tutorial::STATE::DELIVER);
+		return;
 	}
 #endif //_DEBUG
 }
@@ -310,26 +404,29 @@ void TutorialScene::Deliver(void)
 #ifdef _DEBUG
 	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
 	{
-		currentStepValue_ += steps_[currentPlayCount_ - 1].value;
+		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
+	}
+
+	// 100％に達したら、クリアに遷移
+	if (PlayerActionCounter::GetInstance()->GetCounter(currentState_) >= MAX_VALUE)
+	{
+		// 次の項目をアイテムの動かし方にする
+		SetState(Tutorial::STATE::MAX);
+		return;
 	}
 #endif //_DEBUG
 }
 
 void TutorialScene::Clear(void)
 {
-	// 100以上になったらクリア
-	if (currentStepValue_ >= MAX_VALUE)
+	// 規定値に到達したら
+	if (clearStateEndCount_ >= MAX_CLEAR_COUNT)
 	{
-		currentPlayCount_++;
-
-		if (currentState_ != STATE::DELIVER)
-		{
-			SetState(nextState_);
-		}	 
+		// クリア判定を切る
+		isClearState_ = false;
 		return;
 	}
 
-	// クリアステート時は、時間でカウントさせる
-	currentStepValue_ += SceneManager::GetInstance()->GetDeltaTime() * 60.0f;
-
+	// カウントを進める
+	clearStateEndCount_++;
 }

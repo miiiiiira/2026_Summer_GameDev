@@ -10,10 +10,11 @@
 #include "../Common/Manager/Score/ScoreManager.h"
 #include "../Common/Manager/Input/InputManager.h"
 #include "../Common/Manager/PlayerStatus/PlayerStatusManager.h"
+#include "../Common/Manager/PlayerActionCounter/PlayerActionCounter.h"
 #include "../Common/FrameRenderer/FrameRenderer.h"
 #include "../Object/Component/PlayerController/Upgrade/UpgradeManager.h"
-#include "../Common/Shader/Shader.h"
 #include "../Common/MouseCursor/MouseCursor.h"
+#include "../Common/Shader/Shader.h"
 
 SceneManager* SceneManager::instance_ = nullptr;
 
@@ -58,6 +59,10 @@ void SceneManager::Init(void)
 	MouseCursor::CreateInstance();
 	MouseCursor::GetInstance().Load();
 	MouseCursor::GetInstance().Init();
+
+	// プレイヤー行動のカウンタクラス生成
+	PlayerActionCounter::CreateInstance();
+	PlayerActionCounter::GetInstance()->Init();
 
 	// フレーム画像のロード
 	FrameRenderer::Load();
@@ -289,6 +294,9 @@ void SceneManager::Delete(void)
 
 	// マウスカーソル解放
 	MouseCursor::GetInstance().Destroy();
+
+	// プレイヤー行動カウンタクラス破棄
+	PlayerActionCounter::DeleteInstance();
 
 	// ロード画面の削除
 	load_->Release();

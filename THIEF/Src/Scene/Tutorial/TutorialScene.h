@@ -6,25 +6,6 @@
 class TutorialScene : public SceneBase
 {
 public:
-
-	// 状態
-	enum STATE
-	{
-		MOVE = 1,
-		JUMP,
-		DASH,
-		CROUCH,
-		SLIDING,
-		LIGHT,
-		MAP,
-		GRAB,
-		RANGE,
-		CART,
-		DELIVER,
-		CLEAR,
-		MAX,
-	};
-
 	TutorialScene(void);				// コンストラクタ
 	~TutorialScene(void) override;		// デストラクタ
 
@@ -36,28 +17,34 @@ public:
 	void Release(void)	override;	// 解放
 
 	// 状態遷移
-	void SetState(STATE newState);
+	void SetState(Tutorial::STATE newState);
 
 	// 状態を返却
-	STATE GetState() const { return currentState_; }
+	Tutorial::STATE GetState() const { return currentState_; }
 
 private:
 
 	static constexpr float MAX_VALUE = 100.0f;
 
-	std::vector<TutorialInfo> steps_;
-	float currentStepValue_;
-	int totalPlayCount_;
-	int currentPlayCount_;
+	// 確認項目クリア時の最大カウント　「Good job!」出す時間
+	static constexpr int MAX_CLEAR_COUNT =1;
+
+	// データ
+	std::vector<Tutorial::TutorialInfo> steps_;
+
+	// 確認項目をクリアしたか
+	bool isClearState_;
+
+	// 確認項目クリア時のカウント
+	int clearStateEndCount_;
 
 	// 状態関数型
 	typedef void (TutorialScene::*StateFunction)(void);
 
 	// 現在の状態	
-	STATE currentState_;	// 現在のステート
-	STATE nextState_;		// 次のステップのステート
+	Tutorial::STATE currentState_;	// 現在のステート
 	
-	StateFunction stateTable_[MAX];
+	StateFunction stateTable_[Tutorial::STATE::MAX];
 
 	// ステート別Update処理
 	void Move(void);

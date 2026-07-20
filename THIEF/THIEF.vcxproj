@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Common\Manager\PlayerActionCounter\PlayerActionCounter.cpp" />
     <ClCompile Include="Src\Scene\LightSelectScene\LightSelectInfo.cpp" />
     <ClCompile Include="Src\Scene\LightSelectScene\LightSelectScene.cpp" />
     <ClCompile Include="Src\Common\MouseCursor\MouseCursor.cpp" />
@@ -99,6 +100,7 @@
     <ClCompile Include="Src\Scene\Tutorial\TutorialScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Common\Manager\PlayerActionCounter\PlayerActionCounter.h" />
     <ClInclude Include="Src\Scene\LightSelectScene\LightSelectInfo.h" />
     <ClInclude Include="Src\Scene\LightSelectScene\LightSelectScene.h" />
     <ClInclude Include="Src\Common\MouseCursor\MouseCursor.h" />
