@@ -15,6 +15,7 @@
 #include "../DebugScene.h"
 #include "../Tutorial/TutorialScene.h"
 #include "../TitleScene/TitleScene.h"
+#include "../LightSelectScene/LightSelectScene.h"
 
 MainMenu::MainMenu(void)
 {
@@ -67,14 +68,21 @@ void MainMenu::Update(void)
 	// Lキーを押したらデバッグシーン
 	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_L))
 	{
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<DebugScene>(), true);
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<DebugScene>(),DEBUG, true);
 		return;
 	}
 
 	// Lキーを押したらデバッグシーン
 	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
 	{
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TutorialScene>(), true);
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TutorialScene>(),TUTORIAL, true);
+		return;
+	}
+
+	// Lキーを押したらデバッグシーン
+	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_H))
+	{
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<LightSelectScene>(),LIGHT_SELECT, true);
 		return;
 	}
 #endif //_DEBUG
@@ -82,7 +90,7 @@ void MainMenu::Update(void)
 	// メニューからタイトルに戻すボタン
 	if (InputManager::GetInstance()->MenuToTitleButtons())
 	{
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(), true);
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(),TITLE, true);
 		return;
 	}
 
@@ -153,7 +161,7 @@ void MainMenu::ChangeSelect(MENU menu)
 void MainMenu::UpdatePlay(void)
 {
 	// ゲームシーンへ
-	SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameScene>(), true);
+	SceneManager::GetInstance()->NextChangeScene(std::make_shared<LightSelectScene>(),LIGHT_SELECT, true);
 }
 
 void MainMenu::UpdateOption(void)

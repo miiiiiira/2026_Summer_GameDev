@@ -8,7 +8,6 @@
 #include "../SceneBase.h"
 
 class ObjectManager;
-class Goblet;
 class EnemyManager;
 class EnemyBase;
 class Crosshair;

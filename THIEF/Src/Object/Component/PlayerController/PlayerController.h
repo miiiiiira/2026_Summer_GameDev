@@ -1,6 +1,7 @@
 #pragma once
 #include "../Component.h"
 #include "Upgrade/UpgradeType.h"
+#include "../../../Scene/Tutorial/TutorialInfo.h"
 #include <variant>
 #include <DxLib.h>
 

@@ -5,8 +5,10 @@
 #include "../../../Common/Math/Math.h"
 #include "../../../Common/Manager/Input/InputManager.h"
 #include "../../../Common/Manager/Light/LightManager.h"
+#include "../../../Scene/SceneManager.h"
 #include "../Render/Render3D.h"
 #include "../../Object.h"
+#include "../Animation/Animation.h"
 
 Wisp::Wisp(void)
 {
@@ -37,7 +39,7 @@ Wisp::Wisp(void)
 	 // テクスチャをロード
 	for (auto table : LightTable::Table)
 	{
-		textureId_[static_cast<int>(table.first)] = LoadGraph(table.second.path.c_str());
+		textures_.emplace(table.first, LoadGraph(table.second.path.c_str()));
 	}
 
 	lightType_ = LightManager::GetInstance().GetLightType();
@@ -48,11 +50,13 @@ Wisp::~Wisp(void)
 	// ポイントライトのハンドルを解放
 	DeleteLightHandle(pointLightHandle_);
 
-	for (auto table : LightTable::Table)
+	for ( auto texture:textures_)
 	{
 		// テクスチャの解放
-		DeleteGraph(static_cast<int>(table.first));
+		DeleteGraph(texture.second);
 	}
+
+	textures_.clear();
 }
 
 void Wisp::Init(void)
@@ -72,6 +76,15 @@ void Wisp::Init(void)
 	// オーナーからTransformを取得
 	trans_ = owner_->GetComponent<Transform>();
 
+	// アニメーションの追加
+	anim_ = owner_->AddComponent<Animation>();
+	anim_->Init();
+	anim_->AddInFbx((int)ANIM::NORMAL, 1, 0);
+	anim_->AddInFbx((int)ANIM::SMALL, 1, 1);
+
+	// 通常アニメーションを再生
+	SetAnimation(ANIM::NORMAL);
+
 	// モデルに大きさ、向き、座標を設定
 	MV1SetScale(wispModelId_, scale_);
 	MV1SetPosition(wispModelId_, trans_->pos_);
@@ -83,6 +96,9 @@ void Wisp::Init(void)
 
 	// ライトを手前に初期化
 	isPushLight_ = false;
+
+	// 設定されているライトの種類を適用
+	ChangeLightTexture(lightType_);
 }
 
 void Wisp::Update(void)
@@ -93,11 +109,15 @@ void Wisp::Update(void)
 	// ライトの範囲を更新
 	UpdateRange();
 
+#ifdef _DEBUG
 
 	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_H))
 	{
 		switch (lightType_)
 		{
+		case COLOR_0:
+			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_1);
+			break;
 		case COLOR_1:
 			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_2);
 			break;
@@ -132,16 +152,14 @@ void Wisp::Update(void)
 			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_12);
 			break;
 		case COLOR_12:
-			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_MAX);
-			break;
-		case COLOR_MAX:
-			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_1);
+			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_0);
 			break;
 		default:
 			break;
 		}
 
 	}
+#endif // _DEBUG
 
 	// ライトの設定に変更があったら設定し直し
 	if (LightManager::GetInstance().GetLightType() != lightType_)
@@ -174,7 +192,7 @@ void Wisp::ChangeLightTexture(LIGHT_TYPE lightType)
 {
 	lightType_ = lightType;
 
-	if (lightType_ == LIGHT_TYPE::COLOR_MAX)
+	if (lightType_ == LIGHT_TYPE::COLOR_0)
 	{
 		// テクスチャをデフォルトに戻す
 		MV1SetTextureGraphHandle(wispModelId_, 0, -1, false);
@@ -193,7 +211,7 @@ void Wisp::ChangeLightTexture(LIGHT_TYPE lightType)
 	auto lightData = LightTable::Table.find(lightType_);
 
 	// テクスチャを変更
-	MV1SetTextureGraphHandle(wispModelId_, 0, textureId_[static_cast<int>(lightType_)], false);
+	MV1SetTextureGraphHandle(wispModelId_, 0, textures_.find(lightType)->second, false);
 	// ライトの色を変更
 	SetLightDifColorHandle(pointLightHandle_,
 		GetColorF(
@@ -201,6 +219,29 @@ void Wisp::ChangeLightTexture(LIGHT_TYPE lightType)
 			lightData->second.color.y / 255.0f,
 			lightData->second.color.z / 255.0f,
 			1.0f));
+}
+
+void Wisp::SetAnimation(ANIM anim)
+{
+	switch (anim)
+	{
+	case Wisp::ANIM::NORMAL:
+		anim_->Play((int)ANIM::NORMAL);
+
+		// 指定シェイプの有効率を設定する( Rate  0.0f:0% ～ 1.0f:100% )
+		MV1SetShapeRate(wispModelId_, 2, 0.0f);
+		MV1SetShapeRate(wispModelId_, 3, 0.0f);
+		break;
+	case Wisp::ANIM::SMALL:
+		anim_->Play((int)ANIM::SMALL);
+		
+		// 指定シェイプの有効率を設定する( Rate  0.0f:0% ～ 1.0f:100% )
+		MV1SetShapeRate(wispModelId_, 2, 1.0f);
+		MV1SetShapeRate(wispModelId_, 3, 1.0f);
+		break;
+	default:
+		break;
+	}
 }
 
 void Wisp::UpdatePos(void)
@@ -224,12 +265,22 @@ void Wisp::UpdatePos(void)
 	if (InputManager::GetInstance()->PushLightButtons())
 	{
 		// 反転させる
-		isPushLight_ = !isPushLight_;
+		if (isPushLight_)
+		{
+			isPushLight_ = false;
+		}
+		else
+		{
+			isPushLight_ = true;
+
+			// チュートリアル時にカウンタに加算される
+			SceneManager::GetInstance()->TutorialCounter(Tutorial::LIGHT);
+		}
+
 	}
 
 	if (isPushLight_)
 	{
-
 		// 座標に反映 奥
 		trans->pos_ = CameraUtility::AddCameraPosLocalPos(REACH_MAX_LIGHT);
 		pointPos_ = CameraUtility::AddCameraPosLocalPos(VAdd(REACH_MAX_LIGHT, POINTLIGHT_OFFSET));

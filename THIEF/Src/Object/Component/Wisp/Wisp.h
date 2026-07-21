@@ -2,13 +2,22 @@
 
 #include "../Component.h"
 #include <DxLib.h>
+#include <map>
 #include "LightInfo.h"
 
 // 前方宣言
 class Transform;
+class Animation;
 
 class Wisp :public Component
 {
+public:
+	enum class ANIM
+	{
+		NORMAL,		// 通常
+		SMALL,		// 小さい
+	};
+
 private:
 	// 初期座標
 	static constexpr VECTOR DEFAULT_POS = { 0.0f,0.0f,0.0f };
@@ -66,9 +75,15 @@ public:
 	// 指定されたテクスチャ番号に変更(MAXを設定するとモデルについていた元の色へ戻す)
 	void ChangeLightTexture(LIGHT_TYPE lightType);
 
+	// 指定されたアニメーションを再生する
+	void SetAnimation(ANIM anim);
+
 private:
 	// Transform
 	Transform* trans_;
+
+	// アニメーション
+	Animation* anim_;
 
 	// ポイントライトのハンドル
 	int pointLightHandle_ = -1;
@@ -79,7 +94,7 @@ private:
 	int wispModelId_ = -1;
 
 	// テクスチャId
-	int textureId_[static_cast<int>(LIGHT_TYPE::COLOR_MAX)];
+	std::map<LIGHT_TYPE, int> textures_;
 
 	// ライトの光量(小さいほど光量が増す)
 	float lightPow_;

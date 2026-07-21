@@ -5,6 +5,7 @@
 #include "../../../Common/Manager/Input/InputManager.h"
 #include "../../../Common/Manager/System/SystemManager.h"
 #include "../../../Common/Manager/PlayerStatus/PlayerStatusManager.h"
+#include "../../../Common/Manager/PlayerActionCounter/PlayerActionCounter.h"
 #include "../../../Common/Math/Math.h"
 
 #include "../../Object.h"
@@ -20,6 +21,7 @@
 
 #include "../Collider/StageCollider/StageCollider.h"
 #include "../../../Common/Manager/Audio/AudioManager.h"
+#include "../../../Scene/Tutorial/TutorialScene.h"
 
 // 初期化
 void PlayerController::Init()
@@ -439,12 +441,18 @@ void PlayerController::Dash(void)
 
 		// スライディング可能時間(秒数)を設定
 		slidingInputBufferTime = SLIDING_INPUT_BUFFER_TIME;
+
+		// チュートリアル時にカウンタに加算される
+		SceneManager::GetInstance()->TutorialCounter(Tutorial::DASH);
+
 	}
 	else
 	{
 		// プレイヤーの状態を普通の移動状態にする
 		state_ = PLAYER_STATE::MOVE;
 
+		// チュートリアル時にカウンタに加算される
+		SceneManager::GetInstance()->TutorialCounter(Tutorial::MOVE);
 	}
 }
 
@@ -489,6 +497,12 @@ void PlayerController::InputSliding(void)
 
 		// ランタンOFFサウンド
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_OFF);
+
+		// Wispの火を小さく
+		wisp_->SetAnimation(Wisp::ANIM::SMALL);
+
+		// チュートリアル時にカウンタに加算される
+		SceneManager::GetInstance()->TutorialCounter(Tutorial::SLIDING);
 	}
 }
 
@@ -536,7 +550,13 @@ void PlayerController::Crouching(void)
 
 			// 前回しゃがみフラグon
 			prevCrouching_ = true;
+
+			// Wispの火を小さく
+			wisp_->SetAnimation(Wisp::ANIM::SMALL);
 		}
+
+		// チュートリアル時にカウンタに加算される
+		SceneManager::GetInstance()->TutorialCounter(Tutorial::CROUCH);
 	}
 
 	UnCrouch();
@@ -554,6 +574,9 @@ void PlayerController::UnCrouch(void)
 		// しゃがみ復帰時
 		if (prevCrouching_)
 		{
+			// Wispの火を小さく
+			wisp_->SetAnimation(Wisp::ANIM::NORMAL);
+
 			// ランタンONサウンド
 			AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_ON);
 		}
@@ -655,6 +678,9 @@ void PlayerController::Jump(void)
 
 		// 接地フラグを折る
 		stageCol->IsGroundFold();
+
+		// チュートリアル時にカウンタに加算される
+		SceneManager::GetInstance()->TutorialCounter(Tutorial::JUMP);
 	}
 }
 
@@ -710,8 +736,6 @@ void PlayerController::Grabbing(void)
 				grabObject_ = std::monostate{};
 			}
 		}
-				
-
 
 
 		// 中身が空では無かったら(アイテム)
@@ -722,6 +746,9 @@ void PlayerController::Grabbing(void)
 			{
 				// アイテムに反映させる
 				GetGrabItem()->SetLocalPosZ(range_);
+
+				// チュートリアル時にカウンタに加算される
+				SceneManager::GetInstance()->TutorialCounter(Tutorial::RANGE);
 			}
 		}
 		// 中身が空では無かったら(カート)
@@ -820,6 +847,9 @@ void PlayerController::MapDrawUpdate(void)
 		{
 			// マップを表示する
 			map->SetIsDraw(true);
+
+			// チュートリアル時にカウンタに加算される
+			SceneManager::GetInstance()->TutorialCounter(Tutorial::MAP);
 		}
 	}
 }
@@ -900,3 +930,4 @@ bool PlayerController::IsGrabbing(void)
 	// 中身がある
 	return true;
 }
+

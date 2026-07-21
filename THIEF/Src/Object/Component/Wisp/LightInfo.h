@@ -5,6 +5,7 @@
 
 enum LIGHT_TYPE
 {
+	COLOR_0, // モデルについている既存のテクスチャ色
 	COLOR_1,
 	COLOR_2,
 	COLOR_3,
@@ -17,8 +18,6 @@ enum LIGHT_TYPE
 	COLOR_10,
 	COLOR_11,
 	COLOR_12,
-
-	COLOR_MAX
 };
 
 struct LightData

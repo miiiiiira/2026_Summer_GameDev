@@ -39,20 +39,38 @@ void Stage::Init()
 		anim->AddInFbx(0, 0.5f, 0);
 	}
 
-	// ステージ情報を取ってきて初期化処理を行う
-	auto stageNum = SceneManager::GetInstance()->GetCurrentStage();
-	auto deliveryData = DeliveryTable::Table.find(stageNum);
+	if (SceneManager::GetInstance()->GetNowSceneTag() == TUTORIAL)
+	{
+		deliverySize_ = { 230.0f,220.0f,240.0f };
+		deliveryPos_ =  {-10.0f,220.0f,14665.0f};
+		doneSwitchPos_ = { 286.0f,148.0f,14392.0f };
+	}
+	else
+	{
 
-	// 納品場所の大きさ
-	deliverySize_ = deliveryData->second.deliverySize_;
+		// ステージ情報を取ってきて初期化処理を行う
+		auto stageNum = SceneManager::GetInstance()->GetCurrentStage();
+		auto deliveryData = DeliveryTable::Table.find(stageNum);
 
-	// 納品場所の座標
-	deliveryPos_ = trans->pos_;
-	deliveryPos_ = VAdd(deliveryPos_, deliveryData->second.deliveryLocalPos_);
+		if (deliveryData != DeliveryTable::Table.end())
+		{
+			// 納品場所の大きさ
+			deliverySize_ = deliveryData->second.deliverySize_;
 
-	// 納品完了スイッチの座標
-	doneSwitchPos_ = trans->pos_;
-	doneSwitchPos_ = VAdd(doneSwitchPos_, deliveryData->second.doneSwitchLocalPos_);
+			// 納品場所の座標
+			deliveryPos_ = trans->pos_;
+			deliveryPos_ = VAdd(deliveryPos_, deliveryData->second.deliveryLocalPos_);
+
+			// 納品完了スイッチの座標
+			doneSwitchPos_ = trans->pos_;
+			doneSwitchPos_ = VAdd(doneSwitchPos_, deliveryData->second.doneSwitchLocalPos_);
+		}
+		else
+		{
+			// データがなかった場合は0初期化
+			deliverySize_ = deliveryPos_ = doneSwitchPos_ = {};
+		}
+	}
 
 	// 納品完了スイッチフラグ
 	isDoneSwitch_ = false;
@@ -82,8 +100,17 @@ void Stage::Update(void)
 	// クリアカウントが規定量に達したらステージクリアへ
 	if (clearCount_ >= CLEAR_COUNT_MAX)
 	{
-		// ステージクリアへ
-		SceneManager::GetInstance()->TrueStageClear();
+		if (SceneManager::GetInstance()->GetNowSceneTag() == SCENE_TAG::TUTORIAL)
+		{
+			// チュートリアル時にカウンタに加算される
+			SceneManager::GetInstance()->TutorialCounter(Tutorial::DELIVER);
+		}
+		else
+		{
+			// ステージクリアへ
+			SceneManager::GetInstance()->TrueStageClear();
+		}
+
 		// TODO 完全納品完了音
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_SUC);
 		return;
@@ -106,6 +133,7 @@ void Stage::Update(void)
 	{
 		// カウントを終了
 		clearCount_ = 0;
+
 		// TODO 納品失敗音長めのやつ
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_FAI);
 	}

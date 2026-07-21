@@ -44,11 +44,9 @@
 #include "../../Common/CameraUtility/CameraUtility.h"
 #include "../../Common/Effect/DamageEffect.h"
 
-
 #include "../../Common/Collision/Collision.h"
 #include "../../Object/Component/Collider/CartCollider/CartCollider.h"
 #include "../../Common/MouseCursor/MouseCursor.h"
-
 
 GameScene::GameScene(void)
 {
@@ -210,7 +208,7 @@ void GameScene::Update(void)
 		// ステージ情報などを初期化する
 		SceneManager::GetInstance()->ResetGame();
 		// ゲームクリアシーンへ
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameClear>());
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameClear>(),CLEAR);
 		return;
 	}
 
@@ -221,7 +219,7 @@ void GameScene::Update(void)
 		// ステージ情報などを初期化する
 		SceneManager::GetInstance()->ResetGame();
 		// ゲームオーバーシーンへ
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameOver>());
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameOver>(),OVER);
 		return;
 	}
 
@@ -230,7 +228,7 @@ void GameScene::Update(void)
 		// 納品した文の金額をショップで使える金額に加算
 		ScoreManager::GetInstance().AddTotalPrice(ScoreManager::GetInstance().GetDeliveryPrice());
 		// ショップシーンへ
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<ShopScene>());
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<ShopScene>(),SHOP);
 		return;
 	}
 
@@ -1055,6 +1053,9 @@ void GameScene::CollisionEnemy2PlayerGrab(void)
 void GameScene::ItemCreate(Tag tag, VECTOR pos)
 {
 	auto itemData = ItemTable::Table.find(tag);
+
+	// データの中身が無ければ処理を行わない
+	if (itemData == ItemTable::Table.end())return;
 
 	// アイテムの作成
 	auto item = objectManger_->CreateObject();

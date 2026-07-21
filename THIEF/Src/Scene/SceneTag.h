@@ -1,0 +1,16 @@
+#pragma once
+
+enum SCENE_TAG
+{
+	TITLE,
+	MAINMANU,
+	TUTORIAL,
+	LIGHT_SELECT,
+	GAME,
+	SHOP,
+	PAUSE,
+	CLEAR,
+	OVER,
+
+	DEBUG,
+};

@@ -23,6 +23,9 @@
     <ClCompile Include="Src\Common\Manager\Input\InputIO.cpp" />
     <ClCompile Include="Src\Common\Manager\Input\KeyConfig.cpp" />
     <ClCompile Include="Src\Common\Manager\Input\KeyConfigUI.cpp" />
+    <ClCompile Include="Src\Common\Manager\PlayerActionCounter\PlayerActionCounter.cpp" />
+    <ClCompile Include="Src\Scene\LightSelectScene\LightSelectInfo.cpp" />
+    <ClCompile Include="Src\Scene\LightSelectScene\LightSelectScene.cpp" />
     <ClCompile Include="Src\Common\MouseCursor\MouseCursor.cpp" />
     <ClCompile Include="Src\Object\Component\Stage\DeliveryInfo.cpp" />
     <ClCompile Include="Src\Object\Component\PlayerController\Map\MapInfo.cpp" />
@@ -106,6 +109,9 @@
     <ClInclude Include="Src\Common\Manager\Input\InputIO.h" />
     <ClInclude Include="Src\Common\Manager\Input\KeyConfig.h" />
     <ClInclude Include="Src\Common\Manager\Input\KeyConfigUI.h" />
+    <ClInclude Include="Src\Common\Manager\PlayerActionCounter\PlayerActionCounter.h" />
+    <ClInclude Include="Src\Scene\LightSelectScene\LightSelectInfo.h" />
+    <ClInclude Include="Src\Scene\LightSelectScene\LightSelectScene.h" />
     <ClInclude Include="Src\Common\MouseCursor\MouseCursor.h" />
     <ClInclude Include="Src\Object\Component\Stage\DeliveryInfo.h" />
     <ClInclude Include="Src\Object\Component\PlayerController\Map\MapInfo.h" />
@@ -128,6 +134,7 @@
     <ClInclude Include="Src\Common\FrameRenderer\FrameRenderer.h" />
     <ClInclude Include="Src\Common\Manager\PlayerStatus\PlayerStatusManager.h" />
     <ClInclude Include="Src\Object\Component\PlayerController\Upgrade\UpgradeManager.h" />
+    <ClInclude Include="Src\Scene\SceneTag.h" />
     <ClInclude Include="Src\Scene\Shop\ShopScene.h" />
     <ClInclude Include="Src\Object\Component\Item\Potion\Potion.h" />
     <ClInclude Include="Src\Common\Crosshair\Crosshair.h" />

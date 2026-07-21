@@ -1,5 +1,4 @@
 #include "PlayerStatusManager.h"
-#include <DxLib.h>
 
 PlayerStatusManager* PlayerStatusManager::instance_ = nullptr;
 
