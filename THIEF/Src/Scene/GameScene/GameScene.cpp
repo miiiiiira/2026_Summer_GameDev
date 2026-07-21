@@ -159,13 +159,13 @@ void GameScene::LoadEnd(void)
 void GameScene::Update(void)
 {
 #ifdef _DEBUG
-	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_C))
+	if (InputManager::GetInstance()->IsDebugActionUp(INPUT_INFO::DEBUG_ACTION::CLEAR))
 	{
 		// ステージクリアにする
 		SceneManager::GetInstance()->TrueStageClear();
 	}
 
-	if (InputManager::GetInstance()->IsTrgUp(KEY_INPUT_O))
+	if (InputManager::GetInstance()->IsDebugActionUp(INPUT_INFO::DEBUG_ACTION::OVER))
 	{
 		// ゲームオーバーにする
 		SceneManager::GetInstance()->TrueGameOver();
@@ -192,7 +192,7 @@ void GameScene::Update(void)
 	// スコアマネージャーの更新
 	ScoreManager::GetInstance().Update();
 
-	if (InputManager::GetInstance()->PauseButtons())
+	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::PAUSE))
 	{
 		// ポーズ画面を開いたサウンド
 		AudioManager::GetInstance()->PlaySE(SoundID::SYS_PAUSE_ON);

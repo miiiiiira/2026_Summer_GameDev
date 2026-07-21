@@ -51,7 +51,7 @@ void GameOver::Update(void)
 	SelectUpgrade();
 
 	// マウスを左クリックしなかったら、処理を行わない
-	if (!InputManager::GetInstance()->ConfirmButton()) return;
+	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE)) return;
 
 	// 種類が選択されていない場合、処理を行わない
 	if (currentType_ == TYPE::NONE) return;
@@ -117,7 +117,7 @@ void GameOver::SelectUpgrade(void)
 	// 前回の選択物を入れておく
 	TYPE prevType = currentType_;
 
-	if (SystemManager::GetInstance().GetIsDevice())
+	if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::KEY_MOUSE)
 	{
 		// マウス選択
 		MouseSelect();
@@ -161,7 +161,7 @@ void GameOver::PadSelect(void)
 	{
 	case GameOver::RETRY:
 
-		if (InputManager::GetInstance()->SelectDown())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
 			currentType_ = RETURN_TITLE;
 		}
@@ -169,7 +169,7 @@ void GameOver::PadSelect(void)
 		break;
 	case GameOver::RETURN_TITLE:
 
-		if (InputManager::GetInstance()->SelectUp())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
 		{
 			currentType_ = RETRY;
 		}

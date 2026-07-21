@@ -66,21 +66,21 @@ void MainMenu::Update(void)
 {
 #ifdef _DEBUG
 	// Lキーを押したらデバッグシーン
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_L))
+	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DEBUG))
 	{
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<DebugScene>(),DEBUG, true);
 		return;
 	}
 
 	// Lキーを押したらデバッグシーン
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
+	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::TUTORIAL))
 	{
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TutorialScene>(),TUTORIAL, true);
 		return;
 	}
 
 	// Lキーを押したらデバッグシーン
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_H))
+	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::COLOR_CHANGE))
 	{
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<LightSelectScene>(),LIGHT_SELECT, true);
 		return;
@@ -88,7 +88,7 @@ void MainMenu::Update(void)
 #endif //_DEBUG
 
 	// メニューからタイトルに戻すボタン
-	if (InputManager::GetInstance()->MenuToTitleButtons())
+	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::CANCEL))
 	{
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(),TITLE, true);
 		return;
@@ -98,7 +98,7 @@ void MainMenu::Update(void)
 	SelectUpgrade();
 
 	// マウスを左クリックしなかったら、処理を行わない
-	if (!InputManager::GetInstance()->ConfirmButton()) return;
+	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE)) return;
 
 	// メニューが選択されていない場合、処理を行わない
 	if (currentMenu_ == MENU::NONE) return;
@@ -180,7 +180,7 @@ void MainMenu::SelectUpgrade(void)
 	// 前回の選択物を入れておく
 	MENU prevMenu = currentMenu_;
 
-	if (SystemManager::GetInstance().GetIsDevice())
+	if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::KEY_MOUSE)
 	{
 		// マウス選択
 		MouseSelect();
@@ -231,7 +231,7 @@ void MainMenu::PadSelect(void)
 		break;
 	case MainMenu::MENU::PLAY:
 
-		if (InputManager::GetInstance()->SelectDown())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
 			ChangeSelect(MENU::OPTION);
 		}
@@ -239,12 +239,12 @@ void MainMenu::PadSelect(void)
 		break;
 	case MainMenu::MENU::OPTION:
 
-		if (InputManager::GetInstance()->SelectUp())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
 		{
 			ChangeSelect(MENU::PLAY);
 		}
 
-		if (InputManager::GetInstance()->SelectDown())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
 			ChangeSelect(MENU::QUIT);
 		}
@@ -252,7 +252,7 @@ void MainMenu::PadSelect(void)
 		break;
 	case MainMenu::MENU::QUIT:
 
-		if (InputManager::GetInstance()->SelectUp())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
 		{
 			ChangeSelect(MENU::OPTION);
 		}

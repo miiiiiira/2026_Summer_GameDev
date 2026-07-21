@@ -53,15 +53,9 @@ private:
 
 	// デバッグポイントの配置
 	void PlaceDebugPoint(void);
-	void PlaceEnemyNodePoint(void);
-	void PlaceItemNodePoint(void);
-	void PlaceSpawnPoint(void);
 
 	// デバッグポイントの保存
 	void SavePoints(void);
-	void SaveEnemyNodePoints(void);
-	void SaveItemNodePoints(void);
-	void SaveSpawnPoints(void);
 
 	// デバックポイントの読み込み
 	void LoadPoints(void);

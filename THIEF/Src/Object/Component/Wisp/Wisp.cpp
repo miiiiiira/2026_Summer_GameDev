@@ -111,7 +111,7 @@ void Wisp::Update(void)
 
 #ifdef _DEBUG
 
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_H))
+	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::COLOR_CHANGE))
 	{
 		switch (lightType_)
 		{
@@ -262,7 +262,7 @@ void Wisp::UpdatePos(void)
 	VECTOR cameraDir = CameraUtility::CameraRotToPos(forward);
 
 	// ƒ‰ƒCƒg‚Ì‹——£
-	if (InputManager::GetInstance()->PushLightButtons())
+	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::LIGHT))
 	{
 		// ”½“]‚³‚¹‚é
 		if (isPushLight_)

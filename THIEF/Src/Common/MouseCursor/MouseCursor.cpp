@@ -43,7 +43,7 @@ void MouseCursor::Update(void)
 	if (mouseImg_ == -1)return;
 
 	// デバイスがパッドであれば処理を行わない
-	if (!SystemManager::GetInstance().GetIsDevice())
+	if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::PAD)
 	{
 		mousePos_ = { Application::SCREEN_SIZE_X / 2,Application::SCREEN_SIZE_Y / 2 };
 		return;
@@ -61,7 +61,7 @@ void MouseCursor::Draw(void)
 	if (mouseImg_ == -1)return;
 
 	// デバイスがパッドであればマウスを表示しない
-	if (!SystemManager::GetInstance().GetIsDevice())return;
+	if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::PAD) return;
 
 	// 描画フラグが立っていなかったらマウスを表示しない
 	if (!mouseDrawFlg_)return;

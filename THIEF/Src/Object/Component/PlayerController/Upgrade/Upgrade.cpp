@@ -337,12 +337,12 @@ void Upgrade::PadSelect(void)
 	{
 	case Upgrade::SHOP_SLOT::SHOP_SLOT_0:
 
-		if (InputManager::GetInstance()->SelectDown())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_4);
 		}
 
-		if (InputManager::GetInstance()->SelectRight())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_RIGHT))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_1);
 		}
@@ -350,17 +350,17 @@ void Upgrade::PadSelect(void)
 		break;
 	case Upgrade::SHOP_SLOT::SHOP_SLOT_1:
 
-		if (InputManager::GetInstance()->SelectDown())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_5);
 		}
 
-		if (InputManager::GetInstance()->SelectLeft())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_LEFT))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_0);
 		}
 
-		if (InputManager::GetInstance()->SelectRight())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_RIGHT))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_2);
 		}
@@ -368,17 +368,17 @@ void Upgrade::PadSelect(void)
 		break;
 	case Upgrade::SHOP_SLOT::SHOP_SLOT_2:
 
-		if (InputManager::GetInstance()->SelectDown())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_6);
 		}
 
-		if (InputManager::GetInstance()->SelectLeft())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_LEFT))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_1);
 		}
 
-		if (InputManager::GetInstance()->SelectRight())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_RIGHT))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_3);
 		}
@@ -386,12 +386,12 @@ void Upgrade::PadSelect(void)
 		break;
 	case Upgrade::SHOP_SLOT::SHOP_SLOT_3:
 
-		if (InputManager::GetInstance()->SelectDown())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_7);
 		}
 
-		if (InputManager::GetInstance()->SelectLeft())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_LEFT))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_2);
 		}
@@ -399,12 +399,12 @@ void Upgrade::PadSelect(void)
 		break;
 	case Upgrade::SHOP_SLOT::SHOP_SLOT_4:
 
-		if (InputManager::GetInstance()->SelectUp())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_0);
 		}
 
-		if (InputManager::GetInstance()->SelectRight())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_RIGHT))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_5);
 		}
@@ -412,18 +412,18 @@ void Upgrade::PadSelect(void)
 		break;
 	case Upgrade::SHOP_SLOT::SHOP_SLOT_5:
 
-		if (InputManager::GetInstance()->SelectUp())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_1);
 		}
 
-		if (InputManager::GetInstance()->SelectRight())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_RIGHT))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_6);
 		}
-		
 
-		if (InputManager::GetInstance()->SelectLeft())
+
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_LEFT))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_4);
 		}
@@ -431,18 +431,18 @@ void Upgrade::PadSelect(void)
 		break;
 	case Upgrade::SHOP_SLOT::SHOP_SLOT_6:
 
-		if (InputManager::GetInstance()->SelectUp())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_2);
 		}
 
-		if (InputManager::GetInstance()->SelectRight())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_RIGHT))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_7);
 		}
 
 
-		if (InputManager::GetInstance()->SelectLeft())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_LEFT))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_5);
 		}
@@ -450,17 +450,17 @@ void Upgrade::PadSelect(void)
 		break;
 	case Upgrade::SHOP_SLOT::SHOP_SLOT_7:
 
-		if (InputManager::GetInstance()->SelectUp())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_3);
 		}
 
-		if (InputManager::GetInstance()->SelectLeft())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_LEFT))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_6);
 		}
 
-		if (InputManager::GetInstance()->SelectDown())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
 			ChangeShopSlot(SHOP_SLOT::END);
 		}
@@ -473,7 +473,7 @@ void Upgrade::PadSelect(void)
 		break;
 	case Upgrade::SHOP_SLOT::END:
 
-		if (InputManager::GetInstance()->SelectUp())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
 		{
 			ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_7);
 		}
@@ -489,7 +489,7 @@ void Upgrade::PadSelect(void)
 void Upgrade::ConfirmUpgrade(void)
 {
 	// 決定ボタンが押されていなかったら処理を行わない
-	if (!InputManager::GetInstance()->ConfirmButton())return;
+	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE))return;
 
 	// 何も選択されていないなら処理を行わない
 	if (slot_ == SHOP_SLOT::NON)return;

@@ -39,7 +39,7 @@ void GameClear::LoadEnd(void)
 void GameClear::Update(void)
 {
 	// ボタンが押されると次のシーンへ
-	if (InputManager::GetInstance()->PushAnyButton())
+	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE))
 	{
 		// ゲームシーンへ
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(),TITLE);
