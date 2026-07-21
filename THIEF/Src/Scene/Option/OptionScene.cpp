@@ -2,6 +2,8 @@
 
 #include "../../Application.h"
 #include "../../Common/Manager/Input/KeyConfigUI.h"
+#include "../../Common/Manager/Input/InputManager.h"
+#include "../../Scene/SceneManager.h"
 
 OptionScene::OptionScene(void)
 	:
@@ -35,6 +37,13 @@ void OptionScene::LoadEnd(void)
 
 void OptionScene::Update(void)
 {
+	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::CANCEL))
+	{
+		// ポーズシーンへ
+		SceneManager::GetInstance()->PopScene();
+		return;
+	}
+
 	// キーコンフィグUIの更新のみ処理
 	keyConfigUI_->Update();
 }

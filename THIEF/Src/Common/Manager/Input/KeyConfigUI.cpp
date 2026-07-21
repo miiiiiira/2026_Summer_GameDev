@@ -64,19 +64,6 @@ void KeyConfigUI::LoadEnd()
 
 void KeyConfigUI::Update()
 {
-    auto* input = InputManager::GetInstance();
-
-    // •ÒW’†‚Í–³Œø
-    if (!keyConfig_.IsWaiting())
-    {
-        if (input->IsActionDown(INPUT_INFO::ACTION::PAUSE))
-        {
-            isActive_ = !isActive_;
-        }
-    }
-
-    if (!isActive_) return;
-
     if (keyConfig_.IsWaiting())
     {
         UpdateEditing();
@@ -276,10 +263,6 @@ void KeyConfigUI::Draw()
     auto* input = InputManager::GetInstance();
     const auto& binds = input->GetActionBinds();
 
-    SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
-    DrawBox(0, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, 0xffffff, true);
-    SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-
     const int baseY = START_Y;
     const int rowHeight = ROW_HEIGHT;
     const int visibleRows = VISIBLE_ROWS;
@@ -310,7 +293,7 @@ void KeyConfigUI::Draw()
                 HEADER_X,
                 y,
                 GetColor(0, 200, 255),
-                fontHandle_,
+                Application::GetInstance()->GetFont(),
                 "%s",
                 title.c_str()
             );
