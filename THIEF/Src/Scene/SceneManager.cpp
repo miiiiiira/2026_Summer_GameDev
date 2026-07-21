@@ -307,10 +307,13 @@ void SceneManager::Delete(void)
 	DeleteGraph(mainScreen_);
 }
 
-void SceneManager::NextChangeScene(std::shared_ptr<SceneBase> scene, bool isJumpScne, Fader::TYPE type)
+void SceneManager::NextChangeScene(std::shared_ptr<SceneBase> scene, SCENE_TAG sceneTag, bool isJumpScne, Fader::TYPE type)
 {
 	// ジャンプシーンフラグを設定する
 	isJumpScene_ = isJumpScne;
+
+	// シーンタグを設定
+	nowSceneTag_ = sceneTag;
 
 	// 遷移するシーンを予約する
 	nextScene_ = scene;
@@ -442,4 +445,27 @@ void SceneManager::ResetGame(void)
 
 	// プレイヤーのステータスを初期化
 	PlayerStatusManager::GetInstance().ResetStatus();
+}
+
+void SceneManager::SetTutorialStateAndValue(Tutorial::STATE state, float value)
+{
+	nowTutorialState_ = state;
+	tutorialValue_ = value;
+}
+
+
+void SceneManager::TutorialCounter(Tutorial::STATE state)
+{
+	// チュートリアルシーンだった場合のみ
+	if (nowSceneTag_ == TUTORIAL)
+	{
+		// 指定された行動と確認項目が同じだったら加算される
+		if (state == nowTutorialState_)
+		{
+			// 登録されているチュートリアルの情報使用し、カウンタに加算
+			PlayerActionCounter::GetInstance()->SetCounter(
+				nowTutorialState_,
+				tutorialValue_);
+		}
+	}
 }

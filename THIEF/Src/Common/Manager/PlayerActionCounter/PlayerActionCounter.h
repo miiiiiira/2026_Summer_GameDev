@@ -28,7 +28,7 @@ public:
 
 	// 指定されたステートのカウンターを渡す
 	float GetCounter(Tutorial::STATE state) 
-	{ return state != Tutorial::STATE::MAX ? counter_[state] : -1.0f; }
+	{ return state != Tutorial::STATE::MAX ? counter_[state] : 100.0f; }
 
 	// 指定されたステートのカウンターに指定された数足す
 	void SetCounter(Tutorial::STATE state, float counter)

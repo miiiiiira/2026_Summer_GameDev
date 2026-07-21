@@ -5,7 +5,9 @@
 #include <chrono>
 #include <DxLib.h>
 #include "GameScene/GameScene.h"
+#include "SceneTag.h"
 #include "../Common/Fader/Fader.h" 
+#include "Tutorial/TutorialInfo.h"
 
 class SceneBase;
 class Loading;
@@ -54,7 +56,7 @@ public:
 	void Delete(void);	// リソースの破棄
 
 	// 状態遷移(フェードを挟む)
-	void NextChangeScene(std::shared_ptr<SceneBase> scene, bool isJumpScne = false, Fader::TYPE type = Fader::TYPE::NORMAL);
+	void NextChangeScene(std::shared_ptr<SceneBase> scene,SCENE_TAG sceneTag, bool isJumpScne = false, Fader::TYPE type = Fader::TYPE::NORMAL);
 
 	// 状態遷移		遷移させたいシーン,全てのシーンを解放させるか
 	void ChangeScene(std::shared_ptr<SceneBase> scene);
@@ -104,6 +106,16 @@ public:
 
 	// シェーダのゲッター
 	Shader* GetShader(void) { return shader_; }
+
+	// 現在のシーンタグを渡す
+	SCENE_TAG GetNowSceneTag(void) { return nowSceneTag_; }
+
+
+	// チュートリアルシーン用特別関数
+	void SetTutorialStateAndValue(Tutorial::STATE state,float value);
+
+	// チュートリアル時に行動すると加算されるカウンタ
+	void TutorialCounter(Tutorial::STATE state);
 
 private:
 
@@ -160,4 +172,13 @@ private:
 	STAGE_NUM prevStage_;
 	// 現在のステージを表す
 	STAGE_NUM currentStage_;
+
+	// 現在のシーンのタグを保持
+	SCENE_TAG nowSceneTag_;
+
+	// チュートリアル専用変数
+	// チュートリアルの現在の確認項目を保持
+	Tutorial::STATE nowTutorialState_ = Tutorial::MOVE;
+	// チュートリアルの確認項目にそった加算用値を保持
+	float tutorialValue_ = 0.0f;
 };

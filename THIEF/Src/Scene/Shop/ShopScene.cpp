@@ -49,7 +49,7 @@ void ShopScene::Update(void)
 	{
 		// ƒQ[ƒ€ƒV[ƒ“‚Ö
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_SHOP_SHUTTER);
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameScene>(), false, Fader::TYPE::SHUTTER);
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameScene>(),GAME, false, Fader::TYPE::SHUTTER);
 	}
 }
 

@@ -125,6 +125,7 @@
     <ClInclude Include="Src\Common\FrameRenderer\FrameRenderer.h" />
     <ClInclude Include="Src\Common\Manager\PlayerStatus\PlayerStatusManager.h" />
     <ClInclude Include="Src\Object\Component\PlayerController\Upgrade\UpgradeManager.h" />
+    <ClInclude Include="Src\Scene\SceneTag.h" />
     <ClInclude Include="Src\Scene\Shop\ShopScene.h" />
     <ClInclude Include="Src\Object\Component\Item\Potion\Potion.h" />
     <ClInclude Include="Src\Common\Crosshair\Crosshair.h" />

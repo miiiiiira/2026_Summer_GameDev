@@ -10,6 +10,7 @@
 #include "../../../../Common/Manager/Audio/AudioManager.h"
 #include "../../../../Common/Collision/Collision.h"
 #include "../../../../Common/Crosshair/Crosshair.h"
+#include "../../../../Scene/SceneManager.h"
 #include "../../../../Application.h"
 
 #include <algorithm>
@@ -127,6 +128,9 @@ void ItemCollider::PlayerGrabCollision(void)
 
 		// クロスヘアの種類を掴んでいるに変更
 		crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::GRABBING);
+
+		// チュートリアル時にカウンタに加算される
+		SceneManager::GetInstance()->TutorialCounter(Tutorial::GRAB);
 	}
 }
 
@@ -376,6 +380,9 @@ bool ItemCollider::ItemInCartCollision(void)
 	{
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_CART_ON_ITEM, &cartPos);
 		item_->SetHasTouchedCart(true);
+
+		// チュートリアル時にカウンタに加算される
+		SceneManager::GetInstance()->TutorialCounter(Tutorial::CART);
 	}
 	// 当たっていないかつ、カートに入っているフラグが立っていたら
 	else if (!isHit && item_->GetInfo().hasTouchedCart_)

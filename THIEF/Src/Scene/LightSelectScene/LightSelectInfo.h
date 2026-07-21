@@ -22,9 +22,9 @@ struct selectTypeData
 	Vector2 size;
 };
 
-namespace MouseSelectTypeTable
+namespace LightSelectTypeTable
 {
-	enum MOUSE_SELECT_TYPE
+	enum SELECT_TYPE
 	{
 		RIGHT_ARROW,// ‰E–îˆó
 		LEFT_ARROW,// ¶–îˆó
@@ -34,5 +34,5 @@ namespace MouseSelectTypeTable
 		NON
 	};
 
-	extern const std::unordered_map<MOUSE_SELECT_TYPE, selectTypeData> Table;
+	extern const std::unordered_map<SELECT_TYPE, selectTypeData> Table;
 }

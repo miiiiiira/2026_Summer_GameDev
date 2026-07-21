@@ -159,7 +159,7 @@ void Confirm::UpdateYes(void)
 		Application::GetInstance()->SetEnd(true);
 		break;
 	case TYPE::MAIN_MENU:
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<MainMenu>(), true);
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<MainMenu>(),MAINMANU, true);
 		// ゲームを終了したため、ステージ情報などを初期化する
 		SceneManager::GetInstance()->ResetGame();
 		break;

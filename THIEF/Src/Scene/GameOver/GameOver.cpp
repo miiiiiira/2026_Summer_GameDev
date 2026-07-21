@@ -61,14 +61,14 @@ void GameOver::Update(void)
 	case GameOver::RETRY:
 
 		// ゲームシーンへ
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameScene>());
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameScene>(),GAME);
 		return;
 
 		break;
 	case GameOver::RETURN_TITLE:
 
 		// タイトルシーンへ
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>());
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(),TITLE);
 		return;
 
 		break;

@@ -46,7 +46,7 @@ void CartCollider::CartToPlayerGrabbingCollision(void)
 	// 線分と当たっていないなら処理をしない
 	if (!itemHitResult.HitFlag)return;
 
-	// カメラとアイテムに線分をつなげてステージに当たっているか
+	// カメラとカートに線分をつなげてステージに当たっているか
 	// 線分とステージモデルの衝突判定
 	MV1_COLL_RESULT_POLY stageHitResult =
 		MV1CollCheck_Line(stage_->GetModelId(), -1, lineStartPos, itemHitResult.HitPosition);
@@ -61,7 +61,7 @@ void CartCollider::CartToPlayerGrabbingCollision(void)
 	// 掴もうとしていたら
 	if (player_->GetGrabbingState() == GRABBING_STATE::TRY_GRABBING)
 	{
-		// アイテムの追従モードをオンにする
+		// カートの追従モードをオンにする
 		cart_->StartGrabbing({ 0.0f,CameraUtility::GetCameraPos().y ,PlayerController::CART_DISTANCE });
 		// 掴み状態にする
 		player_->StartGrabbing(0);

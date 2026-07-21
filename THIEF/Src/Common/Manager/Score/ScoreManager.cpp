@@ -21,6 +21,9 @@ ScoreManager& ScoreManager::GetInstance(void)
 
 void ScoreManager::Update(void)
 {
+	// チュートリアルなら処理を行わない
+	if (SceneManager::GetInstance()->GetNowSceneTag() == TUTORIAL)return;
+	
 	// アイテムの中身がなかったら処理を行わない
 	if (items_.empty())return;
 
@@ -131,24 +134,32 @@ void ScoreManager::SetItems(std::vector<Item*> items)
 	// アイテムの中身がなかったら処理を行わない
 	if (items_.empty())return;
 
-	int allPrice = 0;
-	targetPrice_ = 0;
-	warningPrice_ = 0;
-	for (Item* item : items_)
+	if (SceneManager::GetInstance()->GetNowSceneTag() == TUTORIAL)
 	{
-		allPrice += item->GetInfo().price_;
+		targetPrice_ = 1;
+		warningPrice_ = 0;
 	}
+	else
+	{
+		int allPrice = 0;
+		targetPrice_ = 0;
+		warningPrice_ = 0;
+		for (Item* item : items_)
+		{
+			allPrice += item->GetInfo().price_;
+		}
 
-	//	目標金額を50%にする
-	targetPrice_ = allPrice * TARGET_PRICE_RATIO;
+		//	目標金額を50%にする
+		targetPrice_ = allPrice * TARGET_PRICE_RATIO;
 
-	// 100円以下は切り捨て
-	int price = targetPrice_ % 100;
-	// 目標金額を設定
-	targetPrice_ -= price;
+		// 100円以下は切り捨て
+		int price = targetPrice_ % 100;
+		// 目標金額を設定
+		targetPrice_ -= price;
 
-	//	警告文を出す目安金額を70%にする
-	warningPrice_ = allPrice * SHOW_WARNING_PRICE_RATIO;
+		//	警告文を出す目安金額を70%にする
+		warningPrice_ = allPrice * SHOW_WARNING_PRICE_RATIO;
+	}
 }
 
 ScoreManager::ScoreManager(void)

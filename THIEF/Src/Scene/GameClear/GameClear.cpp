@@ -42,7 +42,7 @@ void GameClear::Update(void)
 	if (InputManager::GetInstance()->PushAnyButton())
 	{
 		// ƒQ[ƒ€ƒV[ƒ“‚Ö
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>());
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(),TITLE);
 	}
 }
 

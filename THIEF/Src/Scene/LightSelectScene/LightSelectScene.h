@@ -33,13 +33,13 @@ private:
 	// 使用中のライトの種類
 	LIGHT_TYPE lightType_;
 
-	// マウス選択できる画像のハンドル
-	int mouseSelectTypeImg_[MouseSelectTypeTable::MOUSE_SELECT_TYPE::MAX];
-	// マウス選択できる画像のフレーム画像ハンドル
-	int mouseSelectTypeFrameImg_[MouseSelectTypeTable::MOUSE_SELECT_TYPE::MAX];
+	// 選択できる画像のハンドル
+	int selectTypeImg_[LightSelectTypeTable::SELECT_TYPE::MAX];
+	// 選択できる画像のフレーム画像ハンドル
+	int selectTypeFrameImg_[LightSelectTypeTable::SELECT_TYPE::MAX];
 
 	// マウスが現在選択している画像の種類
-	MouseSelectTypeTable::MOUSE_SELECT_TYPE mouseSelectType_;
+	LightSelectTypeTable::SELECT_TYPE selectType_;
 
 	// どの能力をアップグレードするか選択を行う
 	void SelectUpgrade(void);
@@ -54,5 +54,5 @@ private:
 	void ConfirmUpgrade(void);
 
 	// 変更処理
-	void ChangeMouseSelect(MouseSelectTypeTable::MOUSE_SELECT_TYPE type);
+	void ChangeSelectType(LightSelectTypeTable::SELECT_TYPE type);
 };

@@ -5,6 +5,7 @@
 #include "../../../Common/Math/Math.h"
 #include "../../../Common/Manager/Input/InputManager.h"
 #include "../../../Common/Manager/Light/LightManager.h"
+#include "../../../Scene/SceneManager.h"
 #include "../Render/Render3D.h"
 #include "../../Object.h"
 #include "../Animation/Animation.h"
@@ -264,7 +265,18 @@ void Wisp::UpdatePos(void)
 	if (InputManager::GetInstance()->PushLightButtons())
 	{
 		// 反転させる
-		isPushLight_ = !isPushLight_;
+		if (isPushLight_)
+		{
+			isPushLight_ = false;
+		}
+		else
+		{
+			isPushLight_ = true;
+
+			// チュートリアル時にカウンタに加算される
+			SceneManager::GetInstance()->TutorialCounter(Tutorial::LIGHT);
+		}
+
 	}
 
 	if (isPushLight_)

@@ -1,7 +1,16 @@
 #pragma once
+#include <DxLib.h>
+#include <vector>
+#include <string>
+
+#include "../../Object/Tag.h"
 #include "../SceneBase.h"
 #include "TutorialInfo.h"
-#include <vector>
+
+class ObjectManager;
+class EnemyManager;
+class EnemyBase;
+class Crosshair;
 
 class TutorialScene : public SceneBase
 {
@@ -16,18 +25,30 @@ public:
 	void Draw(void)		override;	// 描画
 	void Release(void)	override;	// 解放
 
+	void CameraCreate(void);		// カメラの作成
+	void StageCreate(std::string path, std::string collPath = "NoData");			// ステージの作成
+	void WispCreate(void);			// ライトの作成
+	void PlayerCreate(void);		// プレイヤーの作成
+	void CartCreate(void);			// カートの作成
+	void ItemCreateTutorial(void);	// アイテムの作成
+
+public:
+
 	// 状態遷移
 	void SetState(Tutorial::STATE newState);
-
-	// 状態を返却
-	Tutorial::STATE GetState() const { return currentState_; }
 
 private:
 
 	static constexpr float MAX_VALUE = 100.0f;
 
 	// 確認項目クリア時の最大カウント　「Good job!」出す時間
-	static constexpr int MAX_CLEAR_COUNT =1;
+	static constexpr int MAX_CLEAR_COUNT = 120;
+
+	// オブジェクトマネージャー
+	ObjectManager* objectManger_;
+
+	// クロスヘア
+	Crosshair* crosshair_;
 
 	// データ
 	std::vector<Tutorial::TutorialInfo> steps_;
@@ -53,13 +74,19 @@ private:
 	void Crouch(void);
 	void Sliding(void);
 	void Light(void);
-	void Map(void);
+	void OpenMap(void);
 	void Grab(void);
 	void Range(void);
-	void Cart(void);
+	void ItemInCart(void);
 	void Deliver(void);
 	void Clear(void);
 
 	void LoadCsvData(void);
+
+	// チュートリアルオブジェクトの初期化処理
+	void TutorialCreate(void);
+
+	// タグを使用し、アイテムを作る
+	void ItemCreate(Tag tag, VECTOR pos);
 };
 
