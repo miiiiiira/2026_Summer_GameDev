@@ -4,6 +4,7 @@
 
 #include "Common/System/FpsControl.h"
 #include "Common/Manager/Input/InputManager.h"
+#include "Common/Manager/Input/InputIO.h"
 #include "Scene/SceneManager.h"
 #include "Common/Manager/Audio/AudioManager.h"
 
@@ -57,6 +58,14 @@ void Application::Init(void)
 	SetUseDirectInputFlag(true);
 	InputManager::CreateInstance();
 	InputManager::GetInstance()->Init();
+
+	// 読み込み
+	std::map<INPUT_INFO::ACTION, InputManager::ActionBind> binds;
+
+	if (InputIO::LoadConfigCSV("Data/Csv/input.csv", binds))
+	{
+		InputManager::GetInstance()->SetActionBinds(binds);
+	}
 
 	// サウンド
 	AudioManager::CreateInstance();
