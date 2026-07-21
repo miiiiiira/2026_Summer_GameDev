@@ -7,6 +7,7 @@
 #include "../../Common/Manager/Audio/AudioManager.h"
 #include "../../Common/MouseCursor/MouseCursor.h"
 #include "../../Common/Collision/Collision.h"
+#include "../MainMenu/MainMenu.h"
 
 LightSelectScene::LightSelectScene(void)
 {
@@ -127,6 +128,7 @@ void LightSelectScene::Release(void)
 	for (auto selectTypeTable : LightSelectTypeTable::Table)
 	{
 		DeleteGraph(selectTypeImg_[selectTypeTable.first]);
+		DeleteGraph(selectTypeFrameImg_[selectTypeTable.first]);
 	}
 
 	// ライトセレクトシーンで使用するサウンドを削除

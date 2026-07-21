@@ -11,6 +11,7 @@
 
 Stage::~Stage(void)
 {
+	MV1DeleteModel(collModelId_);
 	items_.clear();
 }
 

@@ -80,6 +80,8 @@ void MouseCursor::Draw(void)
 
 void MouseCursor::Destroy(void)
 {
+	DeleteGraph(mouseImg_);
+
 	delete instance_;
 	instance_ = nullptr;
 }
