@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Scene\Option\OptionScene.cpp" />
     <ClCompile Include="Src\Common\Manager\Input\InputIO.cpp" />
     <ClCompile Include="Src\Common\Manager\Input\KeyConfig.cpp" />
     <ClCompile Include="Src\Common\Manager\Input\KeyConfigUI.cpp" />
@@ -100,6 +101,7 @@
     <ClCompile Include="Src\Scene\Tutorial\TutorialScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Scene\Option\OptionScene.h" />
     <ClInclude Include="Src\Common\Manager\Input\InputInfo.h" />
     <ClInclude Include="Src\Common\Manager\Input\InputIO.h" />
     <ClInclude Include="Src\Common\Manager\Input\KeyConfig.h" />
