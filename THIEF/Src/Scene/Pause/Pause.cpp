@@ -11,6 +11,7 @@
 #include "../../Common/Collision/Collision.h"
 #include "../../Application.h"
 #include "../Confirm/Confirm.h"
+#include "../Option/OptionScene.h"
 #include "../../Common/MouseCursor/MouseCursor.h"
 
 Pause::Pause(void)
@@ -156,7 +157,8 @@ void Pause::UpdateContinue(void)
 
 void Pause::UpdateOption(void)
 {
-
+	// ƒIƒvƒVƒ‡ƒ“‚Ö
+	SceneManager::GetInstance()->PushScene(std::make_shared<OptionScene>());
 }
 
 void Pause::UpdateMainMenu(void)
