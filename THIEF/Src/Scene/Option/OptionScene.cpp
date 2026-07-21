@@ -50,6 +50,8 @@ void OptionScene::Update(void)
 
 void OptionScene::Draw(void)
 {
+	DrawBox(0, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, 0xffffff, true);
+
 	// キーコンフィグUIを描画
 	keyConfigUI_->Draw();
 }
