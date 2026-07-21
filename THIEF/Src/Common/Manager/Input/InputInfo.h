@@ -23,8 +23,10 @@ namespace INPUT_INFO
 		ITEM_PUSH,		// アイテムを遠くへ
 		ITEM_PULL,		// アイテムを近くへ
 
-		LOOK_CAMERA_H,	// 視点左右
-		LOOK_CAMERA_V,	// 視点上下
+		CAMERA_UP,     // カメラ上
+		CAMERA_DOWN,   // カメラ下
+		CAMERA_LEFT,   // カメラ左
+		CAMERA_RIGHT,  // カメラ右
 
 		// UI操作
 		UI_MOVE_UP,		// 上
@@ -38,6 +40,19 @@ namespace INPUT_INFO
 		PAUSE,			// ポーズ
 
 		MAX				// 最大値
+	};
+
+	enum class DEBUG_ACTION
+	{
+		ADD_POINT,
+		REMOVE_POINT,
+		RETURN,
+		CLEAR,
+		OVER,
+		SHADER,
+		DEBUG,
+		TUTORIAL,
+		COLOR_CHANGE,
 	};
 
 	// アクションカテゴリ
@@ -66,8 +81,10 @@ namespace INPUT_INFO
 		case INPUT_INFO::ACTION::GRAB:
 		case INPUT_INFO::ACTION::ITEM_PUSH:
 		case INPUT_INFO::ACTION::ITEM_PULL:
-		case INPUT_INFO::ACTION::LOOK_CAMERA_H:
-		case INPUT_INFO::ACTION::LOOK_CAMERA_V:
+		case INPUT_INFO::ACTION::CAMERA_UP:
+		case INPUT_INFO::ACTION::CAMERA_DOWN:
+		case INPUT_INFO::ACTION::CAMERA_LEFT:
+		case INPUT_INFO::ACTION::CAMERA_RIGHT:
 			return ACTION_CATEGORY::PLAYER;
 
 			// UI操作
@@ -91,7 +108,7 @@ namespace INPUT_INFO
 	}
 
 	// マウス関連
-	enum class MouseBtn { LEFT, RIGHT, MIDDLE, WHEEL_UP, WHEEL_DOWN, MOVE_X, MOVE_Y, MAX };
+	enum class MouseBtn { LEFT, RIGHT, MIDDLE, WHEEL_UP, WHEEL_DOWN, MAX };
 
 	// ゲームパッド関連
 	enum class JOYPAD_NO { PAD1 = 0, PAD2, PAD3, PAD4, MAX };
@@ -140,8 +157,10 @@ namespace INPUT_INFO
 		{ACTION::ITEM_PUSH,		"PUSH"},
 		{ACTION::ITEM_PULL,		"PULL"},
 
-		{ACTION::LOOK_CAMERA_H,	"CAMERA LEFT/RIGHT"},
-		{ACTION::LOOK_CAMERA_V,	"CAMERA UP/DOWN"},
+		{ACTION::CAMERA_UP,		"CAMERA UP"},
+		{ACTION::CAMERA_DOWN,	"CAMERA DOWN"},
+		{ACTION::CAMERA_LEFT,	"CAMERA LEFT"},
+		{ACTION::CAMERA_RIGHT,	"CAMERA RIGHT"},
 
 		{ACTION::UI_MOVE_UP,	"UI UP"},
 		{ACTION::UI_MOVE_DOWN,	"UI DOWN"},
@@ -149,6 +168,7 @@ namespace INPUT_INFO
 		{ACTION::UI_MOVE_RIGHT,	"UI RIGHT"},
 		{ACTION::DECIDE,		"DECIDE" },
 		{ACTION::CANCEL,		"CANCEL"},
+		{ACTION::PAUSE,			"PAUSE"},
 
 	};
 
@@ -195,8 +215,6 @@ namespace INPUT_INFO
 		case INPUT_INFO::MouseBtn::MIDDLE:		return "MOUSE MIDDLE";
 		case INPUT_INFO::MouseBtn::WHEEL_UP:	return "WHEEL UP";
 		case INPUT_INFO::MouseBtn::WHEEL_DOWN:	return "WHEEL DOWN";
-		case INPUT_INFO::MouseBtn::MOVE_X:		return "MOUSE MOVE X";
-		case INPUT_INFO::MouseBtn::MOVE_Y:		return "MOUSE MOVE Y";
 		default:               return "MOUSE ?";
 		}
 	}
@@ -235,10 +253,10 @@ namespace INPUT_INFO
 	{
 		switch (dir)
 		{
-		case INPUT_INFO::PAD_DIR::UP:    return "↑";
-		case INPUT_INFO::PAD_DIR::DOWN:  return "↓";
-		case INPUT_INFO::PAD_DIR::LEFT:  return "←";
-		case INPUT_INFO::PAD_DIR::RIGHT: return "→";
+		case INPUT_INFO::PAD_DIR::UP:    return "D-PAD UP";
+		case INPUT_INFO::PAD_DIR::DOWN:  return "D-PAD DOWN";
+		case INPUT_INFO::PAD_DIR::LEFT:  return "D-PAD LEFT";
+		case INPUT_INFO::PAD_DIR::RIGHT: return "D-PAD RIGHT";
 		default: return "CONTROLLER ?";
 		}
 	}
@@ -286,16 +304,16 @@ namespace INPUT_INFO
 		{KEY_INPUT_SPACE, "SPACE"},
 
 		// --- 修飾キー ---
-		{KEY_INPUT_LSHIFT, "LSHIFT"},
-		{KEY_INPUT_RSHIFT, "RSHIFT"},
-		{KEY_INPUT_LCONTROL, "L CTRL"},
-		{KEY_INPUT_RCONTROL, "R CTRL"},
+		{KEY_INPUT_LSHIFT, "LEFT SHIFT"},
+		{KEY_INPUT_RSHIFT, "RIGHT SHIFT"},
+		{KEY_INPUT_LCONTROL, "LEFT CTRL"},
+		{KEY_INPUT_RCONTROL, "RIGHT CTRL"},
 
 		// --- ナビゲーション ---
-		{KEY_INPUT_LEFT, "←"},
-		{KEY_INPUT_RIGHT, "→"},
-		{KEY_INPUT_UP, "↑"},
-		{KEY_INPUT_DOWN, "↓"},
+		{KEY_INPUT_LEFT, "ARROW LEFT"},
+		{KEY_INPUT_RIGHT, "ARROW RIGHT"},
+		{KEY_INPUT_UP, "ARROW UP"},
+		{KEY_INPUT_DOWN, "ARROW DOWN"},
 		{KEY_INPUT_HOME, "HOME"},
 		{KEY_INPUT_END, "END"},
 		{KEY_INPUT_PGUP, "PAGEUP"},

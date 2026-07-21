@@ -169,6 +169,13 @@ public:
 	
 	void SetActionBinds(const std::map<INPUT_INFO::ACTION, ActionBind>& binds);
 
+
+
+	// デバッグ用
+	bool IsDebugActionDown(INPUT_INFO::DEBUG_ACTION action)const;
+	bool IsDebugAction(INPUT_INFO::DEBUG_ACTION action)const;
+	bool IsDebugActionUp(INPUT_INFO::DEBUG_ACTION action)const;
+
 private:
 	ActiveDevice activeDevice_ = ActiveDevice::KEY_MOUSE;
 
@@ -191,4 +198,9 @@ private:
 
 	static constexpr float ANALOG_MAX = 32767.0f;
 	static constexpr float DEAD_ZONE = 0.35f;
+
+
+	// デバッグ用
+	std::map<INPUT_INFO::DEBUG_ACTION, ActionBind> debugBinds_;
+
 };

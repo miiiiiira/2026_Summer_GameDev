@@ -1,6 +1,7 @@
 #include "KeyConfigUI.h"
 
 #include <DxLib.h>
+#include "../../../Application.h"
 #include "InputManager.h"
 #include "InputIO.h"
 
@@ -12,44 +13,53 @@ namespace
 
     static constexpr int START_Y = 150;
 
-    static constexpr int KEY_START_X = 400;
-    static constexpr int PAD_START_X = 800;
+    static constexpr int HEADER_X = 300; // カテゴリーヘッダーのX座標
+    static constexpr int ACTION_X = 320; // アクション名のX座標
 
-    static constexpr int SLOT_INTERVAL = 120;
+    static constexpr int START_X = 500;
 
+    static constexpr int SLOT_INTERVAL = 260;
+    
     static constexpr int SLOT_LEFT_OFFSET = -10;
-    static constexpr int SLOT_RIGHT_OFFSET = 90;
+    static constexpr int SLOT_RIGHT_OFFSET = 235;
     static constexpr int SLOT_TOP_OFFSET = -10;
     static constexpr int SLOT_BOTTOM_OFFSET = 30;
 
-    static constexpr int COLUMN_COUNT = 6;
-    static constexpr int MAX_SLOT = 3;
+    static constexpr int COLUMN_COUNT = 4;
+    static constexpr int MAX_SLOT = 2;
 }
 
 void KeyConfigUI::Init()
 {
-    AddFontResourceEx("Data/Font/APJapanesefont.TTF", FR_PRIVATE, NULL);
-
-    // --- 画像読み込み ---
-    bgHandle_ = LoadGraph("Data/UI/KeyConfig/keyconfig_bg2.png");
-    slotHandle_ = LoadGraph("Data/UI/KeyConfig/key_slot2.png");
-    slotSelectHandle_ = LoadGraph("Data/UI/KeyConfig/key_slot_select2.png");
-    slotWaitHandle_ = LoadGraph("Data/UI/KeyConfig/key_slot_wait2.png");
-
-    // --- フォント作成 ---
-    fontHandle_ = CreateFontToHandle(
-        "あんずもじ",                   // フォント名
-        16,                             // サイズ
-        6,                              // 太さ
-        DX_FONTTYPE_ANTIALIASING_4X4
-    );
-
-    BuildDisplayList();
-
     // 初期選択位置をヘッダー以外にする
     selectRow_ = 0;
     while (displayRows_[selectRow_].isHeader)
         selectRow_++;
+
+    currentTab_ = TabType::KEY_MOUSE;
+}
+
+void KeyConfigUI::Load()
+{
+    // --- 画像読み込み ---
+    slotHandle_ = LoadGraph("Data/Image/KeyConfig/key_slot.png");
+    slotSelectHandle_ = LoadGraph("Data/Image/KeyConfig/key_slot_select.png");
+    slotWaitHandle_ = LoadGraph("Data/Image/KeyConfig/key_slot_wait.png");
+
+    // --- フォント作成 ---
+    fontHandle_ = CreateFontToHandle(
+        "Shikakufuto_Free",                   // フォント名
+        16,                             // サイズ
+        1,                              // 太さ
+        DX_FONTTYPE_ANTIALIASING_4X4
+    );
+
+    BuildDisplayList();
+}
+
+void KeyConfigUI::LoadEnd()
+{
+    Init();
 }
 
 void KeyConfigUI::Update()
@@ -59,7 +69,7 @@ void KeyConfigUI::Update()
     // 編集中は無効
     if (!keyConfig_.IsWaiting())
     {
-        if (input->IsActionDown(INPUT_INFO::ACTION::OPTION))
+        if (input->IsActionDown(INPUT_INFO::ACTION::PAUSE))
         {
             isActive_ = !isActive_;
         }
@@ -83,7 +93,7 @@ void KeyConfigUI::UpdateEditing()
     if (keyConfig_.IsFinished())
     {
         InputIO::SaveConfigCSV(
-            "input.csv",
+            "Data/Csv/input.csv",
             InputManager::GetInstance()->GetActionBinds());
     }
 }
@@ -100,61 +110,31 @@ bool KeyConfigUI::IsMouseHover(int mx, int my, int x, int y)
         my >= top && my <= bottom;
 }
 
-bool KeyConfigUI::CheckKeySlotHover(
-    int mx, int my, int y,
-    int rowIndex,
-    KeyConfigUI::DisplayRow& row, 
-    int& selectRow, int& selectCol,
-    bool click, 
-    KeyConfig& keyConfig)
+bool KeyConfigUI::CheckSlotHover(int mx, int my, int y, int rowIndex, KeyConfigUI::DisplayRow& row, int& selectRow, int& selectCol, bool click, KeyConfig& keyConfig)
 {
-    for (int slot = 0; slot < 3; ++slot)
+    // 現在のタブに応じてデバイスタイプとスロット数を決定
+    KeyConfig::DeviceType deviceType =
+        (currentTab_ == TabType::KEY_MOUSE)
+        ? KeyConfig::DeviceType::KEY_MOUSE
+        : KeyConfig::DeviceType::PAD;
+
+    // タブ切り替えによりX座標は共通（START_X）
+    int startX = START_X;
+
+    for (int slot = 0; slot < MAX_SLOT; ++slot)
     {
-        int x = KEY_START_X + slot * SLOT_INTERVAL;
+        int x = startX + slot * SLOT_INTERVAL;
 
         if (IsMouseHover(mx, my, x, y))
         {
             selectRow = rowIndex;
-            selectCol = slot;
+            selectCol = slot; // タブ分けしたため +3 オフセットは不要！
 
             if (click)
             {
                 keyConfig.Begin(
                     row.action,
-                    KeyConfig::DeviceType::KEY_MOUSE,
-                    INPUT_INFO::JOYPAD_NO::PAD1,
-                    slot);
-            }
-
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool KeyConfigUI::CheckPadSlotHover(
-    int mx, int my, int y,
-    int rowIndex,
-    KeyConfigUI::DisplayRow& row,
-    int& selectRow, int& selectCol,
-    bool click, 
-    KeyConfig& keyConfig)
-{
-    for (int slot = 0; slot < 3; ++slot)
-    {
-        int x = PAD_START_X + slot * SLOT_INTERVAL;
-
-        if (IsMouseHover(mx, my, x, y))
-        {
-            selectRow = rowIndex;
-            selectCol = slot + 3;
-
-            if (click)
-            {
-                keyConfig.Begin(
-                    row.action,
-                    KeyConfig::DeviceType::PAD,
+                    deviceType,
                     INPUT_INFO::JOYPAD_NO::PAD1,
                     slot);
             }
@@ -183,17 +163,31 @@ void KeyConfigUI::UpdateSelect()
     // 上
     if (input->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
     {
-        do {
-            selectRow_ = (selectRow_ - 1 + maxRow) % maxRow;
-        } while (displayRows_[selectRow_].isHeader);
+        int nextRow = selectRow_;
+        while (nextRow > 0)
+        {
+            nextRow--;
+            if (!displayRows_[nextRow].isHeader)
+            {
+                selectRow_ = nextRow;
+                break;
+            }
+        }
     }
 
     // 下
     if (input->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
     {
-        do {
-            selectRow_ = (selectRow_ + 1) % maxRow;
-        } while (displayRows_[selectRow_].isHeader);
+        int nextRow = selectRow_;
+        while (nextRow < maxRow - 1)
+        {
+            nextRow++;
+            if (!displayRows_[nextRow].isHeader)
+            {
+                selectRow_ = nextRow;
+                break;
+            }
+        }
     }
 
     // 横移動
@@ -208,6 +202,12 @@ void KeyConfigUI::UpdateSelect()
 
     if (selectRow_ < scrollOffset_)
         scrollOffset_ = selectRow_;
+
+    // 一番上に行ったらPLAYERを表示するようにする
+    if (selectRow_ == 1 && displayRows_[0].isHeader)
+    {
+        scrollOffset_ = 0;
+    }
 
     if (selectRow_ >= scrollOffset_ + visibleRows)
         scrollOffset_ = selectRow_ - visibleRows + 1;
@@ -260,18 +260,9 @@ void KeyConfigUI::UpdateSelect()
         if (row.isHeader)
             continue;
 
-        if (CheckKeySlotHover(
-            mx, my, y,
-            i, row,
-            selectRow_, selectCol_,
-            InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE),
-            keyConfig_))
-            return;
-
-        if (CheckPadSlotHover(
-            mx, my, y,
-            i, row,
-            selectRow_, selectCol_,
+        if (CheckSlotHover(mx, my, y,
+            i, row, 
+            selectRow_, selectCol_, 
             InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE),
             keyConfig_))
             return;
@@ -285,13 +276,14 @@ void KeyConfigUI::Draw()
     auto* input = InputManager::GetInstance();
     const auto& binds = input->GetActionBinds();
 
-    SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
-    DrawExtendGraph(0, 0, 1280, 720, bgHandle_, FALSE);
+    SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
+    DrawBox(0, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, 0xffffff, true);
     SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
     const int baseY = START_Y;
     const int rowHeight = ROW_HEIGHT;
     const int visibleRows = VISIBLE_ROWS;
+    const int startX = START_X;
 
     int drawCount = 0;
 
@@ -315,7 +307,7 @@ void KeyConfigUI::Draw()
                 "】";
 
             DrawFormatStringToHandle(
-                210,
+                HEADER_X,
                 y,
                 GetColor(0, 200, 255),
                 fontHandle_,
@@ -335,10 +327,10 @@ void KeyConfigUI::Draw()
             (!row.isHeader && i == selectRow_);
 
         DrawFormatStringToHandle(
-            250,
+            ACTION_X,
             y,
             isSelectedRow
-            ? GetColor(255, 255, 0)
+            ? GetColor(200, 0, 100)
             : GetColor(0, 0, 0),
             fontHandle_,
             "%s",
@@ -354,120 +346,122 @@ void KeyConfigUI::Draw()
 
         const auto& bind = it->second;
 
-        int keyStartX = KEY_START_X;
-        int padStartX = PAD_START_X;
-
-        // --- KEY ---
-        for (int slot = 0; slot < MAX_SLOT; ++slot)
+        if (currentTab_ == TabType::KEY_MOUSE)
         {
-            int x = keyStartX + slot * 120;
-            bool selected = isSelectedRow && selectCol_ == slot;
-
-            bool isWaiting =
-                keyConfig_.IsWaiting() &&
-                selected;
-
-            int handle = slotHandle_;
-
-            if (isWaiting)
-                handle = slotWaitHandle_;
-            else if (selected)
-                handle = slotSelectHandle_;
-
-            DrawExtendGraph(
-                x - 10, y - 10,
-                x + 90, y + 30,
-                handle,
-                TRUE
-            );
-
-            std::string text = "---";
-
-            const auto& b = bind.keyMouse[slot];
-
-            if (b.code != -1)
+            // --- KEY ---
+            for (int slot = 0; slot < MAX_SLOT; ++slot)
             {
-                if (b.type == InputManager::BindType::KEY)
-                    text = INPUT_INFO::GetKeyNameFromScanCode(b.code);
-                else
-                    text = INPUT_INFO::MouseToString(
-                        (INPUT_INFO::MouseBtn)b.code);
-            }
+                int x = startX + slot * SLOT_INTERVAL;
+                bool selected = isSelectedRow && selectCol_ == slot;
 
-            DrawFormatStringToHandle(
-                x,
-                y,
-                GetColor(0, 0, 0),
-                fontHandle_,
-                "%s",
-                text.c_str()
-            );
-        }
+                bool isWaiting =
+                    keyConfig_.IsWaiting() &&
+                    selected;
 
-        // --- PAD ---
-        for (int slot = 0; slot < MAX_SLOT; ++slot)
-        {
-            int x = padStartX + slot * 120;
+                int handle = slotHandle_;
 
-            bool selected =
-                isSelectedRow &&
-                selectCol_ == slot + 3;
+                if (isWaiting)
+                    handle = slotWaitHandle_;
+                else if (selected)
+                    handle = slotSelectHandle_;
 
-            bool isWaiting =
-                keyConfig_.IsWaiting() &&
-                selected;
+                DrawExtendGraph(
+                    x + SLOT_LEFT_OFFSET, y + SLOT_TOP_OFFSET,
+                    x + SLOT_RIGHT_OFFSET, y + SLOT_BOTTOM_OFFSET,
+                    handle,
+                    TRUE
+                );
 
-            int handle = slotHandle_;
+                std::string text = "---";
 
-            if (isWaiting)
-                handle = slotWaitHandle_;
-            else if (selected)
-                handle = slotSelectHandle_;
+                const auto& b = bind.keyMouse[slot];
 
-            DrawExtendGraph(
-                x - 10, y - 10,
-                x + 90, y + 30,
-                handle,
-                TRUE);
-
-            std::string text = "---";
-
-            const auto& b = bind.pad[slot];
-
-            if (b.code != -1)
-            {
-                switch (b.type)
+                if (b.code != -1)
                 {
-                case InputManager::BindType::PAD_BTN:
-                    text = INPUT_INFO::PadBtnToString(
-                        (INPUT_INFO::PAD_BTN)b.code);
-                    break;
-
-                case InputManager::BindType::PAD_DIR:
-                    text = INPUT_INFO::PadDirToString(
-                        (INPUT_INFO::PAD_DIR)b.code);
-                    break;
-
-                case InputManager::BindType::PAD_TRIGGER:
-                    text = INPUT_INFO::PadTriggerToString(
-                        (INPUT_INFO::PAD_TRIGGER)b.code);
-                    break;
-
-                case InputManager::BindType::PAD_STICK:
-                    text = INPUT_INFO::PadStickToString(
-                        (INPUT_INFO::PAD_STICK)b.code);
-                    break;
+                    if (b.type == InputManager::BindType::KEY)
+                        text = INPUT_INFO::GetKeyNameFromScanCode(b.code);
+                    else
+                        text = INPUT_INFO::MouseToString(
+                            (INPUT_INFO::MouseBtn)b.code);
                 }
-            }
 
-            DrawFormatStringToHandle(
-                x,
-                y,
-                GetColor(0, 0, 0),
-                fontHandle_,
-                "%s",
-                text.c_str()
-            );
+                DrawFormatStringToHandle(
+                    x,
+                    y,
+                    GetColor(0, 0, 0),
+                    fontHandle_,
+                    "%s",
+                    text.c_str()
+                );
+            }
+        }
+        else
+        {
+            // --- PAD ---
+            for (int slot = 0; slot < MAX_SLOT; ++slot)
+            {
+                int x = startX + slot * SLOT_INTERVAL;
+
+                bool selected =
+                    isSelectedRow &&
+                    selectCol_ == slot + 3;
+
+                bool isWaiting =
+                    keyConfig_.IsWaiting() &&
+                    selected;
+
+                int handle = slotHandle_;
+
+                if (isWaiting)
+                    handle = slotWaitHandle_;
+                else if (selected)
+                    handle = slotSelectHandle_;
+
+                DrawExtendGraph(
+                    x + SLOT_LEFT_OFFSET, y + SLOT_TOP_OFFSET,
+                    x + SLOT_RIGHT_OFFSET, y + SLOT_BOTTOM_OFFSET,
+                    handle,
+                    TRUE);
+
+                std::string text = "---";
+
+                const auto& b = bind.pad[slot];
+
+                if (b.code != -1)
+                {
+                    switch (b.type)
+                    {
+                    case InputManager::BindType::PAD_BTN:
+                        text = INPUT_INFO::PadBtnToString(
+                            (INPUT_INFO::PAD_BTN)b.code);
+                        break;
+
+                    case InputManager::BindType::PAD_DIR:
+                        text = INPUT_INFO::PadDirToString(
+                            (INPUT_INFO::PAD_DIR)b.code);
+                        break;
+
+                    case InputManager::BindType::PAD_TRIGGER:
+                        text = INPUT_INFO::PadTriggerToString(
+                            (INPUT_INFO::PAD_TRIGGER)b.code);
+                        break;
+
+                    case InputManager::BindType::PAD_STICK:
+                        text = INPUT_INFO::PadStickToString(
+                            (INPUT_INFO::PAD_STICK)b.code);
+                        break;
+                    }
+                }
+
+                DrawFormatStringToHandle(
+                    x,
+                    y,
+                    GetColor(0, 0, 0),
+                    fontHandle_,
+                    "%s",
+                    text.c_str()
+                );
+            }
         }
 
         drawCount++;
@@ -476,14 +470,7 @@ void KeyConfigUI::Draw()
 
 void KeyConfigUI::Delete()
 {
-    RemoveFontResourceEx(
-        "Data/Font/APJapanesefont.TTF",
-        FR_PRIVATE,
-        NULL
-    );
-
     DeleteFontToHandle(fontHandle_);
-    DeleteGraph(bgHandle_);
     DeleteGraph(slotHandle_);
     DeleteGraph(slotWaitHandle_);
     DeleteGraph(slotSelectHandle_);

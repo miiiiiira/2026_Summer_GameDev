@@ -6,6 +6,8 @@ class KeyConfigUI
 {
 public:
     void Init();    // 初期化
+    void Load();
+    void LoadEnd();
     void Update();  // 更新
     void Draw();    // 描画
     void Delete();  // 削除処理
@@ -25,11 +27,19 @@ public:
         INPUT_INFO::ACTION_CATEGORY category;   // カテゴリ
     };
 
+    enum class TabType
+    {
+        KEY_MOUSE,
+        PAD,
+    };
+
 private:
 
     // 表示データ
     std::vector<DisplayRow> displayRows_;   // 表示行リスト
     int scrollOffset_ = 0;                  // スクロール位置
+
+    TabType currentTab_;
 
     // UI状態
     bool isActive_ = false;     // UI表示状態
@@ -40,7 +50,6 @@ private:
     KeyConfig keyConfig_;
 
     // 描画
-    int bgHandle_ = -1;         // 背景
     int slotHandle_ = -1;       // 通常スロット
     int slotWaitHandle_ = -1;   // 入力待ちスロット
     int slotSelectHandle_ = -1; // 選択スロット
@@ -53,20 +62,11 @@ private:
     // マウス判定
     bool IsMouseHover(int mx, int my, int x, int y);
 
-    bool CheckKeySlotHover(
+    bool CheckSlotHover(
         int mx, int my, int y,
         int rowIndex,
         KeyConfigUI::DisplayRow& row,
         int& selectRow, int& selectCol,
         bool click,
         KeyConfig& keyConfig);
-
-    bool CheckPadSlotHover(
-        int mx, int my, int y,
-        int rowIndex,
-        KeyConfigUI::DisplayRow& row,
-        int& selectRow, int& selectCol,
-        bool click,
-        KeyConfig& keyConfig);
-
 };

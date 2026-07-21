@@ -30,8 +30,10 @@ void InputManager::Init(void)
 	SetActionMouse(INPUT_INFO::ACTION::GRAB, INPUT_INFO::MouseBtn::LEFT);
 	SetActionMouse(INPUT_INFO::ACTION::ITEM_PUSH, INPUT_INFO::MouseBtn::WHEEL_UP);
 	SetActionMouse(INPUT_INFO::ACTION::ITEM_PULL, INPUT_INFO::MouseBtn::WHEEL_DOWN);
-	SetActionMouse(INPUT_INFO::ACTION::LOOK_CAMERA_V, INPUT_INFO::MouseBtn::MOVE_X);
-	SetActionMouse(INPUT_INFO::ACTION::LOOK_CAMERA_H, INPUT_INFO::MouseBtn::MOVE_Y);
+	SetActionKey(INPUT_INFO::ACTION::CAMERA_UP, { KEY_INPUT_UP });
+	SetActionKey(INPUT_INFO::ACTION::CAMERA_DOWN, { KEY_INPUT_DOWN });
+	SetActionKey(INPUT_INFO::ACTION::CAMERA_LEFT, { KEY_INPUT_LEFT });
+	SetActionKey(INPUT_INFO::ACTION::CAMERA_RIGHT, { KEY_INPUT_RIGHT });
 
 	
 	// --- UI・システム系 ---
@@ -40,11 +42,13 @@ void InputManager::Init(void)
 	SetActionKey(INPUT_INFO::ACTION::UI_MOVE_LEFT, { KEY_INPUT_A });
 	SetActionKey(INPUT_INFO::ACTION::UI_MOVE_RIGHT, { KEY_INPUT_D });
 
+	SetActionMouse(INPUT_INFO::ACTION::UI_MOVE_UP, INPUT_INFO::MouseBtn::WHEEL_UP);
+	SetActionMouse(INPUT_INFO::ACTION::UI_MOVE_DOWN, INPUT_INFO::MouseBtn::WHEEL_DOWN);
+
 	SetActionMouse(INPUT_INFO::ACTION::DECIDE, INPUT_INFO::MouseBtn::LEFT);
 	SetActionKey(INPUT_INFO::ACTION::CANCEL, { KEY_INPUT_ESCAPE });
 
 	SetActionKey(INPUT_INFO::ACTION::PAUSE, { KEY_INPUT_ESCAPE });
-
 
 	// --- パッド ---
 	// --- プレイヤーアクション ---
@@ -64,31 +68,63 @@ void InputManager::Init(void)
 	stickInput.code = (int)INPUT_INFO::PAD_STICK::LEFT_RIGHT;
 	AddBind(INPUT_INFO::ACTION::MOVE_RIGHT, 0, stickInput);
 	SetActionPadBtn(INPUT_INFO::ACTION::DASH, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_BTN::RB);
-	SetActionPadBtn(INPUT_INFO::ACTION::JUMP, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_BTN::Y);
+	SetActionPadBtn(INPUT_INFO::ACTION::JUMP, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_BTN::A);
 	SetActionPadBtn(INPUT_INFO::ACTION::CROUCH, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_BTN::LB);
-	SetActionPadTrigger(INPUT_INFO::ACTION::LIGHT, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_TRIGGER::RT);
-	SetActionPadBtn(INPUT_INFO::ACTION::MAP, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_BTN::START);
-	SetActionPadTrigger(INPUT_INFO::ACTION::GRAB, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_TRIGGER::LT);
+	SetActionPadTrigger(INPUT_INFO::ACTION::LIGHT, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_TRIGGER::LT);
+	SetActionPadBtn(INPUT_INFO::ACTION::MAP, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_BTN::X);
+	SetActionPadTrigger(INPUT_INFO::ACTION::GRAB, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_TRIGGER::RT);
 	SetActionPadDir(INPUT_INFO::ACTION::ITEM_PUSH, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_DIR::UP);
 	SetActionPadDir(INPUT_INFO::ACTION::ITEM_PULL, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_DIR::DOWN);
-	// 前進アクションのパッド側スロット1に割り当て
+	// カメラのパッド側スロット1に割り当て
 	stickInput.code = (int)INPUT_INFO::PAD_STICK::RIGHT_UP;
-	AddBind(INPUT_INFO::ACTION::LOOK_CAMERA_H, 0, stickInput);
-	// 後退アクションのパッド側スロット2に割り当て
+	AddBind(INPUT_INFO::ACTION::CAMERA_UP, 0, stickInput);
+	// カメラのパッド側スロット1に割り当て
 	stickInput.code = (int)INPUT_INFO::PAD_STICK::RIGHT_DOWN;
-	AddBind(INPUT_INFO::ACTION::LOOK_CAMERA_H, 1, stickInput);
-	// 左アクションのパッド側スロット1に割り当て
+	AddBind(INPUT_INFO::ACTION::CAMERA_DOWN, 0, stickInput);
+	// カメラのパッド側スロット1に割り当て
 	stickInput.code = (int)INPUT_INFO::PAD_STICK::RIGHT_LEFT;
-	AddBind(INPUT_INFO::ACTION::LOOK_CAMERA_V, 0, stickInput);
-	// 右アクションのパッド側スロット2に割り当て
+	AddBind(INPUT_INFO::ACTION::CAMERA_LEFT, 0, stickInput);
+	// カメラのパッド側スロット1に割り当て
 	stickInput.code = (int)INPUT_INFO::PAD_STICK::RIGHT_RIGHT;
-	AddBind(INPUT_INFO::ACTION::LOOK_CAMERA_V, 1, stickInput);
+	AddBind(INPUT_INFO::ACTION::CAMERA_RIGHT, 0, stickInput);
+
+	// --- UI・システム系 ---
+	SetActionPadDir(INPUT_INFO::ACTION::UI_MOVE_UP, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_DIR::UP);
+	SetActionPadDir(INPUT_INFO::ACTION::UI_MOVE_DOWN, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_DIR::DOWN);
+	SetActionPadDir(INPUT_INFO::ACTION::UI_MOVE_LEFT, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_DIR::LEFT);
+	SetActionPadDir(INPUT_INFO::ACTION::UI_MOVE_RIGHT, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_DIR::RIGHT);
+
+	// 前進アクションのパッド側スロット1に割り当て
+	stickInput.code = (int)INPUT_INFO::PAD_STICK::LEFT_UP;
+	AddBind(INPUT_INFO::ACTION::UI_MOVE_UP, 1, stickInput);
+	// 後退アクションのパッド側スロット1に割り当て
+	stickInput.code = (int)INPUT_INFO::PAD_STICK::LEFT_DOWN;
+	AddBind(INPUT_INFO::ACTION::UI_MOVE_DOWN, 1, stickInput);
+	// 左アクションのパッド側スロット1に割り当て
+	stickInput.code = (int)INPUT_INFO::PAD_STICK::LEFT_LEFT;
+	AddBind(INPUT_INFO::ACTION::UI_MOVE_LEFT, 1, stickInput);
+	// 右アクションのパッド側スロット1に割り当て
+	stickInput.code = (int)INPUT_INFO::PAD_STICK::LEFT_RIGHT;
+	AddBind(INPUT_INFO::ACTION::UI_MOVE_RIGHT, 1, stickInput);
 
 
-
-	SetActionPadBtn(INPUT_INFO::ACTION::JUMP, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_BTN::A);
 	SetActionPadBtn(INPUT_INFO::ACTION::DECIDE, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_BTN::A);
-	SetActionPadBtn(INPUT_INFO::ACTION::CANCEL, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_BTN::B);
+	SetActionPadBtn(INPUT_INFO::ACTION::CANCEL, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_BTN::START);
+
+	SetActionPadBtn(INPUT_INFO::ACTION::PAUSE, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_BTN::START);
+
+
+
+	// デバッグ用
+	debugBinds_[INPUT_INFO::DEBUG_ACTION::ADD_POINT].keyMouse[0] = { BindType::MOUSE, MOUSE_INPUT_LEFT };
+	debugBinds_[INPUT_INFO::DEBUG_ACTION::REMOVE_POINT].keyMouse[0] = { BindType::MOUSE, MOUSE_INPUT_RIGHT };
+	debugBinds_[INPUT_INFO::DEBUG_ACTION::RETURN].keyMouse[0] = { BindType::KEY,   KEY_INPUT_RETURN };
+	debugBinds_[INPUT_INFO::DEBUG_ACTION::CLEAR].keyMouse[0] = { BindType::KEY,   KEY_INPUT_C };
+	debugBinds_[INPUT_INFO::DEBUG_ACTION::OVER].keyMouse[0] = { BindType::KEY,   KEY_INPUT_O };
+	debugBinds_[INPUT_INFO::DEBUG_ACTION::SHADER].keyMouse[0] = { BindType::KEY,   KEY_INPUT_K };
+	debugBinds_[INPUT_INFO::DEBUG_ACTION::DEBUG].keyMouse[0] = { BindType::KEY,   KEY_INPUT_L };
+	debugBinds_[INPUT_INFO::DEBUG_ACTION::TUTORIAL].keyMouse[0] = { BindType::KEY,   KEY_INPUT_B };
+	debugBinds_[INPUT_INFO::DEBUG_ACTION::COLOR_CHANGE].keyMouse[0] = { BindType::KEY,   KEY_INPUT_H };
 }
 
 void InputManager::Update(void)
@@ -926,4 +962,202 @@ bool InputManager::DetectPadStick(INPUT_INFO::JOYPAD_NO pad, INPUT_INFO::PAD_STI
 void InputManager::SetActionBinds(const std::map<INPUT_INFO::ACTION, ActionBind>& binds)
 {
 	actionBinds_ = binds;
+}
+
+bool InputManager::IsDebugActionDown(INPUT_INFO::DEBUG_ACTION action) const
+{
+	const auto& bind = debugBinds_.at(action);
+
+	// キーボード&マウス
+	for (const auto& b : bind.keyMouse)
+	{
+		if (b.code == -1) continue;
+
+		if (b.type == BindType::KEY &&
+			keyStates_.at(b.code).down)
+			return true;
+
+		if (b.type == BindType::MOUSE &&
+			mouseStates_[b.code].down)
+			return true;
+	}
+
+	// パッド
+	for (const auto& b : bind.pad)
+	{
+		if (b.code == -1) continue;
+
+		auto pad = b.pad;
+
+		switch (b.type)
+		{
+		case BindType::PAD_BTN:
+			if (padStates_[(int)pad].btn[b.code].down)
+				return true;
+			break;
+
+		case BindType::PAD_DIR:
+			if (padStates_[(int)pad].dir[b.code].down)
+				return true;
+			break;
+
+		case BindType::PAD_TRIGGER:
+		{
+			bool pressed = false;
+
+			if (b.code == (int)INPUT_INFO::PAD_TRIGGER::LT)
+				pressed = padStates_[(int)pad].lt.down;
+			else
+				pressed = padStates_[(int)pad].rt.down;
+
+			if (pressed)
+				return true;
+		}
+		break;
+
+		case BindType::PAD_STICK:
+		{
+			if (padStates_[(int)pad].stick[b.code].down)
+				return true;
+		}
+		break;
+
+		default:
+			break;
+		}
+	}
+
+	return false;
+}
+
+bool InputManager::IsDebugAction(INPUT_INFO::DEBUG_ACTION action) const
+{
+	const auto& bind = debugBinds_.at(action);
+
+	// キーボード&マウス
+	for (const auto& b : bind.keyMouse)
+	{
+		if (b.code == -1) continue;
+
+		if (b.type == BindType::KEY &&
+			keyStates_.at(b.code).now)
+			return true;
+
+		if (b.type == BindType::MOUSE &&
+			mouseStates_[b.code].now)
+			return true;
+	}
+
+	// パッド
+	for (const auto& b : bind.pad)
+	{
+		if (b.code == -1) continue;
+
+		auto pad = b.pad;
+
+		switch (b.type)
+		{
+		case BindType::PAD_BTN:
+			if (padStates_[(int)pad].btn[b.code].now)
+				return true;
+			break;
+
+		case BindType::PAD_DIR:
+			if (padStates_[(int)pad].dir[b.code].now)
+				return true;
+			break;
+
+		case BindType::PAD_TRIGGER:
+		{
+			bool pressed = false;
+
+			if (b.code == (int)INPUT_INFO::PAD_TRIGGER::LT)
+				pressed = padStates_[(int)pad].lt.now;
+			else
+				pressed = padStates_[(int)pad].rt.now;
+
+			if (pressed)
+				return true;
+		}
+		break;
+
+		case BindType::PAD_STICK:
+		{
+			if (padStates_[(int)pad].stick[b.code].now)
+				return true;
+		}
+		break;
+
+		default:
+			break;
+		}
+	}
+
+	return false;
+}
+
+bool InputManager::IsDebugActionUp(INPUT_INFO::DEBUG_ACTION action) const
+{
+	const auto& bind = debugBinds_.at(action);
+
+	// キーボード&マウス
+	for (const auto& b : bind.keyMouse)
+	{
+		if (b.code == -1) continue;
+
+		if (b.type == BindType::KEY &&
+			keyStates_.at(b.code).up)
+			return true;
+
+		if (b.type == BindType::MOUSE &&
+			mouseStates_[b.code].up)
+			return true;
+	}
+
+	// パッド
+	for (const auto& b : bind.pad)
+	{
+		if (b.code == -1) continue;
+
+		auto pad = b.pad;
+
+		switch (b.type)
+		{
+		case BindType::PAD_BTN:
+			if (padStates_[(int)pad].btn[b.code].up)
+				return true;
+			break;
+
+		case BindType::PAD_DIR:
+			if (padStates_[(int)pad].dir[b.code].up)
+				return true;
+			break;
+
+		case BindType::PAD_TRIGGER:
+		{
+			bool pressed = false;
+
+			if (b.code == (int)INPUT_INFO::PAD_TRIGGER::LT)
+				pressed = padStates_[(int)pad].lt.up;
+			else
+				pressed = padStates_[(int)pad].rt.up;
+
+			if (pressed)
+				return true;
+		}
+		break;
+
+		case BindType::PAD_STICK:
+		{
+			if (padStates_[(int)pad].stick[b.code].up)
+				return true;
+		}
+		break;
+
+		default:
+			break;
+		}
+	}
+
+	return false;
 }

@@ -3,7 +3,7 @@
 
 KeyConfig::KeyConfig()
     : state_(State::IDLE),
-    targetAction_(INPUT_INFO::ACTION::MOVE_UP)
+    targetAction_(INPUT_INFO::ACTION::MOVE_FORWARD)
 {
 }
 
