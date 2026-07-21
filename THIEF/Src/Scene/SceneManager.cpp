@@ -453,6 +453,11 @@ void SceneManager::SetTutorialStateAndValue(Tutorial::STATE state, float value)
 	tutorialValue_ = value;
 }
 
+Tutorial::STATE SceneManager::GetTutorialState(void)
+{
+	return nowTutorialState_;
+}
+
 
 void SceneManager::TutorialCounter(Tutorial::STATE state)
 {

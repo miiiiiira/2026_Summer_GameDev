@@ -63,6 +63,9 @@ struct ItemInfo
 	// 一度でも発見したか　true / 見つけた , false / 見つけてない
 	bool isFound_;
 
+	// 発見した物を一定時間ハイライトさせる用のカウンター
+	int foundCounter_;
+
 	// 無敵時間
 	int invincibilityFrames_;
 };

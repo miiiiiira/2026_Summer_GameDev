@@ -137,11 +137,32 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 		// 目標金額を達成していたら
 		if (deliveryPrice >= targetPrice)
 		{
-			// 納品完了音
-			AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_SUC);
+			// チュートリアルだった場合
+			if (SceneManager::GetInstance()->GetNowSceneTag() == TUTORIAL)
+			{
+				// 確認項目が納品だったら
+				if (SceneManager::GetInstance()->GetTutorialState() == Tutorial::DELIVER)
+				{
+					// 納品完了音
+					AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_SUC);
 
-			// クリアカウントを開始
-			stage_->StartClearCount();
+					// クリアカウントを開始
+					stage_->StartClearCount();
+					return;
+				}
+
+				// 確認項目が納品出なければ納品失敗音
+				AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_FAI);
+			}
+			// チュートリアル以外のシーンだった場合
+			else
+			{
+				// 納品完了音
+				AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_SUC);
+
+				// クリアカウントを開始
+				stage_->StartClearCount();
+			}
 			return;
 		}
 		else

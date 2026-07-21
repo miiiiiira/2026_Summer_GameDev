@@ -2,6 +2,7 @@
 
 #include "../Component.h"
 #include "ItemInfo.h"
+#include "../../../Common/Math/Vector2.h"
 #include <vector>
 
 // 前方宣言
@@ -93,10 +94,20 @@ public:
 
 protected:
 
+	// ダメージの補正値
 	static constexpr int DAMAGE_MULT = 15;
 
+	// フォントのサイズ
 	static constexpr int FONT_SIZE = 21;
 
+	// 発見時のハイライトカウンタ時間
+	static constexpr int FOUND_COUNTER_MAX = 60;
+
+	// 発見時のハイライトの大きさ
+	static constexpr Vector2 HIGHLIGHT_SIZE_BIG = { 100,160 };
+	static constexpr Vector2 HIGHLIGHT_SIZE_MEDIUM = { 60,70 };
+	static constexpr Vector2 HIGHLIGHT_SIZE_SMALL = { 50,60 };
+	
 	struct DamageInfo
 	{
 		VECTOR pos = {};
@@ -115,6 +126,9 @@ protected:
 
 	// 縁フォント
 	int edgeFont_;
+
+	// 初期位置
+	VECTOR defaultPos_;
 
 	// 重力をかける
 	void Gravity(void);

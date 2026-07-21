@@ -114,6 +114,9 @@ public:
 	// チュートリアルシーン用特別関数
 	void SetTutorialStateAndValue(Tutorial::STATE state,float value);
 
+	// チュートリアルの現在の確認項目を渡す
+	Tutorial::STATE GetTutorialState(void);
+
 	// チュートリアル時に行動すると加算されるカウンタ
 	void TutorialCounter(Tutorial::STATE state);
 

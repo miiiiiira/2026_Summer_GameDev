@@ -7,6 +7,7 @@
 #include "../../Object.h"
 #include "../../../Common/CameraUtility/CameraUtility.h"
 #include "../../../Application.h"
+#include "../../../Scene/SceneManager.h"
 
 Item::~Item(void)
 {
@@ -28,11 +29,14 @@ void Item::Init(void)
 	// オーナーからTransformを取得
 	trans_ = owner_->GetComponent<Transform>();
 
+	// 初期座標を保持しておく
+	defaultPos_ = trans_->pos_;
+
 	// 座標の更新
 	MV1SetPosition(info_.modelId_, trans_->pos_);
 
 	// 向きの更新
-	MV1SetPosition(info_.modelId_, trans_->angle_);
+	MV1SetRotationXYZ(info_.modelId_, trans_->angle_);
 
 	// 衝突情報構築
 	MV1SetupCollInfo(info_.modelId_, -1);
@@ -58,6 +62,9 @@ void Item::Init(void)
 	// まだ見つかっていないことにする
 	info_.isFound_ = false;
 
+	// 発見時のカウンタ初期化
+	info_.foundCounter_ = FOUND_COUNTER_MAX;
+
 	// 個々のパラメータを設定
 	SetParam();
 
@@ -71,15 +78,34 @@ void Item::Update(void)
 	// ダメージ表記用のカウントを進める
 	CountUpdate();
 
-	// 生存していなかったら描画しない
-	if (!info_.isAlive_)return;
+	// 生存していなかったら
+	if (!info_.isAlive_)
+	{
+		// チュートリアルシーンだったら
+		if (SceneManager::GetInstance()->GetNowSceneTag() == TUTORIAL)
+		{
+			// 位置を初期化
+			SetPos(defaultPos_);
+
+			// 掴まれていない状態にする
+			info_.isGrabbed_ = false;
+
+			// 描画フラグを折る
+			auto render = owner_->GetComponent<Render3D>();
+			render->SetIsDraw(true);
+
+			// パラメータ設定をしなおして復活させる
+			SetParam();
+		}
+
+		return;
+	}
 
 	// 当たり判定更新
 	MV1RefreshCollInfo(info_.modelId_, -1);
 
 	// 無敵時間の更新処理
 	UpdateInvincibility();
-
 
 	// 掴まれていたら
 	if (info_.isGrabbed_)
@@ -94,6 +120,13 @@ void Item::Update(void)
 	{
 		// 重力をかける
 		Gravity();
+	}
+
+	// ハイライトカウンタが0より大きいかつ見つかったフラグが立っていたら
+	if (info_.foundCounter_ > 0 &&info_.isFound_)
+	{
+		// ハイライトカウンタを減らす
+		info_.foundCounter_--;
 	}
 
 	// 一定の座標いったら
@@ -161,6 +194,7 @@ void Item::Draw2D(void)
 		}
 	}
 
+	// ダメージ表記
 	for (const DamageInfo damage : damageDrawList_)
 	{
 		// ダメージの場所が視界内に入っていないのであれば処理をスキップ
@@ -177,6 +211,46 @@ void Item::Draw2D(void)
 			Application::GetInstance()->GetFont(),
 			"-%d",
 			damage.damage);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
+
+	// 発見時のハイライト
+	// ハイライトカウンタが0じゃないかつ、発見フラグが立っていたら
+	if (info_.foundCounter_ > 0 && info_.isFound_)
+	{
+		// 場所が視界内に入っていないのであれば処理をスキップ
+		if (CheckCameraViewClip(trans_->pos_))return;
+
+		// ワールド座標をスクリーン座標にする
+		VECTOR pos = ConvWorldPosToScreenPos(trans_->pos_);
+
+		Vector2 boxSize = {};
+
+		// 設定されているサイズによってハイライトの大きさも変更
+		switch (info_.size_)
+		{
+		case ITEM_SIZE::BIG:
+			boxSize = HIGHLIGHT_SIZE_BIG;
+			break;
+		case ITEM_SIZE::MEDIUM:
+			boxSize = HIGHLIGHT_SIZE_MEDIUM;
+			break;
+		case ITEM_SIZE::SMALL:
+			boxSize = HIGHLIGHT_SIZE_SMALL;
+			break;
+		default:
+			break;
+		}
+
+		// 透明度設定したボックスを表示
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+		DrawBox(
+			pos.x - boxSize.x,
+			pos.y - boxSize.y,
+			pos.x + boxSize.x,
+			pos.y + boxSize.y,
+			0xffff00,
+			true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 }
@@ -345,8 +419,6 @@ void Item::TrueIsFound(void)
 	info_.isFound_ = true; 
 
 	// TODO アイテムを見つけたとの音
-
-	// TODO 見つけたためアイテムにハイライト
 
 }
 
