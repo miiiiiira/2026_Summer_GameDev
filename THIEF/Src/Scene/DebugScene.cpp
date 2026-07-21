@@ -93,7 +93,7 @@ void DebugScene::LoadEnd(void)
 void DebugScene::Update(void)
 {
 
-	if (InputManager::GetInstance()->PauseButtons())
+	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::PAUSE))
 	{
 		// ポーズ画面を開いたサウンド
 		AudioManager::GetInstance()->PlaySE(SoundID::SYS_PAUSE_ON);
@@ -135,7 +135,7 @@ void DebugScene::Draw(void)
 			point.pos.x, point.pos.y, point.pos.z);
 		y += 20;
 	}
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_RETURN))
+	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::RETURN))
 	{
 		time_ = 60 * 3;
 	}
@@ -286,28 +286,10 @@ void DebugScene::StageCreate(void)
 
 void DebugScene::PlaceDebugPoint(void)
 {
-	switch (edit_)
-	{
-	case DebugScene::EditMode::ENEMY_NODE_POINT:
-		PlaceEnemyNodePoint();
-		break;
-	case DebugScene::EditMode::ITEM_NODE_POINT:
-		PlaceItemNodePoint();
-		break;
-	case DebugScene::EditMode::SPAWN_POINT:
-		PlaceSpawnPoint();
-		break;
-	default:
-		break;
-	}
-}
-
-void DebugScene::PlaceEnemyNodePoint(void)
-{
 	VECTOR cameraPos = CameraUtility::GetCameraPos();
 
 	// 左クリックでカメラの座標をデバックポイントとして追加
-	if (InputManager::GetInstance()->IsTrgMouseLeft())
+	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::ADD_POINT))
 	{
 		Point point;
 		point.id = pointNum_;
@@ -319,7 +301,7 @@ void DebugScene::PlaceEnemyNodePoint(void)
 	}
 
 	// 右クリックで最後のデバッグポイントを削除
-	if (InputManager::GetInstance()->IsTrgMouseRight())
+	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::REMOVE_POINT))
 	{
 		// 線分の上座標
 		VECTOR topPos = cameraPos;
@@ -364,80 +346,7 @@ void DebugScene::PlaceEnemyNodePoint(void)
 	}
 
 	// エンターでデバックポイントを保存
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_RETURN))
-	{
-		// デバッグポイントの保存
-		SavePoints();
-	}
-}
-
-void DebugScene::PlaceItemNodePoint(void)
-{
-}
-
-void DebugScene::PlaceSpawnPoint(void)
-{
-	VECTOR cameraPos = CameraUtility::GetCameraPos();
-
-	// 左クリックでカメラの座標をデバックポイントとして追加
-	if (InputManager::GetInstance()->IsTrgMouseLeft())
-	{
-		Point point;
-		point.id = pointNum_;
-		point.pos = cameraPos;
-		point.pos.y -= 100.0f;
-		points_.push_back(point);
-
-		pointNum_++;
-	}
-
-	// 右クリックで最後のデバッグポイントを削除
-	if (InputManager::GetInstance()->IsTrgMouseRight())
-	{
-		// 線分の上座標
-		VECTOR topPos = cameraPos;
-		// 線分の下座標
-		VECTOR downPos = cameraPos;
-
-		// カメラの視線方向のベクトルを計算
-		// DxlibのVTransformを使用
-		VECTOR forward = VGet(0.0f, 0.0f, 1.0f); // 前方向をZ軸とする
-		// カメラの方向を算出
-		VECTOR cameraDir = CameraUtility::AddCameraPosLocalPos(forward);
-
-		// 相対座標
-		VECTOR LOCAL_POS = { 0.0f,0.0f,500.0f };
-
-		// 座標に反映
-		downPos = CameraUtility::AddCameraPosLocalPos(LOCAL_POS);
-
-		auto targetIt = points_.end();
-
-		for (auto it = points_.begin(); it != points_.end(); ++it)
-		{
-			if (HitCheck_Line_Sphere(topPos, downPos, it->pos, 30.0f))
-			{
-				targetIt = it;
-				break;
-			}
-		}
-
-		if (targetIt != points_.end())
-		{
-			// 指定したデバッグポイントを削除
-			points_.erase(targetIt);
-			pointNum_--;
-
-			// IDを振りなおす
-			for (int i = 0; i < points_.size(); i++)
-			{
-				points_[i].id = i;
-			}
-		}
-	}
-
-	// エンターでデバックポイントを保存
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_RETURN))
+	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::RETURN))
 	{
 		// デバッグポイントの保存
 		SavePoints();
@@ -446,53 +355,7 @@ void DebugScene::PlaceSpawnPoint(void)
 
 void DebugScene::SavePoints(void)
 {
-	switch (edit_)
-	{
-	case DebugScene::EditMode::ENEMY_NODE_POINT:
-		SaveEnemyNodePoints();
-		break;
-	case DebugScene::EditMode::ITEM_NODE_POINT:
-		SaveItemNodePoints();
-		break;
-	case DebugScene::EditMode::SPAWN_POINT:
-		SaveSpawnPoints();
-		break;
-	default:
-		break;
-	}
-}
-
-void DebugScene::SaveEnemyNodePoints(void)
-{
 	std::ofstream ofs("Data/EnemyPointSave2.csv");
-
-	if (!ofs) return;
-
-	// 形式: x y z
-	for (const auto& point : points_) {
-		ofs << point.id << "," << point.pos.x << "," <<
-			point.pos.y << "," << point.pos.z << "\n";
-	}
-	ofs.close();
-}
-
-void DebugScene::SaveItemNodePoints(void)
-{
-	std::ofstream ofs("Data/ItemPointSave.csv");
-
-	if (!ofs) return;
-
-	// 形式: x y z
-	for (const auto& point : points_) {
-		ofs << point.id << "," << point.pos.x << "," <<
-			point.pos.y << "," << point.pos.z << "\n";
-	}
-	ofs.close();
-}
-
-void DebugScene::SaveSpawnPoints(void)
-{
-	std::ofstream ofs("Data/PlayerPointSave.csv");
 
 	if (!ofs) return;
 

@@ -212,7 +212,7 @@ Transform* Camera::GetTransform()
 
 void Camera::ProcessRot(bool isLimit)
 {
-	if (SystemManager::GetInstance().GetIsDevice())
+	if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::KEY_MOUSE)
 	{
 		// 方向回転によるXYZの移動(キーボード)
 		RotKeyboard(isLimit);
@@ -253,7 +253,7 @@ void Camera::RotKeyboard(bool isLimit)
 	float rotPow = 1.0f * DX_PI_F / 180.0f;
 
 	// isLimitがtrueだった場合カメラの視点操作(上下)に上限を付ける
-	if (InputManager::GetInstance()->IsNew(KEY_INPUT_DOWN))
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CAMERA_DOWN))
 	{
 		transform_->angle_.x += rotPow;
 
@@ -263,7 +263,7 @@ void Camera::RotKeyboard(bool isLimit)
 		}
 	}
 
-	if (InputManager::GetInstance()->IsNew(KEY_INPUT_UP))
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CAMERA_UP))
 	{
 		transform_->angle_.x -= rotPow;
 
@@ -274,41 +274,30 @@ void Camera::RotKeyboard(bool isLimit)
 	}
 
 	// 視点操作(左右)
-	if (InputManager::GetInstance()->IsNew(KEY_INPUT_RIGHT)) { transform_->angle_.y += rotPow; }
-	if (InputManager::GetInstance()->IsNew(KEY_INPUT_LEFT)) { transform_->angle_.y -= rotPow; }
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CAMERA_RIGHT)) { transform_->angle_.y += rotPow; }
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CAMERA_LEFT)) { transform_->angle_.y -= rotPow; }
 }
 
 void Camera::RotGamePad(bool isLimit)
 {
-	// 接続されているゲームパッド１の情報を取得
-	InputManager::JOYPAD_IN_STATE padState =
-		InputManager::GetInstance()->GetJPadInputState(InputManager::JOYPAD_NO::PAD1);
-
-	VECTOR dir = Math::VECTOR_ZERO;
-
-
 	const float ROT_POW_DEG = 2.0f;
 	const float rotPow = ROT_POW_DEG * DX_PI_F / 180.0f;
 
-	// 右スティックの傾き
-	dir = InputManager::GetInstance()->GetDirectionXZAKey(padState.AKeyRX, padState.AKeyRY);
-
-	// 右スティック左右の傾き
-	transform_->angle_.y += dir.x * rotPow;
-
-	// 右スティック上下の傾き
-	transform_->angle_.x -= dir.z * rotPow;
-
-	// 角度制限
-	if (!isLimit)return;
-
-	if (transform_->angle_.x > LIMIT_X_DW_RAD)
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CAMERA_UP))
 	{
-		transform_->angle_.x = LIMIT_X_DW_RAD;
+		transform_->angle_.x -= rotPow; // または += （回転させたい方向）
 	}
-	if (transform_->angle_.x < LIMIT_X_UP_RAD)
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CAMERA_DOWN))
 	{
-		transform_->angle_.x = LIMIT_X_UP_RAD;
+		transform_->angle_.x += rotPow;
+	}
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CAMERA_LEFT))
+	{
+		transform_->angle_.y -= rotPow;
+	}
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CAMERA_RIGHT))
+	{
+		transform_->angle_.y += rotPow;
 	}
 }
 

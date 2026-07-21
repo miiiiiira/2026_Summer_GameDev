@@ -141,7 +141,7 @@ void LightSelectScene::SelectUpgrade(void)
 	LightSelectTypeTable::SELECT_TYPE type = selectType_;
 
 	// 使っているデバイスによって変更
-	if (SystemManager::GetInstance().GetIsDevice())
+	if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::KEY_MOUSE)
 	{
 		// マウス選択
 		MouseSelect();
@@ -187,12 +187,12 @@ void LightSelectScene::PadSelect(void)
 	{
 	case LightSelectTypeTable::RIGHT_ARROW:
 
-		if (InputManager::GetInstance()->SelectLeft())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_LEFT))
 		{
 			ChangeSelectType(LightSelectTypeTable::LEFT_ARROW);
 		}
 
-		if (InputManager::GetInstance()->SelectDown())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
 			ChangeSelectType(LightSelectTypeTable::GAME_START);
 		}
@@ -200,12 +200,12 @@ void LightSelectScene::PadSelect(void)
 		break;
 	case LightSelectTypeTable::LEFT_ARROW:
 
-		if (InputManager::GetInstance()->SelectRight())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_RIGHT))
 		{
 			ChangeSelectType(LightSelectTypeTable::RIGHT_ARROW);
 		}
 
-		if (InputManager::GetInstance()->SelectDown())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
 			ChangeSelectType(LightSelectTypeTable::GAME_START);
 		}
@@ -213,7 +213,7 @@ void LightSelectScene::PadSelect(void)
 		break;
 	case LightSelectTypeTable::GAME_START:
 
-		if (InputManager::GetInstance()->SelectUp())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
 		{
 			ChangeSelectType(LightSelectTypeTable::LEFT_ARROW);
 		}
@@ -231,7 +231,7 @@ void LightSelectScene::PadSelect(void)
 void LightSelectScene::ConfirmUpgrade(void)
 {
 	// 決定ボタンが押されていなかったら処理を行わない
-	if (!InputManager::GetInstance()->ConfirmButton())return;
+	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE)) return;
 
 	// ライトの種類を整数型にして足し引き算出来るようにする
 	int nowlightType = static_cast<int>(lightType_);

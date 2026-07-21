@@ -44,25 +44,25 @@ void Confirm::Load(void)
 		switch (type)
 		{
 		case PLAYER_UPGRADE_TYPE::HP_UP:
-			confirmImg_ = LoadGraph("Data/Image/ConfirmBuyHpUp.png");
+			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmBuyHpUp.png").c_str());
 			break;
 		case PLAYER_UPGRADE_TYPE::STAMINA_UP:
-			confirmImg_ = LoadGraph("Data/Image/ConfirmBuyStaminaUp.png");
+			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmBuyStaminaUp.png").c_str());
 			break;
 		case PLAYER_UPGRADE_TYPE::DASH_SPEED_UP:
-			confirmImg_ = LoadGraph("Data/Image/ConfirmBuyDashSpeedUp.png");
+			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmBuyDashSpeedUp.png").c_str());
 			break;
 		case PLAYER_UPGRADE_TYPE::RANGE_UP:
-			confirmImg_ = LoadGraph("Data/Image/ConfirmBuyRangeUp.png");
+			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmBuyRangeUp.png").c_str());
 			break;
 		case PLAYER_UPGRADE_TYPE::JUMP_NUM_UP:
-			confirmImg_ = LoadGraph("Data/Image/ConfirmBuyJumpNumUp.png");
+			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmBuyJumpNumUp.png").c_str());
 			break;
 		case PLAYER_UPGRADE_TYPE::HEAL_HP_25:
-			confirmImg_ = LoadGraph("Data/Image/ConfirmBuyHealHp25.png");
+			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmBuyHealHp25.png").c_str());
 			break;
 		case PLAYER_UPGRADE_TYPE::HEAL_HP_50:
-			confirmImg_ = LoadGraph("Data/Image/ConfirmBuyHealHp50.png");
+			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmBuyHealHp50.png").c_str());
 			break;
 		default:
 			break;
@@ -92,7 +92,7 @@ void Confirm::Update(void)
 	SelectUpgrade();
 
 	// マウスを左クリックされなかったら、処理しない
-	if (!InputManager::GetInstance()->ConfirmButton()) return;
+	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE)) return;
 	// どの選択肢も選ばれていない場合は処理しない
 	if (currentSelect_ == SELECT::NONE) return;
 
@@ -184,7 +184,7 @@ void Confirm::SelectUpgrade(void)
 	// 前回の選択物を入れておく
 	SELECT prevSelect = currentSelect_;
 
-	if (SystemManager::GetInstance().GetIsDevice())
+	if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::KEY_MOUSE)
 	{
 		// マウス選択
 		MouseSelect();
@@ -233,7 +233,7 @@ void Confirm::PadSelect(void)
 		break;
 	case Confirm::SELECT::YES:
 
-		if (InputManager::GetInstance()->SelectRight())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_RIGHT))
 		{
 			ChangeSelect(SELECT::NO);
 		}
@@ -241,7 +241,7 @@ void Confirm::PadSelect(void)
 		break;
 	case Confirm::SELECT::NO:
 
-		if (InputManager::GetInstance()->SelectLeft())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_LEFT))
 		{
 			ChangeSelect(SELECT::YES);
 		}

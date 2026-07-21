@@ -143,7 +143,7 @@ void TutorialScene::LoadEnd(void)
 
 void TutorialScene::Update(void)
 {
-	if (InputManager::GetInstance()->PauseButtons())
+	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::CANCEL))
 	{
 		// ポーズ画面を開いたサウンド
 		AudioManager::GetInstance()->PlaySE(SoundID::SYS_PAUSE_ON);
@@ -160,15 +160,6 @@ void TutorialScene::Update(void)
 
 	// スコアマネージャーの更新
 	ScoreManager::GetInstance().Update();
-
-	if (InputManager::GetInstance()->PauseButtons())
-	{
-		// ポーズ画面を開いたサウンド
-		AudioManager::GetInstance()->PlaySE(SoundID::SYS_PAUSE_ON);
-		// ポーズモードへ
-		SceneManager::GetInstance()->PushScene(std::make_shared<Pause>());
-		return;
-	}
 
 	// 確認項目がクリア判定になっていたら「Good job!」のための時間を取る
 	if (isClearState_)
@@ -352,7 +343,7 @@ void TutorialScene::Move(void)
 {
 
 #ifdef _DEBUG
-	if (InputManager::GetInstance()->IsNew(KEY_INPUT_B))
+	if (InputManager::GetInstance()->IsDebugAction(INPUT_INFO::DEBUG_ACTION::TUTORIAL))
 	{
 		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
 	}
@@ -373,7 +364,7 @@ void TutorialScene::Jump(void)
 {
 
 #ifdef _DEBUG
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
+	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::TUTORIAL))
 	{
 		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
 	}
@@ -392,7 +383,7 @@ void TutorialScene::Dash(void)
 {
 
 #ifdef _DEBUG
-	if (InputManager::GetInstance()->IsNew(KEY_INPUT_B))
+	if (InputManager::GetInstance()->IsDebugAction(INPUT_INFO::DEBUG_ACTION::TUTORIAL))
 	{
 		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
 	}
@@ -412,7 +403,7 @@ void TutorialScene::Crouch(void)
 {
 
 #ifdef _DEBUG
-	if (InputManager::GetInstance()->IsNew(KEY_INPUT_B))
+	if (InputManager::GetInstance()->IsDebugAction(INPUT_INFO::DEBUG_ACTION::TUTORIAL))
 	{
 		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
 	}
@@ -431,7 +422,7 @@ void TutorialScene::Sliding(void)
 {
 
 #ifdef _DEBUG
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
+	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::TUTORIAL))
 	{
 		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
 	}
@@ -450,7 +441,7 @@ void TutorialScene::Light(void)
 {
 
 #ifdef _DEBUG
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
+	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::TUTORIAL))
 	{
 		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
 	}
@@ -468,7 +459,7 @@ void TutorialScene::Light(void)
 void TutorialScene::OpenMap(void)
 {
 #ifdef _DEBUG
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
+	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::TUTORIAL))
 	{
 		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
 	}
@@ -487,7 +478,7 @@ void TutorialScene::Grab(void)
 {
 
 #ifdef _DEBUG
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
+	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::TUTORIAL))
 	{
 		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
 	}
@@ -506,7 +497,7 @@ void TutorialScene::Range(void)
 {
 
 #ifdef _DEBUG
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
+	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::TUTORIAL))
 	{
 		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
 	}
@@ -525,7 +516,7 @@ void TutorialScene::ItemInCart(void)
 {
 
 #ifdef _DEBUG
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
+	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::TUTORIAL))
 	{
 		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
 	}
@@ -544,7 +535,7 @@ void TutorialScene::Deliver(void)
 {
 
 #ifdef _DEBUG
-	if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_B))
+	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::TUTORIAL))
 	{
 		PlayerActionCounter::GetInstance()->SetCounter(currentState_, steps_[static_cast<int>(currentState_)].value);
 	}

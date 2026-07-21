@@ -304,25 +304,11 @@ void PlayerController::Move()
 	// 移動量
 	VECTOR dir = Math::VECTOR_ZERO;
 
-	// ゲームパッドが接続数で処理を分ける
-	if (SystemManager::GetInstance().GetIsDevice())
-	{
-		// WASDで移動する
-		if (InputManager::GetInstance()->IsNew(KEY_INPUT_W)) { dir = VAdd(dir, { 0.0f, 0.0f, 1.0f }); }
-		if (InputManager::GetInstance()->IsNew(KEY_INPUT_A)) { dir = VAdd(dir, { -1.0f, 0.0f, 0.0f }); }
-		if (InputManager::GetInstance()->IsNew(KEY_INPUT_S)) { dir = VAdd(dir, { 0.0f, 0.0f, -1.0f }); }
-		if (InputManager::GetInstance()->IsNew(KEY_INPUT_D)) { dir = VAdd(dir, { 1.0f, 0.0f, 0.0f }); }
-	}
-	else
-	{
-		// 接続されているゲームパッド１の情報を取得
-		InputManager::JOYPAD_IN_STATE padState =
-			InputManager::GetInstance()->GetJPadInputState(InputManager::JOYPAD_NO::PAD1);
-
-		// アナログキーの入力値から方向を取得
-		dir = InputManager::GetInstance()->GetDirectionXZAKey(padState.AKeyLX, padState.AKeyLY);
-
-	}
+	// WASDで移動する
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::MOVE_FORWARD)) { dir = VAdd(dir, { 0.0f, 0.0f, 1.0f }); }
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::MOVE_LEFT)) { dir = VAdd(dir, { -1.0f, 0.0f, 0.0f }); }
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::MOVE_BACK)) { dir = VAdd(dir, { 0.0f, 0.0f, -1.0f }); }
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::MOVE_RIGHT)) { dir = VAdd(dir, { 1.0f, 0.0f, 0.0f }); }
 
 	if (!Math::EqualsVZero(dir))
 	{
@@ -419,7 +405,7 @@ void PlayerController::Dash(void)
 	if (state_ == PLAYER_STATE::CROUCHING)return;
 
 	// もし走るボタンを押されたかつ、しゃがみ状態じゃないかつ、スタミナがあった場合
-	if (InputManager::GetInstance()->DashButtons()
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::DASH)
 		&& stamina_ >= 0.1f)
 	{
 		// プレイヤーの状態を走り状態にする
@@ -471,7 +457,7 @@ void PlayerController::InputSliding(void)
 	}
 
 	// しゃがみボタン押されたら
-	if (InputManager::GetInstance()->CrouchingButtons())
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CROUCH))
 	{
 		// スライディング状態にする
 		state_ = PLAYER_STATE::SLIDING;
@@ -532,7 +518,7 @@ void PlayerController::SlidingToCrouching(void)
 void PlayerController::Crouching(void)
 {
 	// しゃがみボタンを押されたかつスライディング中じゃない場合
-	if (InputManager::GetInstance()->CrouchingButtons())
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CROUCH))
 	{
 		// しゃがみ状態にする
 		CrouchingInit();
@@ -568,7 +554,7 @@ void PlayerController::UnCrouch(void)
 	auto stageCol = owner_->GetComponent<StageCollider>();
 
 	// しゃがみボタンを押されてないかつ、頭に障害物がなかった場合にしゃがみを解除
-	if (!InputManager::GetInstance()->CrouchingButtons()
+	if (!InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CROUCH)
 		&& !stageCol->CeilingColl())
 	{
 		// しゃがみ復帰時
@@ -664,7 +650,7 @@ void PlayerController::Jump(void)
 	if (!stageCol) return;
 
 	// ジャンプボタンを押されたかつ、ジャンプ中では無いかつ、ジャンプ回数がMaxまで到達していなかったら
-	if (InputManager::GetInstance()->JumpButtons()
+	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::JUMP)
 		&& jumpNum_ < PlayerStatusManager::GetInstance().GetPlayerStatus().jumpNumMax_)
 	{
 		// ジャンプ音
@@ -691,7 +677,7 @@ void PlayerController::Grabbing(void)
 	case GRABBING_STATE::NOT_GRABBING:
 
 		// 掴もうとしていたら
-		if (InputManager::GetInstance()->IsTrgDownGrabbingButtons())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::GRAB))
 		{
 			// 状態を変更
 			grabState_ = GRABBING_STATE::TRY_GRABBING;
@@ -701,7 +687,7 @@ void PlayerController::Grabbing(void)
 	case GRABBING_STATE::TRY_GRABBING:
 
 		// 掴もうとしていなくなったら
-		if (!InputManager::GetInstance()->IsNewGrabbingButtons())
+		if (!InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::GRAB))
 		{
 			// 状態を変更
 			grabState_ = GRABBING_STATE::NOT_GRABBING;
@@ -711,7 +697,7 @@ void PlayerController::Grabbing(void)
 	case GRABBING_STATE::IS_GRABBING:
 
 		// マウスの左クリックを押されていなかったら
-		if (!InputManager::GetInstance()->IsNewGrabbingButtons())
+		if (!InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::GRAB))
 		{
 			// 掴み動作を終わる
 			grabState_ = GRABBING_STATE::NOT_GRABBING;
@@ -789,11 +775,9 @@ void PlayerController::Grabbing(void)
 bool PlayerController::RangeUpdate(void)
 {
 	float rangeMax = PlayerStatusManager::GetInstance().GetPlayerStatus().rangeMax_;
-	// マウスホイールの回転量を取得
-	int wheel = GetMouseWheelRotVol();
 
 	// 物との距離を大きくする操作が行われていたら
-	if (InputManager::GetInstance()->PushItemButtons(wheel))
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::ITEM_PUSH))
 	{
 		// 物との距離を大きくする
 		range_ += EXTEND_RENGE_MOVE;
@@ -808,7 +792,7 @@ bool PlayerController::RangeUpdate(void)
 		return true;
 	}
 	// 物との距離を小さくする操作が行われていたら
-	else if (InputManager::GetInstance()->PullItemButtons(wheel))
+	else if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::ITEM_PULL))
 	{
 		// 物との距離を小さくする
 		range_ -= EXTEND_RENGE_MOVE;
@@ -829,7 +813,7 @@ bool PlayerController::RangeUpdate(void)
 
 void PlayerController::MapDrawUpdate(void)
 {
-	if (InputManager::GetInstance()->MapButtons())
+	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::MAP))
 	{
 		auto* map = owner_->GetComponent<Map>();
 

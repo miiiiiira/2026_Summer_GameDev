@@ -11,6 +11,7 @@
 #include "../../Common/Collision/Collision.h"
 #include "../../Application.h"
 #include "../Confirm/Confirm.h"
+#include "../Option/OptionScene.h"
 #include "../../Common/MouseCursor/MouseCursor.h"
 
 Pause::Pause(void)
@@ -62,7 +63,7 @@ void Pause::LoadEnd(void)
 void Pause::Update(void)
 {
 	// Escape押したら
-	if (InputManager::GetInstance()->PauseButtons())
+	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::CANCEL))
 	{
 		// ポーズモード終了しゲームシーンへ戻る
 		UpdateContinue();
@@ -72,7 +73,7 @@ void Pause::Update(void)
 	SelectUpgrade();
 
 	// マウスを左クリックされていなかったら、ここで終了
-	if (!InputManager::GetInstance()->ConfirmButton()) return;
+	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE)) return;
 
 	// 選択されているメニューがない場合も、ここで終了
 	if (currentMenu_ == MENU::NONE) return;
@@ -156,7 +157,8 @@ void Pause::UpdateContinue(void)
 
 void Pause::UpdateOption(void)
 {
-
+	// オプションへ
+	SceneManager::GetInstance()->PushScene(std::make_shared<OptionScene>());
 }
 
 void Pause::UpdateMainMenu(void)
@@ -178,7 +180,7 @@ void Pause::SelectUpgrade(void)
 	// 前回の選択物を入れておく
 	MENU prevSelect = currentMenu_;
 
-	if (SystemManager::GetInstance().GetIsDevice())
+	if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::KEY_MOUSE)
 	{
 		// マウス選択
 		MouseSelect();
@@ -229,19 +231,18 @@ void Pause::PadSelect(void)
 
 		break;
 	case Pause::MENU::CONTINUE:
-		if (InputManager::GetInstance()->SelectDown())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
 			ChangeSelect(MENU::OPTION);
 		}
 		break;
 	case Pause::MENU::OPTION:
 
-		if (InputManager::GetInstance()->SelectUp())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
 		{
 			ChangeSelect(MENU::CONTINUE);
 		}
-
-		if (InputManager::GetInstance()->SelectDown())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
 			ChangeSelect(MENU::MAINMENU);
 		}
@@ -249,12 +250,12 @@ void Pause::PadSelect(void)
 		break;
 	case Pause::MENU::MAINMENU:
 
-		if (InputManager::GetInstance()->SelectUp())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
 		{
 			ChangeSelect(MENU::OPTION);
 		}
 
-		if (InputManager::GetInstance()->SelectDown())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
 			ChangeSelect(MENU::QUIT);
 		}
@@ -262,7 +263,7 @@ void Pause::PadSelect(void)
 		break;
 	case Pause::MENU::QUIT:
 
-		if (InputManager::GetInstance()->SelectUp())
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
 		{
 			ChangeSelect(MENU::MAINMENU);
 		}

@@ -244,7 +244,7 @@ void SceneManager::Draw(void)
 		SetDrawScreen(DX_SCREEN_BACK);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 
-		if (InputManager::GetInstance()->IsTrgDown(KEY_INPUT_K))
+		if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::SHADER))
 		{
 			isShader_ = !isShader_;
 		}

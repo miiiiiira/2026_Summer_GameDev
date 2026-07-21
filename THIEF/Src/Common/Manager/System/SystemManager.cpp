@@ -18,22 +18,22 @@ SystemManager& SystemManager::GetInstance(void)
 
 void SystemManager::Update(void)
 {
-	if (isDeviceMouse_)
-	{
-		if (InputManager::GetInstance()->ChangeDevicePad())
-		{
-			// 特定のキーを押されたら(A,B,X,Y,Lスティックのどれか)パッドモードにする
-			isDeviceMouse_ = false;
-		}
-	}
-	else
-	{
-		if (InputManager::GetInstance()->ChangeDeviceMouse())
-		{
-			// 特定のキーを押されたら(マウス左クリック，Q,E,W,A,S,Dのどれか)マウスモードにすす
-			isDeviceMouse_ = true;
-		}
-	}
+	//if (isDeviceMouse_)
+	//{
+	//	if (InputManager::GetInstance()->ChangeDevicePad())
+	//	{
+	//		// 特定のキーを押されたら(A,B,X,Y,Lスティックのどれか)パッドモードにする
+	//		isDeviceMouse_ = false;
+	//	}
+	//}
+	//else
+	//{
+	//	if (InputManager::GetInstance()->ChangeDeviceMouse())
+	//	{
+	//		// 特定のキーを押されたら(マウス左クリック，Q,E,W,A,S,Dのどれか)マウスモードにすす
+	//		isDeviceMouse_ = true;
+	//	}
+	//}
 }
 
 void SystemManager::Destroy()
