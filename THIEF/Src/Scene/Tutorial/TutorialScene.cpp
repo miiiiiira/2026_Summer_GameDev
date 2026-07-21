@@ -350,7 +350,6 @@ void TutorialScene::Move(void)
 #endif //_DEBUG
 
 	// 100％に達したら、クリアに遷移
-	// TODO PlayerActionCounter::GetInstance()::GetMoveCount()
 	if (PlayerActionCounter::GetInstance()->GetCounter(currentState_) >= MAX_VALUE)
 	{
 		// 次の項目をジャンプにする

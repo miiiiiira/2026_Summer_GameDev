@@ -38,7 +38,6 @@ void Skull::SetParam(void)
 
 void Skull::Break(void)
 {
-	// TODO “ªŠWœ”j‰óSE
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_3, &trans_->pos_);
 }
 

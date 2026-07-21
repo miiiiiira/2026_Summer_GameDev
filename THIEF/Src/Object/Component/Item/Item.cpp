@@ -8,6 +8,7 @@
 #include "../../../Common/CameraUtility/CameraUtility.h"
 #include "../../../Application.h"
 #include "../../../Scene/SceneManager.h"
+#include "../../../Common/Manager/Audio/AudioManager.h"
 
 Item::~Item(void)
 {
@@ -418,8 +419,8 @@ void Item::TrueIsFound(void)
 	// 発見フラグを立てる
 	info_.isFound_ = true; 
 
-	// TODO アイテムを見つけたとの音
-
+	// アイテムを見つけた時の音
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_FOUND);
 }
 
 void Item::OnFloor(void)

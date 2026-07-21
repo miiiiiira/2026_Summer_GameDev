@@ -75,6 +75,7 @@ namespace SoundTable_Game
 		{ SoundID::SE_DELIVERY_ITEM_ON,	{"Data/Sound/Game/Delivery/SE_DELIVERY_ITEM_ON.mp3", SoundType::SE_2D, 180} },
 		{ SoundID::SE_DELIVERY_BUTTON_SUC, {"Data/Sound/Game/Delivery/SE_DELIVERY_BUTTON_SUC.mp3", SoundType::SE_2D, 200} },
 		{ SoundID::SE_DELIVERY_BUTTON_FAI, {"Data/Sound/Game/Delivery/SE_DELIVERY_BUTTON_FAI.mp3", SoundType::SE_2D, 200} },
+		{ SoundID::SE_DELIVERY_CANCEL, {"Data/Sound/Game/Delivery/SE_DELIVERY_CANCEL.mp3", SoundType::SE_2D, 255} },
 		{ SoundID::SE_CART_ON_ITEM,	{"Data/Sound/Game/Delivery/SE_DELIVERY_ITEM_ON.mp3", SoundType::SE_3D, 150} },
 
 		{ SoundID::SE_ITEM_DAMAGE_1, {"Data/Sound/Game/Item/SE_ITEM_DAMAGE_1.mp3", SoundType::SE_3D, 100} },
@@ -89,6 +90,8 @@ namespace SoundTable_Game
 		{ SoundID::SE_ITEM_BREAK_5, {"Data/Sound/Game/Item/SE_ITEM_BREAK_5.mp3", SoundType::SE_3D, 127} },
 		{ SoundID::SE_ITEM_BREAK_6, {"Data/Sound/Game/Item/SE_ITEM_BREAK_6.mp3", SoundType::SE_3D, 200} },
 		{ SoundID::SE_ITEM_BREAK_7, {"Data/Sound/Game/Item/SE_ITEM_BREAK_7.mp3", SoundType::SE_3D, 127} },
+
+		{ SoundID::SE_ITEM_FOUND, {"Data/Sound/Game/Item/SE_ITEM_FOUND.mp3", SoundType::SE_2D, 200} },
 
 		{ SoundID::SE_ENEMY_SPAWN_1, {"Data/Sound/Game/Enemy/SE_ENEMY_SPAWN_1.wav", SoundType::SE_3D, 255} },
 		{ SoundID::SE_ENEMY_SPAWN_2, {"Data/Sound/Game/Enemy/SE_ENEMY_SPAWN_2.wav", SoundType::SE_3D, 255} },

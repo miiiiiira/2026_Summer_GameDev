@@ -135,8 +135,8 @@ void Stage::Update(void)
 		// ƒJƒEƒ“ƒg‚ðI—¹
 		clearCount_ = 0;
 
-		// TODO ”[•iŽ¸”s‰¹’·‚ß‚Ì‚â‚Â
-		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_FAI);
+		// ”[•iŽ¸”s‰¹’·‚ß‚Ì‚â‚Â
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_CANCEL);
 	}
 }
 
