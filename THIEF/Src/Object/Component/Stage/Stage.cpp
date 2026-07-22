@@ -42,7 +42,7 @@ void Stage::Init()
 
 	if (SceneManager::GetInstance()->GetNowSceneTag() == TUTORIAL)
 	{
-		deliverySize_ = { 150.0f,220.0f,159.0f };
+		deliverySize_ = { 220.0f,220.0f,240.0f };
 		deliveryPos_ =  {-1.0f,220.0f,14630.0f};
 		doneSwitchPos_ = { 286.0f,148.0f,14392.0f };
 	}
