@@ -14,6 +14,7 @@
 #include "../GameScene/GameScene.h"
 #include "../DebugScene.h"
 #include "../Tutorial/TutorialScene.h"
+#include "../Option/OptionScene.h"
 #include "../TitleScene/TitleScene.h"
 #include "../LightSelectScene/LightSelectScene.h"
 
@@ -166,7 +167,8 @@ void MainMenu::UpdatePlay(void)
 
 void MainMenu::UpdateOption(void)
 {
-
+	// ƒIƒvƒVƒ‡ƒ“‚Ö
+	SceneManager::GetInstance()->PushScene(std::make_shared<OptionScene>());
 }
 
 void MainMenu::UpdateQuit(void)
