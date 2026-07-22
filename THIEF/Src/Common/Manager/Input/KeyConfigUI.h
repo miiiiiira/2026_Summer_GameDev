@@ -29,16 +29,24 @@ public:
 
     enum class TabType
     {
+        NONE =-1,
         KEY_MOUSE,
         PAD,
     };
 
-private:
+    struct TabButton
+    {
+        TabType type;
+        int x, y;
+        int sizeX, sizeY;
+    };
 
+private:
     // 表示データ
     std::vector<DisplayRow> displayRows_;   // 表示行リスト
     int scrollOffset_ = 0;                  // スクロール位置
 
+    std::vector<TabButton> tabButtons_;
     TabType currentTab_;
 
     // UI状態
@@ -54,6 +62,7 @@ private:
     int slotWaitHandle_ = -1;   // 入力待ちスロット
     int slotSelectHandle_ = -1; // 選択スロット
     int fontHandle_ = -1;       // フォント
+    int tabHandle_[2] = { -1, -1 };
 
     // 更新処理
     void UpdateSelect();
@@ -69,4 +78,11 @@ private:
         int& selectRow, int& selectCol,
         bool click,
         KeyConfig& keyConfig);
+
+    void UpdateTabSelect(void);
+    void MouseSelect(void);
+    void KeySelect(void);
+    void PadSelect(void);
+    void ChangeTabType(TabType type);
+
 };
