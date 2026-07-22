@@ -52,6 +52,7 @@
 #include "TutorialScene.h"
 #include "../MainMenu/MainMenu.h"
 #include "../LightSelectScene/LightSelectScene.h"
+#include "../../Object/Component/Collider/TutorialWallCollider/TutorialWallCollider.h"
 
 TutorialScene::TutorialScene(void)
 {
@@ -701,6 +702,9 @@ void TutorialScene::PlayerCreate(void)
 	stageCol->SetSlopeNormalY(0.65f);
 
 	stageCol->SetStepHeight(25.0f);
+
+	// チュートリアルの壁の当たり判定
+	player->AddComponent<TutorialWallCollider>();
 
 	// プレイヤー取得
 	auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
