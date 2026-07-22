@@ -489,7 +489,7 @@ void Upgrade::PadSelect(void)
 void Upgrade::ConfirmUpgrade(void)
 {
 	// 決定ボタンが押されていなかったら処理を行わない
-	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE))return;
+	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE) && !InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DECIDE))return;
 
 	// 何も選択されていないなら処理を行わない
 	if (slot_ == SHOP_SLOT::NON)return;

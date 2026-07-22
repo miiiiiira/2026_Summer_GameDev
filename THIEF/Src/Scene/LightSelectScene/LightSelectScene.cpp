@@ -231,7 +231,7 @@ void LightSelectScene::PadSelect(void)
 void LightSelectScene::ConfirmUpgrade(void)
 {
 	// 決定ボタンが押されていなかったら処理を行わない
-	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE)) return;
+	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE) && !InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DECIDE)) return;
 
 	// ライトの種類を整数型にして足し引き算出来るようにする
 	int nowlightType = static_cast<int>(lightType_);

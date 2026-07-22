@@ -45,7 +45,7 @@ void InputManager::Init(void)
 	SetActionMouse(INPUT_INFO::ACTION::UI_MOVE_UP, INPUT_INFO::MouseBtn::WHEEL_UP);
 	SetActionMouse(INPUT_INFO::ACTION::UI_MOVE_DOWN, INPUT_INFO::MouseBtn::WHEEL_DOWN);
 
-	SetActionMouse(INPUT_INFO::ACTION::DECIDE, INPUT_INFO::MouseBtn::LEFT);
+	SetActionKey(INPUT_INFO::ACTION::DECIDE, { KEY_INPUT_RETURN });
 	SetActionKey(INPUT_INFO::ACTION::CANCEL, { KEY_INPUT_ESCAPE });
 	SetActionKey(INPUT_INFO::ACTION::TAB_LEFT, { KEY_INPUT_Q });
 	SetActionKey(INPUT_INFO::ACTION::TAB_RIGHT, { KEY_INPUT_E });
@@ -131,6 +131,12 @@ void InputManager::Init(void)
 	debugBinds_[INPUT_INFO::DEBUG_ACTION::DEBUG].keyMouse[0] = { BindType::KEY,   KEY_INPUT_L };
 	debugBinds_[INPUT_INFO::DEBUG_ACTION::TUTORIAL].keyMouse[0] = { BindType::KEY,   KEY_INPUT_B };
 	debugBinds_[INPUT_INFO::DEBUG_ACTION::COLOR_CHANGE].keyMouse[0] = { BindType::KEY,   KEY_INPUT_H };
+
+	debugBinds_[INPUT_INFO::DEBUG_ACTION::DECIDE].keyMouse[0] = { BindType::MOUSE, (int)INPUT_INFO::MouseBtn::LEFT };
+	debugBinds_[INPUT_INFO::DEBUG_ACTION::CANCEL].keyMouse[0] = { BindType::KEY,   KEY_INPUT_ESCAPE };
+
+	debugBinds_[INPUT_INFO::DEBUG_ACTION::DECIDE].pad[0] = { BindType::PAD_BTN, (int)INPUT_INFO::PAD_BTN::A };
+	debugBinds_[INPUT_INFO::DEBUG_ACTION::CANCEL].pad[0] = { BindType::PAD_BTN, (int)INPUT_INFO::PAD_BTN::START };
 }
 
 void InputManager::Update(void)
@@ -372,6 +378,42 @@ void InputManager::RemoveDuplicateOtherActions(INPUT_INFO::ACTION action, const 
 			}
 		}
 	}
+}
+
+bool InputManager::IsMatchDebugAction(INPUT_INFO::DEBUG_ACTION action, const BindInput& input) const
+{
+	// 指定されたデバッグアクションが debugBinds_ に存在するか検索
+	auto it = debugBinds_.find(action);
+	if (it == debugBinds_.end()) return false;
+
+	const auto& bind = it->second;
+
+	// 1. キーボード・マウスの判定
+	if (input.type == BindType::KEY || input.type == BindType::MOUSE)
+	{
+		for (const auto& b : bind.keyMouse)
+		{
+			// コードが有効(-1以外)で、入力のタイプとコードが完全に一致するか
+			if (b.code != -1 && b.type == input.type && b.code == input.code)
+			{
+				return true;
+			}
+		}
+	}
+	// 2. パッド系の判定
+	else
+	{
+		for (const auto& b : bind.pad)
+		{
+			// パッド番号(pad)・入力タイプ(type)・ボタンコード(code)が一致するか
+			if (b.code != -1 && b.type == input.type && b.pad == input.pad && b.code == input.code)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 bool InputManager::IsAction(INPUT_INFO::ACTION action) const
@@ -866,6 +908,20 @@ void InputManager::AddBind(INPUT_INFO::ACTION action, int slot,	const BindInput&
 		{
 			return;
 		}
+	}
+
+	// キャンセル枠（1・2スロット問わず）に決定キー入力を入れようとしたら弾く
+	if (action == INPUT_INFO::ACTION::CANCEL &&
+		IsMatchDebugAction(INPUT_INFO::DEBUG_ACTION::DECIDE, input))
+	{
+		return;
+	}
+
+	// 決定枠（1・2スロット問わず）にキャンセルキー入力を入れようとしたら弾く
+	if (action == INPUT_INFO::ACTION::DECIDE &&
+		IsMatchDebugAction(INPUT_INFO::DEBUG_ACTION::CANCEL, input))
+	{
+		return;
 	}
 
 	// 他アクションからは削除

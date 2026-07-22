@@ -93,9 +93,10 @@ void KeyConfigUI::Update()
 
     UpdateSelect();
 
-    // マウスを左クリックされなかったら、処理しない
+    // 処理しない
     if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE) ||
         InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::TAB_LEFT) ||
+        InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DECIDE) ||
         InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::TAB_RIGHT))
     {
         UpdateTabSelect();
@@ -301,10 +302,10 @@ void KeyConfigUI::UpdateSelect()
 
     // 横移動
     if (input->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_LEFT))
-        selectCol_ = (selectCol_ - 1 + COLUMN_COUNT) % COLUMN_COUNT;
+        selectCol_ = (selectCol_ - 1 + MAX_SLOT) % MAX_SLOT;
 
     if (input->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_RIGHT))
-        selectCol_ = (selectCol_ + 1) % COLUMN_COUNT;
+        selectCol_ = (selectCol_ + 1) % MAX_SLOT;
 
     // スクロール制御
     const int visibleRows = VISIBLE_ROWS;
@@ -388,7 +389,7 @@ void KeyConfigUI::UpdateSelect()
         if (CheckSlotHover(mx, my, y,
             i, row, 
             selectRow_, selectCol_, 
-            InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE),
+            (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE)|| InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DECIDE)),
             keyConfig_))
             return;
     }
@@ -478,7 +479,7 @@ void KeyConfigUI::Draw()
             for (int slot = 0; slot < MAX_SLOT; ++slot)
             {
                 int x = startX + slot * SLOT_INTERVAL;
-                bool selected = isSelectedRow && selectCol_ == slot;
+                bool selected = isSelectedRow && (selectCol_ == slot);
 
                 bool isWaiting =
                     keyConfig_.IsWaiting() &&
@@ -528,9 +529,7 @@ void KeyConfigUI::Draw()
             {
                 int x = startX + slot * SLOT_INTERVAL;
 
-                bool selected =
-                    isSelectedRow &&
-                    selectCol_ == slot + 3;
+                bool selected = isSelectedRow && (selectCol_ == slot);
 
                 bool isWaiting =
                     keyConfig_.IsWaiting() &&

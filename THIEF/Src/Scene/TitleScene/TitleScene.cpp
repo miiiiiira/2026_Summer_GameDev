@@ -51,7 +51,7 @@ void TitleScene::LoadEnd(void)
 void TitleScene::Update(void)
 {
 	// ボタンが押されると次のシーンへ
-	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE))
+	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE) || InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DECIDE))
 	{
 		if (!isPlaySoundSE_)
 		{

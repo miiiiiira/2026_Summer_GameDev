@@ -37,11 +37,14 @@ void OptionScene::LoadEnd(void)
 
 void OptionScene::Update(void)
 {
-	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::CANCEL))
+	if (!keyConfigUI_->IsWaiting())
 	{
-		// ポーズシーンへ
-		SceneManager::GetInstance()->PopScene();
-		return;
+		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::CANCEL) || InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::CANCEL))
+		{
+			// ポーズシーンへ
+			SceneManager::GetInstance()->PopScene();
+			return;
+		}
 	}
 
 	// キーコンフィグUIの更新のみ処理

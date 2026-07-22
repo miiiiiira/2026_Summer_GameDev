@@ -19,6 +19,9 @@ public:
     // 表示リスト生成
     void BuildDisplayList();
 
+    // キー入力待機中かどうか
+    bool IsWaiting(void) const { return keyConfig_.IsWaiting(); }
+
     // 表示行データ
     struct DisplayRow
     {

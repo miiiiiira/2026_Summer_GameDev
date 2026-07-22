@@ -55,6 +55,8 @@ namespace INPUT_INFO
 		DEBUG,
 		TUTORIAL,
 		COLOR_CHANGE,
+		DECIDE,
+		CANCEL,
 	};
 
 	// アクションカテゴリ
