@@ -11,6 +11,8 @@
 #include "../../Object/Component/PlayerController/Upgrade/UpgradeManager.h"
 #include "../../Object/Component/PlayerController/Upgrade/Upgrade.h"
 #include "../../Common/FrameRenderer/FrameRenderer.h"
+#include "../LightSelectScene/LightSelectScene.h"
+#include "../Tutorial/TutorialScene.h"
 
 Confirm::Confirm(void)
 {
@@ -31,6 +33,9 @@ void Confirm::Load(void)
 
 	switch (confirmType_)
 	{
+	case TYPE::TUTORIAL:
+		confirmImg_ = LoadGraph((Application::PATH_IMAGE + "Confirm/ConfirmTutorial.png").c_str());	// TUTORIALの時の確認画面
+		break;
 	case TYPE::QUIT:
 		confirmImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmQuit.png").c_str());			// QUITの時の確認画面;
 		break;
@@ -155,6 +160,10 @@ void Confirm::UpdateYes(void)
 {
 	switch (confirmType_)
 	{
+	case TYPE::TUTORIAL:
+		// チュートリアルへ遷移
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TutorialScene>(), TUTORIAL, true);
+		break;
 	case TYPE::QUIT:
 		Application::GetInstance()->SetEnd(true);
 		break;
@@ -175,6 +184,14 @@ void Confirm::UpdateYes(void)
 
 void Confirm::UpdateNo(void)
 {
+	// チュートリアルを断っていたら
+	if (confirmType_ == TYPE::TUTORIAL)
+	{
+		// ライトセレクトシーンへ遷移
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<LightSelectScene>(), LIGHT_SELECT, true);
+		return;
+	}
+
 	// 確認シーンを閉じる（ポーズシーンへ）
 	SceneManager::GetInstance()->PopScene();
 }
