@@ -51,7 +51,6 @@ void InputManager::Init(void)
 	SetActionKey(INPUT_INFO::ACTION::TAB_RIGHT, { KEY_INPUT_E });
 
 
-
 	SetActionKey(INPUT_INFO::ACTION::PAUSE, { KEY_INPUT_ESCAPE });
 
 	// --- パッド ---
