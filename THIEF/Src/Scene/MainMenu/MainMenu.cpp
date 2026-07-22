@@ -160,8 +160,8 @@ void MainMenu::ChangeSelect(MENU menu)
 
 void MainMenu::UpdatePlay(void)
 {
-	// ƒQ[ƒ€ƒV[ƒ“‚Ö
-	SceneManager::GetInstance()->NextChangeScene(std::make_shared<LightSelectScene>(),LIGHT_SELECT, true);
+	confirm_->ChangeType(Confirm::TYPE::TUTORIAL);
+	SceneManager::GetInstance()->PushScene(confirm_);
 }
 
 void MainMenu::UpdateOption(void)

@@ -13,6 +13,7 @@ public:
 	enum class TYPE
 	{
 		NONE,
+		TUTORIAL,
 		QUIT,
 		MAIN_MENU,
 		BUY_UPGRADE,
