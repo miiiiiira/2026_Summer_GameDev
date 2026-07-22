@@ -88,7 +88,7 @@ void MainMenu::Update(void)
 #endif //_DEBUG
 
 	// メニューからタイトルに戻すボタン
-	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::CANCEL))
+	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::CANCEL) || InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::CANCEL))
 	{
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(),TITLE, true);
 		return;
@@ -98,7 +98,7 @@ void MainMenu::Update(void)
 	SelectUpgrade();
 
 	// マウスを左クリックしなかったら、処理を行わない
-	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE)) return;
+	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE) && !InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DECIDE)) return;
 
 	// メニューが選択されていない場合、処理を行わない
 	if (currentMenu_ == MENU::NONE) return;

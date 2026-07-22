@@ -143,7 +143,7 @@ void TutorialScene::LoadEnd(void)
 
 void TutorialScene::Update(void)
 {
-	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::CANCEL))
+	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::CANCEL) || InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::CANCEL))
 	{
 		// ポーズ画面を開いたサウンド
 		AudioManager::GetInstance()->PlaySE(SoundID::SYS_PAUSE_ON);

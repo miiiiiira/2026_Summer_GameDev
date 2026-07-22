@@ -97,7 +97,7 @@ void Confirm::Update(void)
 	SelectUpgrade();
 
 	// マウスを左クリックされなかったら、処理しない
-	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE)) return;
+	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE) && !InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DECIDE)) return;
 	// どの選択肢も選ばれていない場合は処理しない
 	if (currentSelect_ == SELECT::NONE) return;
 

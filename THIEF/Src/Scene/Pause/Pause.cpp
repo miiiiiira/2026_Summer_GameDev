@@ -63,7 +63,7 @@ void Pause::LoadEnd(void)
 void Pause::Update(void)
 {
 	// Escape押したら
-	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::CANCEL))
+	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::CANCEL) || InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::CANCEL))
 	{
 		// ポーズモード終了しゲームシーンへ戻る
 		UpdateContinue();
@@ -73,7 +73,7 @@ void Pause::Update(void)
 	SelectUpgrade();
 
 	// マウスを左クリックされていなかったら、ここで終了
-	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE)) return;
+	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE) && !InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DECIDE)) return;
 
 	// 選択されているメニューがない場合も、ここで終了
 	if (currentMenu_ == MENU::NONE) return;

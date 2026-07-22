@@ -193,6 +193,7 @@ private:
 	static void UpdateKeyState(bool isPressed, KeyState& st);
 	bool IsInputAlreadyUsed(const BindInput& input, INPUT_INFO::ACTION ignoreAction) const;
 	void RemoveDuplicateOtherActions(INPUT_INFO::ACTION action, const BindInput& input);
+	bool IsMatchDebugAction(INPUT_INFO::DEBUG_ACTION action, const BindInput& input) const;
 
 	inline int ToDxPad(INPUT_INFO::JOYPAD_NO pad) { return DX_INPUT_PAD1 + (int)pad; }
 

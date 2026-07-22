@@ -113,7 +113,7 @@ void KeyConfig::DetectInput()
     }
 
     // ƒLƒƒƒ“ƒZƒ‹‚¾‚¯‚ÍŽc‚·
-    if (input->IsActionDown(INPUT_INFO::ACTION::CANCEL))
+    if (input->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::CANCEL))
     {
         state_ = State::CANCELED;
     }

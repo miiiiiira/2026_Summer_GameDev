@@ -51,7 +51,7 @@ void GameOver::Update(void)
 	SelectUpgrade();
 
 	// マウスを左クリックしなかったら、処理を行わない
-	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE)) return;
+	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE) && !InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DECIDE)) return;
 
 	// 種類が選択されていない場合、処理を行わない
 	if (currentType_ == TYPE::NONE) return;
