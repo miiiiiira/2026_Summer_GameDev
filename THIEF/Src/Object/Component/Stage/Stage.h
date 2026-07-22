@@ -65,6 +65,8 @@ public:
 private:
 	// クリアカウントの規定値
 	static constexpr int CLEAR_COUNT_MAX = 180;
+	// 納品場所が呼ぶカウントの規定値
+	static constexpr int COLL_COUNT_MAX = 600;
 
 	// モデルID
 	int modelId_ = -1;
@@ -88,6 +90,15 @@ private:
 	// 納品完了スイッチが押されたか　true / 押された , false / 押されていない
 	bool isDoneSwitch_;
 
+	// 納品場所が呼ぶカウント
+	int callCount_ = 0;
+
 	// デバック用描画
 	void DrawDebug(void);
+
+	// クリアカウントの更新処理
+	void ClearCountUpdate(void);
+
+	// 納品場所が呼ぶカウントの更新処理
+	void CallCountUpdate(void);
 };

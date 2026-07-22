@@ -93,51 +93,11 @@ void Stage::Update(void)
 		isDoneSwitch_ = false;
 	}
 
-	// クリアカウントが開始されていなければ処理を行わない
-	if (clearCount_ <= 0)return;
-	// クリアまでのカウントを進める
-	clearCount_++;
+	// クリアカウントの更新処理
+	ClearCountUpdate();
 
-	// クリアカウントが規定量に達したらステージクリアへ
-	if (clearCount_ >= CLEAR_COUNT_MAX)
-	{
-		if (SceneManager::GetInstance()->GetNowSceneTag() == SCENE_TAG::TUTORIAL)
-		{
-			// チュートリアル時にカウンタに加算される
-			SceneManager::GetInstance()->TutorialCounter(Tutorial::DELIVER);
-		}
-		else
-		{
-			// ステージクリアへ
-			SceneManager::GetInstance()->TrueStageClear();
-		}
-
-		// TODO 完全納品完了音
-		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_SUC);
-		return;
-	}
-
-	// 一秒ごとにカウント音を出す
-	if (clearCount_ % 60 == 0)
-	{
-		// TODO 納品完了待ち時間のカウント音
-		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_SUC);
-	}
-
-	// 納品済みの金額を確認
-	int deliveryPrice = ScoreManager::GetInstance().GetDeliveryPrice();
-	// 目標金額を確認
-	int targetPrice = ScoreManager::GetInstance().GetTargetPrice();
-
-	// 目標金額を達成していなかったら
-	if (deliveryPrice < targetPrice)
-	{
-		// カウントを終了
-		clearCount_ = 0;
-
-		// 納品失敗音長めのやつ
-		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_CANCEL);
-	}
+	// 納品場所の呼ぶ音カウントの更新処理
+	CallCountUpdate();
 }
 
 void Stage::Draw3D(void)
@@ -244,4 +204,72 @@ void Stage::DrawDebug(void)
 
 	DrawCube3D(startPos, endPos, 0x0000ff, 0x0000ff, false);
 
+}
+
+void Stage::ClearCountUpdate(void)
+{
+	// クリアカウントが開始されていなければ処理を行わない
+	if (clearCount_ <= 0)return;
+	// クリアまでのカウントを進める
+	clearCount_++;
+
+	// クリアカウントが規定量に達したらステージクリアへ
+	if (clearCount_ >= CLEAR_COUNT_MAX)
+	{
+		if (SceneManager::GetInstance()->GetNowSceneTag() == SCENE_TAG::TUTORIAL)
+		{
+			// チュートリアル時にカウンタに加算される
+			SceneManager::GetInstance()->TutorialCounter(Tutorial::DELIVER);
+		}
+		else
+		{
+			// ステージクリアへ
+			SceneManager::GetInstance()->TrueStageClear();
+		}
+
+		// TODO 完全納品完了音
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_SUC);
+		return;
+	}
+
+	// 一秒ごとにカウント音を出す
+	if (clearCount_ % 60 == 0)
+	{
+		// TODO 納品完了待ち時間のカウント音
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_SUC);
+	}
+
+	// 納品済みの金額を確認
+	int deliveryPrice = ScoreManager::GetInstance().GetDeliveryPrice();
+	// 目標金額を確認
+	int targetPrice = ScoreManager::GetInstance().GetTargetPrice();
+
+	// 目標金額を達成していなかったら
+	if (deliveryPrice < targetPrice)
+	{
+		// カウントを終了
+		clearCount_ = 0;
+
+		// 納品失敗音長めのやつ
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_CANCEL);
+	}
+}
+
+void Stage::CallCountUpdate(void)
+{
+	// カウントを勧める
+	callCount_++;
+
+	// 一秒ごとにカウント音を出す
+	if (callCount_ % 120 == 0)
+	{
+		// 納品場所が呼ぶ音を出す
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_CALL, &deliveryPos_,3000.0f);
+	}
+
+	// 規定値までいったらカウント初期化
+	if (callCount_ >= COLL_COUNT_MAX)
+	{
+		callCount_ = 0;
+	}
 }

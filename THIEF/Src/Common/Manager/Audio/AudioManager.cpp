@@ -167,7 +167,7 @@ void AudioManager::StopBGM()
 	currentBgm_ = SoundID::NON;
 }
 
-void AudioManager::PlaySE(SoundID id, const VECTOR* pos)
+void AudioManager::PlaySE(SoundID id, const VECTOR* pos,float dis)
 {
 	// IDからサウンドハンドルを抽出
 	auto it = handles_.find(id);
@@ -184,7 +184,7 @@ void AudioManager::PlaySE(SoundID id, const VECTOR* pos)
 	if (sound.type == SoundType::SE_3D)
 	{
 		// 聞こえる範囲を設定
-		Set3DRadiusSoundMem(1024.0f, sound.handle);
+		Set3DRadiusSoundMem(dis, sound.handle);
 
 		// 引数で座標が設定されていれば
 		if (pos)
