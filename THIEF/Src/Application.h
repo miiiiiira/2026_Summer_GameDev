@@ -84,4 +84,6 @@ private:
 
 	int font_;
 	int defaultFont_;
+
+	int InitEffekseer(void);
 };
