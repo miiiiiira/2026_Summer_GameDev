@@ -1,6 +1,7 @@
 ﻿#include "Application.h"
 
 #include <DxLib.h>
+#include <EffekseerForDXLib.h>
 
 #include "Common/System/FpsControl.h"
 #include "Common/Manager/Input/InputManager.h"
@@ -45,7 +46,16 @@ void Application::Init(void)
 	// １メートルに相当する値を設定する
 	Set3DSoundOneMetre(16.0f);
 	isInitFail_ = false;
+
+	// DxLibの初期化
 	if (DxLib_Init() == -1)
+	{
+		isInitFail_ = true;
+		return;
+	}
+
+	// Effekseerの初期化
+	if (InitEffekseer() == -1)
 	{
 		isInitFail_ = true;
 		return;
@@ -111,6 +121,9 @@ void Application::Run(void)
 
 void Application::Delete(void)
 {
+	// Effekseerを終了する
+	Effkseer_End();
+
 	// 入力制御削除
 	InputManager::DeleteInstance();
 
@@ -160,4 +173,18 @@ int Application::GetFont(void)
 int Application::GetDefaultFont(void)
 {
 	return defaultFont_;
+}
+
+int Application::InitEffekseer(void)
+{
+	if (Effekseer_Init(8000) == -1)
+	{
+		DxLib_End();
+
+		return -1;
+	}
+
+	SetChangeScreenModeGraphicsSystemResetFlag(FALSE);
+	Effekseer_SetGraphicsDeviceLostCallbackFunctions();
+	return 1;
 }

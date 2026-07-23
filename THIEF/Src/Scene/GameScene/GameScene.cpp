@@ -47,6 +47,7 @@
 #include "../../Common/Collision/Collision.h"
 #include "../../Object/Component/Collider/CartCollider/CartCollider.h"
 #include "../../Common/MouseCursor/MouseCursor.h"
+#include "../../Common/Manager/EffectResManager/EffectResManager.h"
 
 GameScene::GameScene(void)
 {
@@ -105,6 +106,10 @@ void GameScene::Load(void)
 {
 	// サウンド読みこみ
 	AudioManager::GetInstance()->LoadSceneSound(LoadScene::GAME);
+
+	// エフェクト管理初期化
+	EffectResManager::CreateInstance();
+	EffectResManager::GetInstance().Load();
 
 	// オブジェクトマネージャーの生成
 	objectManger_ = new ObjectManager();
@@ -262,10 +267,12 @@ void GameScene::Release(void)
 	// オブジェクトマネージャー削除
 	delete objectManger_;
 
+	// 敵の解放
 	enemyManager_->Release();
 	delete enemyManager_;
 	enemyManager_ = nullptr;
 
+	// クロスヘアの解放
 	crosshair_->Release();
 	delete crosshair_;
 	crosshair_ = nullptr;
@@ -274,6 +281,10 @@ void GameScene::Release(void)
 	delete redEffect_;
 	redEffect_ = nullptr;
 
+	// エフェクト管理解放
+	EffectResManager::GetInstance().Destroy();
+
+	// 音の解放
 	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::GAME);
 }
 

@@ -1,3 +1,4 @@
+#include <EffekseerForDXLib.h>
 #include "Camera.h"
 #include "../Transform/Transform.h"
 #include "../../Object.h"
@@ -71,6 +72,9 @@ void Camera::SetBeforeDraw(void)
 		SetBeforeDrawFree();
 		break;
 	}
+
+	// DXライブラリのカメラとEffekseerのカメラを同期する
+	Effekseer_Sync3DSetting();
 }
 
 void Camera::UpdateFollow(void)
