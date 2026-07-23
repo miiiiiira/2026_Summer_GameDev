@@ -17,6 +17,7 @@ public:
 	// 納品完了スイッチの半径
 	static constexpr float DONE_SWITCH_RAD= 20.0f;
 
+	Stage(void);
 	~Stage(void)override;
 
 	// 初期化
@@ -62,6 +63,11 @@ public:
 	// 納品完了スイッチを押したことを知らせる
 	void TrueIsDoneSwitch(void);
 
+	// プッシュ画像表示フラグを渡す
+	bool GetIsPushDrawFlg(void);
+	// プッシュ画像表示フラグを設定
+	void SetIsPushDrawFlg(bool flg);
+
 private:
 	// クリアカウントの規定値
 	static constexpr int CLEAR_COUNT_MAX = 180;
@@ -92,6 +98,12 @@ private:
 
 	// 納品場所が呼ぶカウント
 	int callCount_ = 0;
+
+	// プッシュ画像ハンドル
+	int pushImg_;
+
+	// プッシュ画像を表示するか　true / 表示 , false / 非表示
+	bool isPushDrawFlg_;
 
 	// デバック用描画
 	void DrawDebug(void);

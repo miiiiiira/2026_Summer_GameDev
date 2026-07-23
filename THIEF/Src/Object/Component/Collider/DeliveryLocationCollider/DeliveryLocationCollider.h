@@ -29,6 +29,9 @@ private:
 	// 納品完了スイッチとプレイヤー掴み機能との当たり判定
 	void DoneSwitchToPlayerGrabbingCollision(void);
 
+	// 納品完了スイッチとプレイヤー ステージと当たっていたら処理をしない
+	void DoneSwitchToPlayerCollision(void);
+
 private:
 
 	// ステージ

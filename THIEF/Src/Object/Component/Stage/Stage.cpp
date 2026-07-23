@@ -9,9 +9,15 @@
 #include "../../../Common/Manager/Audio/AudioManager.h"
 #include "../Animation/Animation.h"
 
+Stage::Stage(void)
+{
+	pushImg_ = LoadGraph("Data/Image/GameScene/PushArrow.png");
+}
+
 Stage::~Stage(void)
 {
 	MV1DeleteModel(collModelId_);
+	DeleteGraph(pushImg_);
 	items_.clear();
 }
 
@@ -65,13 +71,17 @@ void Stage::Init()
 			// 納品完了スイッチの座標
 			doneSwitchPos_ = trans->pos_;
 			doneSwitchPos_ = VAdd(doneSwitchPos_, deliveryData->second.doneSwitchLocalPos_);
+
 		}
 		else
 		{
 			// データがなかった場合は0初期化
-			deliverySize_ = deliveryPos_ = doneSwitchPos_ = {};
+			deliverySize_ = deliveryPos_ = doneSwitchPos_ ={};
 		}
 	}
+
+	// プッシュ画像フラグ
+	isPushDrawFlg_ = false;
 
 	// 納品完了スイッチフラグ
 	isDoneSwitch_ = false;
@@ -102,6 +112,12 @@ void Stage::Update(void)
 
 void Stage::Draw3D(void)
 {
+	if (isPushDrawFlg_)
+	{
+		VECTOR pushPos = VAdd(doneSwitchPos_, { 0.0f,30.0f,0.0f });
+		DrawBillboard3D(pushPos, 0.5f, 0.0f, 60.0f, 0.0f, pushImg_, true);
+	}
+
 #ifdef _DEBUG
 	DrawDebug();
 #endif // _DEBUG
@@ -187,6 +203,16 @@ void Stage::TrueIsDoneSwitch(void)
 {
 	// 押されたことを知らせる
 	isDoneSwitch_ = true;
+}
+
+bool Stage::GetIsPushDrawFlg(void)
+{
+	return isPushDrawFlg_;
+}
+
+void Stage::SetIsPushDrawFlg(bool flg)
+{
+	isPushDrawFlg_ = flg;
 }
 
 void Stage::DrawDebug(void)
