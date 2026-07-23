@@ -8,10 +8,21 @@
 #include "../../../Common/Manager/Score/ScoreManager.h"
 #include "../../../Common/Manager/Audio/AudioManager.h"
 #include "../Animation/Animation.h"
+#include "../../../Application.h"
+
+Stage::Stage(void)
+{
+	pushImg_ = LoadGraph("Data/Image/GameScene/PushArrow.png");
+
+	clearFontH_ = CreateFontToHandle("Shikakufuto_Free", CLEAR_COUNT_FONT_SIZE, 1, DX_FONTTYPE_ANTIALIASING);
+}
 
 Stage::~Stage(void)
 {
 	MV1DeleteModel(collModelId_);
+	DeleteGraph(pushImg_);
+	// フォントの削除
+	DeleteFontToHandle(clearFontH_);
 	items_.clear();
 }
 
@@ -65,13 +76,20 @@ void Stage::Init()
 			// 納品完了スイッチの座標
 			doneSwitchPos_ = trans->pos_;
 			doneSwitchPos_ = VAdd(doneSwitchPos_, deliveryData->second.doneSwitchLocalPos_);
+
 		}
 		else
 		{
 			// データがなかった場合は0初期化
-			deliverySize_ = deliveryPos_ = doneSwitchPos_ = {};
+			deliverySize_ = deliveryPos_ = doneSwitchPos_ ={};
 		}
 	}
+
+	// プッシュ画像フラグ
+	isPushDrawFlg_ = false;
+
+	// 上へ設定
+	isPushUp_ = true;
 
 	// 納品完了スイッチフラグ
 	isDoneSwitch_ = false;
@@ -98,13 +116,47 @@ void Stage::Update(void)
 
 	// 納品場所の呼ぶ音カウントの更新処理
 	CallCountUpdate();
+
+	// プッシュ画像の上下させる更新処理
+	PushUpDownUpdate();
 }
 
 void Stage::Draw3D(void)
 {
+	// プッシュ画像の描画フラグが立っていたら
+	if (isPushDrawFlg_)
+	{
+		// スイッチ座標から縦座標を補正する
+		VECTOR pushPos = VAdd(doneSwitchPos_, { 0.0f,PUSH_IMG_OFFSET_Y + pushUpDownOffsetPos_,0.0f });
+
+		// ビルボードで画像反映
+		DrawBillboard3D(pushPos, 0.5f, 0.0f, 60.0f, 0.0f, pushImg_, true);
+	}
+
 #ifdef _DEBUG
 	DrawDebug();
 #endif // _DEBUG
+}
+
+void Stage::Draw2D(void)
+{
+	// クリアカウントが動いてなければ描画しない
+	if (clearCount_ <= 0)return;
+
+	// カウントを調べる
+	int count = (CLEAR_COUNT_MAX / 60) - (clearCount_ / 60);
+
+	// 文字の大きさを調べる
+	int strWidth = GetDrawFormatStringWidthToHandle(clearFontH_, "%d", count);
+
+	// カウントを出す
+	DrawFormatStringToHandle(
+		Application::SCREEN_SIZE_X / 2 - strWidth / 2,
+		60,
+		0xffffff,
+		clearFontH_,
+		"%d",
+		count);
 }
 
 Transform* Stage::GetTransform()
@@ -189,6 +241,16 @@ void Stage::TrueIsDoneSwitch(void)
 	isDoneSwitch_ = true;
 }
 
+bool Stage::GetIsPushDrawFlg(void)
+{
+	return isPushDrawFlg_;
+}
+
+void Stage::SetIsPushDrawFlg(bool flg)
+{
+	isPushDrawFlg_ = flg;
+}
+
 void Stage::DrawDebug(void)
 {
 	// 納品完了スイッチの当たり判定視覚化
@@ -271,5 +333,51 @@ void Stage::CallCountUpdate(void)
 	if (callCount_ >= COLL_COUNT_MAX)
 	{
 		callCount_ = 0;
+	}
+}
+
+void Stage::PushUpDownUpdate(void)
+{
+	// プッシュ画像の描画フラグが立っていたら
+	if (isPushDrawFlg_)
+	{
+		// 上へだったら
+		if (isPushUp_)
+		{
+			// 座標を増やす
+			++pushUpDownOffsetPos_;
+
+			// 最大座標へ達したら
+			if (pushUpDownOffsetPos_ > PUSH_IMG_OFFSET_Y_MAX)
+			{
+				// 下へにする
+				pushUpDownOffsetPos_ = PUSH_IMG_OFFSET_Y_MAX;
+				isPushUp_ = false;
+			}
+		}
+		// 下へだったら
+		else
+		{
+			// 座標を減らす
+			--pushUpDownOffsetPos_;
+
+			// 最少座標へ達したら
+			if (pushUpDownOffsetPos_ < 0)
+			{
+				// 上へにする
+				pushUpDownOffsetPos_ = 0;
+				isPushUp_ = true;
+			}
+		}
+	}
+	else
+	{
+		// プッシュ画像の位置を上下させるカウントが初期化されていなければ
+		if (pushUpDownOffsetPos_ != 0)
+		{
+			// 初期化する
+			pushUpDownOffsetPos_ = 0;
+			isPushUp_ = true;
+		}
 	}
 }

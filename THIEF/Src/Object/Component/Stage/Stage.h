@@ -17,12 +17,14 @@ public:
 	// 納品完了スイッチの半径
 	static constexpr float DONE_SWITCH_RAD= 20.0f;
 
+	Stage(void);
 	~Stage(void)override;
 
 	// 初期化
 	void Init(void) override;
 	void Update(void) override;
 	void Draw3D(void) override;
+	void Draw2D(void) override;
 	
 	// モデルIDを返す
 	int GetModelId() const { return modelId_; }
@@ -62,11 +64,24 @@ public:
 	// 納品完了スイッチを押したことを知らせる
 	void TrueIsDoneSwitch(void);
 
+	// プッシュ画像表示フラグを渡す
+	bool GetIsPushDrawFlg(void);
+	// プッシュ画像表示フラグを設定
+	void SetIsPushDrawFlg(bool flg);
+
 private:
 	// クリアカウントの規定値
 	static constexpr int CLEAR_COUNT_MAX = 180;
+	// クリアカウント用のフォントサイズ
+	static constexpr int CLEAR_COUNT_FONT_SIZE = 60;
+
 	// 納品場所が呼ぶカウントの規定値
 	static constexpr int COLL_COUNT_MAX = 600;
+	
+	// プッシュ画像のオフセット座標
+	static constexpr float PUSH_IMG_OFFSET_Y = 30.0f;
+	// プッシュ画像の最大オフセット座標
+	static constexpr float PUSH_IMG_OFFSET_Y_MAX = 30.0f;
 
 	// モデルID
 	int modelId_ = -1;
@@ -77,6 +92,9 @@ private:
 
 	// クリアカウント
 	int clearCount_ = 0;
+
+	// クリアカウント用のフォント
+	int clearFontH_;
 
 	// 納品場所の大きさ
 	VECTOR deliverySize_;
@@ -93,6 +111,17 @@ private:
 	// 納品場所が呼ぶカウント
 	int callCount_ = 0;
 
+	// プッシュ画像ハンドル
+	int pushImg_;
+
+	// プッシュ画像を表示するか　true / 表示 , false / 非表示
+	bool isPushDrawFlg_;
+
+	// プッシュ画像の位置を上下させる座標
+	float pushUpDownOffsetPos_;
+	// プッシュ画像の座標の上下を変更する　true / 上へ , false / 下へ
+	bool isPushUp_;
+
 	// デバック用描画
 	void DrawDebug(void);
 
@@ -101,4 +130,7 @@ private:
 
 	// 納品場所が呼ぶカウントの更新処理
 	void CallCountUpdate(void);
+
+	// プッシュ画像の上下させる更新処理
+	void PushUpDownUpdate(void);
 };

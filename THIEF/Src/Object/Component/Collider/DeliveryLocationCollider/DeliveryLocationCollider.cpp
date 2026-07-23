@@ -29,6 +29,9 @@ void DeliveryLocationCollider::Update(void)
 
 	// 納品完了スイッチとプレイヤー掴み機能との当たり判定
 	DoneSwitchToPlayerGrabbingCollision();
+
+	// 納品完了スイッチとプレイヤーとの当たり判定
+	DoneSwitchToPlayerCollision();
 }
 
 void DeliveryLocationCollider::Draw2D(void)
@@ -170,6 +173,58 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 			// 納品失敗音
 			AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_FAI);
 		}
+	}
+}
+
+void DeliveryLocationCollider::DoneSwitchToPlayerCollision(void)
+{
+	// 納品済みの金額を確認
+	int deliveryPrice = ScoreManager::GetInstance().GetDeliveryPrice();
+	// 目標金額を確認
+	int targetPrice = ScoreManager::GetInstance().GetTargetPrice();
+
+	// 目標金額を達成していなかったら
+	if (deliveryPrice < targetPrice)
+	{
+		// プッシュ画像表示フラグを折る
+		stage_->SetIsPushDrawFlg(false);
+		return;
+	}
+
+	// 線分の上座標
+	VECTOR lineStartPos = player_->GetLineStartPos();
+
+	// 納品完了スイッチの座標
+	VECTOR lineEndPos = stage_->GetDoneSwitchPos();
+	lineEndPos.y += 30.0f;
+
+	// カメラとスイッチを線分をつなげてステージに当たっているか
+	MV1_COLL_RESULT_POLY stageHitResult =
+		MV1CollCheck_Line(stage_->GetModelId(), -1, lineStartPos, lineEndPos);
+
+	// ステージに当たっていたら
+	if (stageHitResult.HitFlag)
+	{
+		// プッシュ画像表示フラグを折る
+		stage_->SetIsPushDrawFlg(false);
+		return;
+	}
+
+	// チュートリアルだった場合
+	if (SceneManager::GetInstance()->GetNowSceneTag() == TUTORIAL)
+	{
+		// 確認項目が納品だったら
+		if (SceneManager::GetInstance()->GetTutorialState() == Tutorial::DELIVER)
+		{
+			// プッシュ画像を表示
+			stage_->SetIsPushDrawFlg(true);
+		}
+	}
+	// チュートリアル以外のシーンだった場合
+	else
+	{
+		// プッシュ画像を表示
+		stage_->SetIsPushDrawFlg(true);
 	}
 }
 

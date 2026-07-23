@@ -159,6 +159,7 @@ void ScoreManager::SetItems(std::vector<Item*> items)
 
 		//	Œx•¶‚ğo‚·–ÚˆÀ‹àŠz‚ğ70%‚É‚·‚é
 		warningPrice_ = allPrice * SHOW_WARNING_PRICE_RATIO;
+		targetPrice_ = 1;
 	}
 }
 
