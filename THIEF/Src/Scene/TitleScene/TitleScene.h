@@ -1,5 +1,8 @@
 #pragma once
 #include "../SceneBase.h"
+#include <memory>
+
+class Confirm;
 
 class TitleScene : public SceneBase
 {
@@ -30,6 +33,8 @@ private:
 	static constexpr float ALPHA_MIN = 0.0f;
 
 private:
+
+	std::shared_ptr<Confirm> confirm_;
 
 	int handle_;
 	int buttonHandle_;				// PushAnyButton‰æ‘œ‚Ìƒnƒ“ƒhƒ‹

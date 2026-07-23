@@ -6,6 +6,7 @@
 #include "../../Common/Manager/Audio/AudioManager.h"
 #include "../SceneManager.h"
 #include "../../Application.h"
+#include "../Confirm/Confirm.h"
 #include "../GameScene/GameScene.h"
 #include "../MainMenu/MainMenu.h"
 #include "../../Common/Shader/Shader.h"
@@ -18,6 +19,7 @@ TitleScene::TitleScene(void)
 	alpha_ = 0.0f;
 	isIncreasing_ = false;
 	isPlaySoundSE_ = false;
+	confirm_ = nullptr;
 	// マウスの表示する
 	MouseCursor::GetInstance().SetMouseDraw(true);
 }
@@ -40,6 +42,8 @@ void TitleScene::Load(void)
 	AudioManager::GetInstance()->LoadSceneSound(LoadScene::TITLE);
 	handle_ = LoadGraph("Data/Image/Title.png");
 	buttonHandle_ = LoadGraph("Data/Image/PushAnyButton.png");
+
+	confirm_ = std::make_shared<Confirm>();
 }
 
 void TitleScene::LoadEnd(void)
@@ -50,6 +54,13 @@ void TitleScene::LoadEnd(void)
 
 void TitleScene::Update(void)
 {
+	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::CANCEL) || InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::CANCEL))
+	{
+		confirm_->ChangeType(Confirm::TYPE::QUIT);
+		SceneManager::GetInstance()->PushScene(confirm_);
+		return;
+	}
+
 	// ボタンが押されると次のシーンへ
 	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE) || InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DECIDE))
 	{
