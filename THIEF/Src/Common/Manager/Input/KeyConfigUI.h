@@ -1,19 +1,22 @@
 #pragma once
 #include "KeyConfig.h"
 #include <vector>
+#include <memory>
+
+class Confirm;
 
 class KeyConfigUI
 {
 public:
-    void Init();    // 初期化
-    void Load();
-    void LoadEnd();
-    void Update();  // 更新
-    void Draw();    // 描画
-    void Delete();  // 削除処理
+    void Init(void);    // 初期化
+    void Load(void);
+    void LoadEnd(void);
+    void Update(void);  // 更新
+    void Draw(void);    // 描画
+    void Delete(void);  // 削除処理
 
     // UI情愛
-    bool IsActive() const { return isActive_; }
+    bool IsActive(void) const { return isActive_; }
     void SetActive(bool flag) { isActive_ = flag; }
 
     // 表示リスト生成
@@ -50,7 +53,9 @@ private:
     // 表示データ
     std::vector<DisplayRow> displayRows_;   // 表示行リスト
     int scrollOffset_ = 0;                  // スクロール位置
-;
+
+    std::shared_ptr<Confirm> confirm_;
+
     TabType currentTab_;
 
     FocusArea currentFocus_;    // 現在のフォーカス領域

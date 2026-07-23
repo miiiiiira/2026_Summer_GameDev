@@ -17,6 +17,7 @@ public:
 		QUIT,
 		MAIN_MENU,
 		BUY_UPGRADE,
+		RESET_KEY,
 	};
 
 	enum class SELECT

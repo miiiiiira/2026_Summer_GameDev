@@ -37,41 +37,45 @@ void Confirm::Load(void)
 		confirmImg_ = LoadGraph((Application::PATH_IMAGE + "Confirm/ConfirmTutorial.png").c_str());	// TUTORIALの時の確認画面
 		break;
 	case TYPE::QUIT:
-		confirmImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmQuit.png").c_str());			// QUITの時の確認画面;
+		confirmImg_ = LoadGraph((Application::PATH_IMAGE + "Confirm/ConfirmQuit.png").c_str());			// QUITの時の確認画面;
 		break;
 	case TYPE::MAIN_MENU:
-		confirmImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmMainMenu.png").c_str());	// MAIN MENUの時の確認画面
+		confirmImg_ = LoadGraph((Application::PATH_IMAGE + "Confirm/ConfirmMainMenu.png").c_str());	// MAIN MENUの時の確認画面
 		break;
 	case TYPE::BUY_UPGRADE:
-
+	{
 		PLAYER_UPGRADE_TYPE type = UpgradeManager::GetInstance().GetUpgrade()->GetFinalizeUpgrade().type;
 
 		switch (type)
 		{
 		case PLAYER_UPGRADE_TYPE::HP_UP:
-			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmBuyHpUp.png").c_str());
+			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "Confirm/ConfirmBuyHpUp.png").c_str());
 			break;
 		case PLAYER_UPGRADE_TYPE::STAMINA_UP:
-			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmBuyStaminaUp.png").c_str());
+			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "Confirm/ConfirmBuyStaminaUp.png").c_str());
 			break;
 		case PLAYER_UPGRADE_TYPE::DASH_SPEED_UP:
-			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmBuyDashSpeedUp.png").c_str());
+			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "Confirm/ConfirmBuyDashSpeedUp.png").c_str());
 			break;
 		case PLAYER_UPGRADE_TYPE::RANGE_UP:
-			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmBuyRangeUp.png").c_str());
+			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "Confirm/ConfirmBuyRangeUp.png").c_str());
 			break;
 		case PLAYER_UPGRADE_TYPE::JUMP_NUM_UP:
-			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmBuyJumpNumUp.png").c_str());
+			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "Confirm/ConfirmBuyJumpNumUp.png").c_str());
 			break;
 		case PLAYER_UPGRADE_TYPE::HEAL_HP_25:
-			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmBuyHealHp25.png").c_str());
+			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "Confirm/ConfirmBuyHealHp25.png").c_str());
 			break;
 		case PLAYER_UPGRADE_TYPE::HEAL_HP_50:
-			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "ConfirmBuyHealHp50.png").c_str());
+			confirmImg_ = LoadGraph((Application::PATH_IMAGE + "Confirm/ConfirmBuyHealHp50.png").c_str());
 			break;
 		default:
 			break;
 		}
+	}
+	break;
+	case TYPE::RESET_KEY:
+		confirmImg_ = LoadGraph((Application::PATH_IMAGE + "Confirm/ConfirmResetAllKey.png").c_str());	// RESETKEYの時の確認画面
 		break;
 	}
 
@@ -174,7 +178,12 @@ void Confirm::UpdateYes(void)
 		break;
 	case TYPE::BUY_UPGRADE:
 		UpgradeManager::GetInstance().GetUpgrade()->ChangeState(Upgrade::UPGRADE_STATE::APPLY);
-		// 確認シーンを閉じる（ポーズシーンへ）
+		// 確認シーンを閉じる
+		SceneManager::GetInstance()->PopScene();
+		break;
+	case TYPE::RESET_KEY:
+		InputManager::GetInstance()->DefaultKey();
+		// 確認シーンを閉じる
 		SceneManager::GetInstance()->PopScene();
 		break;
 	default:
@@ -192,7 +201,7 @@ void Confirm::UpdateNo(void)
 		return;
 	}
 
-	// 確認シーンを閉じる（ポーズシーンへ）
+	// 確認シーンを閉じる
 	SceneManager::GetInstance()->PopScene();
 }
 

@@ -5,7 +5,6 @@
 
 class Confirm;
 
-
 class Pause : public SceneBase
 {
 public:
