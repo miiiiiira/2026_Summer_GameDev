@@ -23,4 +23,8 @@ private:
 
 	int handle_;
 	int tiHandle_;
+
+	int timer_;
+
+	void ShaderInit(void);
 };

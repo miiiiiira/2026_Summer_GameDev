@@ -123,9 +123,9 @@ void TitleScene::ShaderInit(void)
 	// 走査線
 	SceneManager::GetInstance()->GetShader()->SetScanlineIntensity(0.5f);
 	// グリッチ
-	SceneManager::GetInstance()->GetShader()->SetGlitchAmount(0.004f);
+	SceneManager::GetInstance()->GetShader()->SetGlitchAmount(0.005f);
 	// 歪み
-	SceneManager::GetInstance()->GetShader()->SetCurvatureAmount(0.3f, false);
+	SceneManager::GetInstance()->GetShader()->SetCurvatureAmount(0.5f, false);
 	// ノイズ
 	SceneManager::GetInstance()->GetShader()->SetNoisePower(0.5f);
 	// 色ずれ
