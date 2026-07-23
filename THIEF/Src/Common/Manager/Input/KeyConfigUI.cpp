@@ -5,6 +5,7 @@
 #include "../Audio/AudioManager.h"
 #include "../../Collision/Collision.h"
 #include "InputManager.h"
+#include "../../FrameRenderer/FrameRenderer.h"
 #include "InputIO.h"
 
 namespace
@@ -15,10 +16,10 @@ namespace
 
     static constexpr int START_Y = 120;
 
-    static constexpr int HEADER_X = 300; // カテゴリーヘッダーのX座標
-    static constexpr int ACTION_X = 320; // アクション名のX座標
+    static constexpr int HEADER_X = 270; // カテゴリーヘッダーのX座標
+    static constexpr int ACTION_X = 290; // アクション名のX座標
 
-    static constexpr int START_X = 500;
+    static constexpr int START_X = 470;
 
     static constexpr int SLOT_INTERVAL = 260;
     
@@ -37,10 +38,18 @@ namespace
     static constexpr int TAB_SIZE_Y = 55;
     static constexpr int TAB_COL_SIZE_X = 151;
     static constexpr int TAB_COL_SIZE_Y = TAB_SIZE_Y;
+
+    static constexpr int RESET_POS_X = 850;
+    static constexpr int RESET_POS_Y = 20;
+
+    static constexpr int RESET_SIZE_X = 150;
+    static constexpr int RESET_SIZE_Y = 60;
 }
 
 void KeyConfigUI::Init()
 {
+    currentFocus_ = FocusArea::LIST;
+
     // 初期選択位置をヘッダー以外にする
     selectRow_ = 0;
     while (displayRows_[selectRow_].isHeader)
@@ -55,6 +64,7 @@ void KeyConfigUI::Load()
     slotHandle_ = LoadGraph("Data/Image/KeyConfig/key_slot.png");
     slotSelectHandle_ = LoadGraph("Data/Image/KeyConfig/key_slot_select.png");
     slotWaitHandle_ = LoadGraph("Data/Image/KeyConfig/key_slot_wait.png");
+    resetHandle_ = LoadGraph("Data/Image/KeyConfig/Reset.png");
 
     LoadDivGraph("Data/Image/KeyConfig/KeyConfigTab.png",
         2, 1, 2,
@@ -93,13 +103,51 @@ void KeyConfigUI::Update()
 
     UpdateSelect();
 
-    // 処理しない
     if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE) ||
         InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::TAB_LEFT) ||
         InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DECIDE) ||
         InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::TAB_RIGHT))
     {
         UpdateTabSelect();
+    }
+
+    if (currentFocus_ == FocusArea::RESET_BUTTON)
+    {
+        // 下キーを押したらリストへ移動
+        if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
+        {
+            ChangeFocus(FocusArea::LIST);
+        }
+
+        // 決定キーでリセット実行
+        if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE))
+        {
+            ResetToDefault();
+        }
+
+        if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::KEY_MOUSE)
+        {
+            int mx, my;
+            GetMousePoint(&mx, &my);
+
+            bool isInsideReset = Collision::HitMouseImg2Box(
+                { static_cast<float>(RESET_POS_X), static_cast<float>(RESET_POS_Y) },
+                static_cast<float>(RESET_SIZE_X), static_cast<float>(RESET_SIZE_Y));
+
+            bool isInsideList = (mx >= 270 && mx <= 1010 && my >= 90 && my <= 630);
+
+            if (isInsideList)
+            {
+                ChangeFocus(FocusArea::LIST);
+                return;
+            }
+            else if (!isInsideReset)
+            {
+                // どちらの範囲でもないなら NONE にする
+                ChangeFocus(FocusArea::NONE);
+                return;
+            }
+        }
 
     }
 
@@ -256,10 +304,50 @@ void KeyConfigUI::ChangeTabType(TabType type)
     currentTab_ = type;
 }
 
+void KeyConfigUI::ChangeFocus(FocusArea focus)
+{
+    currentFocus_ = focus;
+}
+
+void KeyConfigUI::ResetToDefault()
+{
+}
+
 void KeyConfigUI::UpdateSelect()
 {
-    auto* input = InputManager::GetInstance();
 
+    if (currentFocus_ == FocusArea::NONE)
+    {
+        if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::KEY_MOUSE)
+        {
+            int mx, my;
+            GetMousePoint(&mx, &my);
+
+            // リスト内にマウスが入ったら LIST へ
+            if (mx >= 270 && mx <= 1010 && my >= 90 && my <= 630)
+            {
+                ChangeFocus(FocusArea::LIST);
+            }
+            // リセットボタン上にマウスが入ったら RESET_BUTTON へ
+            else if (Collision::HitMouseImg2Box(
+                { static_cast<float>(RESET_POS_X), static_cast<float>(RESET_POS_Y) },
+                static_cast<float>(RESET_SIZE_X), static_cast<float>(RESET_SIZE_Y)))
+            {
+                ChangeFocus(FocusArea::RESET_BUTTON);
+            }
+        }
+
+        // キーボードやパッドの上下入力があったら LIST に戻す場合
+        if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP) ||
+            InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
+        {
+            ChangeFocus(FocusArea::LIST);
+        }
+    }
+
+    if (currentFocus_ != FocusArea::LIST) return;
+
+    auto* input = InputManager::GetInstance();
     int maxRow = (int)displayRows_.size();
 
     // ヘッダーに乗っていたら次の有効行へ
@@ -274,14 +362,33 @@ void KeyConfigUI::UpdateSelect()
     if (input->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
     {
         int nextRow = selectRow_;
+        bool foundUpperRow = false;
+
         while (nextRow > 0)
         {
             nextRow--;
             if (!displayRows_[nextRow].isHeader)
             {
                 selectRow_ = nextRow;
+                foundUpperRow = true;
                 break;
             }
+        }
+
+        if (!foundUpperRow)
+        {
+            ChangeFocus(FocusArea::RESET_BUTTON);
+            return;
+        }
+    }
+
+    if (input->GetActiveDevice() == InputManager::ActiveDevice::KEY_MOUSE)
+    {
+        if (Collision::HitMouseImg2Box({ static_cast<float>(RESET_POS_X), static_cast<float>(RESET_POS_Y) },
+            static_cast<float>(RESET_SIZE_X), static_cast<float>(RESET_SIZE_Y)))
+        {
+            ChangeFocus(FocusArea::RESET_BUTTON);
+            return;
         }
     }
 
@@ -331,18 +438,19 @@ void KeyConfigUI::UpdateSelect()
             bool isKeyMouse = (input->GetActiveDevice() == InputManager::ActiveDevice::KEY_MOUSE);
             int mx, my;
             GetMousePoint(&mx, &my);
-            bool isInsideBox = (mx >= 290 && mx <= 1010 && my >= 90 && my <= 630);
+            bool isInsideBox = (mx >= 270 && mx <= 1010 && my >= 90 && my <= 630);
 
             if (!isKeyMouse || isInsideBox)
             {
+                int slot = selectCol_;
 
-                bool isKey = selectCol_ < 2;
-                int slot = selectCol_ % 2;
+                KeyConfig::DeviceType deviceType = (currentTab_ == TabType::KEY_MOUSE)
+                    ? KeyConfig::DeviceType::KEY_MOUSE
+                    : KeyConfig::DeviceType::PAD;
 
                 keyConfig_.Begin(
                     row.action,
-                    isKey ? KeyConfig::DeviceType::KEY_MOUSE
-                    : KeyConfig::DeviceType::PAD,
+                    deviceType,
                     INPUT_INFO::JOYPAD_NO::PAD1,
                     slot
                 );
@@ -352,10 +460,7 @@ void KeyConfigUI::UpdateSelect()
     }
 
     // パッド操作中はマウスUI無効
-    if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::PAD)
-    {
-        return;
-    }
+    if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::PAD) return;
 
     // ======================
     // マウス入力取得
@@ -363,10 +468,20 @@ void KeyConfigUI::UpdateSelect()
     int mx, my;
     GetMousePoint(&mx, &my);
 
-    if (!(mx >= 290 && mx <= 1010 && my >= 90 && my <= 630))
+    bool isInsideList = (mx >= 270 && mx <= 1010 && my >= 90 && my <= 630);
+    bool isInsideReset = Collision::HitMouseImg2Box(
+        { static_cast<float>(RESET_POS_X), static_cast<float>(RESET_POS_Y) },
+        static_cast<float>(RESET_SIZE_X), static_cast<float>(RESET_SIZE_Y));
+
+    // どちらの範囲でもないなら NONE にする
+    if (!isInsideList && !isInsideReset)
     {
+        ChangeFocus(FocusArea::NONE);
         return;
     }
+
+    // リスト範囲外ならスキップ
+    if (!isInsideList) return;
 
     // ======================
     // スロットホバー判定
@@ -402,7 +517,14 @@ void KeyConfigUI::Draw()
     bool isKeyTab = (currentTab_ == TabType::KEY_MOUSE);
     DrawGraph(TAB_POS_X, TAB_POS_Y, tabHandle_[isKeyTab ? 0 : 1], true);
 
-    DrawBoxAA(290, 90, 1010, 630, 0x000000, false, 3.0f);
+    DrawGraph(RESET_POS_X, RESET_POS_Y, resetHandle_, true);
+
+    if (currentFocus_ == FocusArea::RESET_BUTTON)
+    {
+        FrameRenderer::Draw(RESET_POS_X, RESET_POS_Y, RESET_SIZE_X, RESET_SIZE_Y,5);
+    }
+
+    DrawBoxAA(270, 90, 1010, 630, 0x000000, false, 3.0f);
 
     auto* input = InputManager::GetInstance();
     const auto& binds = input->GetActionBinds();
@@ -451,7 +573,7 @@ void KeyConfigUI::Draw()
         // ==========================================
 
         bool isSelectedRow =
-            (!row.isHeader && i == selectRow_);
+            (currentFocus_ == FocusArea::LIST && !row.isHeader && i == selectRow_);
 
         DrawFormatStringToHandle(
             ACTION_X,
@@ -606,6 +728,7 @@ void KeyConfigUI::Delete()
     DeleteGraph(slotHandle_);
     DeleteGraph(slotWaitHandle_);
     DeleteGraph(slotSelectHandle_);
+    DeleteGraph(resetHandle_);
 
     for (int i = 0; i < 2; i++)
     {

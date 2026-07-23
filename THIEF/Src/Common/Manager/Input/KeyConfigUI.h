@@ -30,6 +30,7 @@ public:
         INPUT_INFO::ACTION_CATEGORY category;   // カテゴリ
     };
 
+    // タブ
     enum class TabType
     {
         NONE =-1,
@@ -44,6 +45,14 @@ public:
         int sizeX, sizeY;
     };
 
+    enum class FocusArea
+    {
+        NONE = -1,
+        LIST,         // キーバインドリスト選択中
+        RESET_BUTTON  // リセットボタン選択中
+    };
+
+
 private:
     // 表示データ
     std::vector<DisplayRow> displayRows_;   // 表示行リスト
@@ -51,6 +60,8 @@ private:
 
     std::vector<TabButton> tabButtons_;
     TabType currentTab_;
+
+    FocusArea currentFocus_;    // 現在のフォーカス領域
 
     // UI状態
     bool isActive_ = false;     // UI表示状態
@@ -65,7 +76,8 @@ private:
     int slotWaitHandle_ = -1;   // 入力待ちスロット
     int slotSelectHandle_ = -1; // 選択スロット
     int fontHandle_ = -1;       // フォント
-    int tabHandle_[2] = { -1, -1 };
+    int tabHandle_[2] = { -1, -1 }; // タブ
+    int resetHandle_ = -1;           // リセット画像
 
     // 更新処理
     void UpdateSelect();
@@ -87,5 +99,10 @@ private:
     void KeySelect(void);
     void PadSelect(void);
     void ChangeTabType(TabType type);
+
+    void ChangeFocus(FocusArea focus);
+
+    // リセット実行処理関数
+    void ResetToDefault();
 
 };
