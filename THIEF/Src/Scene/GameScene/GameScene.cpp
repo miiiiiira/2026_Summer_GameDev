@@ -48,6 +48,7 @@
 #include "../../Object/Component/Collider/CartCollider/CartCollider.h"
 #include "../../Common/MouseCursor/MouseCursor.h"
 #include "../../Common/Manager/EffectResManager/EffectResManager.h"
+#include <EffekseerForDXLib.h>
 
 GameScene::GameScene(void)
 {
@@ -194,6 +195,9 @@ void GameScene::Update(void)
 	CollisionEnemy2Player();
 	CollisionEnemy2PlayerGrab();
 
+	// Effekseerにより再生中のエフェクトを更新する
+	UpdateEffekseer3D();
+
 	// スコアマネージャーの更新
 	ScoreManager::GetInstance().Update();
 
@@ -248,6 +252,9 @@ void GameScene::Draw(void)
 
 	// オブジェクトの3D描画
 	objectManger_->Draw3D();
+
+	// Effekseerにより再生中のエフェクトを描画する
+	DrawEffekseer3D();
 
 	// クロスヘアの描画
 	crosshair_->Draw();
