@@ -59,6 +59,9 @@ private:
 	// 確認項目クリア時のカウント
 	int clearStateEndCount_;
 
+	// 達成率
+	int achievementRate_;
+
 	// 状態関数型
 	typedef void (TutorialScene::*StateFunction)(void);
 
@@ -82,6 +85,9 @@ private:
 	void Clear(void);
 
 	void LoadCsvData(void);
+
+	// 達成率バーの処理
+	void UpdateAchievementRate(void);
 
 	// チュートリアルオブジェクトの初期化処理
 	void TutorialCreate(void);
