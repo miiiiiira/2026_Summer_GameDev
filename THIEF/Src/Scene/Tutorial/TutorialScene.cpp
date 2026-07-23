@@ -226,7 +226,7 @@ void TutorialScene::Draw(void)
 
 	if (isClearState_)
 	{
-		DrawStringToHandle(150, 570, "Good job!", 0xffffff, Application::GetInstance()->GetFont());
+		DrawStringToHandle(150, 570, "Good Job!", 0xffffff, Application::GetInstance()->GetFont());
 	}
 	// CLEARˆÈŠO‚Ì‚ÍACSV‚©‚ç“Ç‚İ‚Ş
 	else
