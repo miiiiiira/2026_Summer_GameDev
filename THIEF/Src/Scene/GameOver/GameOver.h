@@ -35,25 +35,17 @@ public:
 
 private:
 
-	// GAMEOVER画像サイズ
-	static constexpr int GAMEOVER_SIZE_X = 765;
-	static constexpr int GAMEOVER_SIZE_Y = 105;
-
-	// GAMEOVER
-	static constexpr int GAMEOVER_POS_X = Application::SCREEN_SIZE_X / 2 - GAMEOVER_SIZE_X/2;
-	static constexpr int GAMEOVER_POS_Y = Application::SCREEN_SIZE_Y / 2 - 100;
-
 	// RETRY画像サイズ
-	static constexpr int RETRY_SIZE_X = 230;
-	static constexpr int RETRY_SIZE_Y = 55;
+	static constexpr int RETRY_SIZE_X = 152;
+	static constexpr int RETRY_SIZE_Y = 32;
 
 	// RETRY
 	static constexpr int RETRY_POS_X = Application::SCREEN_SIZE_X / 2 - RETRY_SIZE_X / 2;
 	static constexpr int RETRY_POS_Y = 485;
 
 	// RETURN_TITLE画像サイズ
-	static constexpr int RETURN_TITLE_SIZE_X = 230;
-	static constexpr int RETURN_TITLE_SIZE_Y = 55;
+	static constexpr int RETURN_TITLE_SIZE_X = 152;
+	static constexpr int RETURN_TITLE_SIZE_Y = 32;
 
 	// RETURN_TITLE
 	static constexpr int RETURN_TITLE_POS_X = Application::SCREEN_SIZE_X / 2 - RETURN_TITLE_SIZE_X / 2;

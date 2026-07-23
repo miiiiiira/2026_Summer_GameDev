@@ -89,7 +89,7 @@ void GameOver::Draw(void)
 #endif // _DEBUG
 
 	// ‰æ‘œ‚Ì•`‰æ
-	DrawGraph(GAMEOVER_POS_X, GAMEOVER_POS_Y, handle_, true);
+	DrawGraph(0, 0, handle_, true);
 
 	for (const auto& button : buttons_)
 	{
