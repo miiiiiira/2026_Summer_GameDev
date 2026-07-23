@@ -33,3 +33,8 @@ namespace SoundTable_Shop
 {
 	extern const std::unordered_map<SoundID, SoundData> Table;
 }
+
+namespace SoundTable_GameOver
+{
+	extern const std::unordered_map<SoundID, SoundData> Table;
+}

@@ -34,10 +34,14 @@ void GameOver::Init(void)
 	// RETURN_TITLE‰æ‘œ
 	buttons_.push_back({ TYPE::RETURN_TITLE, LoadGraph( "Data/Image/GameOver/ReturnTitle.png"),
 							RETURN_TITLE_POS_X, RETURN_TITLE_POS_Y, RETURN_TITLE_SIZE_X, RETURN_TITLE_SIZE_Y });
+
+	// BGM‚ðÄ¶
+	AudioManager::GetInstance()->PlayBGM(SoundID::BGM_GAMEOVER);
 }
 
 void GameOver::Load(void)
 {
+	AudioManager::GetInstance()->LoadSceneSound(LoadScene::GAME_OVER);
 }
 
 void GameOver::LoadEnd(void)
@@ -110,6 +114,8 @@ void GameOver::Release(void)
 		DeleteGraph(button.graphHandle);
 	}
 	buttons_.clear();
+
+	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::GAME_OVER);
 }
 
 void GameOver::SelectUpgrade(void)

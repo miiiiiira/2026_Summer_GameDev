@@ -2,6 +2,7 @@
 #include "Amphora.h"
 #include "../../../../Common/Manager/Audio/AudioManager.h"
 #include "../../Transform/Transform.h"
+#include "../../../../Common/Manager/EffectResManager/EffectResManager.h"
 
 Amphora::Amphora()
 {
@@ -40,6 +41,7 @@ void Amphora::SetParam(void)
 void Amphora::Break(void)
 {
 	// ‘å‚«‚¢•r”j‰óSE
+	EffectResManager::GetInstance().PlayEffect(1.0f, { 0.0f,0.0f, 0.0f }, trans_->pos_, EffectResManager::TYPE::ITEM_BREAK_AMPHORA);
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_6, &trans_->pos_);
 }
 

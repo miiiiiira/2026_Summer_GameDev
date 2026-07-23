@@ -3,6 +3,7 @@
 
 #include "../../../../Common/Manager/Audio/AudioManager.h"
 #include "../../Transform/Transform.h"
+#include "../../../../Common/Manager/EffectResManager/EffectResManager.h"
 
 Goblet::Goblet()
 	:Item()
@@ -41,6 +42,7 @@ void Goblet::SetParam(void)
 
 void Goblet::Break(void)
 {
+	EffectResManager::GetInstance().PlayEffect(1.0f, { 0.0f,0.0f, 0.0f }, trans_->pos_, EffectResManager::TYPE::ITEM_BREAK_GOBLET);
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_1, &trans_->pos_);
 }
 

@@ -9,7 +9,13 @@ public:
 	// エフェクトの種類
 	enum class TYPE
 	{
-		ITEM_BREAK_1
+		ITEM_BREAK_AMPHORA,
+		ITEM_BREAK_BOTTLE,
+		ITEM_BREAK_GOBLET,
+		ITEM_BREAK_JAR,
+		ITEM_BREAK_MUG,
+		ITEM_BREAK_POTION,
+		ITEM_BREAK_SKULL,
 	};
 
 	// インスタンスの生成

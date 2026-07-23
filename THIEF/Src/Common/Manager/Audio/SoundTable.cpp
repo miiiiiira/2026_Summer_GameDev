@@ -73,11 +73,13 @@ namespace SoundTable_Game
 		{ SoundID::SE_MAP_CLOSE,	{"Data/Sound/Game/Player/SE_MAP_CLOSE.mp3",		SoundType::SE_2D, 127} },
 
 		{ SoundID::SE_DELIVERY_ITEM_ON,	{"Data/Sound/Game/Delivery/SE_DELIVERY_ITEM_ON.mp3", SoundType::SE_2D, 180} },
-		{ SoundID::SE_DELIVERY_BUTTON_SUC, {"Data/Sound/Game/Delivery/SE_DELIVERY_BUTTON_SUC.mp3", SoundType::SE_2D, 200} },
+		{ SoundID::SE_DELIVERY_BUTTON_SUC, {"Data/Sound/Game/Delivery/SE_DELIVERY_BUTTON_SUC.mp3", SoundType::SE_2D, 150} },
 		{ SoundID::SE_DELIVERY_BUTTON_FAI, {"Data/Sound/Game/Delivery/SE_DELIVERY_BUTTON_FAI.mp3", SoundType::SE_2D, 200} },
 		{ SoundID::SE_DELIVERY_CANCEL, {"Data/Sound/Game/Delivery/SE_DELIVERY_CANCEL.mp3", SoundType::SE_2D, 255} },
 		{ SoundID::SE_DELIVERY_CALL, {"Data/Sound/Game/Delivery/SE_DELIVERY_CALL.mp3", SoundType::SE_3D, 150} },
 		{ SoundID::SE_CART_ON_ITEM,	{"Data/Sound/Game/Delivery/SE_DELIVERY_ITEM_ON.mp3", SoundType::SE_3D, 150} },
+		{ SoundID::SE_DELIVERY_COUNT_UP,	{"Data/Sound/Game/Delivery/SE_DELIVERY_COUNT_UP.mp3", SoundType::SE_2D, 150} },
+		{ SoundID::SE_DELIVERY_COUNT_END,	{"Data/Sound/Game/Delivery/SE_DELIVERY_COUNT_END.mp3", SoundType::SE_2D, 180} },
 
 		{ SoundID::SE_ITEM_DAMAGE_1, {"Data/Sound/Game/Item/SE_ITEM_DAMAGE_1.mp3", SoundType::SE_3D, 100} },
 		{ SoundID::SE_ITEM_DAMAGE_2, {"Data/Sound/Game/Item/SE_ITEM_DAMAGE_2.mp3", SoundType::SE_3D, 100} },
@@ -125,5 +127,14 @@ namespace SoundTable_Shop
 		{ SoundID::SE_SHOP_NOT_MONEY, {"Data/Sound/Game/Shop/SE_SHOP_NOT_MONEY.mp3", SoundType::SE_2D, 200} },
 		{ SoundID::SE_SHOP_SHUTTER, {"Data/Sound/Game/Shop/SE_SHOP_SHUTTER.mp3", SoundType::SE_2D, 130} },
 
+	};
+}
+
+// ゲームオーバー画面用
+namespace SoundTable_GameOver
+{
+	const std::unordered_map<SoundID, SoundData> Table =
+	{
+		{ SoundID::BGM_GAMEOVER, {"Data/Sound/GameOver/BGM_GAMEOVER.wav", SoundType::BGM, 127} },
 	};
 }

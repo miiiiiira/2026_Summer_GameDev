@@ -2,6 +2,7 @@
 #include "Mug.h"
 #include "../../../../Common/Manager/Audio/AudioManager.h"
 #include "../../Transform/Transform.h"
+#include "../../../../Common/Manager/EffectResManager/EffectResManager.h"
 
 Mug::Mug()
 {
@@ -40,6 +41,7 @@ void Mug::SetParam(void)
 void Mug::Break(void)
 {
 	// 木のマグカップ破壊SE
+	EffectResManager::GetInstance().PlayEffect(1.0f, { 0.0f,0.0f, 0.0f }, trans_->pos_, EffectResManager::TYPE::ITEM_BREAK_MUG);
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_7, &trans_->pos_);
 }
 

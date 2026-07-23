@@ -2,6 +2,7 @@
 #include "Bottle.h"
 #include "../../../../Common/Manager/Audio/AudioManager.h"
 #include "../../Transform/Transform.h"
+#include "../../../../Common/Manager/EffectResManager/EffectResManager.h"
 
 Bottle::Bottle()
 {
@@ -40,6 +41,7 @@ void Bottle::SetParam(void)
 void Bottle::Break(void)
 {
 	// Žæ‚ÁŽè•t‚«•r”j‰óSE
+	EffectResManager::GetInstance().PlayEffect(1.0f, { 0.0f,0.0f, 0.0f }, trans_->pos_, EffectResManager::TYPE::ITEM_BREAK_BOTTLE);
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_4, &trans_->pos_);
 }
 

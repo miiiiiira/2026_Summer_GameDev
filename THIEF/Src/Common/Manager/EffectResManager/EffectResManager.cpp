@@ -91,7 +91,12 @@ EffectResManager::EffectResManager(void)
 
 void EffectResManager::Load(void)
 {
-	// TODO アイテム破壊時のエフェクト
-	//resourceIds_.emplace(TYPE::ITEM_BREAK_1,
-	//	LoadEffekseerEffect("Data/Effect/Charge.efkefc"));
+	// アイテム破壊時のエフェクト
+	resourceIds_.emplace(TYPE::ITEM_BREAK_AMPHORA, LoadEffekseerEffect("Data/Effect/BreakAmphora.efkproj", 100.0f));
+	resourceIds_.emplace(TYPE::ITEM_BREAK_BOTTLE, LoadEffekseerEffect("Data/Effect/BreakBottle.efkproj", 100.0f));
+	resourceIds_.emplace(TYPE::ITEM_BREAK_GOBLET, LoadEffekseerEffect("Data/Effect/BreakGoblet.efkproj", 100.0f));
+	resourceIds_.emplace(TYPE::ITEM_BREAK_JAR, LoadEffekseerEffect("Data/Effect/BreakJar.efkproj", 100.0f));
+	resourceIds_.emplace(TYPE::ITEM_BREAK_MUG, LoadEffekseerEffect("Data/Effect/BreakMug.efkproj", 100.0f));
+	resourceIds_.emplace(TYPE::ITEM_BREAK_POTION, LoadEffekseerEffect("Data/Effect/BreakPotion.efkproj", 100.0f));
+	resourceIds_.emplace(TYPE::ITEM_BREAK_SKULL, LoadEffekseerEffect("Data/Effect/BreakSkull.efkproj", 100.0f));
 }

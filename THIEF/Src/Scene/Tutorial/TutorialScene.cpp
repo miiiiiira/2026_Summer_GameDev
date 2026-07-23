@@ -53,6 +53,8 @@
 #include "../MainMenu/MainMenu.h"
 #include "../LightSelectScene/LightSelectScene.h"
 #include "../../Object/Component/Collider/TutorialWallCollider/TutorialWallCollider.h"
+#include "../../Common/Manager/EffectResManager/EffectResManager.h"
+#include <EffekseerForDXLib.h>
 
 TutorialScene::TutorialScene(void)
 {
@@ -116,6 +118,9 @@ void TutorialScene::Load(void)
 {
 	LoadCsvData();
 
+	// エフェクト管理初期化
+	EffectResManager::CreateInstance();
+
 	// サウンド読みこみ
 	AudioManager::GetInstance()->LoadSceneSound(LoadScene::GAME);
 
@@ -134,6 +139,10 @@ void TutorialScene::Load(void)
 void TutorialScene::LoadEnd(void)
 {
 	Init();
+
+	// エフェクシアが非同期ロードに対応していないためここでロード
+	EffectResManager::GetInstance().Load();
+
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 	// スコアマネージャーに空のベクターを渡す(チュートリアルの場合納品金額が1円になる)
 	ScoreManager::GetInstance().SetItems(stage->GetItems());
@@ -159,6 +168,9 @@ void TutorialScene::Update(void)
 
 	// クロスヘアの更新
 	crosshair_->Update();
+
+	// Effekseerにより再生中のエフェクトを更新する
+	UpdateEffekseer3D();
 
 	// スコアマネージャーの更新
 	ScoreManager::GetInstance().Update();
@@ -203,6 +215,9 @@ void TutorialScene::Draw(void)
 
 	// オブジェクトの3D描画
 	objectManger_->Draw3D();
+
+	// Effekseerにより再生中のエフェクトを描画する
+	DrawEffekseer3D();
 
 	// クロスヘアの描画
 	crosshair_->Draw();
@@ -267,8 +282,10 @@ void TutorialScene::Release(void)
 	delete crosshair_;
 	crosshair_ = nullptr;
 
-	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::GAME);
+	// エフェクト管理解放
+	EffectResManager::GetInstance().Destroy();
 
+	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::GAME);
 }
 
 void TutorialScene::SetState(Tutorial::STATE newState)

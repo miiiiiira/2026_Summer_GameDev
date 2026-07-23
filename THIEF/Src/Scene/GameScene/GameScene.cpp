@@ -110,7 +110,6 @@ void GameScene::Load(void)
 
 	// エフェクト管理初期化
 	EffectResManager::CreateInstance();
-	EffectResManager::GetInstance().Load();
 
 	// オブジェクトマネージャーの生成
 	objectManger_ = new ObjectManager();
@@ -152,6 +151,9 @@ void GameScene::Load(void)
 void GameScene::LoadEnd(void)
 {
 	Init();
+
+	// エフェクシアが非同期ロードに対応していないためここでロード
+	EffectResManager::GetInstance().Load();
 
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 	// スコアマネージャーにアイテムたちを渡す

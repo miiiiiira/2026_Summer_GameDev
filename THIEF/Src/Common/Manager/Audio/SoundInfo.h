@@ -23,6 +23,7 @@ enum class SoundID
 	BGM_GAME_2,
 	BGM_GAME_3,
 	BGM_SHOP,
+	BGM_GAMEOVER,
 
 	AMBIENT_SOUND_1,
 	AMBIENT_SOUND_2,
@@ -44,6 +45,8 @@ enum class SoundID
 	SE_DELIVERY_ITEM_ON,
 	SE_DELIVERY_BUTTON_SUC,
 	SE_DELIVERY_BUTTON_FAI,
+	SE_DELIVERY_COUNT_UP,
+	SE_DELIVERY_COUNT_END,
 	SE_DELIVERY_CANCEL,
 	SE_DELIVERY_CALL,
 	SE_CART_ON_ITEM,
@@ -95,7 +98,8 @@ enum class LoadScene
 	MAIN_MENU,		// メインメニュー
 	LIGHT_SELECT,	// ライト選択
 	GAME,			// ゲーム
-	SHOP,			// ゲーム
+	SHOP,			// ショップ
+	GAME_OVER,		// ゲームオーバー
 };
 
 // サウンドのタイプ

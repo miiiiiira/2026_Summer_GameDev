@@ -1,6 +1,7 @@
 #include "../../../../Common/Manager/Audio/AudioManager.h"
 #include "../../Transform/Transform.h"
 #include "Skull.h"
+#include "../../../../Common/Manager/EffectResManager/EffectResManager.h"
 
 Skull::Skull(void)
 {
@@ -38,6 +39,7 @@ void Skull::SetParam(void)
 
 void Skull::Break(void)
 {
+	EffectResManager::GetInstance().PlayEffect(1.0f, { 0.0f,0.0f, 0.0f }, trans_->pos_, EffectResManager::TYPE::ITEM_BREAK_SKULL);
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_3, &trans_->pos_);
 }
 

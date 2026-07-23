@@ -289,16 +289,16 @@ void Stage::ClearCountUpdate(void)
 			SceneManager::GetInstance()->TrueStageClear();
 		}
 
-		// TODO 完全納品完了音
-		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_SUC);
+		// 完全納品完了音
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_COUNT_END);
 		return;
 	}
 
 	// 一秒ごとにカウント音を出す
 	if (clearCount_ % 60 == 0)
 	{
-		// TODO 納品完了待ち時間のカウント音
-		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_SUC);
+		// 納品完了待ち時間のカウント音
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_COUNT_UP);
 	}
 
 	// 納品済みの金額を確認
