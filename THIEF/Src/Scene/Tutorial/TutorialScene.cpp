@@ -244,13 +244,13 @@ void TutorialScene::Draw(void)
 			DrawStringToHandle(150, 600, steps_[index].textJP.c_str(), 0xffffff, Application::GetInstance()->GetDefaultFont());
 			// ステート表示
 			DrawFormatStringToHandle(10, 230, 0xffffff, 
-					Application::GetInstance()->GetFont(), "ステート：　%s", steps_[index].type.c_str());
+					Application::GetInstance()->GetFont(), "STATE：　%s", steps_[index].type.c_str());
 		}
 	}
 
 	// ステップ表示  ステートが0から始まるため、+1で補正
 	DrawFormatStringToHandle(10, 270, 0xffffff,
-		Application::GetInstance()->GetFont(), "ステップ：　%d / %d", static_cast<int>(currentState_) + 1, static_cast<int>(Tutorial::STATE::MAX));
+		Application::GetInstance()->GetFont(), "STEP：　%d / %d", static_cast<int>(currentState_) + 1, static_cast<int>(Tutorial::STATE::MAX));
 }
 
 void TutorialScene::Release(void)

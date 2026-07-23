@@ -7,6 +7,6 @@ ID,TYPE,PERCENTAGE,ENTEXT,JPTEXT
 6,LIGHT,50,Use %LIGHT% to move the light.,(%LIGHT%でライトを動かす。)
 7,MAP,50,Press %MAP% to open the map.,(％MAP％でマップを開く。)
 8,GRAB,50,Press %GRAB% to pick up the item.,(%GRAB%でアイテムを拾う。)
-9,ITEM,2,Use %WHEEL% to move the item.,(%WHEEL%でアイテムを動かす。)
+9,ITEM,5,Use %WHEEL% to move the item.,(%WHEEL%でアイテムを動かす。)
 10,CART,50,Put the item into the cart.,(アイテムをカートに入れる。)
 11,DELIVER,100,Move to the delivery point and press %DELIVER%.,(配達場所まで移動し、%DELIVER%を押す。)
