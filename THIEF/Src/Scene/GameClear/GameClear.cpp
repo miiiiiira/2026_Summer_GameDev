@@ -1,7 +1,7 @@
 #include "GameClear.h"
 
 #include <DxLib.h>
-#include "../../Application.h"
+
 #include "../../Common/Manager/Input/InputManager.h"
 #include "../../Common/Manager/Audio/AudioManager.h"
 #include "../SceneManager.h"
@@ -14,8 +14,9 @@ GameClear::GameClear(void)
 	handle_ = -1;
 	// マウスの表示する
 	MouseCursor::GetInstance().SetMouseDraw(true);
-	tiHandle_ = -1;
-	timer_ = 0;
+	waitTimer_ = 0;
+	scrollY_ = 0;
+	skipTimer_ = 0;
 }
 
 GameClear::~GameClear(void)
@@ -24,13 +25,18 @@ GameClear::~GameClear(void)
 
 void GameClear::Init(void)
 {
-	timer_ = 0;
+	waitTimer_ = 0;
+	scrollY_ = 0;
+	skipTimer_ = 0;
+
+	state_ = STATE::WAIT_SHADER;
 }
 
 void GameClear::Load(void)
 {
-	handle_ = LoadGraph("Data/Image/GameClear.png");
-	tiHandle_ = LoadGraph("Data/Image/TT.png");
+	handle_ = LoadGraph("Data/Image/GameClear/EndRoll.png");
+
+	AudioManager::GetInstance()->LoadSceneSound(LoadScene::GAME_CLEAR);
 }
 
 void GameClear::LoadEnd(void)
@@ -40,50 +46,98 @@ void GameClear::LoadEnd(void)
 
 void GameClear::Update(void)
 {
-	// ボタンが押されると次のシーンへ
-	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE) || InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DECIDE))
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::DECIDE) || InputManager::GetInstance()->IsDebugAction(INPUT_INFO::DEBUG_ACTION::DECIDE))
 	{
-		// ゲームシーンへ
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(),TITLE);
+		skipTimer_++;	// ボタンが押されるとスキップカウンターをカウントさせる
+	}
+	else
+	{
+		skipTimer_ = 0;	// ボタンが離されたら、カウンターを0にする
 	}
 
-	timer_++;
-
-	if (timer_ >= 120)
+	// スキップ処理を1秒以上押されたら、タイトルに遷移
+	if (skipTimer_ >= 60)
 	{
-		ShaderInit();
+		// ゲームシーンへ
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(), TITLE);
+		return;
+	}
+
+	switch (state_)
+	{
+	case STATE::WAIT_SHADER:
+
+		if (waitTimer_ >= 120)
+		{
+			ShaderInit();
+			waitTimer_ = 0; // タイマーをリセット
+
+			// BGMを再生
+			AudioManager::GetInstance()->PlayBGM(SoundID::BGM_GAMECLEAR);
+
+			state_ = STATE::SCROLL;
+		}
+		else
+		{
+			waitTimer_++;
+		}
+		break;
+
+	case STATE::SCROLL:
+
+		if (waitTimer_ >= 60)
+		{
+			scrollY_ -= 1;
+
+			if (scrollY_ <= LIMIT_Y)
+			{
+				scrollY_ = LIMIT_Y;
+				waitTimer_ = 0; // タイマーをリセット
+
+				state_ = STATE::WAIT_END;
+			}
+		}
+		else
+		{
+			waitTimer_++;
+		}
+		break;
+
+	case STATE::WAIT_END:
+
+		if (waitTimer_ >= 120)
+		{
+			// タイトルシーンへ
+			SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(), TITLE);
+		}
+		else
+		{
+			waitTimer_++;
+		}
+		break;
 	}
 }
 
 void GameClear::Draw(void)
 {
-#ifdef _DEBUG
-
-	DrawString(0, 0, "GameClear", GetColor(255, 255, 255));
-
-#endif // _DEBUG
-
-	DrawRotaGraph(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2 - 100, 1.0, 0.0, handle_, true);
-
-	DrawRotaGraph(TITLE_POS_X, TITLE_POS_Y, 1.0, 0.0, tiHandle_, true);
+	DrawGraph(0, scrollY_, handle_, true);
 }
 
 void GameClear::Release(void)
 {
 	DeleteGraph(handle_);
-	DeleteGraph(tiHandle_);
+
+	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::GAME_CLEAR);
 }
 
 void GameClear::ShaderInit(void)
 {
 	// 走査線
 	SceneManager::GetInstance()->GetShader()->SetScanlineIntensity(0.5f);
-	// グリッチ
-	SceneManager::GetInstance()->GetShader()->SetGlitchAmount(0.005f);
 	// 歪み
-	SceneManager::GetInstance()->GetShader()->SetCurvatureAmount(0.5f);
+	SceneManager::GetInstance()->GetShader()->SetCurvatureAmount(0.4f);
 	// ノイズ
-	SceneManager::GetInstance()->GetShader()->SetNoisePower(0.5f);
+	SceneManager::GetInstance()->GetShader()->SetNoisePower(0.4f);
 	// 色ずれ
 	SceneManager::GetInstance()->GetShader()->SetRgbShift(0.004f);
 }

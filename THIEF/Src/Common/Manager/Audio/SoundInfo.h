@@ -24,6 +24,7 @@ enum class SoundID
 	BGM_GAME_3,
 	BGM_SHOP,
 	BGM_GAMEOVER,
+	BGM_GAMECLEAR,
 
 	AMBIENT_SOUND_1,
 	AMBIENT_SOUND_2,
@@ -100,6 +101,7 @@ enum class LoadScene
 	GAME,			// ゲーム
 	SHOP,			// ショップ
 	GAME_OVER,		// ゲームオーバー
+	GAME_CLEAR,		// ゲームクリア
 };
 
 // サウンドのタイプ

@@ -38,3 +38,8 @@ namespace SoundTable_GameOver
 {
 	extern const std::unordered_map<SoundID, SoundData> Table;
 }
+
+namespace SoundTable_GameClear
+{
+	extern const std::unordered_map<SoundID, SoundData> Table;
+}

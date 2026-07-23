@@ -125,7 +125,7 @@ void TitleScene::ShaderInit(void)
 	// グリッチ
 	SceneManager::GetInstance()->GetShader()->SetGlitchAmount(0.005f);
 	// 歪み
-	SceneManager::GetInstance()->GetShader()->SetCurvatureAmount(0.5f, false);
+	SceneManager::GetInstance()->GetShader()->SetCurvatureAmount(0.4f, false);
 	// ノイズ
 	SceneManager::GetInstance()->GetShader()->SetNoisePower(0.5f);
 	// 色ずれ

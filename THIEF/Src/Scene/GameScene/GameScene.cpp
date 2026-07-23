@@ -718,7 +718,7 @@ void GameScene::CheckEnemyAttack(void)
 				startPos, endPos, radius))
 			{
 				// プレイヤーにダメージを与える
-				player->SetDamage(enemy->GetAttackDamagePow());
+				player->SetDamage(static_cast<int>(enemy->GetAttackDamagePow()));
 
 				// 画面を赤くするエフェクトを付ける
 				redEffect_->SetEffect(DAMAGE_EFFECT_ALPHA, DAMAGE_EFFECT_COLOR);
@@ -1007,7 +1007,7 @@ void GameScene::CollisionEnemy2Player(void)
 		if (enemy->GetTag() == ENEMY_TAG::MUSHNUB && 
 			(pushVector.x > 0.1f || pushVector.y > 0.1f || pushVector.z > 0.1f))
 		{
-			player->SetDamage(enemy->GetAttackDamagePow());
+			player->SetDamage(static_cast<int>(enemy->GetAttackDamagePow()));
 
 			// 画面を赤くするエフェクトを付ける
 			redEffect_->SetEffect(DAMAGE_EFFECT_ALPHA, DAMAGE_EFFECT_COLOR);

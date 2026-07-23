@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../SceneBase.h"
+#include "../../Application.h"
 
 class GameClear : public SceneBase
 {
@@ -18,13 +19,28 @@ public:
 
 private:
 
-	static constexpr int TITLE_POS_X = 512;
-	static constexpr int TITLE_POS_Y = 480;
+	enum class STATE
+	{
+		WAIT_SHADER,
+		SCROLL,
+		WAIT_END,
+		MAX,
+	};
 
-	int handle_;
-	int tiHandle_;
+	STATE state_;	// 現在のステート
 
-	int timer_;
+	// 画像のYサイズ
+	static constexpr int IMAGE_SIZE_Y = 3840;
+	
+	static constexpr int LIMIT_Y = Application::SCREEN_SIZE_Y - IMAGE_SIZE_Y;
+
+	int handle_;	// 画像ハンドル
+
+	int waitTimer_;	// 待ち時間のカウンター
+
+	int skipTimer_;	// スキップ用のカウンター
+
+	int scrollY_;	// Y座標のスクロール値
 
 	void ShaderInit(void);
 };

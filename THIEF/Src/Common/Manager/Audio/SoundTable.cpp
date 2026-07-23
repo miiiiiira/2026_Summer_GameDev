@@ -138,3 +138,12 @@ namespace SoundTable_GameOver
 		{ SoundID::BGM_GAMEOVER, {"Data/Sound/GameOver/BGM_GAMEOVER.wav", SoundType::BGM, 127} },
 	};
 }
+
+// ゲームクリア画面用
+namespace SoundTable_GameClear
+{
+	const std::unordered_map<SoundID, SoundData> Table =
+	{
+		{ SoundID::BGM_GAMECLEAR, {"Data/Sound/GameClear/BGM_GAMECLEAR.mp3", SoundType::BGM, 120} },
+	};
+}
