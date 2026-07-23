@@ -35,8 +35,6 @@ namespace INPUT_INFO
 		UI_MOVE_RIGHT,	// 右
 		DECIDE,			// 決定
 		CANCEL,			// キャンセル
-		TAB_LEFT,		// タブ切替
-		TAB_RIGHT,		// タブ切替
 
 		// システム操作
 		PAUSE,			// ポーズ
@@ -98,8 +96,6 @@ namespace INPUT_INFO
 		case INPUT_INFO::ACTION::UI_MOVE_RIGHT:
 		case INPUT_INFO::ACTION::DECIDE:
 		case INPUT_INFO::ACTION::CANCEL:
-		case INPUT_INFO::ACTION::TAB_LEFT:
-		case INPUT_INFO::ACTION::TAB_RIGHT:
 			return ACTION_CATEGORY::UI;
 
 			// システム操作
@@ -174,8 +170,6 @@ namespace INPUT_INFO
 		{ACTION::UI_MOVE_RIGHT,	"UI RIGHT"},
 		{ACTION::DECIDE,		"DECIDE" },
 		{ACTION::CANCEL,		"CANCEL"},
-		{ACTION::TAB_LEFT,		"TAB LEFT"},
-		{ACTION::TAB_RIGHT,		"TAB RIGHT"},
 
 		{ACTION::PAUSE,			"PAUSE"},
 

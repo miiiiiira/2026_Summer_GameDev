@@ -36,8 +36,6 @@ namespace
 
     static constexpr int TAB_SIZE_X = 303;
     static constexpr int TAB_SIZE_Y = 55;
-    static constexpr int TAB_COL_SIZE_X = 151;
-    static constexpr int TAB_COL_SIZE_Y = TAB_SIZE_Y;
 
     static constexpr int RESET_POS_X = 850;
     static constexpr int RESET_POS_Y = 20;
@@ -80,12 +78,6 @@ void KeyConfigUI::Load()
     );
 
     BuildDisplayList();
-
-    tabButtons_.push_back({ TabType::KEY_MOUSE,TAB_POS_X ,TAB_POS_Y ,
-        TAB_COL_SIZE_X ,TAB_COL_SIZE_Y });
-
-    tabButtons_.push_back({ TabType::PAD,TAB_POS_X+ TAB_COL_SIZE_X ,TAB_POS_Y+ TAB_COL_SIZE_Y ,
-    TAB_COL_SIZE_X, TAB_COL_SIZE_Y });
 }
 
 void KeyConfigUI::LoadEnd()
@@ -103,13 +95,7 @@ void KeyConfigUI::Update()
 
     UpdateSelect();
 
-    if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE) ||
-        InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::TAB_LEFT) ||
-        InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DECIDE) ||
-        InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::TAB_RIGHT))
-    {
-        UpdateTabSelect();
-    }
+    UpdateTabSelect();
 
     if (currentFocus_ == FocusArea::RESET_BUTTON)
     {
@@ -122,7 +108,6 @@ void KeyConfigUI::Update()
         // 決定キーでリセット実行
         if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE))
         {
-            ResetToDefault();
         }
 
         if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::KEY_MOUSE)
@@ -220,15 +205,11 @@ void KeyConfigUI::UpdateTabSelect(void)
 
     if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::KEY_MOUSE)
     {
-        // マウス選択
-        MouseSelect();
-
-        KeySelect();
+        ChangeTabType(TabType::KEY_MOUSE);
     }
     else
     {
-        // パッド選択
-        PadSelect();
+        ChangeTabType(TabType::PAD);
     }
 
     // 中身がNONじゃないかつ、選択物が変わっていたら
@@ -240,65 +221,6 @@ void KeyConfigUI::UpdateTabSelect(void)
     }
 }
 
-void KeyConfigUI::MouseSelect(void)
-{
-    for (const auto& button : tabButtons_)
-    {
-        if (Collision::HitMouseImg2Box({ static_cast<float>(button.x), static_cast<float>(button.y) },
-            static_cast<float>(button.sizeX), static_cast<float>(button.sizeY)))
-        {
-            ChangeTabType(button.type);
-            break;
-        }
-    }
-}
-
-void KeyConfigUI::KeySelect(void)
-{
-    switch (currentTab_)
-    {
-    case KeyConfigUI::TabType::KEY_MOUSE:
-
-        if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::TAB_RIGHT))
-        {
-            ChangeTabType(TabType::PAD);
-        }
-        break;
-    case KeyConfigUI::TabType::PAD:
-
-        if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::TAB_LEFT))
-        {
-            ChangeTabType(TabType::KEY_MOUSE);
-        }
-        break;
-    default:
-        break;
-    }
-}
-
-void KeyConfigUI::PadSelect(void)
-{
-    switch (currentTab_)
-    {
-    case KeyConfigUI::TabType::KEY_MOUSE:
-
-        if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::TAB_RIGHT))
-        {
-            ChangeTabType(TabType::PAD);
-        }
-        break;
-    case KeyConfigUI::TabType::PAD:
-
-        if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::TAB_LEFT))
-        {
-            ChangeTabType(TabType::KEY_MOUSE);
-        }
-        break;
-    default:
-        break;
-    }
-}
-
 void KeyConfigUI::ChangeTabType(TabType type)
 {
     currentTab_ = type;
@@ -307,10 +229,6 @@ void KeyConfigUI::ChangeTabType(TabType type)
 void KeyConfigUI::ChangeFocus(FocusArea focus)
 {
     currentFocus_ = focus;
-}
-
-void KeyConfigUI::ResetToDefault()
-{
 }
 
 void KeyConfigUI::UpdateSelect()
@@ -517,13 +435,16 @@ void KeyConfigUI::Draw()
     bool isKeyTab = (currentTab_ == TabType::KEY_MOUSE);
     DrawGraph(TAB_POS_X, TAB_POS_Y, tabHandle_[isKeyTab ? 0 : 1], true);
 
+    // リセットボタン
     DrawGraph(RESET_POS_X, RESET_POS_Y, resetHandle_, true);
 
+    // リセットボタンが選択されたらフレームをつける
     if (currentFocus_ == FocusArea::RESET_BUTTON)
     {
         FrameRenderer::Draw(RESET_POS_X, RESET_POS_Y, RESET_SIZE_X, RESET_SIZE_Y,5);
     }
 
+    // キーコンフィグを囲む
     DrawBoxAA(270, 90, 1010, 630, 0x000000, false, 3.0f);
 
     auto* input = InputManager::GetInstance();
@@ -715,9 +636,6 @@ void KeyConfigUI::Draw()
     }
 
 #ifdef _DEBUG
-
-    DrawBox(TAB_POS_X, TAB_POS_Y, TAB_POS_X + TAB_COL_SIZE_X, TAB_POS_Y +TAB_COL_SIZE_Y, 0x00ff00, false);
-    DrawBox(TAB_POS_X + TAB_COL_SIZE_X, TAB_POS_Y + TAB_COL_SIZE_Y, TAB_POS_X + TAB_COL_SIZE_X * 2, TAB_POS_Y + TAB_COL_SIZE_Y, 0x00ff00, false);
 
 #endif //_DEBUG
 }

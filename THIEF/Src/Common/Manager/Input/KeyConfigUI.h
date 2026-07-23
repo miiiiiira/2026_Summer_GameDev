@@ -38,13 +38,6 @@ public:
         PAD,
     };
 
-    struct TabButton
-    {
-        TabType type;
-        int x, y;
-        int sizeX, sizeY;
-    };
-
     enum class FocusArea
     {
         NONE = -1,
@@ -57,8 +50,7 @@ private:
     // 表示データ
     std::vector<DisplayRow> displayRows_;   // 表示行リスト
     int scrollOffset_ = 0;                  // スクロール位置
-
-    std::vector<TabButton> tabButtons_;
+;
     TabType currentTab_;
 
     FocusArea currentFocus_;    // 現在のフォーカス領域
@@ -95,14 +87,7 @@ private:
         KeyConfig& keyConfig);
 
     void UpdateTabSelect(void);
-    void MouseSelect(void);
-    void KeySelect(void);
-    void PadSelect(void);
     void ChangeTabType(TabType type);
 
     void ChangeFocus(FocusArea focus);
-
-    // リセット実行処理関数
-    void ResetToDefault();
-
 };
