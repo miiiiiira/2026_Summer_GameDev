@@ -6,6 +6,7 @@
 #include "../../Common/Manager/Audio/AudioManager.h"
 #include "../SceneManager.h"
 #include "../TitleScene/TitleScene.h"
+#include "../../Common/Shader/Shader.h"
 #include "../../Common/MouseCursor/MouseCursor.h"
 
 GameClear::GameClear(void)
@@ -14,6 +15,7 @@ GameClear::GameClear(void)
 	// マウスの表示する
 	MouseCursor::GetInstance().SetMouseDraw(true);
 	tiHandle_ = -1;
+	timer_ = 0;
 }
 
 GameClear::~GameClear(void)
@@ -22,13 +24,13 @@ GameClear::~GameClear(void)
 
 void GameClear::Init(void)
 {
-	handle_ = LoadGraph("Data/Image/GameClear.png"); 
-	tiHandle_ = LoadGraph("Data/Image/TT.png");
+	timer_ = 0;
 }
 
 void GameClear::Load(void)
 {
-	
+	handle_ = LoadGraph("Data/Image/GameClear.png");
+	tiHandle_ = LoadGraph("Data/Image/TT.png");
 }
 
 void GameClear::LoadEnd(void)
@@ -43,6 +45,13 @@ void GameClear::Update(void)
 	{
 		// ゲームシーンへ
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(),TITLE);
+	}
+
+	timer_++;
+
+	if (timer_ >= 120)
+	{
+		ShaderInit();
 	}
 }
 
@@ -63,4 +72,18 @@ void GameClear::Release(void)
 {
 	DeleteGraph(handle_);
 	DeleteGraph(tiHandle_);
+}
+
+void GameClear::ShaderInit(void)
+{
+	// 走査線
+	SceneManager::GetInstance()->GetShader()->SetScanlineIntensity(0.5f);
+	// グリッチ
+	SceneManager::GetInstance()->GetShader()->SetGlitchAmount(0.005f);
+	// 歪み
+	SceneManager::GetInstance()->GetShader()->SetCurvatureAmount(0.5f);
+	// ノイズ
+	SceneManager::GetInstance()->GetShader()->SetNoisePower(0.5f);
+	// 色ずれ
+	SceneManager::GetInstance()->GetShader()->SetRgbShift(0.004f);
 }
