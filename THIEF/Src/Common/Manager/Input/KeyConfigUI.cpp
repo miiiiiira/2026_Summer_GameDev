@@ -6,6 +6,8 @@
 #include "../../Collision/Collision.h"
 #include "InputManager.h"
 #include "../../FrameRenderer/FrameRenderer.h"
+#include "../../../Scene/Confirm/Confirm.h"
+#include "../../../Scene/SceneManager.h"
 #include "InputIO.h"
 
 namespace
@@ -54,6 +56,8 @@ void KeyConfigUI::Init()
         selectRow_++;
 
     currentTab_ = TabType::KEY_MOUSE;
+
+    confirm_ = std::make_shared<Confirm>();
 }
 
 void KeyConfigUI::Load()
@@ -106,8 +110,13 @@ void KeyConfigUI::Update()
         }
 
         // 決定キーでリセット実行
-        if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE))
+        if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE) ||
+             InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DECIDE))
         {
+            // 確認シーンへ
+            confirm_->ChangeType(Confirm::TYPE::RESET_KEY);
+            SceneManager::GetInstance()->PushScene(confirm_);
+            return;
         }
 
         if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::KEY_MOUSE)
@@ -373,7 +382,6 @@ void KeyConfigUI::UpdateSelect()
                     slot
                 );
             }
-
         }
     }
 

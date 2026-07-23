@@ -7,26 +7,27 @@ InputManager::~InputManager(void)
 {
 }
 
-void InputManager::Init(void)
+void InputManager::DefaultKey(void)
 {
+	actionBinds_.clear();
+
 	// --- 全キー登録 ---
 	for (int k = 0; k < 256; ++k)
 	{
 		keyStates_[k] = KeyState{};
 	}
-
 	// --- アクション初期割り当て ---
 	// --- キーボード ---
 	// --- プレイヤーアクション ---
-	SetActionKey(INPUT_INFO::ACTION::MOVE_FORWARD,	{ KEY_INPUT_W });
-	SetActionKey(INPUT_INFO::ACTION::MOVE_BACK,		{ KEY_INPUT_S });
-	SetActionKey(INPUT_INFO::ACTION::MOVE_LEFT,		{ KEY_INPUT_A });
-	SetActionKey(INPUT_INFO::ACTION::MOVE_RIGHT,	{ KEY_INPUT_D });
-	SetActionKey(INPUT_INFO::ACTION::DASH,			{ KEY_INPUT_LSHIFT });
-	SetActionKey(INPUT_INFO::ACTION::JUMP,			{ KEY_INPUT_SPACE });
-	SetActionKey(INPUT_INFO::ACTION::CROUCH,		{ KEY_INPUT_LCONTROL });
-	SetActionKey(INPUT_INFO::ACTION::LIGHT,			{ KEY_INPUT_Q });
-	SetActionKey(INPUT_INFO::ACTION::MAP,			{ KEY_INPUT_TAB });
+	SetActionKey(INPUT_INFO::ACTION::MOVE_FORWARD, { KEY_INPUT_W });
+	SetActionKey(INPUT_INFO::ACTION::MOVE_BACK, { KEY_INPUT_S });
+	SetActionKey(INPUT_INFO::ACTION::MOVE_LEFT, { KEY_INPUT_A });
+	SetActionKey(INPUT_INFO::ACTION::MOVE_RIGHT, { KEY_INPUT_D });
+	SetActionKey(INPUT_INFO::ACTION::DASH, { KEY_INPUT_LSHIFT });
+	SetActionKey(INPUT_INFO::ACTION::JUMP, { KEY_INPUT_SPACE });
+	SetActionKey(INPUT_INFO::ACTION::CROUCH, { KEY_INPUT_LCONTROL });
+	SetActionKey(INPUT_INFO::ACTION::LIGHT, { KEY_INPUT_Q });
+	SetActionKey(INPUT_INFO::ACTION::MAP, { KEY_INPUT_TAB });
 	SetActionMouse(INPUT_INFO::ACTION::GRAB, INPUT_INFO::MouseBtn::LEFT);
 	SetActionMouse(INPUT_INFO::ACTION::ITEM_PUSH, INPUT_INFO::MouseBtn::WHEEL_UP);
 	SetActionMouse(INPUT_INFO::ACTION::ITEM_PULL, INPUT_INFO::MouseBtn::WHEEL_DOWN);
@@ -35,7 +36,7 @@ void InputManager::Init(void)
 	SetActionKey(INPUT_INFO::ACTION::CAMERA_LEFT, { KEY_INPUT_LEFT });
 	SetActionKey(INPUT_INFO::ACTION::CAMERA_RIGHT, { KEY_INPUT_RIGHT });
 
-	
+
 	// --- UI・システム系 ---
 	SetActionKey(INPUT_INFO::ACTION::UI_MOVE_UP, { KEY_INPUT_W });
 	SetActionKey(INPUT_INFO::ACTION::UI_MOVE_DOWN, { KEY_INPUT_S });
@@ -113,8 +114,11 @@ void InputManager::Init(void)
 	SetActionPadBtn(INPUT_INFO::ACTION::CANCEL, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_BTN::START);
 
 	SetActionPadBtn(INPUT_INFO::ACTION::PAUSE, INPUT_INFO::JOYPAD_NO::PAD1, INPUT_INFO::PAD_BTN::START);
+}
 
-
+void InputManager::Init(void)
+{
+	DefaultKey();
 
 	// デバッグ用
 	debugBinds_[INPUT_INFO::DEBUG_ACTION::ADD_POINT].keyMouse[0] = { BindType::MOUSE, MOUSE_INPUT_LEFT };
