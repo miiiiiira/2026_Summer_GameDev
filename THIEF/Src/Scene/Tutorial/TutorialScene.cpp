@@ -58,6 +58,7 @@
 #include "../../Object/Component/Collider/TutorialWallCollider/TutorialWallCollider.h"
 #include "../../Common/Manager/EffectResManager/EffectResManager.h"
 #include <EffekseerForDXLib.h>
+#include "../../Common/Manager/Light/LightManager.h"
 
 TutorialScene::TutorialScene(void)
 {
@@ -118,6 +119,9 @@ void TutorialScene::Init(void)
 
 	// BGM再生
 	AudioManager::GetInstance()->PlayBGM(SoundID::BGM_GAME_1);
+
+	// ライトをデフォルト色に設定する
+	LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_0);
 }
 
 void TutorialScene::Load(void)

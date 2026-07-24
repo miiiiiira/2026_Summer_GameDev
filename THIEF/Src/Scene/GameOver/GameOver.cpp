@@ -60,6 +60,9 @@ void GameOver::Update(void)
 	// 種類が選択されていない場合、処理を行わない
 	if (currentType_ == TYPE::NONE) return;
 
+	// ボタン押下のSEを流す
+	AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_1);
+
 	switch (currentType_)
 	{
 	case GameOver::RETRY:
@@ -79,9 +82,6 @@ void GameOver::Update(void)
 	default:
 		break;
 	}
-
-	// ボタン押下のSEを流す
-	AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_1);
 }
 
 void GameOver::Draw(void)
