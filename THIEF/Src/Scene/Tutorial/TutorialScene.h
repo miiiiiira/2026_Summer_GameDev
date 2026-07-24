@@ -94,5 +94,20 @@ private:
 
 	// タグを使用し、アイテムを作る
 	void ItemCreate(Tag tag, VECTOR pos);
+
+	// 1スロット目の入力名を取得する
+	std::string GetSlot1KeyName(INPUT_INFO::ACTION action);
+
+	// 文字列ないの特定のワードを置換する
+	std::string ReplaceAll(std::string str, const std::string& from, const std::string& to);
+
+	// ％％タグをキーコンフィグ1スロット目の名称に置換する
+	std::string ConvertTutorialTagToKeyName(std::string text);
+
+	// タグ部分だけ色を変えて描画
+	void DrawTutorialTextWithHighlight(int x, int y, const std::string& originalText, unsigned int normalColor, unsigned int highlightColor, int fontHandle);
+
+	// パッドの割り当てがスティックか
+	std::string GetPadMoveString(void);
 };
 

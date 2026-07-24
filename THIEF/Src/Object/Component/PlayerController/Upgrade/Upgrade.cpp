@@ -287,7 +287,7 @@ void Upgrade::SelectUpgrade(void)
 	// 前回の選択物を入れておく
 	SHOP_SLOT prevSlot = slot_;
 
-	if (SystemManager::GetInstance().GetIsDevice())
+	if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::KEY_MOUSE)
 	{
 		// マウス選択
 		MouseSelect();

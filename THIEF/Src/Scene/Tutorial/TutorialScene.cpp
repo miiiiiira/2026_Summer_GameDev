@@ -1,6 +1,7 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include <unordered_map>
 
 #include "../../Common/Manager/PlayerActionCounter/PlayerActionCounter.h"
 #include "../../Application.h"
@@ -254,9 +255,13 @@ void TutorialScene::Draw(void)
 		if (index >= 0 && index < static_cast<int>(steps_.size()))
 		{
 			// steps_ から取得し、描画
-			// テキスト表示
-			DrawStringToHandle(150, 570, steps_[index].textEN.c_str(), 0xffffff, Application::GetInstance()->GetFont());
-			DrawStringToHandle(150, 600, steps_[index].textJP.c_str(), 0xffffff, Application::GetInstance()->GetDefaultFont());
+			std::string textEN = ConvertTutorialTagToKeyName(steps_[index].textEN);
+			std::string textJP = ConvertTutorialTagToKeyName(steps_[index].textJP);
+
+			// 置換後のテキストを描画
+			DrawTutorialTextWithHighlight(150, 570, steps_[index].textEN, 0xffffff, 0xffc800, Application::GetInstance()->GetFont());
+			DrawTutorialTextWithHighlight(150, 600, steps_[index].textJP, 0xffffff, 0xffc800, Application::GetInstance()->GetDefaultFont());
+
 			// ステート表示
 			DrawFormatStringToHandle(10, 230, 0xffffff, 
 					Application::GetInstance()->GetFont(), "STATE：　%s", steps_[index].type.c_str());
@@ -848,4 +853,238 @@ void TutorialScene::ItemCreate(Tag tag, VECTOR pos)
 	{
 		stage->SetItem(itemBase);
 	}
+}
+
+std::string TutorialScene::GetSlot1KeyName(INPUT_INFO::ACTION action)
+{
+	// InputManagerから全アクションのバインド情報を取得
+	const auto& binds = InputManager::GetInstance()->GetActionBinds();
+	auto it = binds.find(action);
+
+	// アクションの登録情報が存在しないなら"---" を返す
+	if (it == binds.end()) return "---";
+
+	// 現在アクティブなデバイスを取得
+	auto activeDevice = InputManager::GetInstance()->GetActiveDevice();
+
+	// パッド
+	if (activeDevice == InputManager::ActiveDevice::PAD)
+	{
+		const auto& bind = it->second.pad[0];	// 1スロット目
+
+		// 未割り当てなら"---" を返す
+		if (bind.code == -1) return "---";
+
+		switch (bind.type)
+		{
+		case InputManager::BindType::PAD_BTN:
+			return INPUT_INFO::PadBtnToString(static_cast<INPUT_INFO::PAD_BTN>(bind.code));
+
+		case InputManager::BindType::PAD_DIR:
+			return INPUT_INFO::PadDirToString(static_cast<INPUT_INFO::PAD_DIR>(bind.code));
+
+		case InputManager::BindType::PAD_TRIGGER:
+			return INPUT_INFO::PadTriggerToString(static_cast<INPUT_INFO::PAD_TRIGGER>(bind.code));
+
+		case InputManager::BindType::PAD_STICK:
+			return INPUT_INFO::PadStickToString(static_cast<INPUT_INFO::PAD_STICK>(bind.code));
+
+		default:
+			return "---";
+		}
+	}
+
+	// キーボード・マウス
+	const auto& bind = it->second.keyMouse[0]; // 1スロット目
+
+	if (bind.code == -1) return "---";
+
+	// 未割り当てなら"---" を返す
+	if (bind.type == InputManager::BindType::KEY)
+	{
+		return INPUT_INFO::GetKeyNameFromScanCode(bind.code);
+	}
+	else if (bind.type == InputManager::BindType::MOUSE)
+	{
+		return INPUT_INFO::MouseToString(static_cast<INPUT_INFO::MouseBtn>(bind.code));
+	}
+
+	return "---";
+}
+
+std::string TutorialScene::ReplaceAll(std::string str, const std::string& from, const std::string& to)
+{
+	// 空ならそのまま返す
+	if (from.empty()) return str;
+
+	// 検索を開始する位置
+	size_t startPos = 0;
+
+	// 開始位置からfromが見つからなくなるまでループ
+	while ((startPos = str.find(from, startPos)) != std::string::npos)
+	{
+		// 見つかった位置から長さ文をtoに置き換え
+		str.replace(startPos, from.length(), to);
+
+		// 次の検索位置を置換後の文字列の後ろに進める
+		startPos += to.length();
+	}
+	return str;
+}
+
+std::string TutorialScene::ConvertTutorialTagToKeyName(std::string text)
+{
+	// --- 単一アクションとタグの対応表 ---
+	static const std::unordered_map<std::string, INPUT_INFO::ACTION> singleTagMap = {
+		{ "%JUMP%",   INPUT_INFO::ACTION::JUMP },
+		{ "%DASH%",   INPUT_INFO::ACTION::DASH },
+		{ "%CROUCH%", INPUT_INFO::ACTION::CROUCH },
+		{ "%LIGHT%",  INPUT_INFO::ACTION::LIGHT },
+		{ "%MAP%",    INPUT_INFO::ACTION::MAP },
+		{ "%GRAB%",   INPUT_INFO::ACTION::GRAB },
+		{ "%DELIVER%",   INPUT_INFO::ACTION::GRAB },
+	};
+
+	// 単一アクションタグの置換
+	for (const auto& pair : singleTagMap)
+	{
+		if (text.find(pair.first) != std::string::npos)
+		{
+			// 1スロット目のキー名を取得
+			std::string keyName = GetSlot1KeyName(pair.second);
+			// 文字列で置換
+			text = ReplaceAll(text, pair.first, keyName);
+		}
+	}
+
+	// --- 複合・特殊タグの個別置換 ---
+	if (text.find("%MOVE%") != std::string::npos)
+	{
+		std::string moveStr = "";
+
+		// 現在アクティブなデバイスを取得
+		auto activeDevice = InputManager::GetInstance()->GetActiveDevice();
+
+		if (activeDevice == InputManager::ActiveDevice::PAD)
+		{
+			// パッド時の文字列を取得
+			moveStr = GetPadMoveString();
+		}
+		else
+		{
+			moveStr = GetSlot1KeyName(INPUT_INFO::ACTION::MOVE_FORWARD) + "/" +
+				GetSlot1KeyName(INPUT_INFO::ACTION::MOVE_LEFT) + "/" +
+				GetSlot1KeyName(INPUT_INFO::ACTION::MOVE_BACK) + "/" +
+				GetSlot1KeyName(INPUT_INFO::ACTION::MOVE_RIGHT);
+		}
+
+		// 文字列で置換
+		text = ReplaceAll(text, "%MOVE%", moveStr);
+	}
+
+	if (text.find("%WHEEL%") != std::string::npos)
+	{
+		std::string wheelStr = 
+			GetSlot1KeyName(INPUT_INFO::ACTION::ITEM_PUSH) + "/" + 
+			GetSlot1KeyName(INPUT_INFO::ACTION::ITEM_PULL);
+
+		// 文字列で置換
+		text = ReplaceAll(text, "%WHEEL%", wheelStr);
+	}
+
+	return text;
+}
+
+void TutorialScene::DrawTutorialTextWithHighlight(int x, int y, const std::string& originalText, unsigned int normalColor, unsigned int highlightColor, int fontHandle)
+{
+	// % から次の % までのタグを検出して描画する
+	size_t currentPos = 0;
+	int currentX = x;
+
+	// 文字列の後ろになるまでループ
+	while (currentPos < originalText.length())
+	{
+		// 最初の '%' の位置を探す
+		size_t tagStart = originalText.find('%', currentPos);
+
+		// '%' がこれ以上存在しないなら
+		if (tagStart == std::string::npos)
+		{
+			// 残りの文字列を描画
+			std::string sub = originalText.substr(currentPos);
+			DrawStringToHandle(currentX, y, sub.c_str(), normalColor, fontHandle);
+			break;
+		}
+		// '%' の直前までに通常テキストが存在するなら
+		if (tagStart > currentPos)
+		{
+			// タグ手前までの通常文字列を取り出して描画する
+			std::string normalStr = originalText.substr(currentPos, tagStart - currentPos);
+			DrawStringToHandle(currentX, y, normalStr.c_str(), normalColor, fontHandle);
+			// 描画した長さ分、X座標を進める
+			currentX += GetDrawStringWidthToHandle(normalStr.c_str(), static_cast<int>(normalStr.length()), fontHandle);
+		}
+
+		// 閉じの '%' を探す
+		size_t tagEnd = originalText.find('%', tagStart + 1);
+
+		// 閉じの '%' が見つからないなら
+		if (tagEnd == std::string::npos)
+		{
+			// 残りの文字列をすべて通常色で描画して終了
+			std::string sub = originalText.substr(tagStart);
+			DrawStringToHandle(currentX, y, sub.c_str(), normalColor, fontHandle);
+			break;
+		}
+
+		// タグを取り出す
+		std::string tag = originalText.substr(tagStart, tagEnd - tagStart + 1);
+
+		// タグを実際のキー名に変換
+		std::string keyName = ConvertTutorialTagToKeyName(tag);
+
+		// 置換後のキー名をハイライト色で描画
+		DrawStringToHandle(currentX, y, keyName.c_str(), highlightColor, fontHandle);
+		// 描画した長さ分、X座標を進める
+		currentX += GetDrawStringWidthToHandle(keyName.c_str(), static_cast<int>(keyName.length()), fontHandle);
+
+		// 次の検索位置へ進める
+		currentPos = tagEnd + 1;
+	}
+}
+
+std::string TutorialScene::GetPadMoveString(void)
+{
+	// InputManagerから全アクションのバインド情報を取得
+	const auto& binds = InputManager::GetInstance()->GetActionBinds();
+
+	// 移動アクションの登録情報を検索
+	auto it = binds.find(INPUT_INFO::ACTION::MOVE_FORWARD);
+	if (it == binds.end()) return "---";
+
+	const auto& bind = it->second.pad[0];	// 1スロット目
+	if (bind.code == -1) return "---";
+
+	// スティックが割り当てられているなら
+	if (bind.type == InputManager::BindType::PAD_STICK)
+	{
+		auto stick = static_cast<INPUT_INFO::PAD_STICK>(bind.code);
+
+		// 左スティックが割り当てられているなら
+		if (stick >= INPUT_INFO::PAD_STICK::LEFT_UP && stick <= INPUT_INFO::PAD_STICK::LEFT_RIGHT)
+		{
+			return "LEFT STICK";
+		}
+		// 右スティックが割り当てられているなら
+		if (stick >= INPUT_INFO::PAD_STICK::RIGHT_UP && stick <= INPUT_INFO::PAD_STICK::RIGHT_RIGHT)
+		{
+			return "RIGHT STICK";
+		}
+	}
+
+	// スティック以外が割り当てられているならそのまま表示
+	return GetSlot1KeyName(INPUT_INFO::ACTION::MOVE_FORWARD) + "/" +
+		GetSlot1KeyName(INPUT_INFO::ACTION::MOVE_LEFT) + "/" +
+		GetSlot1KeyName(INPUT_INFO::ACTION::MOVE_BACK) + "/" +
+		GetSlot1KeyName(INPUT_INFO::ACTION::MOVE_RIGHT);
 }
