@@ -12,6 +12,8 @@
 GameClear::GameClear(void)
 {
 	handle_ = -1;
+	skipHandle_ = -1;
+	skipGauge_ = -1;
 	// マウスの表示する
 	MouseCursor::GetInstance().SetMouseDraw(true);
 	waitTimer_ = 0;
@@ -36,6 +38,9 @@ void GameClear::Load(void)
 {
 	handle_ = LoadGraph("Data/Image/GameClear/EndRoll.png");
 
+	skipHandle_ = LoadGraph("Data/Image/GameClear/skip.png");
+	skipGauge_ = LoadGraph("Data/Image/GameClear/skipGauge.png");
+
 	AudioManager::GetInstance()->LoadSceneSound(LoadScene::GAME_CLEAR);
 }
 
@@ -46,21 +51,35 @@ void GameClear::LoadEnd(void)
 
 void GameClear::Update(void)
 {
-	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::DECIDE) || InputManager::GetInstance()->IsDebugAction(INPUT_INFO::DEBUG_ACTION::DECIDE))
-	{
-		skipTimer_++;	// ボタンが押されるとスキップカウンターをカウントさせる
-	}
-	else
-	{
-		skipTimer_ = 0;	// ボタンが離されたら、カウンターを0にする
-	}
-
 	// スキップ処理を1秒以上押されたら、タイトルに遷移
-	if (skipTimer_ >= 60)
+	if (skipTimer_ >= MAX_SKIP_TIME)
 	{
 		// ゲームシーンへ
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(), TITLE);
 		return;
+	}
+
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::DECIDE) || InputManager::GetInstance()->IsDebugAction(INPUT_INFO::DEBUG_ACTION::DECIDE))
+	{
+		skipTimer_++;	// ボタンが押されるとスキップカウンターをカウントさせる
+
+		alpha_ += 10.0f;
+
+		if (alpha_ >= 255.0f)
+		{
+			alpha_ = 255.0f;
+		}
+	}
+	else
+	{
+		skipTimer_ = 0.0f;	// ボタンが離されたら、カウンターを0にする
+
+		alpha_ -= 10.0f;
+
+		if (alpha_ <= 0.0f)
+		{
+			alpha_ = 0.0f;
+		}
 	}
 
 	switch (state_)
@@ -121,11 +140,28 @@ void GameClear::Update(void)
 void GameClear::Draw(void)
 {
 	DrawGraph(0, scrollY_, handle_, true);
+
+	// アルファ値を設定
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha_);
+
+	int gaugePosX = Application::SCREEN_SIZE_X - SKIP_IMAGE_SIZE / 2;
+	int gaugePosY = Application::SCREEN_SIZE_Y - SKIP_IMAGE_SIZE / 2;
+	float rate = (static_cast<float>(skipTimer_) / MAX_SKIP_TIME) * 100.0;
+	DrawCircleGauge(gaugePosX, gaugePosY, rate, skipGauge_, 0.0);
+
+	int posX = Application::SCREEN_SIZE_X - SKIP_IMAGE_SIZE;
+	int posY = Application::SCREEN_SIZE_Y - SKIP_IMAGE_SIZE;
+	DrawGraph(posX, posY, skipHandle_, true);
+
+	// アルファ値を元に戻す
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 void GameClear::Release(void)
 {
 	DeleteGraph(handle_);
+	DeleteGraph(skipHandle_);
+	DeleteGraph(skipGauge_);
 
 	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::GAME_CLEAR);
 }
