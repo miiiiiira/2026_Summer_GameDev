@@ -50,6 +50,8 @@
 #include "../../Object/Component/Collider/CartCollider/CartCollider.h"
 #include "../../Common/MouseCursor/MouseCursor.h"
 
+#include "../../Object/Actor/Wall/TutorialWall.h"
+
 #include "TutorialScene.h"
 #include "../MainMenu/MainMenu.h"
 #include "../LightSelectScene/LightSelectScene.h"
@@ -62,6 +64,7 @@ TutorialScene::TutorialScene(void)
 	// マウスの表示を消す
 	MouseCursor::GetInstance().SetMouseDraw(false);
 	crosshair_ = nullptr;
+	tutorialWall_ = nullptr;
 
 	// 状態の登録
 	stateTable_[Tutorial::MOVE] = &TutorialScene::Move;
@@ -111,6 +114,8 @@ void TutorialScene::Init(void)
 	// クロスヘアの初期化処理
 	crosshair_->Init();
 
+	tutorialWall_->Init();
+
 	// BGM再生
 	AudioManager::GetInstance()->PlayBGM(SoundID::BGM_GAME_1);
 }
@@ -131,6 +136,8 @@ void TutorialScene::Load(void)
 	// クロスヘアの作成
 	crosshair_ = new Crosshair();
 	crosshair_->Load();
+
+	WallCreate();
 
 	// チュートリアルに使用するオブジェクトの初期化処理
 	TutorialCreate();
@@ -166,6 +173,8 @@ void TutorialScene::Update(void)
 
 	// オブジェクトの更新
 	objectManger_->Update();
+
+	tutorialWall_->Update(currentState_, isClearState_, clearStateEndCount_, MAX_CLEAR_COUNT);
 
 	// クロスヘアの更新
 	crosshair_->Update();
@@ -216,6 +225,8 @@ void TutorialScene::Draw(void)
 
 	// オブジェクトの3D描画
 	objectManger_->Draw3D();
+
+	tutorialWall_->Draw();
 
 	// Effekseerにより再生中のエフェクトを描画する
 	DrawEffekseer3D();
@@ -292,6 +303,13 @@ void TutorialScene::Release(void)
 	crosshair_->Release();
 	delete crosshair_;
 	crosshair_ = nullptr;
+
+	if (tutorialWall_ != nullptr)
+	{
+		tutorialWall_->Release();
+		delete tutorialWall_;
+		tutorialWall_ = nullptr;
+	}
 
 	// エフェクト管理解放
 	EffectResManager::GetInstance().Destroy();
@@ -530,7 +548,7 @@ void TutorialScene::Clear(void)
 	}
 
 	// カウントを進める
-	clearStateEndCount_++;
+	clearStateEndCount_+= 2;
 }
 
 void TutorialScene::TutorialCreate(void)
@@ -859,6 +877,58 @@ void TutorialScene::ItemCreate(Tag tag, VECTOR pos)
 	{
 		stage->SetItem(itemBase);
 	}
+}
+
+void TutorialScene::WallCreate(void)
+{
+	tutorialWall_ = new TutorialWall();
+	tutorialWall_->Load();
+
+	// --- 各ステップの壁座標を登録 ---
+	tutorialWall_->AddWall(
+		VGet(0.0f, 0.0f, 780.0f),
+		{ Tutorial::MOVE }
+	);
+
+	tutorialWall_->AddWall(
+		VGet(0.0f, 0.0f, 2280.0f),
+		{ Tutorial::JUMP }
+	);
+
+	tutorialWall_->AddWall(
+		VGet(0.0f, 0.0f, 3750.0f),
+		{ Tutorial::DASH }
+	);
+
+	tutorialWall_->AddWall(
+		VGet(0.0f, 0.0f, 5180.0f),
+		{ Tutorial::CROUCH }
+	);
+
+	tutorialWall_->AddWall(
+		VGet(0.0f, 0.0f, 6680.0f),
+		{ Tutorial::SLIDING }
+	);
+
+	tutorialWall_->AddWall(
+		VGet(0.0f, 0.0f, 8130.0f),
+		{ Tutorial::LIGHT }
+	);
+
+	tutorialWall_->AddWall(
+		VGet(0.0f, 0.0f, 9600.0f),
+		{ Tutorial::MAP }
+	);
+
+	tutorialWall_->AddWall(
+		VGet(0.0f, 0.0f, 11070.0f),
+		{ Tutorial::GRAB }
+	);
+
+	tutorialWall_->AddWall(
+		VGet(0.0f, 0.0f, 12500.0f),
+		{ Tutorial::RANGE }
+	);
 }
 
 std::string TutorialScene::GetSlot1KeyName(INPUT_INFO::ACTION action)

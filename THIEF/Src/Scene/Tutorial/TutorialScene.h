@@ -11,6 +11,7 @@ class ObjectManager;
 class EnemyManager;
 class EnemyBase;
 class Crosshair;
+class TutorialWall;
 
 class TutorialScene : public SceneBase
 {
@@ -49,6 +50,9 @@ private:
 
 	// クロスヘア
 	Crosshair* crosshair_;
+
+	// チュートリアル用の壁
+	TutorialWall* tutorialWall_;
 
 	// データ
 	std::vector<Tutorial::TutorialInfo> steps_;
@@ -94,6 +98,8 @@ private:
 
 	// タグを使用し、アイテムを作る
 	void ItemCreate(Tag tag, VECTOR pos);
+
+	void WallCreate(void);
 
 	// 1スロット目の入力名を取得する
 	std::string GetSlot1KeyName(INPUT_INFO::ACTION action);
