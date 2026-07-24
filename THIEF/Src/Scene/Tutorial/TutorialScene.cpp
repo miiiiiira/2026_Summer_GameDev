@@ -268,9 +268,15 @@ void TutorialScene::Draw(void)
 		}
 	}
 
+
+	int step = static_cast<int>(currentState_);
 	// ステップ表示  ステートが0から始まるため、+1で補正
+	if (static_cast<int>(currentState_) < static_cast<int>(Tutorial::STATE::MAX))
+	{
+		step++;
+	}
 	DrawFormatStringToHandle(10, 270, 0xffffff,
-		Application::GetInstance()->GetFont(), "STEP：　%d / %d", static_cast<int>(currentState_) + 1, static_cast<int>(Tutorial::STATE::MAX));
+		Application::GetInstance()->GetFont(), "STEP：　%d / %d", step, static_cast<int>(Tutorial::STATE::MAX));
 }
 
 void TutorialScene::Release(void)
