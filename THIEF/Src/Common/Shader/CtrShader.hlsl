@@ -60,32 +60,26 @@ float4 main(PS_INPUT input) : SV_TARGET
     // 魚眼レンズ処理
     // --------------------------------------------
     // 歪みの計算
-    if (g_curvatureAmount > 0)
-    {
-        // 中心から離れるほど、歪みが強くなる
-        float distortion = (x * x + y * y) * g_curvatureAmount;
+    // 中心から離れるほど、歪みが強くなる
+    float distortion = (x * x + y * y) * g_curvatureAmount;
     
-        // 曲面の歪み
-        uv = 0.5f + center * (1.0f + distortion);
-    }
+    // 曲面の歪み
+    uv = 0.5f + center * (1.0f + distortion);
     
     // グリッチ処理
     // --------------------------------------------
-    if (g_glitchAmount > 0)
+    // 0.5秒ごとに値を更新
+    float timeStep = floor(g_timer * GLITCH_CHECK_HERTZ);
+    float randomInterval = frac(sin(timeStep * TIME_RANDOM_SEED_A) * TIME_RANDOM_SEED_B);
+    
+    if (randomInterval > glitchProbability)
     {
-       // 0.5秒ごとに値を更新
-        float timeStep = floor(g_timer * GLITCH_CHECK_HERTZ);
-        float randomInterval = frac(sin(timeStep * TIME_RANDOM_SEED_A) * TIME_RANDOM_SEED_B);
+        // グリッチ
+        float glitch = sin(uv.y * GLITCH_WAVE_FREQ + g_timer * GLITCH_WAVE_SPEED);
     
-        if (randomInterval > glitchProbability)
+        if (abs(glitch) > GLITCH_THRESHOLD)
         {
-             // グリッチ
-            float glitch = sin(uv.y * GLITCH_WAVE_FREQ + g_timer * GLITCH_WAVE_SPEED);
-    
-            if (abs(glitch) > GLITCH_THRESHOLD)
-            {
-                uv.x += glitch * g_glitchAmount;
-            }
+            uv.x += glitch * g_glitchAmount;
         }
     }
     
@@ -93,51 +87,39 @@ float4 main(PS_INPUT input) : SV_TARGET
 
     // RGBずらし処理
     // --------------------------------------------
-    if (g_rgbShift > 0)
-    {
-       // RGBずらし用の座標
-        float2 uvRed = uv + float2(g_rgbShift, 0.0f);
-        float2 uvBlue = uv - float2(g_rgbShift, 0.0f);
+    // RGBずらし用の座標
+    float2 uvRed = uv + float2(g_rgbShift, 0.0f);
+    float2 uvBlue = uv - float2(g_rgbShift, 0.0f);
         
-        // 左方向にずらす
-        float r = g_SrcTexture.Sample(g_SrcSampler, uvRed).r;
-        // そのまま
-        float g = g_SrcTexture.Sample(g_SrcSampler, uv).g;
-        // 右方向にずらす
-        float b = g_SrcTexture.Sample(g_SrcSampler, uvBlue).b;
+    // 左方向にずらす
+    float r = g_SrcTexture.Sample(g_SrcSampler, uvRed).r;
+    // そのまま
+    float g = g_SrcTexture.Sample(g_SrcSampler, uv).g;
+    // 右方向にずらす
+    float b = g_SrcTexture.Sample(g_SrcSampler, uvBlue).b;
         
-        color = float4(r, g, b, 1.0f);
-    }
+    color = float4(r, g, b, 1.0f);
         
-        // ビネット
+    // ビネット
     // --------------------------------------------
-    if (g_vignettePower > 0)
-    {
-        float vignette = (1.0f - x * x * g_vignettePower)
+    float vignette = (1.0f - x * x * g_vignettePower)
                               * (1.0f - y * y * g_vignettePower);
-        color.rgb *= vignette;
-    }
+    color.rgb *= vignette;
     
     // ノイズ処理
     // --------------------------------------------
     // ノイズ計算
-    if (g_noisePower > 0)
-    {
-        float noise = frac(sin(
+    float noise = frac(sin(
 			dot(uv * frac(g_timer), NOISE_SEED)) * NOISE_AMPLITUDE) - 0.5f;
     
-        // ノイズカラーを加算する
-        color.rgb += noise * g_noisePower;
-    }
+    // ノイズカラーを加算する
+    color.rgb += noise * g_noisePower;
 
     
     // スキャンライン処理
     // --------------------------------------------
-    if (g_scanlineIntensity > 0)
-    {
-        float scanLine = 1.0f - abs(sin(uv.y * SCANLINE_DENSITY)) * g_scanlineIntensity;
-        color.rgb *= scanLine;
-    }
+    float scanLine = 1.0f - abs(sin(uv.y * SCANLINE_DENSITY)) * g_scanlineIntensity;
+    color.rgb *= scanLine;
 
     return color;
 }
