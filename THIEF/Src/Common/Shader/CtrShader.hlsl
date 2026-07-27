@@ -45,16 +45,12 @@ Texture2D g_SrcTexture : register(t0);
 // サンプラー：適切な色を決める処理
 SamplerState g_SrcSampler : register(s0);
 
-// シェーダー内だけで使う定数
-
 float4 main(PS_INPUT input) : SV_TARGET
 {
     float2 uv = input.TexCoords0;
-    
-    float4 color = float4(0.0f, 0.0f, 0.0f, 1.0f);
    
     // 中心を0.0にする
-    float2 center =  (uv - 0.5f);
+    float2 center = (uv - 0.5f);
    
     // 中心からの距離を計算
     // * 2.0で0.0～1.0にする
@@ -92,44 +88,40 @@ float4 main(PS_INPUT input) : SV_TARGET
             }
         }
     }
-
     
+    float4 color = g_SrcTexture.Sample(g_SrcSampler, uv);
+
     // RGBずらし処理
     // --------------------------------------------
-    if(g_rgbShift > 0)
+    if (g_rgbShift > 0)
     {
-        // 範囲内だけ反映する
-        if (uv.x >= 0.0f && uv.x <= 1.0f && uv.y >= 0.0f && uv.y <= 1.0f)
-        {
-            // RGBずらし用の座標
-            float2 uvRed = uv + float2(g_rgbShift, 0.0f);
-            float2 uvBlue = uv - float2(g_rgbShift, 0.0f);
+       // RGBずらし用の座標
+        float2 uvRed = uv + float2(g_rgbShift, 0.0f);
+        float2 uvBlue = uv - float2(g_rgbShift, 0.0f);
         
-            // 左方向にずらす
-            float r = g_SrcTexture.Sample(g_SrcSampler, uvRed).r;
-            // そのまま
-            float g = g_SrcTexture.Sample(g_SrcSampler, uv).g;
-            // 右方向にずらす
-            float b = g_SrcTexture.Sample(g_SrcSampler, uvBlue).b;
+        // 左方向にずらす
+        float r = g_SrcTexture.Sample(g_SrcSampler, uvRed).r;
+        // そのまま
+        float g = g_SrcTexture.Sample(g_SrcSampler, uv).g;
+        // 右方向にずらす
+        float b = g_SrcTexture.Sample(g_SrcSampler, uvBlue).b;
         
-            color = float4(r, g, b, 1.0f);
-        
-            // ビネット
-            if (g_vignettePower > 0)
-            {
-                float vignette = (1.0f - x * x * g_vignettePower)
-                              * (1.0f - y * y * g_vignettePower);
-                color.rgb *= vignette;
-            }
-
-        }
+        color = float4(r, g, b, 1.0f);
     }
-
+        
+        // ビネット
+    // --------------------------------------------
+    if (g_vignettePower > 0)
+    {
+        float vignette = (1.0f - x * x * g_vignettePower)
+                              * (1.0f - y * y * g_vignettePower);
+        color.rgb *= vignette;
+    }
     
     // ノイズ処理
     // --------------------------------------------
     // ノイズ計算
-    if(g_noisePower > 0)
+    if (g_noisePower > 0)
     {
         float noise = frac(sin(
 			dot(uv * frac(g_timer), NOISE_SEED)) * NOISE_AMPLITUDE) - 0.5f;
@@ -141,7 +133,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     
     // スキャンライン処理
     // --------------------------------------------
-    if(g_scanlineIntensity > 0)
+    if (g_scanlineIntensity > 0)
     {
         float scanLine = 1.0f - abs(sin(uv.y * SCANLINE_DENSITY)) * g_scanlineIntensity;
         color.rgb *= scanLine;

@@ -48,7 +48,8 @@ void Shader::Draw(int texture)
 	// ピクセルシェーダー用の定数バッファを定数バッファレジスタにセット
 	SetShaderConstantBuffer(psCtrConstBuf_, DX_SHADERTYPE_PIXEL, 1);
 
-	SetTextureAddressModeUV(DX_TEXADDRESS_WRAP, DX_TEXADDRESS_WRAP);
+	// 画面外を黒枠にする
+	SetTextureAddressModeUV(DX_TEXADDRESS_BORDER, DX_TEXADDRESS_BORDER);
 
 	// 描画
 	DrawPolygonIndexed2DToShader(mVertex, 4, mIndex, 2);
