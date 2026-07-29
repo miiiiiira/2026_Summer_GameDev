@@ -51,6 +51,23 @@ void GameOver::LoadEnd(void)
 
 void GameOver::Update(void)
 {
+	// ヒットストップでの中断判定
+	if (hitStopCounter_ > 0) {
+		hitStopCounter_--;
+		return;
+	}
+
+#ifdef _DEBUG
+
+	// Lキーで揺らし発動
+	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DEBUG))
+	{
+		hitStopCounter_ = SHAKE_TIME;
+		return;
+	}
+
+#endif // _DEBUG
+
 	// 選択処理
 	SelectUpgrade();
 
@@ -92,18 +109,29 @@ void GameOver::Draw(void)
 
 #endif // _DEBUG
 
+	int shake = 0;
+
+	// ヒットストップカウンタが0じゃない場合に揺らし量を計算
+	GetShakeOffset(shake);
+
 	// 画像の描画
-	DrawGraph(0, 0, handle_, true);
+	DrawGraph(shake, shake, handle_, true);
 
 	for (const auto& button : buttons_)
 	{
+		int x = button.x;
+		int y = button.y;
+
+		// 揺らし量分ずらす
+		x += shake;
+		y += shake;
+
 		if (button.type == currentType_)
 		{
-			FrameRenderer::Draw(button.x, button.y, button.sizeX, button.sizeY, FRAME_OFFSET);
+			FrameRenderer::Draw(x, y, button.sizeX, button.sizeY, FRAME_OFFSET);
 		}
-		DrawGraph(button.x, button.y,button.graphHandle, true);
+		DrawGraph(x, y,button.graphHandle, true);
 	}
-
 }
 
 void GameOver::Release(void)
@@ -188,5 +216,21 @@ void GameOver::PadSelect(void)
 		break;
 	default:
 		break;
+	}
+}
+
+void GameOver::GetShakeOffset(int& offset)
+{
+	if (hitStopCounter_ > 0) {
+		// 振動先をカウンターから計算する----------
+		// 0 or 1
+		offset = (hitStopCounter_ / 5) % 2;
+		// 0 or 2　中心を作る
+		offset *= 2;
+		// -1 or 1　0を中心にする
+		offset -= 1;
+		// -3 or 3　振れ幅を付ける
+		offset *= 3;
+		// ----------------------------------------
 	}
 }

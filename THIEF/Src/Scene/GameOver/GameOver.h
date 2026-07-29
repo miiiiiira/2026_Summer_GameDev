@@ -54,6 +54,9 @@ private:
 	// フレームのオフセット
 	static constexpr int FRAME_OFFSET = 10;
 
+	// 揺らす時間
+	static constexpr int SHAKE_TIME = 20;
+
 	// 画像ハンドル
 	int handle_;
 
@@ -71,5 +74,10 @@ private:
 
 	// パッド選択
 	void PadSelect(void);
+
+	// ヒットストップカウンタが0じゃない場合に揺らし量を計算
+	void GetShakeOffset(int& offset);
+
+	int hitStopCounter_ = 0;		// ヒットストップ用のカウンター
 };
 
