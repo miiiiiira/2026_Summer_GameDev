@@ -8,6 +8,14 @@ class GameOver : public SceneBase
 {
 public:
 
+	enum class STATE
+	{
+		SHAKE,
+		CRACK,
+		SELECT,
+		MAX,
+	};
+
 	enum TYPE
 	{
 		RETRY,
@@ -55,13 +63,19 @@ private:
 	static constexpr int FRAME_OFFSET = 10;
 
 	// 揺らす時間
-	static constexpr int SHAKE_TIME = 20;
+	static constexpr int SHAKE_TIME = 40;
 
 	// 画像ハンドル
 	int handle_;
+	int crackHandle_;
 
 	// ボタンの情報を格納する配列
-	std::vector<IMG_INFO> buttons_;		
+	std::vector<IMG_INFO> buttons_;	
+
+	// 現在のステート
+	STATE state_;
+
+	float step_;
 
 	// 現在選択しているメニュー
 	TYPE currentType_;					
@@ -79,5 +93,13 @@ private:
 	void GetShakeOffset(int& offset);
 
 	int hitStopCounter_ = 0;		// ヒットストップ用のカウンター
+
+	void ChangeState(STATE state);
+	void ChangeShake(void);
+	void ChangeCrack(void);
+	void ChangeSelect(void);
+	void UpdateShake(void);
+	void UpdateCrack(void);
+	void UpdateSelect(void);
 };
 

@@ -136,6 +136,7 @@ namespace SoundTable_GameOver
 	const std::unordered_map<SoundID, SoundData> Table =
 	{
 		{ SoundID::BGM_GAMEOVER, {"Data/Sound/GameOver/BGM_GAMEOVER.wav", SoundType::BGM, 127} },
+		{ SoundID::SE_CRACK, {"Data/Sound/GameOver/SE_CRACK.mp3", SoundType::SE_2D, 127} },
 	};
 }
 

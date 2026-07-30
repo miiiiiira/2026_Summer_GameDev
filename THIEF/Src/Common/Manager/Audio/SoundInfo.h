@@ -89,6 +89,8 @@ enum class SoundID
 	SE_ENEMY_STATUE,
 	SE_ENEMY_SKELETON_LOOK,
 
+	SE_CRACK,
+
 };
 
 // ì«Ç›çûÇﬁÉVÅ[Éì
