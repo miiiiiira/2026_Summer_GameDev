@@ -747,8 +747,18 @@ void GameScene::CollisionEnemyToStage(void)
 	// 登れる最大段差
 	const float STEP_HEIGHT = 15.0f;
 
+	// 各種判定用のしきい値
+	const float FLOOR_NORMAL_Y = 0.866f;
+	const float SLOPE_NORMAL_Y = 0.5f;
+	const float WALL_NORMAL_Y = 0.1f;
+
+	int stageModelId = stage->GetCollModelId() == -1 ? stage->GetModelId() : stage->GetCollModelId();
+
 	for (auto enemy : enemyManager_->GetEnemys())
 	{
+		// 敵の回転行列を取得
+		MATRIX mat = MGetRotY(enemy->GetAngle().y);
+
 		// 現在座標
 		VECTOR currentPos = enemy->GetPos();
 
@@ -802,23 +812,22 @@ void GameScene::CollisionEnemyToStage(void)
 				// 次に移動する座標
 				VECTOR nextPos = VAdd(safePos, stepMove);
 
+				VECTOR normalSum = VGet(0.0f, 0.0f, 0.0f);
+				float totalWeight = 0.0f;
+				bool collision = false;
+
 				// カプセル始点・終点を算出
-				VECTOR capStart = VAdd(nextPos, enemy->GetStart());
-				VECTOR capEnd = VAdd(nextPos, enemy->GetEnd());
+				VECTOR capStart = VAdd(nextPos, VTransform(enemy->GetStart(), mat));
+				VECTOR capEnd = VAdd(nextPos, VTransform(enemy->GetEnd(), mat));
 
 				// ステージとカプセルの衝突判定
 				auto result =
 					MV1CollCheck_Capsule(
-						stage->GetModelId(),
+						stageModelId,
 						-1,
 						capStart,
 						capEnd,
 						radius);
-
-				float bestPush = 0.0f;
-				VECTOR bestNormal = VGet(0, 0, 0);
-
-				bool collision = false;
 
 				// ヒットしたポリゴンを調べる
 				for (int i = 0; i < result.HitNum; i++)
@@ -828,6 +837,11 @@ void GameScene::CollisionEnemyToStage(void)
 					// ポリゴン法線
 					VECTOR normal = VNorm(poly.Normal);
 
+					if (normal.y >= FLOOR_NORMAL_Y)
+					{
+						normal = VGet(0.0f, 1.0f, 0.0f);
+					}
+
 					// 現在の移動方向と法線の向きから
 					// 正面衝突している度合いを求める
 					float push = -VDot(VNorm(move), normal);
@@ -836,12 +850,8 @@ void GameScene::CollisionEnemyToStage(void)
 					if (push <= 0.0f)
 						continue;
 
-					// 最も正面から当たっている面を採用
-					if (push > bestPush)
-					{
-						bestPush = push;
-						bestNormal = normal;
-					}
+					normalSum = VAdd(normalSum, VScale(normal, push));
+					totalWeight += push;
 
 					collision = true;
 
@@ -854,10 +864,10 @@ void GameScene::CollisionEnemyToStage(void)
 				MV1CollResultPolyDimTerminate(result);
 
 				// 衝突したら探索終了
-				if (collision)
+				if (collision && totalWeight > 0.0f)
 				{
 					hit = true;
-					hitNormal = bestNormal;
+					hitNormal = VNorm(VScale(normalSum, 1.0f / totalWeight));
 					hitStep = step;
 					break;
 				}
@@ -874,7 +884,7 @@ void GameScene::CollisionEnemyToStage(void)
 			}
 
 			// 壁に衝突した場合は段差として登れるか確認する(y成分が小さい法線は壁として扱う)
-			if (hitNormal.y < 0.5f)
+			if (!enemy->GetGround() && hitNormal.y < FLOOR_NORMAL_Y)
 			{
 				// 段差判定
 				if (CanStepUp(enemy, safePos, stepMove, STEP_HEIGHT))
@@ -886,7 +896,8 @@ void GameScene::CollisionEnemyToStage(void)
 					pos.y += STEP_HEIGHT;
 
 					// 今回消費した移動量を残り移動量から除外
-					move = VSub(move, stepMove);
+					VECTOR consumed = VSub(pos, prevPos);
+					move = VSub(move, consumed);
 
 					// 次のループで残り移動を処理する
 					continue;
@@ -898,12 +909,19 @@ void GameScene::CollisionEnemyToStage(void)
 
 			// 少しだけ法線の方向へ押し出して
 			// めり込みを防止する
-			pos = VAdd(pos, VScale(hitNormal, SKIN));
+			if (hitNormal.y >= FLOOR_NORMAL_Y)
+			{
+				pos.y += SKIN;
+			}
+			else
+			{
+				pos = VAdd(pos, VScale(hitNormal, SKIN));
+			}
 
 			float velocityY = enemy->GetVelocity();
 
 			// 床判定
-			if (hitNormal.y > 0.6f)
+			if (hitNormal.y >= SLOPE_NORMAL_Y)
 			{
 				// 接地フラグを立てる
 				enemy->SetGround(true);
@@ -933,11 +951,37 @@ void GameScene::CollisionEnemyToStage(void)
 
 			// 壁スライド処理
 			// 法線方向成分を除去して壁に沿って移動させる
-			float dot = VDot(remainMove, hitNormal);
-
-			if (dot < 0.0f)
+			// 坂の場合
+			if (hitNormal.y >= WALL_NORMAL_Y && hitNormal.y < FLOOR_NORMAL_Y)
 			{
-				remainMove = VSub(remainMove, VScale(hitNormal, dot));
+				// 坂方向へ移動できるようにする
+				VECTOR slopeMove = remainMove;
+
+				// 法線方向の押し込みだけ削除
+				float dot = VDot(slopeMove, hitNormal);
+
+				if (dot < 0.0f)
+				{
+					slopeMove = VSub(
+						slopeMove,
+						VScale(hitNormal, dot)
+					);
+				}
+
+				remainMove = slopeMove;
+			}
+			// 壁の場合
+			else
+			{
+				float dot = VDot(remainMove, hitNormal);
+
+				if (dot < 0.0f)
+				{
+					remainMove = VSub(
+						remainMove,
+						VScale(hitNormal, dot)
+					);
+				}
 			}
 
 			// 次の反復で残り移動量を処理
@@ -956,32 +1000,115 @@ bool GameScene::CanStepUp(EnemyBase* enemy, const VECTOR& pos, const VECTOR& mov
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 	if (!stage) return false;
 
+	// 各種判定用のしきい値
+	const float FLOOR_NORMAL_Y = 0.866f;
+	const float WALL_NORMAL_Y = 0.1f;
+
+	// 当たり判定専用モデルがあればそちらを使用する
+	int stageModelId = stage->GetCollModelId() == -1 ? stage->GetModelId() : stage->GetCollModelId();
+
+	// カプセルのオフセットをワールド座標へ変換するために使用
+	MATRIX mat = MGetRotY(enemy->GetAngle().y);
+
 	// テスト用の座標
 	VECTOR testPos = pos;
 
 	// 段差の高さ分だけ上へ持ち上げる(階段の1段上に乗れるか確認するため）
 	testPos.y += stepHeight;
 
-	// その状態で前方へ移動してみる
-	testPos = VAdd(testPos, move);
+	const int FORWARD_STEP = 8;
 
-	// 持ち上げた状態でカプセルとステージの衝突判定を行う
-	auto result =
-		MV1CollCheck_Capsule(
-			stage->GetModelId(),
+	for (int s = 1; s <= FORWARD_STEP; s++)
+	{
+		float rate = (float)s / FORWARD_STEP;
+
+		VECTOR checkPos = testPos;
+		checkPos = VAdd(checkPos, VScale(move, rate));
+
+		bool hitWall = false;
+
+		// カプセル位置の算出（回転行列を適用）
+		VECTOR start = VAdd(checkPos, VTransform(enemy->GetStart(), mat));
+		VECTOR end = VAdd(checkPos, VTransform(enemy->GetEnd(), mat));
+
+		auto result = MV1CollCheck_Capsule(
+			stageModelId,
 			-1,
-			VAdd(testPos, enemy->GetStart()),
-			VAdd(testPos, enemy->GetEnd()),
+			start,
+			end,
 			enemy->GetRadius());
 
-	// 1つでもポリゴンに当たっていれば衝突
-	bool hit = result.HitNum > 0;
+		for (int i = 0; i < result.HitNum; i++)
+		{
+			VECTOR normal = VNorm(result.Dim[i].Normal);
 
-	// 衝突結果のメモリを解放
-	MV1CollResultPolyDimTerminate(result);
+			// 壁だけを見る
+			if (normal.y <= WALL_NORMAL_Y)
+			{
+				hitWall = true;
+				break;
+			}
+		}
 
-	// 衝突していなければ段差を登れる
-	return !hit;
+		MV1CollResultPolyDimTerminate(result);
+
+		// 少しでも前へ進めないなら失敗
+		if (hitWall)
+			return false;
+	}
+
+	// 最後まで壁が無ければ
+	testPos = VAdd(testPos, move);
+
+	// 下へ少しずつ落として床を探す
+	const float DROP_STEP = 1.0f;
+
+	// 現在どれだけ下降したか
+	float dropped = 0.0f;
+
+	while (dropped <= stepHeight)
+	{
+		// 落下後の判定位置
+		VECTOR dropPos = testPos;
+
+		// 少しずつ下げる
+		dropPos.y -= dropped;
+
+		// カプセル位置の算出
+		VECTOR start = VAdd(dropPos, VTransform(enemy->GetStart(), mat));
+		VECTOR end = VAdd(dropPos, VTransform(enemy->GetEnd(), mat));
+
+		// ステージとの衝突確認
+		auto result = MV1CollCheck_Capsule(
+			stageModelId,
+			-1,
+			start,
+			end,
+			enemy->GetRadius());
+
+		// ヒットした面が床か確認
+		for (int i = 0; i < result.HitNum; i++)
+		{
+			// ポリゴン法線
+			VECTOR normal = VNorm(result.Dim[i].Normal);
+
+			// Y方向の法線が大きければ床
+			if (normal.y >= FLOOR_NORMAL_Y)
+			{
+				MV1CollResultPolyDimTerminate(result);
+				return true;
+			}
+		}
+
+		// 衝突結果解放
+		MV1CollResultPolyDimTerminate(result);
+
+		// 次の高さを調べる
+		dropped += DROP_STEP;
+	}
+
+	// どの高さでも床を見つけられなかった
+	return false;
 }
 
 void GameScene::CollisionEnemy2Player(void)

@@ -51,6 +51,7 @@ public:
 	VECTOR GetStart(void);
 	VECTOR GetEnd(void);
 	void SetGround(bool isGround);
+	bool GetGround(void) { return isGround_; }
 	float GetVelocity(void);
 	void SetVelocity(float velocityY);
 	void SetTag(ENEMY_TAG tag);
