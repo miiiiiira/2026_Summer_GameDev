@@ -1059,7 +1059,7 @@ void GameScene::CollisionEnemy2PlayerGrab(void)
 		if (player->GetGrabbingState() == GRABBING_STATE::TRY_GRABBING)
 		{
 			// プレイヤーにダメージを与える
-			player->SetDamage(10);
+			player->SetDamage(static_cast<int>(enemy->GetAttackDamagePow()));
 
 			// 画面を赤くするエフェクトを付ける
 			redEffect_->SetEffect(DAMAGE_EFFECT_ALPHA, DAMAGE_EFFECT_COLOR);

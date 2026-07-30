@@ -18,6 +18,7 @@
 #include "../../../Common/Transform/MatrixUtility.h"
 #include "../../../Common/CameraUtility/CameraUtility.h"
 #include "../../../Scene/SceneManager.h"
+#include "../../../Common/Shader/Shader.h"
 
 #include "../Collider/StageCollider/StageCollider.h"
 #include "../../../Common/Manager/Audio/AudioManager.h"
@@ -112,6 +113,10 @@ void PlayerController::Update()
 	if (invincibleTime_ > 0)
 	{
 		--invincibleTime_;
+	}
+	else
+	{
+		SceneManager::GetInstance()->GetShader()->SetVignettePower(0.5f);
 	}
 
 	// 一定の座標いったら
@@ -226,6 +231,9 @@ void PlayerController::SetDamage(int damage)
 	if (invincibleTime_ > 0)return;
 
 	hp_ -= damage;
+
+	// ビネット
+	SceneManager::GetInstance()->GetShader()->SetVignettePower(1.0f);
 
 	// プレイヤーのダメージ音
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_DAMAGE);
