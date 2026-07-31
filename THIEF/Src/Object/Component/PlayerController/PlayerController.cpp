@@ -110,6 +110,7 @@ void PlayerController::Update()
 	// マップの表示処理
 	MapDrawUpdate();
 
+	// 無敵時間を減らす
 	if (invincibleTime_ > 0)
 	{
 		--invincibleTime_;
@@ -117,6 +118,11 @@ void PlayerController::Update()
 	else
 	{
 		SceneManager::GetInstance()->GetShader()->SetVignettePower(0.5f);
+	}
+
+	// ヒットストップ更新処理
+	if (hitStopCounter_ > 0) {
+		hitStopCounter_--;
 	}
 
 	// 一定の座標いったら
@@ -129,15 +135,79 @@ void PlayerController::Update()
 
 void PlayerController::Draw2D()
 {
-	// HPの表示
-	DrawFormatStringToHandle(10, 50, 0x00fa9a, Application::GetInstance()->GetFont(),
-		"HP : %d / %d",
-		hp_, PlayerStatusManager::GetInstance().GetPlayerStatus().hpMax_);
+	int shake = 0;
+	// ヒットストップカウンタが0じゃない場合に揺らし量を計算
+	GetShakeOffset(shake);
 
-	// スタミナの表示
-	DrawFormatStringToHandle(10, 90, 0xffc800, Application::GetInstance()->GetFont(),
-		"STAMINA : %.0f / %.0f",
-		stamina_, PlayerStatusManager::GetInstance().GetPlayerStatus().staminaMax_);
+	int HPWidth = GetDrawStringWidthToHandle("HP: ", 4, Application::GetInstance()->GetFont(FONT_SIZE_20));
+	int playerHpWidth = GetDrawFormatStringWidthToHandle(Application::GetInstance()->GetFont(FONT_SIZE_30), "%d", hp_);
+
+	// HPの表示
+	DrawStringToHandle(STATUS_DRAW_POS_X, HP_DRAW_POS_Y, "HP:", 0x00fa9a, Application::GetInstance()->GetFont(FONT_SIZE_20));
+
+	if (hitStopCounter_ > 0)
+	{
+		// プレイヤーのhpの表示 赤
+		DrawFormatStringToHandle(
+			STATUS_DRAW_POS_X + HPWidth + shake,
+			(HP_DRAW_POS_Y- STATUS_DRAW_POS_OFFSET) + shake,
+			0xff0000,
+			Application::GetInstance()->GetFont(FONT_SIZE_30),
+			"%d",
+			hp_);
+
+	}
+	else
+	{
+		// プレイヤーのhpの表示 緑
+		DrawFormatStringToHandle(
+			STATUS_DRAW_POS_X + HPWidth,
+			HP_DRAW_POS_Y - STATUS_DRAW_POS_OFFSET,
+			0x00fa9a, 
+			Application::GetInstance()->GetFont(FONT_SIZE_30),
+			"%d",
+			hp_);
+	}
+
+	// プレイヤーのhpMaxの表示
+	DrawFormatStringToHandle(
+		STATUS_DRAW_POS_X + HPWidth + playerHpWidth, 
+		HP_DRAW_POS_Y, 
+		0x00fa9a,
+		Application::GetInstance()->GetFont(FONT_SIZE_20),
+		" / %d",
+		PlayerStatusManager::GetInstance().GetPlayerStatus().hpMax_);
+
+
+
+	int STAMINAWidth = GetDrawStringWidthToHandle("STAMINA: ", 9, Application::GetInstance()->GetFont(FONT_SIZE_20));
+	int playerStaminaWidth = GetDrawFormatStringWidthToHandle(Application::GetInstance()->GetFont(FONT_SIZE_30), "%.f", stamina_);
+
+	// STAMINAの表示
+	DrawStringToHandle(
+		STATUS_DRAW_POS_X, 
+		STAMINA_DRAW_POS_Y, 
+		"STAMINA:", 
+		0xffc800, 
+		Application::GetInstance()->GetFont(FONT_SIZE_20));
+
+	// プレイヤースタミナの表示
+	DrawFormatStringToHandle(
+		STATUS_DRAW_POS_X + STAMINAWidth, 
+		STAMINA_DRAW_POS_Y - STATUS_DRAW_POS_OFFSET,
+		0xffc800,
+		Application::GetInstance()->GetFont(FONT_SIZE_30),
+		"%.f",
+		stamina_);
+
+	// スタミナMaxの表示
+	DrawFormatStringToHandle(
+		STATUS_DRAW_POS_X + STAMINAWidth + playerStaminaWidth,
+		STAMINA_DRAW_POS_Y, 
+		0xffc800,
+		Application::GetInstance()->GetFont(FONT_SIZE_20),
+		" / %.f",
+		PlayerStatusManager::GetInstance().GetPlayerStatus().staminaMax_);
 
 #ifdef _DEBUG
 
@@ -246,6 +316,9 @@ void PlayerController::SetDamage(int damage)
 	{
 		// 無敵時間を設ける
 		invincibleTime_ = INVINCIBLE_TIME;
+
+		// HP描画を揺らす
+		hitStopCounter_ = SHAKE_TIME;
 	}
 
 	// プレイヤーステータスに反映
@@ -923,3 +996,18 @@ bool PlayerController::IsGrabbing(void)
 	return true;
 }
 
+void PlayerController::GetShakeOffset(int& offset)
+{
+	if (hitStopCounter_ > 0) {
+		// 振動先をカウンターから計算する----------
+		// 0 or 1
+		offset = (hitStopCounter_ / 5) % 2;
+		// 0 or 2　中心を作る
+		offset *= 2;
+		// -1 or 1　0を中心にする
+		offset -= 1;
+		// -3 or 3　振れ幅を付ける
+		offset *= 5;
+		// ----------------------------------------
+	}
+}

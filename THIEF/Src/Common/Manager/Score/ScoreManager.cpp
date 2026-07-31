@@ -82,7 +82,7 @@ void ScoreManager::Update(void)
 void ScoreManager::Draw(void)
 {
 	// î[ïiã‡äz / ñ⁄ïWã‡äzÇÃï`âÊ
-	int font = Application::GetInstance()->GetFont();
+	int font = Application::GetInstance()->GetFont(FONT_SIZE_20);
 	int strWidth = GetDrawFormatStringWidthToHandle(font, "%dÅ@/Å@%d", deliveryPrice_, targetPrice_);
 	
 	unsigned int priceCol = 0xffffff;

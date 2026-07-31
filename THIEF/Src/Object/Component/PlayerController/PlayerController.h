@@ -93,6 +93,15 @@ public:
 	// カートを離す距離
 	static constexpr float  END_GRAB_CART_DISTANCE = 800.0f;
 
+	// ステータス描画を始める座標
+	static constexpr int  STATUS_DRAW_POS_X = 10;
+	// HPの描画Y軸
+	static constexpr int  HP_DRAW_POS_Y = 50;
+	// STAMINAの描画Y軸
+	static constexpr int  STAMINA_DRAW_POS_Y = 90;
+	// オフセット
+	static constexpr int STATUS_DRAW_POS_OFFSET = 10;
+
 public:
 	void Init() override;		// 初期化
 	void Update() override;		// 更新
@@ -203,6 +212,9 @@ private:
 	// 最大落下速度
 	const float MAX_FALL = -40.0f;
 
+	// 揺らす時間
+	static constexpr int SHAKE_TIME = 20;
+
 	// Transformコンポーネント
 	Transform* transform_ = nullptr;
 
@@ -244,6 +256,11 @@ private:
 
 	// 前回しゃがんでいたか
 	bool prevCrouching_;
+
+	int hitStopCounter_ = 0;		// ヒットストップ用のカウンター
+
+	// ヒットストップカウンタが0じゃない場合に揺らし量を計算
+	void GetShakeOffset(int& offset);
 
 	// 動いてない状態での、初期化処理
 	void IdleInit(void);

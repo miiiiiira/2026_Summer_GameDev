@@ -257,7 +257,7 @@ void TutorialScene::Draw(void)
 
 	if (isClearState_)
 	{
-		DrawStringToHandle(150, 570, "Good Job!", 0xffffff, Application::GetInstance()->GetFont());
+		DrawStringToHandle(150, 570, "Good Job!", 0xffffff, Application::GetInstance()->GetFont(FONT_SIZE_20));
 	}
 	// CLEAR以外の時は、CSVから読み込む
 	else
@@ -274,12 +274,12 @@ void TutorialScene::Draw(void)
 			std::string textJP = ConvertTutorialTagToKeyName(steps_[index].textJP);
 
 			// 置換後のテキストを描画
-			DrawTutorialTextWithHighlight(150, 570, steps_[index].textEN, 0xffffff, 0xffc800, Application::GetInstance()->GetFont());
+			DrawTutorialTextWithHighlight(150, 570, steps_[index].textEN, 0xffffff, 0xffc800, Application::GetInstance()->GetFont(FONT_SIZE_20));
 			DrawTutorialTextWithHighlight(150, 600, steps_[index].textJP, 0xffffff, 0xffc800, Application::GetInstance()->GetDefaultFont());
 
 			// ステート表示
 			DrawFormatStringToHandle(10, 230, 0xffffff, 
-					Application::GetInstance()->GetFont(), "STATE：　%s", steps_[index].type.c_str());
+					Application::GetInstance()->GetFont(FONT_SIZE_20), "STATE：　%s", steps_[index].type.c_str());
 		}
 	}
 
@@ -291,7 +291,7 @@ void TutorialScene::Draw(void)
 		step++;
 	}
 	DrawFormatStringToHandle(10, 270, 0xffffff,
-		Application::GetInstance()->GetFont(), "STEP：　%d / %d", step, static_cast<int>(Tutorial::STATE::MAX));
+		Application::GetInstance()->GetFont(FONT_SIZE_20), "STEP：　%d / %d", step, static_cast<int>(Tutorial::STATE::MAX));
 }
 
 void TutorialScene::Release(void)

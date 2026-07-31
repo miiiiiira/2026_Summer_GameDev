@@ -72,8 +72,6 @@ public:
 private:
 	// クリアカウントの規定値
 	static constexpr int CLEAR_COUNT_MAX = 180;
-	// クリアカウント用のフォントサイズ
-	static constexpr int CLEAR_COUNT_FONT_SIZE = 60;
 
 	// 納品場所が呼ぶカウントの規定値
 	static constexpr int COLL_COUNT_MAX = 600;
@@ -92,9 +90,6 @@ private:
 
 	// クリアカウント
 	int clearCount_ = 0;
-
-	// クリアカウント用のフォント
-	int clearFontH_;
 
 	// 納品場所の大きさ
 	VECTOR deliverySize_;

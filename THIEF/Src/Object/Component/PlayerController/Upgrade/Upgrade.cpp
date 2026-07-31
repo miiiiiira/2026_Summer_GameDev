@@ -126,7 +126,7 @@ void Upgrade::Update(void)
 
 void Upgrade::Draw2D(void)
 {
-	int font = Application::GetInstance()->GetFont();
+	int font = Application::GetInstance()->GetFont(FONT_SIZE_20);
 	for (int i = 0; i < selectUpgrades_.size(); ++i)
 	{
 		// ‰æ‘œ‚Ì•`‰æ

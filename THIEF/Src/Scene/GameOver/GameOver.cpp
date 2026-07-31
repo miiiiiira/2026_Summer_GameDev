@@ -250,7 +250,7 @@ void GameOver::ChangeState(STATE state)
 
 void GameOver::ChangeNone(void)
 {
-	step_ = 2.0f;
+	step_ = 1.5f;
 }
 
 void GameOver::ChangeShake(void)

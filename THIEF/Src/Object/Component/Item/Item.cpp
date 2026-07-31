@@ -13,9 +13,6 @@
 Item::~Item(void)
 {
 	damageDrawList_.clear();
-
-	// ƒtƒHƒ“ƒg‚Ìíœ
-	DeleteFontToHandle(edgeFont_);
 }
 
 void Item::Init(void)
@@ -70,8 +67,6 @@ void Item::Init(void)
 	SetParam();
 
 	damageDrawList_.clear();
-
-	edgeFont_ = CreateFontToHandle("Shikakufuto_Free", FONT_SIZE, 1, DX_FONTTYPE_ANTIALIASING);
 }
 
 void Item::Update(void)
@@ -151,22 +146,7 @@ void Item::Update(void)
 
 void Item::Draw2D(void)
 {
-	int price = info_.price_;
-	int offset = 0;
-
-	// ‹àŠz‚ª0‰~‚Ìê‡‚Í1Œ…‚Æ‚µ‚Äˆµ‚¤
-	if (price == 0)
-	{
-		offset = 1;
-	}
-	else
-	{
-		while (price > 0)
-		{
-			price /= 10;
-			offset++;
-		}
-	}
+	int priceWidth = GetDrawFormatStringWidthToHandle(Application::GetInstance()->GetFont(FONT_SIZE_20), "%d", info_.price_);
 
 	// ¶‘¶‚µ‚Ä‚¢‚È‚©‚Á‚½‚ç•`‰æ‚µ‚È‚¢
 	if (info_.isAlive_)
@@ -178,18 +158,18 @@ void Item::Draw2D(void)
 			// ‚¨‹à•\Ž¦
 			// ‰
 			DrawFormatStringFToHandle(
-				pricePos.x - ((offset * FONT_SIZE) / 2),
+				pricePos.x - (priceWidth / 2),
 				pricePos.y,
 				0x000000,
-				edgeFont_,
+				Application::GetInstance()->GetFont(FONT_SIZE_21),
 				"%d",
 				info_.price_);
 
 			DrawFormatStringFToHandle(
-				pricePos.x - ((offset * FONT_SIZE) / 2),
+				pricePos.x - (priceWidth / 2),
 				pricePos.y,
 				0x00ff00,
-				Application::GetInstance()->GetFont(),
+				Application::GetInstance()->GetFont(FONT_SIZE_20),
 				"%d",
 				info_.price_);
 		}
@@ -206,10 +186,10 @@ void Item::Draw2D(void)
 
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, (255 * damage.count) / DAMAGE_DRAW_COUNT);
 		DrawFormatStringFToHandle(
-			pos.x - ((offset * Application::FONT_SIZE) / 2),
+			pos.x - (priceWidth / 2),
 			pos.y,
 			0xff0000,
-			Application::GetInstance()->GetFont(),
+			Application::GetInstance()->GetFont(FONT_SIZE_20),
 			"-%d",
 			damage.damage);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);

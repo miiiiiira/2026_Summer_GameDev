@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "fontInfo.h"
 
 // クラスの前方宣言
 class FpsControl;
@@ -21,8 +22,8 @@ public:
 	static const std::string PATH_EFFECT;
 	//-------------------------------------------
 
-	// フォントサイズ
-	static constexpr int FONT_SIZE = 20;
+	// デフォルトフォントのサイズ
+	static constexpr int DEFAULTFONT_SIZE = 20;
 
 public:
 	// シングルトン（生成・取得・削除）
@@ -65,7 +66,7 @@ public:
 	void SetEnd(bool isEnd);
 
 	// ゲッター
-	int GetFont(void);
+	int GetFont(FONT_SIZE size);
 	int GetDefaultFont(void);
 
 private:
@@ -82,7 +83,7 @@ private:
 	// 終了フラグ
 	bool isEnd_;
 
-	int font_;
+	int font_[FONT_SIZE::FONT_MAX];
 	int defaultFont_;
 
 	int InitEffekseer(void);

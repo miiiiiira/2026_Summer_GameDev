@@ -13,16 +13,12 @@
 Stage::Stage(void)
 {
 	pushImg_ = LoadGraph("Data/Image/GameScene/PushArrow.png");
-
-	clearFontH_ = CreateFontToHandle("Shikakufuto_Free", CLEAR_COUNT_FONT_SIZE, 1, DX_FONTTYPE_ANTIALIASING);
 }
 
 Stage::~Stage(void)
 {
 	MV1DeleteModel(collModelId_);
 	DeleteGraph(pushImg_);
-	// フォントの削除
-	DeleteFontToHandle(clearFontH_);
 	items_.clear();
 }
 
@@ -146,15 +142,17 @@ void Stage::Draw2D(void)
 	// カウントを調べる
 	int count = (CLEAR_COUNT_MAX / 60) - (clearCount_ / 60);
 
+	int font = Application::GetInstance()->GetFont(FONT_SIZE_60);
+
 	// 文字の大きさを調べる
-	int strWidth = GetDrawFormatStringWidthToHandle(clearFontH_, "%d", count);
+	int strWidth = GetDrawFormatStringWidthToHandle(font, "%d", count);
 
 	// カウントを出す
 	DrawFormatStringToHandle(
 		Application::SCREEN_SIZE_X / 2 - strWidth / 2,
 		60,
 		0xffffff,
-		clearFontH_,
+		font,
 		"%d",
 		count);
 }

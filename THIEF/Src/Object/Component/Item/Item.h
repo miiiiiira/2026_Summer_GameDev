@@ -97,9 +97,6 @@ protected:
 	// ダメージの補正値
 	static constexpr int DAMAGE_MULT = 15;
 
-	// フォントのサイズ
-	static constexpr int FONT_SIZE = 21;
-
 	// 発見時のハイライトカウンタ時間
 	static constexpr int FOUND_COUNTER_MAX = 60;
 
@@ -123,9 +120,6 @@ protected:
 
 	// ダメージ数
 	std::vector<DamageInfo> damageDrawList_;
-
-	// 縁フォント
-	int edgeFont_;
 
 	// 初期位置
 	VECTOR defaultPos_;

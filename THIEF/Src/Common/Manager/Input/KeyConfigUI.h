@@ -72,7 +72,6 @@ private:
     int slotHandle_ = -1;       // 通常スロット
     int slotWaitHandle_ = -1;   // 入力待ちスロット
     int slotSelectHandle_ = -1; // 選択スロット
-    int fontHandle_ = -1;       // フォント
     int tabHandle_[2] = { -1, -1 }; // タブ
     int resetHandle_ = -1;           // リセット画像
 

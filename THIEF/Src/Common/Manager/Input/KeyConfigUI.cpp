@@ -73,14 +73,6 @@ void KeyConfigUI::Load()
         TAB_SIZE_X, TAB_SIZE_Y,
         tabHandle_);
 
-    // --- フォント作成 ---
-    fontHandle_ = CreateFontToHandle(
-        "Shikakufuto_Free",                   // フォント名
-        16,                             // サイズ
-        1,                              // 太さ
-        DX_FONTTYPE_ANTIALIASING_4X4
-    );
-
     BuildDisplayList();
 }
 
@@ -488,7 +480,7 @@ void KeyConfigUI::Draw()
                 HEADER_X,
                 y,
                 GetColor(0, 200, 255),
-                Application::GetInstance()->GetFont(),
+                Application::GetInstance()->GetFont(FONT_SIZE_20),
                 "%s",
                 title.c_str()
             );
@@ -510,7 +502,7 @@ void KeyConfigUI::Draw()
             isSelectedRow
             ? GetColor(200, 0, 100)
             : GetColor(0, 0, 0),
-            fontHandle_,
+            Application::GetInstance()->GetFont(FONT_SIZE_16),
             "%s",
             INPUT_INFO::ActionToString(row.action).c_str()
         );
@@ -567,7 +559,7 @@ void KeyConfigUI::Draw()
                     x,
                     y,
                     GetColor(0, 0, 0),
-                    fontHandle_,
+                    Application::GetInstance()->GetFont(FONT_SIZE_16),
                     "%s",
                     text.c_str()
                 );
@@ -633,7 +625,7 @@ void KeyConfigUI::Draw()
                     x,
                     y,
                     GetColor(0, 0, 0),
-                    fontHandle_,
+                    Application::GetInstance()->GetFont(FONT_SIZE_16),
                     "%s",
                     text.c_str()
                 );
@@ -650,7 +642,7 @@ void KeyConfigUI::Draw()
 
 void KeyConfigUI::Delete()
 {
-    DeleteFontToHandle(fontHandle_);
+    DeleteFontToHandle(Application::GetInstance()->GetFont(FONT_SIZE_16));
     DeleteGraph(slotHandle_);
     DeleteGraph(slotWaitHandle_);
     DeleteGraph(slotSelectHandle_);
