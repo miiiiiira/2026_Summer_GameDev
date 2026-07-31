@@ -698,10 +698,11 @@ void GameScene::CheckEnemyAttack(void)
 			if (player->GetInvincibleTime() > 0)continue;
 
 			auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+			int stageModelId = stage->GetCollModelId() == -1 ? stage->GetModelId() : stage->GetCollModelId();
 			// “G‚ÌUŒ‚‚ÆƒXƒe[ƒW‚Ì‚Ì“–‚½‚è”»’è
 			MV1_COLL_RESULT_POLY_DIM hits = MV1CollCheck_Sphere
 			(
-				stage->GetModelId(),
+				stageModelId,
 				-1,
 				useWeapon->GetPos(),
 				useWeapon->GetCollisionRadius()
