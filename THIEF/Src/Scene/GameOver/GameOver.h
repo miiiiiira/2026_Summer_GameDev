@@ -10,6 +10,7 @@ public:
 
 	enum class STATE
 	{
+		NONE,
 		SHAKE,
 		CRACK,
 		SELECT,
@@ -63,7 +64,7 @@ private:
 	static constexpr int FRAME_OFFSET = 10;
 
 	// 揺らす時間
-	static constexpr int SHAKE_TIME = 40;
+	static constexpr int SHAKE_TIME = 30;
 
 	// 画像ハンドル
 	int handle_;
@@ -95,9 +96,11 @@ private:
 	int hitStopCounter_ = 0;		// ヒットストップ用のカウンター
 
 	void ChangeState(STATE state);
+	void ChangeNone(void);
 	void ChangeShake(void);
 	void ChangeCrack(void);
 	void ChangeSelect(void);
+	void UpdateNone(void);
 	void UpdateShake(void);
 	void UpdateCrack(void);
 	void UpdateSelect(void);

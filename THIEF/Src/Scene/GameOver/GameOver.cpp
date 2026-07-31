@@ -7,6 +7,7 @@
 #include "../../Common/Manager/System/SystemManager.h"
 #include "../../Common/FrameRenderer/FrameRenderer.h"
 #include "../SceneManager.h"
+#include "../../Common/Shader/Shader.h"
 #include "../../Common/Collision/Collision.h"
 #include "../GameScene/GameScene.h"
 #include "../TitleScene/TitleScene.h"
@@ -28,8 +29,14 @@ GameOver::~GameOver(void)
 
 void GameOver::Init(void)
 {
+	ChangeState(STATE::NONE);
 
-	ChangeState(STATE::SHAKE);
+	// ノイズ
+	SceneManager::GetInstance()->GetShader()->SetNoisePower(0.5f);
+	// 色ずれ
+	SceneManager::GetInstance()->GetShader()->SetRgbShift(0.004f);
+	// 歪み
+	SceneManager::GetInstance()->GetShader()->SetCurvatureAmount(0.1f);
 }
 
 void GameOver::Load(void)
@@ -54,25 +61,11 @@ void GameOver::LoadEnd(void)
 
 void GameOver::Update(void)
 {
-	//// ヒットストップでの中断判定
-	//if (hitStopCounter_ > 0) {
-	//	hitStopCounter_--;
-	//	return;
-	//}
-
-#ifdef _DEBUG
-
-	// Lキーで揺らし発動
-	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DEBUG))
-	{
-		hitStopCounter_ = SHAKE_TIME;
-		return;
-	}
-
-#endif // _DEBUG
-
 	switch (state_)
 	{
+	case GameOver::STATE::NONE:
+		UpdateNone();
+		break;
 	case GameOver::STATE::SHAKE:
 		UpdateShake();
 		break;
@@ -89,16 +82,11 @@ void GameOver::Update(void)
 
 void GameOver::Draw(void)
 {
-#ifdef _DEBUG
-
-	DrawString(0, 0, "GameOver", GetColor(255, 255, 255));
-
-#endif // _DEBUG
-
 	int shake = 0;
 
 	switch (state_)
 	{
+	case GameOver::STATE::NONE:
 	case GameOver::STATE::SHAKE:
 
 		// ヒットストップカウンタが0じゃない場合に揺らし量を計算
@@ -132,30 +120,6 @@ void GameOver::Draw(void)
 		}
 		DrawGraph(x, y, button.graphHandle, true);
 	}
-
-	//int shake = 0;
-
-	//// ヒットストップカウンタが0じゃない場合に揺らし量を計算
-	//GetShakeOffset(shake);
-
-	//// 画像の描画
-	//DrawGraph(shake, shake, handle_, true);
-
-	//for (const auto& button : buttons_)
-	//{
-	//	int x = button.x;
-	//	int y = button.y;
-
-	//	// 揺らし量分ずらす
-	//	x += shake;
-	//	y += shake;
-
-	//	if (button.type == currentType_)
-	//	{
-	//		FrameRenderer::Draw(x, y, button.sizeX, button.sizeY, FRAME_OFFSET);
-	//	}
-	//	DrawGraph(x, y,button.graphHandle, true);
-	//}
 }
 
 void GameOver::Release(void)
@@ -256,7 +220,7 @@ void GameOver::GetShakeOffset(int& offset)
 		// -1 or 1　0を中心にする
 		offset -= 1;
 		// -3 or 3　振れ幅を付ける
-		offset *= 3;
+		offset *= 5;
 		// ----------------------------------------
 	}
 }
@@ -267,6 +231,9 @@ void GameOver::ChangeState(STATE state)
 
 	switch (state_)
 	{
+	case GameOver::STATE::NONE:
+		ChangeNone();
+		break;
 	case GameOver::STATE::SHAKE:
 		ChangeShake();
 		break;
@@ -279,6 +246,11 @@ void GameOver::ChangeState(STATE state)
 	default:
 		break;
 	}
+}
+
+void GameOver::ChangeNone(void)
+{
+	step_ = 2.0f;
 }
 
 void GameOver::ChangeShake(void)
@@ -296,6 +268,17 @@ void GameOver::ChangeSelect(void)
 {
 	// BGMを再生
 	AudioManager::GetInstance()->PlayBGM(SoundID::BGM_GAMEOVER);
+}
+
+void GameOver::UpdateNone(void)
+{
+	if (step_ < 0.0f)
+	{
+		ChangeState(STATE::SHAKE);
+		return;
+	}
+
+	step_ -= SceneManager::GetInstance()->GetDeltaTime();
 }
 
 void GameOver::UpdateShake(void)
@@ -338,6 +321,13 @@ void GameOver::UpdateSelect(void)
 	switch (currentType_)
 	{
 	case GameOver::RETRY:
+
+		// ノイズ
+		SceneManager::GetInstance()->GetShader()->SetNoisePower(0.1f);
+		// 色ずれ
+		SceneManager::GetInstance()->GetShader()->SetRgbShift(0.002f);
+		// 歪み
+		SceneManager::GetInstance()->GetShader()->SetCurvatureAmount(0.01f);
 
 		// ゲームシーンへ
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameScene>(), GAME);
