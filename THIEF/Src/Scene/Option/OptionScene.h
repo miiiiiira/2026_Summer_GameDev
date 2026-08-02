@@ -8,7 +8,7 @@ class OptionScene : public SceneBase
 {
 public:
 	// 左側ナビゲーションのメニュー種別
-	enum class NAVI_MENU
+	enum class MENU
 	{
 		SETTINGS,
 		CONTROLS,
@@ -25,7 +25,8 @@ public:
 
 	struct NaviItem
 	{
-		NAVI_MENU type;
+		MENU type;
+		int graphHandle;
 		int x, y;
 		int sizeX, sizeY;
 	};
@@ -42,15 +43,20 @@ public:
 
 private:
 	// 左側ナビの位置関連定数
-	static constexpr int NAVI_POS_X = 80;
-	static constexpr int NAVI_INTERVAL_Y = 60;
-	static constexpr int BACK_POS_Y = 600;
+	static constexpr int NAVI_POS_X = 50;
+	static constexpr int NAVI_POS_Y = 350;
+	static constexpr int BACK_POS_Y = 500;
+
+	// 画像サイズ
+	static constexpr int IMAGE_SIZE_X = 200;
+	static constexpr int IMAGE_SIZE_Y = 50;
+
+	// BACK画像サイズ
+	static constexpr int BACK_IMAGE_SIZE_X = 154;
+	static constexpr int BACK_IMAGE_SIZE_Y = 84;
 
 	// 左側ナビの選択更新
 	void UpdateNaviSelect(void);
-	void SelectNaviUp(void);
-	void SelectNaviDown(void);
-	void MouseNaviSelect(void);
 
 	// 右側コンテンツの更新処理
 	void UpdateSettingsContent(void);
@@ -63,6 +69,6 @@ private:
 	std::vector<NaviItem> naviButtons_;
 
 	// 状態管理
-	NAVI_MENU currentNavi_;		// 現在選択している左メニュー
+	MENU currentNavi_;		// 現在選択している左メニュー
 	FOCUS_AREA focusArea_;		// 現在どこを操作中か
 };
