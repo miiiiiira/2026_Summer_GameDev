@@ -66,14 +66,14 @@ void OptionScene::Draw(void)
 	// キーコンフィグUIを描画
 	keyConfigUI_->Draw();
 
-	for (const auto& button : naviButtons_)
-	{
-		if (button.type == currentNavi_)
-		{
-			FrameRenderer::Draw(button.x, button.y);
-		}
-		DrawGraph(button.x, button.y, button.graphHandle, true);		// メニューボタンの画像
-	}
+	//for (const auto& button : naviButtons_)
+	//{
+	//	if (button.type == currentNavi_)
+	//	{
+	//		FrameRenderer::Draw(button.x, button.y);
+	//	}
+	//	DrawGraph(button.x, button.y, button.graphHandle, true);		// メニューボタンの画像
+	//}
 }
 
 void OptionScene::Release(void)
