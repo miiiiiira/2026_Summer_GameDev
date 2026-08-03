@@ -477,8 +477,20 @@ void ItemCollider::StageCollision(void)
 				// ポリゴン法線
 				VECTOR normal = VNorm(poly.Normal);
 
-				// このステップの進行方向と法線から、正面衝突している度合いを求める
-				float push = -VDot(VNorm(stepMove), normal);
+				// stepMoveの長さを取得
+				float stepLength = VSize(stepMove);
+
+				// 長さがほぼ0ならこのステップでは衝突判定しない
+				if (stepLength < 0.0001f)
+				{
+					continue;
+				}
+
+				// 正規化した移動方向
+				VECTOR moveDir = VScale(stepMove, 1.0f / stepLength);
+
+				// このステップの進行方向と法線から正面衝突している度合いを求める
+				float push = -VDot(moveDir, normal);
 
 				// 背面や平行な面は無視
 				if (push <= 0.0f)
@@ -495,10 +507,21 @@ void ItemCollider::StageCollision(void)
 			MV1CollResultPolyDimTerminate(result);
 
 			// 衝突したら探索終了
-			if (collision && totalWeight > 0.0f)
+			if (collision && totalWeight > 0.0001f)
 			{
+				VECTOR avgNormal = VScale(normalSum, 1.0f / totalWeight);
+
+				if (VSize(avgNormal) > 0.0001f)
+				{
+					hitNormal = VNorm(avgNormal);
+				}
+				else
+				{
+					// 法線が打ち消し合った場合
+					hitNormal = VGet(0.0f, 1.0f, 0.0f);
+				}
+
 				hit = true;
-				hitNormal = VNorm(VScale(normalSum, 1.0f / totalWeight));
 				hitStep = step;
 				break;
 			}

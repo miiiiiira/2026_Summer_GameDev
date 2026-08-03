@@ -13,6 +13,8 @@
 Item::~Item(void)
 {
 	damageDrawList_.clear();
+
+	MV1TerminateCollInfo(info_.modelId_, -1);
 }
 
 void Item::Init(void)
@@ -27,20 +29,20 @@ void Item::Init(void)
 	// オーナーからTransformを取得
 	trans_ = owner_->GetComponent<Transform>();
 
-	// 初期座標を保持しておく
-	defaultPos_ = trans_->pos_;
-
 	// 座標の更新
 	MV1SetPosition(info_.modelId_, trans_->pos_);
 
 	// 向きの更新
 	MV1SetRotationXYZ(info_.modelId_, trans_->angle_);
 
-	// 衝突情報構築
-	MV1SetupCollInfo(info_.modelId_, -1);
-
 	// 離された時の座標を初期化
 	info_.grabbedPos_ = trans_->pos_;
+
+	// プレイヤーとの相対座標初期化
+	info_.localPos_ = { 0.0f,0.0f,0.0f };
+
+	// 初期座標を保持しておく
+	info_.defaultPos_ = trans_->pos_;
 
 	// 重力の初期化
 	info_.velocity_ = VGet(0.0f, 0.0f, 0.0f);
@@ -54,11 +56,11 @@ void Item::Init(void)
 	// 納品場所に入っていない状態にする
 	info_.hasTouchedDeliveryLocation_ = false;
 
-	// 無敵時間を初期化しておく
-	info_.invincibilityFrames_ = INVINCIBILITY_FRAMES;
-
 	// まだ見つかっていないことにする
 	info_.isFound_ = false;
+
+	// 無敵時間を初期化しておく
+	info_.invincibilityFrames_ = INVINCIBILITY_FRAMES;
 
 	// 発見時のカウンタ初期化
 	info_.foundCounter_ = FOUND_COUNTER_MAX;
@@ -67,6 +69,9 @@ void Item::Init(void)
 	SetParam();
 
 	damageDrawList_.clear();
+
+	// 衝突情報構築
+	MV1SetupCollInfo(info_.modelId_, -1);
 }
 
 void Item::Update(void)
@@ -81,7 +86,7 @@ void Item::Update(void)
 		if (SceneManager::GetInstance()->GetNowSceneTag() == TUTORIAL)
 		{
 			// 位置を初期化
-			SetPos(defaultPos_);
+			SetPos(info_.defaultPos_);
 
 			// 掴まれていない状態にする
 			info_.isGrabbed_ = false;

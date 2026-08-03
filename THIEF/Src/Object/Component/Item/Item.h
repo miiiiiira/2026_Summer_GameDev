@@ -121,9 +121,6 @@ protected:
 	// ダメージ数
 	std::vector<DamageInfo> damageDrawList_;
 
-	// 初期位置
-	VECTOR defaultPos_;
-
 	// 重力をかける
 	void Gravity(void);
 

@@ -23,6 +23,12 @@ struct ItemInfo
 	// 離された時の座標
 	VECTOR grabbedPos_;
 
+	// プレイヤーとの相対座標
+	VECTOR localPos_;
+
+	// 初期位置
+	VECTOR defaultPos_;
+
 	// 金額(HP)
 	int price_;
 
@@ -41,9 +47,6 @@ struct ItemInfo
 	// 当たり判定用半径
 	float collisionRadiusX_;
 	float collisionRadiusY_;
-
-	// プレイヤーとの相対座標
-	VECTOR localPos_;
 
 	// 生存フラグ	true / 生存中にする , false / 生存している
 	bool isAlive_;
