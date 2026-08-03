@@ -642,7 +642,6 @@ void KeyConfigUI::Draw()
 
 void KeyConfigUI::Delete()
 {
-    DeleteFontToHandle(Application::GetInstance()->GetFont(FONT_SIZE_16));
     DeleteGraph(slotHandle_);
     DeleteGraph(slotWaitHandle_);
     DeleteGraph(slotSelectHandle_);
