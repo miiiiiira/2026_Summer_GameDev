@@ -227,8 +227,6 @@ void GameScene::Update(void)
 	{
 		// トータルスコアを初期化
 		ScoreManager::GetInstance().ResetTotalPrice();
-		// ステージ情報などを初期化する
-		SceneManager::GetInstance()->ResetGame();
 		// ゲームオーバーシーンへ
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameOver>(),OVER);
 		return;
