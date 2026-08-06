@@ -458,7 +458,7 @@ void ItemCollider::StageCollision(void)
 			// ステージとカプセルの衝突判定
 			auto result =
 				MV1CollCheck_Capsule(
-					stage_->GetModelId(),
+					stage_->GetCollModelId(),
 					-1,
 					capStart,
 					capEnd,
