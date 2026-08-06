@@ -567,10 +567,10 @@ void GameScene::ItemCreateStage1(void)
 
 void GameScene::ItemCreateStage2(void)
 {
-	ItemCreate(Tag::Item_Potion_Green, { -689.0f,314.0f,672.0f });
+	ItemCreate(Tag::Item_Potion_Green, { -689.0f,375.0f,672.0f });
 	ItemCreate(Tag::Item_Potion_Red, { 567.0f,350.0f,1037.0f });
-	ItemCreate(Tag::Item_Amphora, { -586.0f,8.0f,2592.0f });
-	ItemCreate(Tag::Item_Bottle, { 192.0f,135.0f,3260.0f });
+	ItemCreate(Tag::Item_Amphora, { -586.0f,10.0f,2592.0f });
+	ItemCreate(Tag::Item_Bottle, { 192.0f,160.0f,3260.0f });
 	ItemCreate(Tag::Item_Mug, { -2346.0f,182.0f,1348.0f });
 	ItemCreate(Tag::Item_Amphora, { -8108.0f,9.0f,1416.0f });
 	ItemCreate(Tag::Item_Potion_Blue, { -5949.0f,417.0f,5841.0f });
