@@ -167,6 +167,8 @@ void Confirm::UpdateYes(void)
 	case TYPE::TUTORIAL:
 		// チュートリアルへ遷移
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TutorialScene>(), TUTORIAL, true);
+		// ステージ情報などを初期化する
+		SceneManager::GetInstance()->ResetGame();
 		break;
 	case TYPE::QUIT:
 		Application::GetInstance()->SetEnd(true);
@@ -198,6 +200,8 @@ void Confirm::UpdateNo(void)
 	{
 		// ライトセレクトシーンへ遷移
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<LightSelectScene>(), LIGHT_SELECT, true);
+		// ステージ情報などを初期化する
+		SceneManager::GetInstance()->ResetGame();
 		return;
 	}
 

@@ -53,6 +53,9 @@ public:
 	//リセット
 	void ResetStatus(void);
 
+	// HPをMaxHPの値でリセットする
+	void ResetHP(void);
+
 	// プレイヤーのステータスを渡す
 	const Status& GetPlayerStatus(void) { return status_; }
 

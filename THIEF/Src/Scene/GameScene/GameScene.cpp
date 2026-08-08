@@ -49,6 +49,7 @@
 #include "../../Common/MouseCursor/MouseCursor.h"
 #include "../../Common/Manager/EffectResManager/EffectResManager.h"
 #include <EffekseerForDXLib.h>
+#include "../../Common/Manager/PlayerStatus/PlayerStatusManager.h"
 
 GameScene::GameScene(void)
 {
@@ -227,6 +228,8 @@ void GameScene::Update(void)
 	{
 		// トータルスコアを初期化
 		ScoreManager::GetInstance().ResetTotalPrice();
+		// HP情報のみ初期化(リトライ時に自己強化した項目は残しておきたいため)
+		PlayerStatusManager::GetInstance().ResetHP();
 		// ゲームオーバーシーンへ
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameOver>(),OVER);
 		return;

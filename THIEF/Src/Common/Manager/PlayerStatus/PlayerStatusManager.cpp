@@ -44,6 +44,12 @@ void PlayerStatusManager::ResetStatus()
 	status_.rangeMax_ = DEFAULT_RENGE;
 }
 
+void PlayerStatusManager::ResetHP(void)
+{
+	// HP‚Ì‰Šú‰»
+	status_.hp_ = status_.hpMax_;
+}
+
 void PlayerStatusManager::HpUp(int upNum)
 {
 	// HP‚ÌÅ‘å’l‚ğã‚°‚é
