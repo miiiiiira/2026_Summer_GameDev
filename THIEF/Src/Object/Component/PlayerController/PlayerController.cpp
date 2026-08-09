@@ -579,10 +579,10 @@ void PlayerController::SlidingToCrouching(void)
 	if ( moveSpeed_ > 0.0f)
 	{
 		// ˆÚ“®‘¬“x‚ðŒ¸ŽZ
-		moveSpeed_ -= 0.2f;
+		moveSpeed_ -= SLIDING_FRICTION;
 
-		// 0ˆÈ‰º‚É‚È‚ç‚È‚¢‚æ‚¤‚É‚·‚é
-		if (moveSpeed_ <= 0.0f)
+		// END_SLIDING_SPEEDˆÈ‰º‚É‚È‚ç‚È‚¢‚æ‚¤‚É‚·‚é
+		if (moveSpeed_ <= END_SLIDING_SPEED)
 		{
 			moveSpeed_ = 0.0f;
 			// ‚µ‚á‚ª‚Ýó‘Ô‚É‚·‚é
@@ -661,7 +661,7 @@ void PlayerController::HitReactUpdate(void)
 	if (moveSpeed_ > 0.0f)
 	{
 		// ˆÚ“®‘¬“x‚ðŒ¸ŽZ
-		moveSpeed_ -= 0.5f;
+		moveSpeed_ -= HIT_REACT_FRICTION;
 		auto stageCol = owner_->GetComponent<StageCollider>();
 		if (!stageCol) return;
 

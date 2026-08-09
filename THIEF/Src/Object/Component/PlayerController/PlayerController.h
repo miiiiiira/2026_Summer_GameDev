@@ -45,8 +45,17 @@ public:
 	// スライディング時移動速度
 	static constexpr float SLIDING_SPEED = 3.0f;
 
+	// この移動速度になったらスライディングを終了する
+	static constexpr float END_SLIDING_SPEED = 5.0f;
+
 	// スライディング可能時間(0.5秒数)
 	static constexpr int SLIDING_INPUT_BUFFER_TIME = 20;
+
+	// スライディング時の摩擦
+	static constexpr float SLIDING_FRICTION = 0.2f;
+
+	// ダメージ時のリアクション時の摩擦
+	static constexpr float HIT_REACT_FRICTION = 0.5f;
 
 	// スタミナ回復量
 	static constexpr float RECOVERY_STAMINA = 0.05f;
