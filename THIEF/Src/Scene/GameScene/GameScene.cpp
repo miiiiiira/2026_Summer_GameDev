@@ -321,7 +321,7 @@ void GameScene::CameraCreate(void)
 		cameraTrans->angle_ = { 0.0f,0.0f,0.0f };
 		break;
 	case STAGE_3:
-		cameraTrans->angle_ = { 0.0f,0.0f,0.0f };
+		cameraTrans->angle_ = { 0.0f, 90.0f * DX_PI_F / 180.0f, 0.0f };
 		break;
 	default:
 		break;
@@ -489,6 +489,10 @@ void GameScene::CartCreate(void)
 		trans->angle_ = { 0.0f,0.0f,0.0f };
 		break;
 	case STAGE_3:
+
+		trans->pos_ = { 500.0f,0.0f,0.0f };
+		trans->angle_ = { 0.0f,90.0f * (DX_PI_F / 180.0f),0.0f };
+
 		break;
 	default:
 		break;
@@ -575,15 +579,38 @@ void GameScene::ItemCreateStage2(void)
 	ItemCreate(Tag::Item_Amphora, { -586.0f,10.0f,2592.0f });
 	ItemCreate(Tag::Item_Bottle, { 192.0f,160.0f,3260.0f });
 	ItemCreate(Tag::Item_Mug, { -2346.0f,182.0f,1348.0f });
-	ItemCreate(Tag::Item_Amphora, { -8108.0f,9.0f,1416.0f });
+	ItemCreate(Tag::Item_Amphora, { -7419.0f,417.0f,5645.0f });
 	ItemCreate(Tag::Item_Potion_Blue, { -5949.0f,417.0f,5841.0f });
-	ItemCreate(Tag::Item_Goblet, { -7419.0f,417.0f,5645.0f });
+	ItemCreate(Tag::Item_Goblet, { -8108.0f,9.0f,1416.0f });
 	ItemCreate(Tag::Item_Jar, { -7312.0f,9.0f,4863.0f });
 	ItemCreate(Tag::Item_Skull, { -7478.0f,9.0f,3568.0f });
 }
 
 void GameScene::ItemCreateStage3(void)
 {
+	ItemCreate(Tag::Item_Potion_Red, { 1810.0f,14.0f,-669.0f });
+	ItemCreate(Tag::Item_Goblet, { 2078.0f,182.0f,268.0f });
+	ItemCreate(Tag::Item_Bottle, { 4945.0f,10.0f,-672.0f });
+	ItemCreate(Tag::Item_Potion_Green, { 3289.0f,17.0f,744.0f });
+	ItemCreate(Tag::Item_Goblet, { 5194.0f,163.0f,855.0f });
+	ItemCreate(Tag::Item_Amphora, { 5949.0f,11.0f,8.0f });
+	ItemCreate(Tag::Item_Mug, { 6442.0f,19.0f,278.0f });
+	ItemCreate(Tag::Item_Jar, { 7525.0f,200.0f,935.0f });
+	ItemCreate(Tag::Item_Mug, { 5226.0f,196.0f,1183.0f });
+	ItemCreate(Tag::Item_Potion_Blue, { 6514.0f,22.0f,-695.0f });
+	ItemCreate(Tag::Item_Potion_Blue, { 3959.0f,452.0f,1992.0f });
+	ItemCreate(Tag::Item_Potion_Red, { 3309.0f,453.0f,1148.0f });
+	ItemCreate(Tag::Item_Potion_Green, { 3290.0f,160.0f,2353.0f });
+	ItemCreate(Tag::Item_Jar, { 3371.0f,453.0f,3498.0f });
+	ItemCreate(Tag::Item_Bottle, { 4207.0f,157.0f,4189.0f });
+	ItemCreate(Tag::Item_Goblet, { 4802.0f,526.0f,4581.0f });
+	ItemCreate(Tag::Item_Amphora, { 5087.0f,213.0f,8005.0f });
+	ItemCreate(Tag::Item_Potion_Green, { 6070.0f,17.0f,7362.0f });
+	ItemCreate(Tag::Item_Potion_Blue, { 5076.0f,20.0f,7012.0f });
+	ItemCreate(Tag::Item_Potion_Blue, { -1175.0f,11.0f,5550.0f });
+	ItemCreate(Tag::Item_Goblet, { 254.0f,306.0f,5042.0f });
+	ItemCreate(Tag::Item_Skull, { -82.0f,10.0f,4499.0f });
+	ItemCreate(Tag::Item_Skull, { 5023.0f,167.0f,2540.0f });
 }
 
 void GameScene::Stage1Init(void)
@@ -657,7 +684,7 @@ void GameScene::Stage3Init(void)
 	CameraUtility::SetCameraPoint(objectManger_->FindComponentWithTag<Camera>(Tag::Camera));
 
 	// ステージの作成
-	StageCreate("Data/Model/Stage/Stage.mv1");
+	StageCreate("Data/Model/Stage/Stage3.mv1");
 
 	// ライトの作成
 	WispCreate();

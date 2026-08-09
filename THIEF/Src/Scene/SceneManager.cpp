@@ -126,7 +126,7 @@ void SceneManager::Init3D(void)
 	// フォグを発生させる奥行きの最小、最大距離
 	SetFogStartEnd(FOG_START, FOG_END);
 	// フォグの密度を設定
-	SetFogDensity(0.6f);
+	SetFogDensity(1.0f);
 }
 
 // 更新

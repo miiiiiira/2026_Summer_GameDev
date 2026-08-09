@@ -17,9 +17,9 @@ enum STAGE_NUM
 {
 	STAGE_1,
 	STAGE_2,
+	STAGE_3,
 
 	STAGE_MAX,
-	STAGE_3,
 };
 
 class GameScene : public SceneBase
