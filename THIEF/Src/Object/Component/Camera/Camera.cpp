@@ -3,8 +3,10 @@
 #include "../Transform/Transform.h"
 #include "../../Object.h"
 #include "../../../Common/Math/Math.h"
+#include "../../../Common/Easing/Easing.h"
 #include "../../../Common/Manager/Input/InputManager.h"
 #include "../../../Common/Manager/System/SystemManager.h"
+#include "../../../Scene/SceneManager.h"
 #include "../../../Application.h"
 
 #include "../PlayerController/PlayerController.h"
@@ -284,25 +286,52 @@ void Camera::RotKeyboard(bool isLimit)
 
 void Camera::RotGamePad(bool isLimit)
 {
-	const float ROT_POW_DEG = 2.0f;
-	const float rotPow = ROT_POW_DEG * DX_PI_F / 180.0f;
+	constexpr float DEAD_ZONE = 0.2f; // デッドゾーン
+	constexpr float START_DEG = 5.0f; // 最小回転速度
+	constexpr float END_DEG = 100.0f; // 最大回転速度
 
-	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CAMERA_UP))
-	{
-		transform_->angle_.x -= rotPow; // または += （回転させたい方向）
+	DINPUT_JOYSTATE inputState;
+	if (GetJoypadDirectInputState(DX_INPUT_PAD1, &inputState) != 0)return;
+	// 右スティックのデータ(-1000～1000)
+	int rawX = inputState.Rx;
+	int rawY = inputState.Ry;
+
+	// -1.0f～1.0fの範囲に正規化
+	float rightStickX = rawX / 1000.0f;
+	float rightStickY = rawY / 1000.0f;
+
+	// 入力ベクトルの長さを計算
+	float stickInput = std::sqrt(rightStickX * rightStickX + rightStickY * rightStickY);
+	if (stickInput > 1.0f) stickInput = 1.0f;
+
+	// スティックの傾きがデッドゾーンより小さければ視点回転処理を行わない
+	if (stickInput < DEAD_ZONE) {
+		return;
 	}
-	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CAMERA_DOWN))
-	{
-		transform_->angle_.x += rotPow;
+
+	// デッドゾーンを超えた分を0.0f～1.0fに再正規化
+	float normalizedInput = (stickInput - DEAD_ZONE) / (1.0f - DEAD_ZONE);
+
+	// イージングで速度を出す
+	float rotPowDegree = SineIn(normalizedInput, 1.0f, START_DEG, END_DEG);
+
+	// ラジアンへ変換
+	float rotPow = rotPowDegree * DX_PI_F / 180.0f;
+
+	// デルタタイム
+	float deltaTime = SceneManager::GetInstance()->GetDeltaTime();
+
+	// スティックの方向ベクトル
+	float dirX = 0.0f;
+	float dirY = 0.0f;
+	if (stickInput > 0.0001f) {
+		dirX = rightStickX / stickInput;
+		dirY = rightStickY / stickInput;
 	}
-	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CAMERA_LEFT))
-	{
-		transform_->angle_.y -= rotPow;
-	}
-	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CAMERA_RIGHT))
-	{
-		transform_->angle_.y += rotPow;
-	}
+
+	// 角度に反映
+	transform_->angle_.y += dirX * rotPow * deltaTime;
+	transform_->angle_.x += dirY * rotPow * deltaTime;
 }
 
 void Camera::RotMouse(bool isLimit)
