@@ -10,6 +10,8 @@
 #include "../../../../Common/Crosshair/Crosshair.h"
 #include "../../../../Application.h"
 #include "../../../../Scene/SceneManager.h"
+#include "../../../../Common/Manager/PlayerStatus/PlayerStatusManager.h"
+#include "../../../../Common/Manager/System/SystemManager.h"
 
 void DeliveryLocationCollider::Init(void)
 {
@@ -111,13 +113,53 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 	// 線分の下座標
 	VECTOR lineEndPos = player_->GetLineEndPos();
 
+	// 掴めるか
+	bool isGrab = true;
+
 	// 当たっていない
 	if (!Collision::HitLineSphere(lineStartPos, lineEndPos, doneSwitchPos, doneSwitchRad))
 	{
 		// クロスヘアの種類を掴めないに変更
 		crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::NOT_GRAB);
-		return;
+
+		// 掴めない
+		isGrab = false;
 	}
+
+	// パッドかつ掴めない判定が出ていたら
+	if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::PAD
+		&& !isGrab)
+	{
+		// プレイヤーの掴める距離になければ処理を行わない
+		if (!Collision::HitSpherePoint(
+			player_->GetTransform()->pos_,
+			PlayerStatusManager::GetInstance().GetPlayerStatus().rangeMax_,
+			doneSwitchPos))return;
+
+		// 場所が視界内に入っていないため処理を行わない
+		if (CheckCameraViewClip(doneSwitchPos))return;
+
+		// ワールド座標をスクリーン座標にする
+		VECTOR pos = ConvWorldPosToScreenPos(doneSwitchPos);
+		Vector2 screenPos = { pos.x,pos.y };
+		// スクリーン上で掴み可能な範囲
+		Vector2 checkBoxPos = { Application::SCREEN_SIZE_X / 2 - SystemManager::CONTROLLER_GRAB_SCREEN_RANGE_RAD ,
+			Application::SCREEN_SIZE_Y / 2 - SystemManager::CONTROLLER_GRAB_SCREEN_RANGE_RAD };
+
+		// 掴み可能な範囲に入っている
+		if (Collision::HitPoint2Box(
+			screenPos,
+			checkBoxPos,
+			SystemManager::CONTROLLER_GRAB_SCREEN_RANGE,
+			SystemManager::CONTROLLER_GRAB_SCREEN_RANGE))
+		{
+			// 掴める
+			isGrab = true;
+		}
+	}
+
+	// 掴める範囲に無いため処理を行わない
+	if (!isGrab)return;
 
 	// クリアカウントが開始されていたら処理を行わない
 	if (stage_->GetStartClearCount())return;

@@ -158,6 +158,10 @@ void Item::Draw2D(void)
 	{
 		if (info_.isGrabbed_)
 		{
+			// 場所が視界内に入っていないのであれば処理をスキップ
+			if (CheckCameraViewClip(trans_->pos_))return;
+
+			// ワールド座標をスクリーン座標にする
 			VECTOR pricePos = ConvWorldPosToScreenPos(trans_->pos_);
 
 			// お金表示

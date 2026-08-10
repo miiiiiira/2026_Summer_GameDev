@@ -11,6 +11,12 @@ public:
 	// パッド感度
 	static constexpr float PAD_SENSITIVITY = 0.03f;
 
+	// パッド時の場合
+	// スクリーンの中心位置からの掴み可能な範囲の直径
+	static constexpr int CONTROLLER_GRAB_SCREEN_RANGE = 200;
+	// スクリーンの中心位置からの掴み可能な範囲の半径
+	static constexpr int CONTROLLER_GRAB_SCREEN_RANGE_RAD = CONTROLLER_GRAB_SCREEN_RANGE / 2;
+
 	// 明示的にインステンスを生成する
 	static void CreateInstance(void);
 

@@ -14,6 +14,8 @@
 #include "../../../../Application.h"
 
 #include <algorithm>
+#include "../../../../Common/Manager/PlayerStatus/PlayerStatusManager.h"
+#include "../../../../Common/Manager/System/SystemManager.h"
 
 void ItemCollider::Init(void)
 {
@@ -53,6 +55,25 @@ void ItemCollider::Update(void)
 	}
 }
 
+void ItemCollider::Draw2D(void)
+{
+#ifdef _DEBUG
+
+	// デバイスによって処理を変更
+	if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::PAD)
+	{
+		Vector2 checkBoxPos = { Application::SCREEN_SIZE_X / 2 - SystemManager::CONTROLLER_GRAB_SCREEN_RANGE_RAD ,
+			Application::SCREEN_SIZE_Y / 2 - SystemManager::CONTROLLER_GRAB_SCREEN_RANGE_RAD };
+
+		DrawBox(checkBoxPos.x, checkBoxPos.y,
+			checkBoxPos.x + SystemManager::CONTROLLER_GRAB_SCREEN_RANGE, checkBoxPos.y + SystemManager::CONTROLLER_GRAB_SCREEN_RANGE,
+			0xff0000, false);
+	}
+
+#endif // _DEBUG
+
+}
+
 void ItemCollider::CameraRayCollision(void)
 {
 	// すでに見つけていたら処理を行わない
@@ -88,21 +109,76 @@ void ItemCollider::PlayerGrabCollision(void)
 	// プレイヤーが何かを掴んでいる状態だったら処理を行わない
 	if (player_->GetGrabbingState() == GRABBING_STATE::IS_GRABBING) return;
 
+	// アイテムの座標
+	VECTOR itemPos = item_->GetTransform()->pos_;
+
 	// 線分の上座標
 	VECTOR lineStartPos = player_->GetLineStartPos();
 
 	// 線分の下座標
 	VECTOR lineEndPos = player_->GetLineEndPos();
 
+	// 当たった座標
+	VECTOR hitPos = itemPos;
+
+	// 掴めるか
+	bool isGrab = true;
+
 	// 線分とアイテムモデルの衝突判定
 	MV1_COLL_RESULT_POLY itemHitResult = MV1CollCheck_Line(item_->GetModelID(), -1, lineStartPos, lineEndPos);
-	// 線分と当たっていないなら処理をしない
-	if (!itemHitResult.HitFlag)return;
+
+	// 線分と当たっていない
+	if (!itemHitResult.HitFlag)
+	{
+		// 掴めない
+		isGrab = false;
+	}
+	else
+	{
+		// 当たった座標を取る
+		hitPos = itemHitResult.HitPosition;
+	}
+
+	// パッドかつ掴めない判定が出ていたら
+	if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::PAD
+		&& !isGrab)
+	{
+		// プレイヤーの掴める距離にアイテムが入っていなければ処理を行わない
+		if (!Collision::HitSpheres(
+			player_->GetTransform()->pos_,
+			PlayerStatusManager::GetInstance().GetPlayerStatus().rangeMax_,
+			itemPos,
+			item_->GetInfo().collisionRadiusX_))return;
+
+		// 場所が視界内に入っていないため処理を行わない
+		if (CheckCameraViewClip(itemPos))return;
+
+		// ワールド座標をスクリーン座標にする
+		VECTOR pos = ConvWorldPosToScreenPos(itemPos);
+		Vector2 screenPos = { pos.x,pos.y };
+		// スクリーン上で掴み可能な範囲
+		Vector2 checkBoxPos = { Application::SCREEN_SIZE_X / 2 - SystemManager::CONTROLLER_GRAB_SCREEN_RANGE_RAD ,
+			Application::SCREEN_SIZE_Y / 2 - SystemManager::CONTROLLER_GRAB_SCREEN_RANGE_RAD };
+
+		// 掴み可能な範囲に入っている
+		if (Collision::HitPoint2Box(
+			screenPos,
+			checkBoxPos,
+			SystemManager::CONTROLLER_GRAB_SCREEN_RANGE,
+			SystemManager::CONTROLLER_GRAB_SCREEN_RANGE))
+		{
+			// 掴める
+			isGrab = true;
+		}
+	}
+
+	// 掴める範囲に無いため処理を行わない
+	if (!isGrab)return;
 
 	// カメラとアイテムに線分をつなげてステージに当たっているか
 	// 線分とステージモデルの衝突判定
 	MV1_COLL_RESULT_POLY stageHitResult =
-		MV1CollCheck_Line(stage_->GetModelId(), -1, lineStartPos, itemHitResult.HitPosition);
+		MV1CollCheck_Line(stage_->GetModelId(), -1, lineStartPos, hitPos);
 
 	// ステージに当たっていたら
 	if (stageHitResult.HitFlag)return;
