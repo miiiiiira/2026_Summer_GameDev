@@ -66,6 +66,11 @@ private:
 	// 揺らす時間
 	static constexpr int SHAKE_TIME = 30;
 
+	// 透明度の加算値
+	static constexpr int ADD_ALPHA = 3;
+	// 透明度の最大値
+	static constexpr int ALPHA_MAX = 255;
+
 	// 画像ハンドル
 	int handle_;
 	int crackHandle_;
@@ -77,6 +82,9 @@ private:
 	STATE state_;
 
 	float step_;
+
+	// アルファ値(ボタン表示に使用)
+	int alpha_ = 0;
 
 	// 現在選択しているメニュー
 	TYPE currentType_;					

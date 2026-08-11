@@ -100,26 +100,23 @@ void GameOver::Draw(void)
 		// 画像の描画
 		DrawGraph(0, 0, crackHandle_, true);
 
+		// アルファ値を設定
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha_);
+		for (const auto& button : buttons_)
+		{
+			if (button.type == currentType_)
+			{
+				FrameRenderer::Draw(button.x, button.y, button.sizeX, button.sizeY, FRAME_OFFSET);
+			}
+			DrawGraph(button.x, button.y, button.graphHandle, true);
+		}
+		// アルファ値を元に戻す
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		break;
 	default:
 		break;
 	}
 
-	for (const auto& button : buttons_)
-	{
-		int x = button.x;
-		int y = button.y;
-
-		// 揺らし量分ずらす
-		x += shake;
-		y += shake;
-
-		if (button.type == currentType_)
-		{
-			FrameRenderer::Draw(x, y, button.sizeX, button.sizeY, FRAME_OFFSET);
-		}
-		DrawGraph(x, y, button.graphHandle, true);
-	}
 }
 
 void GameOver::Release(void)
@@ -306,42 +303,58 @@ void GameOver::UpdateCrack(void)
 
 void GameOver::UpdateSelect(void)
 {
-	// 選択処理
-	SelectUpgrade();
-
-	// マウスを左クリックしなかったら、処理を行わない
-	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE) && !InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DECIDE)) return;
-
-	// 種類が選択されていない場合、処理を行わない
-	if (currentType_ == TYPE::NONE) return;
-
-	// ボタン押下のSEを流す
-	AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_1);
-
-	switch (currentType_)
+	// アルファ値が最大値ではなかったら
+	if (alpha_ < ALPHA_MAX)
 	{
-	case GameOver::RETRY:
+		// アルファ値を加算
+		alpha_ += ADD_ALPHA;
 
-		// ノイズ
-		SceneManager::GetInstance()->GetShader()->SetNoisePower(0.1f);
-		// 色ずれ
-		SceneManager::GetInstance()->GetShader()->SetRgbShift(0.002f);
-		// 歪み
-		SceneManager::GetInstance()->GetShader()->SetCurvatureAmount(0.01f);
+		// 最大値越えしたら
+		if (alpha_ > ALPHA_MAX)
+		{
+			// 最大値に固定
+			alpha_ = ALPHA_MAX;
+		}
+	}
+	else
+	{
+		// 選択処理
+		SelectUpgrade();
 
-		// ゲームシーンへ
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameScene>(), GAME);
-		return;
+		// マウスを左クリックしなかったら、処理を行わない
+		if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE) && !InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DECIDE)) return;
 
-		break;
-	case GameOver::RETURN_TITLE:
+		// 種類が選択されていない場合、処理を行わない
+		if (currentType_ == TYPE::NONE) return;
 
-		// タイトルシーンへ
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(), TITLE);
-		return;
+		// ボタン押下のSEを流す
+		AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_1);
 
-		break;
-	default:
-		break;
+		switch (currentType_)
+		{
+		case GameOver::RETRY:
+
+			// ノイズ
+			SceneManager::GetInstance()->GetShader()->SetNoisePower(0.1f);
+			// 色ずれ
+			SceneManager::GetInstance()->GetShader()->SetRgbShift(0.002f);
+			// 歪み
+			SceneManager::GetInstance()->GetShader()->SetCurvatureAmount(0.01f);
+
+			// ゲームシーンへ
+			SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameScene>(), GAME);
+			return;
+
+			break;
+		case GameOver::RETURN_TITLE:
+
+			// タイトルシーンへ
+			SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(), TITLE);
+			return;
+
+			break;
+		default:
+			break;
+		}
 	}
 }
