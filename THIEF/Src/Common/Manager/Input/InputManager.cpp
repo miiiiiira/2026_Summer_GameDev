@@ -121,8 +121,8 @@ void InputManager::Init(void)
 	DefaultKey();
 
 	// デバッグ用
-	debugBinds_[INPUT_INFO::DEBUG_ACTION::ADD_POINT].keyMouse[0] = { BindType::MOUSE, MOUSE_INPUT_LEFT };
-	debugBinds_[INPUT_INFO::DEBUG_ACTION::REMOVE_POINT].keyMouse[0] = { BindType::MOUSE, MOUSE_INPUT_RIGHT };
+	debugBinds_[INPUT_INFO::DEBUG_ACTION::ADD_POINT].keyMouse[0] = { BindType::MOUSE, (int)INPUT_INFO::MouseBtn::LEFT };
+	debugBinds_[INPUT_INFO::DEBUG_ACTION::REMOVE_POINT].keyMouse[0] = { BindType::MOUSE, (int)INPUT_INFO::MouseBtn::RIGHT };
 	debugBinds_[INPUT_INFO::DEBUG_ACTION::RETURN].keyMouse[0] = { BindType::KEY,   KEY_INPUT_RETURN };
 	debugBinds_[INPUT_INFO::DEBUG_ACTION::CLEAR].keyMouse[0] = { BindType::KEY,   KEY_INPUT_C };
 	debugBinds_[INPUT_INFO::DEBUG_ACTION::OVER].keyMouse[0] = { BindType::KEY,   KEY_INPUT_O };

@@ -130,11 +130,24 @@ void DebugScene::Draw(void)
 			GetColor(255, 0, 0),
 			false);
 
+		for (const auto& point2 : points_)
+		{
+			auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+			MV1_COLL_RESULT_POLY hit =
+				MV1CollCheck_Line(stage->GetModelId(), -1, point.pos, point2.pos);
+			float nodeDistance = VSquareSize(VSub(point.pos, point2.pos));
+			if (!hit.HitFlag && nodeDistance <= 1300.0f * 1300.0f)
+			{
+				DrawLine3D(point.pos, point2.pos, 0x00ff00);
+			}
+		}
+
 		DrawFormatString(20, y,
 			0xffffff, "À•W(%.2f, %.2f, %.2f)",
 			point.pos.x, point.pos.y, point.pos.z);
 		y += 20;
 	}
+
 	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::RETURN))
 	{
 		time_ = 60 * 3;
@@ -355,7 +368,7 @@ void DebugScene::PlaceDebugPoint(void)
 
 void DebugScene::SavePoints(void)
 {
-	std::ofstream ofs("Data/EnemyPointSave2.csv");
+	std::ofstream ofs("Data/PointSave2.csv");
 
 	if (!ofs) return;
 
