@@ -221,7 +221,7 @@ void Yeti::ChangePatrol(void)
 	SetMoveDirPatrol();
 
 	// 移動スピード
-	moveSpeed_ = 6.0f;
+	moveSpeed_ = 5.0f;
 
 	animationController_->Play(static_cast<int>(ANIM_TYPE::WALK), true);
 }
@@ -236,7 +236,7 @@ void Yeti::ChangeSurprise(void)
 
 void Yeti::ChangeChase(void)
 {
-	moveSpeed_ = 12.0f;
+	moveSpeed_ = 10.0f;
 	chaseTimer_ = 0.0f;
 	targetLostTimer_ = 0.0f;
 	isNotice_ = false;
