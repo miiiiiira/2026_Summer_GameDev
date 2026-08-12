@@ -96,8 +96,8 @@ void Camera::UpdateFollow(void)
 
 	// 相対座標からワールド座標に直して、カメラ座標とする
 	// しゃがみ状態かスライディング状態であれば、カメラの位置を下げる
-	if (playerController_->GetState() == PLAYER_STATE::CROUCHING
-		|| playerController_->GetState() == PLAYER_STATE::SLIDING)
+	if (playerController_->GetState() == PLAYER_STATE::PLAYER_STATE_CROUCHING
+		|| playerController_->GetState() == PLAYER_STATE::PLAYER_STATE_SLIDING)
 	{
 		followCameraPos = VAdd(PlayerController::CROUCHING_CAP_START_OFFSET, PlayerController::STANDING_CAP_END_OFFSET);
 	}
@@ -110,9 +110,9 @@ void Camera::UpdateFollow(void)
 	transform_->pos_ = VAdd(followPos, followCameraPos);
 
 	// プレイヤーの状態が移動しない状態であれば
-	if (playerController_->GetState() == PLAYER_STATE::CROUCHING
-		|| playerController_->GetState() == PLAYER_STATE::SLIDING
-		|| playerController_->GetState() == PLAYER_STATE::HIT_REACT)
+	if (playerController_->GetState() == PLAYER_STATE::PLAYER_STATE_CROUCHING
+		|| playerController_->GetState() == PLAYER_STATE::PLAYER_STATE_SLIDING
+		|| playerController_->GetState() == PLAYER_STATE::PLAYER_STATE_HIT_REACT)
 	{
 		// 移動カウントが動いていたら初期化
 		if (angleMoveCount > 0)

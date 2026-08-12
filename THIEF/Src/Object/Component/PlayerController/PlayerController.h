@@ -4,6 +4,7 @@
 #include "../../../Scene/Tutorial/TutorialInfo.h"
 #include <variant>
 #include <DxLib.h>
+#include "PlayerInfo.h"
 
 // 前方宣言
 class Transform;
@@ -13,16 +14,7 @@ class Item;
 class Cart;
 class Wisp;
 
-// プレイヤーの状態
-enum class PLAYER_STATE
-{
-	IDLE,		// 待機
-	MOVE,		// 移動
-	DASH,		// ダッシュ	
-	CROUCHING,	// しゃがみ
-	SLIDING,	// スライディング
-	HIT_REACT	// ダメージ時のリアクション
-};
+
 
 enum class GRABBING_STATE
 {
@@ -112,6 +104,8 @@ public:
 	static constexpr int STATUS_DRAW_POS_OFFSET = 10;
 
 public:
+	PlayerController(void);		// コンストラクタ
+
 	void Init() override;		// 初期化
 	void Update() override;		// 更新
 	void Draw2D() override;		// 2D描画
@@ -156,31 +150,15 @@ public:
 	// 吹っ飛びリアクションをさせる
 	void SetHitReact(VECTOR moveDir,float moveSpeed,float jumpPow);
 
+	// 状態を変更させる
+	void ChangeState(PLAYER_STATE state);
+
 private:
-	// 移動処理
-	void Move();
+	// 状態別更新処理
+	void StateUpdate(void);
 
 	// 重力処理
 	void ApplyGravity();
-
-	// ダッシュ処理	(走るボタンを押されたら : デフォルト移動速度＋ダッシュ速度、
-	//					   押されなかったら : デフォルト移動速度)
-	void Dash(void);
-
-	// スライディング
-	void InputSliding(void);
-
-	// スライディングからしゃがみ処理
-	void SlidingToCrouching(void);
-	
-	// しゃがみ処理
-	void Crouching(void);
-	
-	// しゃがみ終了処理
-	void UnCrouch(void);
-
-	// ダメージ時のリアクション処理
-	void HitReactUpdate(void);
 
 	// スタミナ回復処理
 	void HealStamina(void);
@@ -199,6 +177,40 @@ private:
 
 	// デバッグ用描画
 	void DebugDraw(void);
+
+
+	// 状態別初期化
+	// 待機処理
+	static void IdleInit(PlayerController& player);
+	// 移動処理
+	static void MoveInit(PlayerController& player);
+	// ダッシュ処理
+	static void DashInit(PlayerController& player);
+	// しゃがみ処理
+	static void CrouchingInit(PlayerController& player);
+	// スライディング処理
+	static void SlidingInit(PlayerController& player);
+	// ダメージ時のリアクション処理
+	static void HitReactInit(PlayerController& player);
+	// 死亡処理
+	static void DeadInit(PlayerController& player);
+
+	// 状態別更新
+	// 待機処理
+	static void IdleUpdate(PlayerController& player);
+	// 移動処理
+	static void MoveUpdate(PlayerController& player);
+	// ダッシュ処理
+	static void DashUpdate(PlayerController& player);
+	// しゃがみ処理
+	static void CrouchingUpdate(PlayerController& player);
+	// スライディング処理
+	static void SlidingUpdate(PlayerController& player);
+	// ダメージ時のリアクション処理
+	static void HitReactUpdate(PlayerController& player);
+	// 死亡処理
+	static void DeadUpdate(PlayerController& player);
+	
 
 private:
 
@@ -254,8 +266,8 @@ private:
 	// 実際に持っている掴み距離
 	float range_;
 
-	// 現在の状態表すステート
-	PLAYER_STATE state_;
+	// プレイヤーの状態情報
+	playerStateCtrl stateCtrl_;
 
 	// 掴み状態を表すステート
 	GRABBING_STATE grabState_;
@@ -271,14 +283,11 @@ private:
 	// ヒットストップカウンタが0じゃない場合に揺らし量を計算
 	void GetShakeOffset(int& offset);
 
-	// 動いてない状態での、初期化処理
-	void IdleInit(void);
-
-	// しゃがみ状態での、初期化処理
-	void CrouchingInit(void);
-
 	Item* GetGrabItem(void);
 	Cart* GetGrabCart(void);
 
 	bool IsGrabbing(void);
+
+	// 移動しているかを渡す
+	bool InputMove(void);
 };

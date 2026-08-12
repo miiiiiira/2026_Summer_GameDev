@@ -24,6 +24,27 @@
 #include "../../../Common/Manager/Audio/AudioManager.h"
 #include "../../../Scene/Tutorial/TutorialScene.h"
 
+PlayerController::PlayerController(void)
+{
+	// テーブルに関数のポインタを格納
+	// 初期化関数
+	stateCtrl_.initTable_[PLAYER_STATE_IDLE] = IdleInit;
+	stateCtrl_.initTable_[PLAYER_STATE_MOVE] = MoveInit;
+	stateCtrl_.initTable_[PLAYER_STATE_DASH] = DashInit;
+	stateCtrl_.initTable_[PLAYER_STATE_CROUCHING] = CrouchingInit;
+	stateCtrl_.initTable_[PLAYER_STATE_SLIDING] = SlidingInit;
+	stateCtrl_.initTable_[PLAYER_STATE_HIT_REACT] = HitReactInit;
+	stateCtrl_.initTable_[PLAYER_STATE_DEAD] = DeadInit;
+	// 更新関数
+	stateCtrl_.updateTable_[PLAYER_STATE_IDLE] = IdleUpdate;
+	stateCtrl_.updateTable_[PLAYER_STATE_MOVE] = MoveUpdate;
+	stateCtrl_.updateTable_[PLAYER_STATE_DASH] = DashUpdate;
+	stateCtrl_.updateTable_[PLAYER_STATE_CROUCHING] = CrouchingUpdate;
+	stateCtrl_.updateTable_[PLAYER_STATE_SLIDING] = SlidingUpdate;
+	stateCtrl_.updateTable_[PLAYER_STATE_HIT_REACT] = HitReactUpdate;
+	stateCtrl_.updateTable_[PLAYER_STATE_DEAD] = DeadUpdate;
+}
+
 // 初期化
 void PlayerController::Init()
 {
@@ -33,9 +54,9 @@ void PlayerController::Init()
 	// 角度から方向に変換する
 	moveDir_ = { 0.0f, 0.0f,0.0f };
 
-	// プレイヤーの状態
-	state_ = PLAYER_STATE::IDLE;
-
+	// プレイヤーの状態初期化
+	ChangeState(PLAYER_STATE_IDLE);
+	
 	// 掴み状態を表すステート
 	grabState_ = GRABBING_STATE::NOT_GRABBING;
 
@@ -76,14 +97,16 @@ void PlayerController::Init()
 // 更新
 void PlayerController::Update()
 {
+	// 体力が0以下になっていたら
 	if (hp_ <= 0)
 	{
-		SceneManager::GetInstance()->TrueGameOver();
+		// 死亡状態へ
+		ChangeState(PLAYER_STATE_DEAD);
 		return;
 	}
 
 	// 移動処理
-	Move();
+	StateUpdate();
 
 	// スタミナ回復処理
 	HealStamina();
@@ -240,7 +263,7 @@ float PlayerController::GetMoveSpeed(void)
 
 PLAYER_STATE PlayerController::GetState(void)
 {
-	return state_;
+	return stateCtrl_.state_;
 }
 
 GRABBING_STATE PlayerController::GetGrabbingState(void)
@@ -334,116 +357,32 @@ void PlayerController::SetHitReact(VECTOR moveDir, float moveSpeed, float jumpPo
 	// ジャンプ力を設定
 	velocityY_ = jumpPow;
 
-	auto stageCol = owner_->GetComponent<StageCollider>();
-
-	if (!stageCol) return;
-
-	// 接地フラグを折る
-	stageCol->IsGroundFold();
-
-	state_ = PLAYER_STATE::HIT_REACT;
+	ChangeState(PLAYER_STATE_HIT_REACT);
 }
 
-// 移動処理
-void PlayerController::Move()
+void PlayerController::ChangeState(PLAYER_STATE state)
+{
+	// 指定されたステートへ変更
+	stateCtrl_.state_ = state;
+
+	// nullチェック
+	if (stateCtrl_.initTable_[stateCtrl_.state_])
+	{
+		stateCtrl_.initTable_[stateCtrl_.state_](*this);
+	}
+}
+
+void PlayerController::StateUpdate(void)
 {
 	// Transformがなければ処理しない
 	if (!transform_) return;
 
-	// ランタンがなければ処理しない
-	if (!wisp_) return;
-
-	switch (state_)
+	// nullチェック
+	if (stateCtrl_.updateTable_[stateCtrl_.state_])
 	{
-	case PLAYER_STATE::IDLE:
-		break;
-	case PLAYER_STATE::MOVE:
-		break;
-	case PLAYER_STATE::DASH:
-		break;
-	case PLAYER_STATE::CROUCHING:;
-		break;
-	case PLAYER_STATE::SLIDING:
-		// スライディングからしゃがみ処理
-		SlidingToCrouching();
-		return;
-		break;
-	case PLAYER_STATE::HIT_REACT:
-		// 吹き飛び処理
-		HitReactUpdate();
-		return;
-		break;
-	default:
-		break;
+		// 状態別更新処理
+		stateCtrl_.updateTable_[stateCtrl_.state_](*this);
 	}
-
-	// スライディング処理
-	InputSliding();
-
-	if (state_ == PLAYER_STATE::SLIDING)return;
-
-	// 移動量
-	VECTOR dir = Math::VECTOR_ZERO;
-
-	// WASDで移動する
-	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::MOVE_FORWARD)) { dir = VAdd(dir, { 0.0f, 0.0f, 1.0f }); }
-	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::MOVE_LEFT)) { dir = VAdd(dir, { -1.0f, 0.0f, 0.0f }); }
-	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::MOVE_BACK)) { dir = VAdd(dir, { 0.0f, 0.0f, -1.0f }); }
-	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::MOVE_RIGHT)) { dir = VAdd(dir, { 1.0f, 0.0f, 0.0f }); }
-
-	if (!Math::EqualsVZero(dir))
-	{
-		moveSpeed_ = DEFAULT_SPEED;
-
-		// 走ったかどうかの判定
-		Dash();
-
-		// 正規化
-		dir = VNorm(dir);
-
-		// XYZの回転行列
-		// XZ平面移動にする場合は、XZの回転を考慮しないようにする
-		MATRIX mat = MGetIdent();
-		mat = MMult(mat, MGetRotY(CameraUtility::GetCameraAngle().y));
-
-		// 回転行列を使用して、ベクトルを回転させる
-		moveDir_ = VTransform(dir, mat);
-
-		// 方向×スピードで移動量を作って、座標に足して移動
-		transform_->pos_ = VAdd(transform_->pos_, VScale(moveDir_, moveSpeed_));
-	}
-
-
-	// 足音のサウンドを鳴らす
-	if (!Math::EqualsVZero(dir))
-	{
-		auto stageCol = owner_->GetComponent<StageCollider>();
-
-		if (!stageCol) return;
-
-		// 通常移動かつ接地している時のみ
-		if (state_ == PLAYER_STATE::MOVE || state_ == PLAYER_STATE::DASH)
-		{
-			// 足音がなる間隔
-			if (moveSoundInterval_ > MOVE_SOUND_INTERVAL - (moveSpeed_ * MOVE_SPEED_UP_MULTI))
-			{
-				// 接地している場合
-				if (velocityY_ <= 0)
-				{
-					// 移動サウンドの再生
-					AudioManager::GetInstance()->PlaySE(SoundID::SE_MOVE);
-					moveSoundInterval_ = 0;
-				}
-			}
-			else
-			{
-				moveSoundInterval_++;
-			}
-		}
-	}
-
-	// しゃがみ処理
-	Crouching();
 }
 
 // 重力処理
@@ -480,208 +419,6 @@ void PlayerController::ApplyGravity()
 	}
 }
 
-void PlayerController::Dash(void)
-{
-	// しゃがみ状態なら処理を行わない
-	if (state_ == PLAYER_STATE::CROUCHING)return;
-
-	// もし走るボタンを押されたかつ、しゃがみ状態じゃないかつ、スタミナがあった場合
-	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::DASH)
-		&& stamina_ >= 0.1f)
-	{
-		// プレイヤーの状態を走り状態にする
-		state_ = PLAYER_STATE::DASH;
-
-		// スタミナを減らす
-		stamina_ -= 0.1f;
-		if (stamina_ <= 0.0f)
-		{
-			// 0を超えないようにする
-			stamina_ = 0.0f;
-		}
-
-		// カウンターリセット
-		staminaCounter_ = 0;
-
-		// プレイヤーの移動速度をダッシュの移動速度にする
-		moveSpeed_ = PlayerStatusManager::GetInstance().GetPlayerStatus().dashMoveSpeed_;
-
-		// スライディング可能時間(秒数)を設定
-		slidingInputBufferTime = SLIDING_INPUT_BUFFER_TIME;
-
-		// チュートリアル時にカウンタに加算される
-		SceneManager::GetInstance()->TutorialCounter(Tutorial::DASH);
-
-	}
-	else
-	{
-		// プレイヤーの状態を普通の移動状態にする
-		state_ = PLAYER_STATE::MOVE;
-
-		// チュートリアル時にカウンタに加算される
-		SceneManager::GetInstance()->TutorialCounter(Tutorial::MOVE);
-	}
-}
-
-void PlayerController::InputSliding(void)
-{
-	// スライディングの可能時間が無かったら処理を行わない
-	if (slidingInputBufferTime <= 0)return;
-
-	// スライディング可能時間を減らす
-	slidingInputBufferTime--;
-
-	if (slidingInputBufferTime < 0)
-	{
-		// 0以下にならないようにする
-		slidingInputBufferTime = 0;
-	}
-
-	// しゃがみボタン押されたら
-	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CROUCH))
-	{
-		// スライディング状態にする
-		state_ = PLAYER_STATE::SLIDING;
-
-		// カプセルのオフセットを初期化する
-		auto cap = owner_->GetComponent<CapsuleCollider>();
-		if (cap != nullptr)
-		{
-			cap->SetStartOffset(CROUCHING_CAP_START_OFFSET);
-		}
-
-		// プレイヤーのスライディングの移動速度とダッシュ移動速度を加算
-		moveSpeed_ = SLIDING_SPEED + PlayerStatusManager::GetInstance().GetPlayerStatus().dashMoveSpeed_;
-
-		// スライディング可能時間を初期化
-		slidingInputBufferTime = 0;
-
-		// ライトの範囲を最小値設定にする
-		wisp_->SetIsRangeMax(false);
-
-		// スライディングのサウンド再生
-		AudioManager::GetInstance()->PlaySE(SoundID::SE_SLIDING);
-
-		// ランタンOFFサウンド
-		AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_OFF);
-
-		// Wispの火を小さく
-		wisp_->SetAnimation(Wisp::ANIM::SMALL);
-
-		// チュートリアル時にカウンタに加算される
-		SceneManager::GetInstance()->TutorialCounter(Tutorial::SLIDING);
-	}
-}
-
-void PlayerController::SlidingToCrouching(void)
-{
-	// スライディング状態かつ移動速度が0より大きく移動している場合
-	if ( moveSpeed_ > 0.0f)
-	{
-		// 移動速度を減算
-		moveSpeed_ -= SLIDING_FRICTION;
-
-		// END_SLIDING_SPEED以下にならないようにする
-		if (moveSpeed_ <= END_SLIDING_SPEED)
-		{
-			moveSpeed_ = 0.0f;
-			// しゃがみ状態にする
-			CrouchingInit();
-			// 前回しゃがみフラグon
-			prevCrouching_ = true;
-		}
-
-		// 方向×スピードで移動量を作って、座標に足して移動
-		transform_->pos_ = VAdd(transform_->pos_, VScale(moveDir_, moveSpeed_));
-	}
-}
-
-void PlayerController::Crouching(void)
-{
-	// しゃがみボタンを押されたかつスライディング中じゃない場合
-	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CROUCH))
-	{
-		// しゃがみ状態にする
-		CrouchingInit();
-
-		// ライトの範囲を最小値設定にする
-		wisp_->SetIsRangeMax(false);
-
-		if (!prevCrouching_)
-		{
-			// しゃがみサウンド
-			AudioManager::GetInstance()->PlaySE(SoundID::SE_CROUCH);
-
-			// ランタンOFFサウンド
-			AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_OFF);
-
-			// 前回しゃがみフラグon
-			prevCrouching_ = true;
-
-			// Wispの火を小さく
-			wisp_->SetAnimation(Wisp::ANIM::SMALL);
-		}
-
-		// チュートリアル時にカウンタに加算される
-		SceneManager::GetInstance()->TutorialCounter(Tutorial::CROUCH);
-	}
-
-	UnCrouch();
-
-}
-
-void PlayerController::UnCrouch(void)
-{
-	auto stageCol = owner_->GetComponent<StageCollider>();
-
-	// しゃがみボタンを押されてないかつ、頭に障害物がなかった場合にしゃがみを解除
-	if (!InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CROUCH)
-		&& !stageCol->CeilingColl())
-	{
-		// しゃがみ復帰時
-		if (prevCrouching_)
-		{
-			// Wispの火を小さく
-			wisp_->SetAnimation(Wisp::ANIM::NORMAL);
-
-			// ランタンONサウンド
-			AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_ON);
-		}
-
-		IdleInit();
-
-		// 前回しゃがみフラグoff
-		prevCrouching_ = false;
-	}
-}
-
-void PlayerController::HitReactUpdate(void)
-{
-	// 移動速度が0より大きく移動している場合
-	if (moveSpeed_ > 0.0f)
-	{
-		// 移動速度を減算
-		moveSpeed_ -= HIT_REACT_FRICTION;
-		auto stageCol = owner_->GetComponent<StageCollider>();
-		if (!stageCol) return;
-
-		// スピードがゼロになるか、接地していたら
-		if (moveSpeed_ <= 0.0f || stageCol->IsGround())
-		{
-			moveSpeed_ = 0.0f;
-
-			// しゃがみ状態にする
-			CrouchingInit();
-			// 前回しゃがみフラグon
-			prevCrouching_ = true;
-			return;
-		}
-
-		// 方向×スピードで移動量を作って、座標に足して移動
-		transform_->pos_ = VAdd(transform_->pos_, VScale(moveDir_, moveSpeed_));
-	}
-}
-
 void PlayerController::HealStamina(void)
 {
 	float staminaMax = PlayerStatusManager::GetInstance().GetPlayerStatus().staminaMax_;
@@ -693,7 +430,7 @@ void PlayerController::HealStamina(void)
 	staminaCounter_++;
 
 	// しゃがみ状態だったら
-	if (state_ == PLAYER_STATE::CROUCHING)
+	if (stateCtrl_.state_ == PLAYER_STATE_CROUCHING)
 	{
 		// スタミナ回復させる
 		stamina_ += RECOVERY_STAMINA;
@@ -723,7 +460,7 @@ void PlayerController::HealStamina(void)
 
 void PlayerController::Jump(void)
 {
-	if (state_ == PLAYER_STATE::HIT_REACT)return;
+	if (stateCtrl_.state_ == PLAYER_STATE_HIT_REACT)return;
 
 	// StageCollider取得
 	auto stageCol = owner_->GetComponent<StageCollider>();
@@ -928,40 +665,248 @@ void PlayerController::DebugDraw(void)
 		transform_->pos_.x, transform_->pos_.y, transform_->pos_.z);
 }
 
-void PlayerController::IdleInit(void)
+void PlayerController::IdleUpdate(PlayerController& player)
 {
-	// 普通状態にする
-	state_ = PLAYER_STATE::IDLE;
-
-	// 移動速度を初期化
-	moveSpeed_ = 0.0f;
-
-	// カプセルのオフセットを初期化する
-	auto cap = owner_->GetComponent<CapsuleCollider>();
-	if (cap != nullptr)
+	// 移動していたら
+	if (player.InputMove())
 	{
-		cap->SetStartOffset(STANDING_CAP_START_OFFSET);
+		// 移動状態にする
+		player.ChangeState(PLAYER_STATE_MOVE);
 	}
 
-	// ライトの範囲設定が最大値でなければ
-	if (!wisp_->GetIsRangeMax())
+	// しゃがみボタンを押された
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CROUCH))
 	{
-		// 最大値設定にする
-		wisp_->SetIsRangeMax(true);
+		player.ChangeState(PLAYER_STATE_CROUCHING);
+	}
+
+}
+
+void PlayerController::MoveUpdate(PlayerController& player)
+{
+	// スライディングの可能時間があれば
+	if (player.slidingInputBufferTime > 0)
+	{
+		// スライディング可能時間を減らす
+		player.slidingInputBufferTime--;
+
+		if (player.slidingInputBufferTime < 0)
+		{
+			// 0以下にならないようにする
+			player.slidingInputBufferTime = 0;
+		}
+	}
+
+	// しゃがみボタンを押された
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CROUCH))
+	{
+		if (player.slidingInputBufferTime > 0)
+		{
+			// スライディング状態へ
+			player.ChangeState(PLAYER_STATE_SLIDING);
+		}
+		else
+		{
+			// しゃがみ状態へ
+			player.ChangeState(PLAYER_STATE_CROUCHING);
+		}
+		return;
+	}
+
+	// 走るボタンを押されたかつスタミナがあったら
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::DASH)
+		&& player.stamina_ >= 0.1f)
+	{
+		// 走り状態へ
+		player.ChangeState(PLAYER_STATE_DASH);
+		return;
+	}
+
+	// 移動していたら
+	if (player.InputMove())
+	{
+		// 方向×スピードで移動量を作って、座標に足して移動
+		player.transform_->pos_ =
+			VAdd(player.transform_->pos_,
+				VScale(player.moveDir_, player.moveSpeed_));
+
+		auto stageCol = player.owner_->GetComponent<StageCollider>();
+
+		if (!stageCol) return;
+
+		// 足音がなる間隔
+		if (player.moveSoundInterval_ > MOVE_SOUND_INTERVAL - (player.moveSpeed_ * MOVE_SPEED_UP_MULTI))
+		{
+			// 接地している場合
+			if (player.velocityY_ <= 0)
+			{
+				// 移動サウンドの再生
+				AudioManager::GetInstance()->PlaySE(SoundID::SE_MOVE);
+				player.moveSoundInterval_ = 0;
+			}
+		}
+		else
+		{
+			player.moveSoundInterval_++;
+		}
+	}
+	else
+	{
+		// 待機状態へ
+		player.ChangeState(PLAYER_STATE_IDLE);
+	}
+
+	// チュートリアル時にカウンタに加算される
+	SceneManager::GetInstance()->TutorialCounter(Tutorial::MOVE);
+}
+
+void PlayerController::DashUpdate(PlayerController& player)
+{
+	// スタミナを減らす
+	player.stamina_ -= 0.1f;
+	if (player.stamina_ <= 0.0f)
+	{
+		// 0を超えないようにする
+		player.stamina_ = 0.0f;
+	}
+
+	// カウンターリセット
+	player.staminaCounter_ = 0;
+
+	// スライディング可能時間(秒数)を設定
+	player.slidingInputBufferTime = SLIDING_INPUT_BUFFER_TIME;
+
+	// しゃがみボタンを押された
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CROUCH))
+	{
+		// しゃがみ状態へ
+		player.ChangeState(PLAYER_STATE_SLIDING);
+		return;
+	}
+
+	// 走るボタンを押されていないかスタミナがなくなったら
+	if (!InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::DASH)
+		|| player.stamina_ < 0.1f)
+	{
+		// 普通の移動状態へ
+		player.ChangeState(PLAYER_STATE_MOVE);
+		return;
+	}
+
+	// 移動していたら
+	if (player.InputMove())
+	{
+		// 方向×スピードで移動量を作って、座標に足して移動
+		player.transform_->pos_ =
+			VAdd(player.transform_->pos_,
+				VScale(player.moveDir_, player.moveSpeed_));
+
+		auto stageCol = player.owner_->GetComponent<StageCollider>();
+
+		if (!stageCol) return;
+
+		// 足音がなる間隔
+		if (player.moveSoundInterval_ > MOVE_SOUND_INTERVAL - (player.moveSpeed_ * MOVE_SPEED_UP_MULTI))
+		{
+			// 接地している場合
+			if (player.velocityY_ <= 0)
+			{
+				// 移動サウンドの再生
+				AudioManager::GetInstance()->PlaySE(SoundID::SE_MOVE);
+				player.moveSoundInterval_ = 0;
+			}
+		}
+		else
+		{
+			player.moveSoundInterval_++;
+		}
+	}
+	else
+	{
+		// 待機状態へ
+		player.ChangeState(PLAYER_STATE_IDLE);
+	}
+
+	// チュートリアル時にカウンタに加算される
+	SceneManager::GetInstance()->TutorialCounter(Tutorial::DASH);
+}
+
+void PlayerController::CrouchingUpdate(PlayerController& player)
+{
+	auto stageCol = player.owner_->GetComponent<StageCollider>();
+
+	// しゃがみボタンを押されてないかつ、頭に障害物がなかった場合にしゃがみを解除
+	if (!InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CROUCH)
+		&& !stageCol->CeilingColl())
+	{
+		// 待機状態へ
+		player.ChangeState(PLAYER_STATE_IDLE);
+		return;
+	}
+
+	// 移動していたら
+	if (player.InputMove())
+	{
+		// 方向×スピードで移動量を作って、座標に足して移動
+		player.transform_->pos_ =
+			VAdd(player.transform_->pos_,
+				VScale(player.moveDir_, player.moveSpeed_));
+	}
+	
+	// チュートリアル時にカウンタに加算される
+	SceneManager::GetInstance()->TutorialCounter(Tutorial::CROUCH);
+}
+
+void PlayerController::SlidingUpdate(PlayerController& player)
+{
+	// スライディング状態かつ移動速度が0より大きく移動している場合
+	if (player.moveSpeed_ > 0.0f)
+	{
+		// 移動速度を減算
+		player.moveSpeed_ -= SLIDING_FRICTION;
+
+		// END_SLIDING_SPEED以下になったら
+		if (player.moveSpeed_ <= END_SLIDING_SPEED)
+		{
+			// しゃがみ状態にする
+			player.ChangeState(PLAYER_STATE_CROUCHING);
+			return;
+		}
+
+		// 方向×スピードで移動量を作って、座標に足して移動
+		player.transform_->pos_ =
+			VAdd(player.transform_->pos_,
+				VScale(player.moveDir_, player.moveSpeed_));
 	}
 }
 
-void PlayerController::CrouchingInit(void)
+void PlayerController::HitReactUpdate(PlayerController& player)
 {
-	// しゃがみ状態にする
-	state_ = PLAYER_STATE::CROUCHING;
-
-	// カプセルのオフセットを初期化する
-	auto cap = owner_->GetComponent<CapsuleCollider>();
-	if (cap != nullptr)
+	// 移動速度が0より大きく移動している場合
+	if (player.moveSpeed_ > 0.0f)
 	{
-		cap->SetStartOffset(CROUCHING_CAP_START_OFFSET);
+		// 移動速度を減算
+		player.moveSpeed_ -= HIT_REACT_FRICTION;
+		auto stageCol = player.owner_->GetComponent<StageCollider>();
+		if (!stageCol) return;
+
+		// スピードがゼロになるか、接地していたら
+		if (player.moveSpeed_ <= 0.0f || stageCol->IsGround())
+		{
+			// しゃがみ状態へ
+			player.ChangeState(PLAYER_STATE_CROUCHING);
+			return;
+		}
+
+		// 方向×スピードで移動量を作って、座標に足して移動
+		player.transform_->pos_ =
+			VAdd(player.transform_->pos_,
+				VScale(player.moveDir_, player.moveSpeed_));
 	}
+}
+
+void PlayerController::DeadUpdate(PlayerController& player)
+{
 }
 
 Item* PlayerController::GetGrabItem(void)
@@ -996,6 +941,38 @@ bool PlayerController::IsGrabbing(void)
 	return true;
 }
 
+bool PlayerController::InputMove(void)
+{
+	// 移動量
+	VECTOR dir = Math::VECTOR_ZERO;
+
+	// WASDで移動する
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::MOVE_FORWARD)) { dir = VAdd(dir, { 0.0f, 0.0f, 1.0f }); }
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::MOVE_LEFT)) { dir = VAdd(dir, { -1.0f, 0.0f, 0.0f }); }
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::MOVE_BACK)) { dir = VAdd(dir, { 0.0f, 0.0f, -1.0f }); }
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::MOVE_RIGHT)) { dir = VAdd(dir, { 1.0f, 0.0f, 0.0f }); }
+
+	if (!Math::EqualsVZero(dir))
+	{
+		// 正規化
+		dir = VNorm(dir);
+
+		// XYZの回転行列
+		// XZ平面移動にする場合は、XZの回転を考慮しないようにする
+		MATRIX mat = MGetIdent();
+		mat = MMult(mat, MGetRotY(CameraUtility::GetCameraAngle().y));
+
+		// 回転行列を使用して、ベクトルを回転させる
+		moveDir_ = VTransform(dir, mat);
+
+		// 移動している
+		return true;
+	}
+
+	// 移動していない
+	return false;
+}
+
 void PlayerController::GetShakeOffset(int& offset)
 {
 	if (hitStopCounter_ > 0) {
@@ -1010,4 +987,128 @@ void PlayerController::GetShakeOffset(int& offset)
 		offset *= 5;
 		// ----------------------------------------
 	}
+}
+
+void PlayerController::IdleInit(PlayerController& player)
+{
+	// 移動速度を初期化
+	player.moveSpeed_ = 0.0f;
+
+	// カプセルのオフセットを初期化する
+	auto cap = player.owner_->GetComponent<CapsuleCollider>();
+	if (cap != nullptr)
+	{
+		cap->SetStartOffset(STANDING_CAP_START_OFFSET);
+	}
+
+	// ライトの範囲設定が最大値でなければ
+	if (!player.wisp_->GetIsRangeMax())
+	{
+		// 最大値設定にする
+		player.wisp_->SetIsRangeMax(true);
+		// ライトアニメーションの火を元に戻す
+		player.wisp_->SetAnimation(Wisp::ANIM::NORMAL);
+		// ライトONサウンド
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_ON);
+	}
+}
+
+void PlayerController::MoveInit(PlayerController& player)
+{
+	// プレイヤーの移動速度を普通の移動速度にする
+	player.moveSpeed_ = DEFAULT_SPEED;
+}
+
+void PlayerController::DashInit(PlayerController& player)
+{
+	// プレイヤーの移動速度をダッシュの移動速度にする
+	player.moveSpeed_ = PlayerStatusManager::GetInstance().GetPlayerStatus().dashMoveSpeed_;
+}
+
+void PlayerController::CrouchingInit(PlayerController& player)
+{
+	// プレイヤーの移動速度を普通の移動速度にする
+	player.moveSpeed_ = DEFAULT_SPEED;
+
+	// カプセルのオフセットを初期化する
+	auto cap = player.owner_->GetComponent<CapsuleCollider>();
+	if (cap != nullptr)
+	{
+		cap->SetStartOffset(CROUCHING_CAP_START_OFFSET);
+	}
+
+	// ライトの範囲設定が最大値だったら
+	if (player.wisp_->GetIsRangeMax())
+	{
+		// ライトOFFサウンド
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_OFF);
+		// ライトの範囲を最小値設定にする
+		player.wisp_->SetIsRangeMax(false);
+		// ライトアニメーションの火を小さく
+		player.wisp_->SetAnimation(Wisp::ANIM::SMALL);
+	}
+
+	// しゃがみサウンド
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_CROUCH);
+}
+
+void PlayerController::SlidingInit(PlayerController& player)
+{
+	// プレイヤーのスライディングの移動速度とダッシュ移動速度を加算
+	player.moveSpeed_ = SLIDING_SPEED + PlayerStatusManager::GetInstance().GetPlayerStatus().dashMoveSpeed_;
+
+	// カプセルのオフセットを初期化する
+	auto cap = player.owner_->GetComponent<CapsuleCollider>();
+	if (cap != nullptr)
+	{
+		cap->SetStartOffset(CROUCHING_CAP_START_OFFSET);
+	}
+
+	// ライトの範囲設定が最大値だったら
+	if (player.wisp_->GetIsRangeMax())
+	{
+		// ライトOFFサウンド
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_OFF);
+		// ライトの範囲を最小値設定にする
+		player.wisp_->SetIsRangeMax(false);
+		// ライトアニメーションの火を小さく
+		player.wisp_->SetAnimation(Wisp::ANIM::SMALL);
+	}
+
+	// スライディング可能時間を初期化
+	player.slidingInputBufferTime = 0;
+
+	// チュートリアル時にカウンタに加算される
+	SceneManager::GetInstance()->TutorialCounter(Tutorial::SLIDING);
+
+	// スライディングのサウンド再生
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_SLIDING);
+
+}
+
+void PlayerController::HitReactInit(PlayerController& player)
+{
+	auto stageCol = player.owner_->GetComponent<StageCollider>();
+
+	if (stageCol != nullptr)
+	{
+		// 接地フラグを折る
+		stageCol->IsGroundFold();
+	}
+
+	// ライトの範囲設定が最大値だったら
+	if (player.wisp_->GetIsRangeMax())
+	{
+		// ライトOFFサウンド
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_OFF);
+		// ライトの範囲を最小値設定にする
+		player.wisp_->SetIsRangeMax(false);
+		// ライトアニメーションの火を小さく
+		player.wisp_->SetAnimation(Wisp::ANIM::SMALL);
+	}
+}
+
+void PlayerController::DeadInit(PlayerController& player)
+{
+	SceneManager::GetInstance()->TrueGameOver();
 }

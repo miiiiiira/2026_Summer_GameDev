@@ -113,6 +113,7 @@
     <ClInclude Include="Src\Common\Manager\EffectResManager\EffectResManager.h" />
     <ClInclude Include="Src\fontInfo.h" />
     <ClInclude Include="Src\Object\Actor\Wall\TutorialWall.h" />
+    <ClInclude Include="Src\Object\Component\PlayerController\PlayerInfo.h" />
     <ClInclude Include="Src\Scene\Option\OptionScene.h" />
     <ClInclude Include="Src\Common\Manager\Input\InputInfo.h" />
     <ClInclude Include="Src\Common\Manager\Input\InputIO.h" />
