@@ -89,7 +89,7 @@ void EnemyManager::CreateEnemyStage2(void)
 	newEnemy = new Yeti(enemyModelIds_[ENEMY_TAG::YETI]);
 	newEnemy->Load();
 	newEnemy->SetTag(ENEMY_TAG::YETI);
-	VECTOR pos = { -6811.0f,10.0f,1372.0f };
+	VECTOR pos = { -7887.0f,10.0f,1399.0f };
 	newEnemy->SetPos(pos);
 	newEnemy->Init(player_, stageId_, way_, edgeList_);
 	// リストに追加
@@ -156,6 +156,16 @@ void EnemyManager::CreateEnemyStage3(void)
 	newEnemy->Init();
 	// リストに追加
 	enemys_.push_back(newEnemy);
+
+	// Yetiを生成
+	newEnemy = new Yeti(enemyModelIds_[ENEMY_TAG::YETI]);
+	newEnemy->Load();
+	newEnemy->SetTag(ENEMY_TAG::YETI);
+	VECTOR pos = { -6811.0f,10.0f,1372.0f };
+	newEnemy->SetPos(pos);
+	newEnemy->Init(player_, stageId_, way_, edgeList_);
+	// リストに追加
+	enemys_.push_back(newEnemy);
 }
 
 void EnemyManager::LoadStage1(void)
@@ -177,7 +187,7 @@ void EnemyManager::LoadStage2(void)
 
 void EnemyManager::LoadStage3(void)
 {
-	LoadCsvData("Data/pointSave.csv");
+	LoadCsvData("Data/pointSave3.csv");
 }
 
 void EnemyManager::Update(void)

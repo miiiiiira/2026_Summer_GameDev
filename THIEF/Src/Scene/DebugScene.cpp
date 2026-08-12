@@ -291,7 +291,7 @@ void DebugScene::StageCreate(void)
 
 	// 描画
 	auto render = stage->AddComponent<Render3D>();
-	render->SetModel("Data/Model/Stage/Stage2.mv1");
+	render->SetModel("Data/Model/Stage/Stage3.mv1");
 
 	// ステージ機能
 	stage->AddComponent<Stage>();
@@ -368,7 +368,7 @@ void DebugScene::PlaceDebugPoint(void)
 
 void DebugScene::SavePoints(void)
 {
-	std::ofstream ofs("Data/PointSave2.csv");
+	std::ofstream ofs("Data/PointSave3.csv");
 
 	if (!ofs) return;
 
