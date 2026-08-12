@@ -161,7 +161,7 @@ void EnemyManager::CreateEnemyStage3(void)
 	newEnemy = new Yeti(enemyModelIds_[ENEMY_TAG::YETI]);
 	newEnemy->Load();
 	newEnemy->SetTag(ENEMY_TAG::YETI);
-	VECTOR pos = { -6811.0f,10.0f,1372.0f };
+	VECTOR pos = { 5704.0f,10.0f,7919.0f };
 	newEnemy->SetPos(pos);
 	newEnemy->Init(player_, stageId_, way_, edgeList_);
 	// ƒŠƒXƒg‚É’Ç‰Á
@@ -187,6 +187,7 @@ void EnemyManager::LoadStage2(void)
 
 void EnemyManager::LoadStage3(void)
 {
+	enemyModelIds_[ENEMY_TAG::YETI] = MV1LoadModel((Application::PATH_MODEL + "Enemy/Yeti.mv1").c_str());
 	LoadCsvData("Data/pointSave3.csv");
 }
 

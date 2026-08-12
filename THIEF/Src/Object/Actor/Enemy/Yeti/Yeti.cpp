@@ -266,9 +266,9 @@ void Yeti::UpdateThink(void)
 {
 	// 思考
 	// ランダムに次の行動を決定	
-	// 20%で待機、80%で徘徊
+	// 10%で待機、90%で徘徊
 	int rand = GetRand(100);
-	if (rand < 20)
+	if (rand < 10)
 	{
 		ChangeState(STATE::IDLE);
 	}
