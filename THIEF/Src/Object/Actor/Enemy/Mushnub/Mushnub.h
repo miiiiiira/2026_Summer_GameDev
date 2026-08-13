@@ -45,6 +45,10 @@ public:
 	void Update(void)override;
 	void Draw(void) override;
 
+	// 特定のエリアの最大、最小値を設定
+	void SetAreaPos(VECTOR minPos, VECTOR maxPos) { minAreaPos_ = minPos; maxAreaPos_ = maxPos; }
+	void SetChasePos(VECTOR pos) { chasePos_ = pos; }
+
 private:
 
 	// 大きさ
@@ -62,6 +66,14 @@ private:
 	static constexpr VECTOR MAX_AREA_POS = { -560.0f, 700.0f, 7800.0f };
 
 	STATE state_;
+
+	int baseModelId_;
+
+	// エリアの最大値、最小値
+	VECTOR minAreaPos_;
+	VECTOR maxAreaPos_;
+
+	VECTOR chasePos_;
 
 	// 状態遷移
 	void ChangeState(STATE state);

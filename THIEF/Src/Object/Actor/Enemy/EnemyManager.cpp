@@ -166,6 +166,38 @@ void EnemyManager::CreateEnemyStage3(void)
 	newEnemy->Init(player_, stageId_, way_, edgeList_);
 	// リストに追加
 	enemys_.push_back(newEnemy);
+
+	// Mushnubを生成
+	Mushnub* mushnub = new Mushnub(enemyModelIds_[ENEMY_TAG::MUSHNUB]);
+	mushnub->Load();
+	mushnub->SetTag(ENEMY_TAG::MUSHNUB);
+
+	// 1体目の座標とエリア指定
+	pos = { 6996.0f, 10.0f, 623.0f };
+	mushnub->SetPos(pos);
+	VECTOR minAreaPos = { 6547.0f, 1.0f, -609.0f };
+	VECTOR maxAreaPos = { 7688.0f, 700.0f, 882.0f };
+	mushnub->SetAreaPos(minAreaPos, maxAreaPos);
+	mushnub->SetChasePos(pos);
+	mushnub->Init(player_, stageId_, way_, edgeList_);
+	// リストに追加
+	enemys_.push_back(mushnub);
+
+
+	// Mushnubを生成
+	mushnub = new Mushnub(enemyModelIds_[ENEMY_TAG::MUSHNUB]);
+	mushnub->Load();
+	mushnub->SetTag(ENEMY_TAG::MUSHNUB);
+	// 2体目の座標とエリア指定
+	pos = { 3606.0f, 10.0f, 2610.0f };
+	mushnub->SetPos(pos);
+	minAreaPos = { 3458.0f, 1.0f, 2207.0f };
+	maxAreaPos = { 5081.0f, 700.0f, 3695.0f };
+	mushnub->SetAreaPos(minAreaPos, maxAreaPos);
+	mushnub->SetChasePos(pos);
+	mushnub->Init(player_, stageId_, way_, edgeList_);
+	// リストに追加
+	enemys_.push_back(mushnub);
 }
 
 void EnemyManager::LoadStage1(void)
@@ -188,6 +220,7 @@ void EnemyManager::LoadStage2(void)
 void EnemyManager::LoadStage3(void)
 {
 	enemyModelIds_[ENEMY_TAG::YETI] = MV1LoadModel((Application::PATH_MODEL + "Enemy/Yeti.mv1").c_str());
+	enemyModelIds_[ENEMY_TAG::MUSHNUB] = MV1LoadModel((Application::PATH_MODEL + "Enemy/Mushnub_Evolved.mv1").c_str());
 	LoadCsvData("Data/pointSave3.csv");
 }
 
