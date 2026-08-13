@@ -19,6 +19,15 @@ enum PLAYER_STATE
 	PLAYER_STATE_MAX
 };
 
+enum GRABBING_STATE
+{
+	NOT_GRABBING,	// 掴もうとしてない
+	TRY_GRABBING,	// 掴もうとしている
+	IS_GRABBING,	// 掴んでいる
+
+	GRABBING_MAX
+};
+
 // 状態遷移
 struct playerStateCtrl
 {
@@ -28,4 +37,14 @@ struct playerStateCtrl
 	// ステートテーブル
 	playerStateFunction initTable_[PLAYER_STATE_MAX];
 	playerStateFunction updateTable_[PLAYER_STATE_MAX];
+};
+
+// 掴み状態遷移
+struct playerGrabStateCtrl
+{
+	// ステート
+	GRABBING_STATE state_;
+
+	// ステートテーブル
+	playerStateFunction updateTable_[GRABBING_MAX];
 };

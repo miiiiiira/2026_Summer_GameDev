@@ -1,27 +1,27 @@
 #include "PlayerController.h"
 
 #include "../../../Application.h"
+#include "../../Object.h"
 
 #include "../../../Common/Manager/Input/InputManager.h"
 #include "../../../Common/Manager/System/SystemManager.h"
 #include "../../../Common/Manager/PlayerStatus/PlayerStatusManager.h"
 #include "../../../Common/Manager/PlayerActionCounter/PlayerActionCounter.h"
 #include "../../../Common/Math/Math.h"
-
-#include "../../Object.h"
-#include "../../Component/Transform/Transform.h"
-#include "../../Component/Animation/Animation.h"
-#include "../../Component/Item/Item.h"
-#include "../../Component/Wisp/Wisp.h"
-#include "../../Component/Cart/Cart.h"
-#include "Map/Map.h"
 #include "../../../Common/Transform/MatrixUtility.h"
 #include "../../../Common/CameraUtility/CameraUtility.h"
-#include "../../../Scene/SceneManager.h"
 #include "../../../Common/Shader/Shader.h"
-
-#include "../Collider/StageCollider/StageCollider.h"
 #include "../../../Common/Manager/Audio/AudioManager.h"
+
+#include "../Transform/Transform.h"
+#include "../Collider/StageCollider/StageCollider.h"
+#include "../Animation/Animation.h"
+#include "../Item/Item.h"
+#include "../Wisp/Wisp.h"
+#include "../Cart/Cart.h"
+#include "Map/Map.h"
+
+#include "../../../Scene/SceneManager.h"
 #include "../../../Scene/Tutorial/TutorialScene.h"
 
 PlayerController::PlayerController(void)
@@ -43,6 +43,11 @@ PlayerController::PlayerController(void)
 	stateCtrl_.updateTable_[PLAYER_STATE_SLIDING] = SlidingUpdate;
 	stateCtrl_.updateTable_[PLAYER_STATE_HIT_REACT] = HitReactUpdate;
 	stateCtrl_.updateTable_[PLAYER_STATE_DEAD] = DeadUpdate;
+
+	// 掴み状態更新関数
+	grabStateCtrl_.updateTable_[NOT_GRABBING] = NotGrabbingUpdate;
+	grabStateCtrl_.updateTable_[TRY_GRABBING] = TryGrabbingUpdate;
+	grabStateCtrl_.updateTable_[IS_GRABBING] = IsGrabbingUpdate;
 }
 
 // 初期化
@@ -51,14 +56,11 @@ void PlayerController::Init()
 	// オーナーからTransform取得
 	transform_ = owner_->GetComponent<Transform>();
 
-	// 角度から方向に変換する
-	moveDir_ = { 0.0f, 0.0f,0.0f };
+	// オーナーからCapsuleCollider取得
+	capColl_ = owner_->GetComponent<CapsuleCollider>();
 
-	// プレイヤーの状態初期化
-	ChangeState(PLAYER_STATE_IDLE);
-	
-	// 掴み状態を表すステート
-	grabState_ = GRABBING_STATE::NOT_GRABBING;
+	// オーナーからStageCollider取得
+	stageColl_ = owner_->GetComponent<StageCollider>();
 
 	// プレイヤーステータスマネージャー
 	auto status = PlayerStatusManager::GetInstance().GetPlayerStatus();
@@ -66,32 +68,17 @@ void PlayerController::Init()
 	// HPの初期化
 	hp_ = status.hp_;
 
-	// 無敵時間の初期化
-	invincibleTime_ = 0;
-
-	// プレイヤーの移動速度の初期化
-	moveSpeed_ = DEFAULT_SPEED;
-
-	// スライディング可能時間の初期化
-	slidingInputBufferTime = 0;
-
 	// スタミナの初期化
 	stamina_ = status.staminaMax_;
-
-	// スタミナを回復させるまでの時間カウンタの初期化
-	staminaCounter_ = 0;
-
-	// ジャンプ数の初期化
-	jumpNum_ = 0;
 
 	// 掴み距離の初期化
 	range_ = status.rangeMax_;
 
-	// 足音のサウンドインターバル
-	moveSoundInterval_ = MOVE_SOUND_INTERVAL;
+	// プレイヤーの状態初期化
+	ChangeState(PLAYER_STATE_IDLE);
 
-	// 前回しゃがみ状態かのフラグ
-	prevCrouching_ = false;
+	// 掴み状態を表すステート
+	ChangeGrabState(NOT_GRABBING);
 }
 
 // 更新
@@ -117,120 +104,36 @@ void PlayerController::Update()
 	// 重力処理
 	ApplyGravity();
 
-	// ステージコライダー取得
-	auto stageCol = owner_->GetComponent<StageCollider>();
-
 	// ステージコライダーがあれば
-	if (stageCol)
+	if (stageColl_)
 	{
 		// ステージの当たり判定の計算処理
-		stageCol->StageColl(velocityY_);
+		stageColl_->StageColl(velocityY_);
 	}
 
-	// 掴み動作処理
-	Grabbing();
+	// 掴み状態更新
+	GrabStateUpdate();
 
 	// マップの表示処理
 	MapDrawUpdate();
 
-	// 無敵時間を減らす
-	if (invincibleTime_ > 0)
-	{
-		--invincibleTime_;
-	}
-	else
-	{
-		SceneManager::GetInstance()->GetShader()->SetVignettePower(0.5f);
-	}
+	// 無敵時間を更新
+	InvincibleUodate();
 
-	// ヒットストップ更新処理
-	if (hitStopCounter_ > 0) {
-		hitStopCounter_--;
-	}
+	// ヒットストップ更新
+	HitStopUodate();
 
-	// 一定の座標いったら
-	if (transform_->pos_.y < DEAD_POS_Y)
-	{
-		hp_ = 0;
-		return;
-	}
+	// 死亡座標へ到達しているか
+	IsReachedDeadPos();
 }
 
 void PlayerController::Draw2D()
 {
-	int shake = 0;
-	// ヒットストップカウンタが0じゃない場合に揺らし量を計算
-	GetShakeOffset(shake);
+	// HP描画
+	DrawHP();
 
-	int HPWidth = GetDrawStringWidthToHandle("HP: ", 4, Application::GetInstance()->GetFont(FONT_SIZE_20));
-	int playerHpWidth = GetDrawFormatStringWidthToHandle(Application::GetInstance()->GetFont(FONT_SIZE_30), "%d", hp_);
-
-	// HPの表示
-	DrawStringToHandle(STATUS_DRAW_POS_X, HP_DRAW_POS_Y, "HP:", 0x00fa9a, Application::GetInstance()->GetFont(FONT_SIZE_20));
-
-	if (hitStopCounter_ > 0)
-	{
-		// プレイヤーのhpの表示 赤
-		DrawFormatStringToHandle(
-			STATUS_DRAW_POS_X + HPWidth + shake,
-			(HP_DRAW_POS_Y- STATUS_DRAW_POS_OFFSET) + shake,
-			0xff0000,
-			Application::GetInstance()->GetFont(FONT_SIZE_30),
-			"%d",
-			hp_);
-
-	}
-	else
-	{
-		// プレイヤーのhpの表示 緑
-		DrawFormatStringToHandle(
-			STATUS_DRAW_POS_X + HPWidth,
-			HP_DRAW_POS_Y - STATUS_DRAW_POS_OFFSET,
-			0x00fa9a, 
-			Application::GetInstance()->GetFont(FONT_SIZE_30),
-			"%d",
-			hp_);
-	}
-
-	// プレイヤーのhpMaxの表示
-	DrawFormatStringToHandle(
-		STATUS_DRAW_POS_X + HPWidth + playerHpWidth, 
-		HP_DRAW_POS_Y, 
-		0x00fa9a,
-		Application::GetInstance()->GetFont(FONT_SIZE_20),
-		" / %d",
-		PlayerStatusManager::GetInstance().GetPlayerStatus().hpMax_);
-
-
-
-	int STAMINAWidth = GetDrawStringWidthToHandle("STAMINA: ", 9, Application::GetInstance()->GetFont(FONT_SIZE_20));
-	int playerStaminaWidth = GetDrawFormatStringWidthToHandle(Application::GetInstance()->GetFont(FONT_SIZE_30), "%.f", stamina_);
-
-	// STAMINAの表示
-	DrawStringToHandle(
-		STATUS_DRAW_POS_X, 
-		STAMINA_DRAW_POS_Y, 
-		"STAMINA:", 
-		0xffc800, 
-		Application::GetInstance()->GetFont(FONT_SIZE_20));
-
-	// プレイヤースタミナの表示
-	DrawFormatStringToHandle(
-		STATUS_DRAW_POS_X + STAMINAWidth, 
-		STAMINA_DRAW_POS_Y - STATUS_DRAW_POS_OFFSET,
-		0xffc800,
-		Application::GetInstance()->GetFont(FONT_SIZE_30),
-		"%.f",
-		stamina_);
-
-	// スタミナMaxの表示
-	DrawFormatStringToHandle(
-		STATUS_DRAW_POS_X + STAMINAWidth + playerStaminaWidth,
-		STAMINA_DRAW_POS_Y, 
-		0xffc800,
-		Application::GetInstance()->GetFont(FONT_SIZE_20),
-		" / %.f",
-		PlayerStatusManager::GetInstance().GetPlayerStatus().staminaMax_);
+	// スタミナ描画
+	DrawStamina();
 
 #ifdef _DEBUG
 
@@ -243,22 +146,12 @@ void PlayerController::Draw2D()
 
 Transform* PlayerController::GetTransform()
 {
-	return owner_->GetComponent<Transform>();
+	return transform_;
 }
 
 CapsuleCollider* PlayerController::GetCapsule(void)
 {
-	return owner_->GetComponent<CapsuleCollider>();
-}
-
-int PlayerController::GetInvincibleTime(void)
-{
-	return invincibleTime_;
-}
-
-float PlayerController::GetMoveSpeed(void)
-{
-	return moveSpeed_;
+	return capColl_;
 }
 
 PLAYER_STATE PlayerController::GetState(void)
@@ -268,7 +161,17 @@ PLAYER_STATE PlayerController::GetState(void)
 
 GRABBING_STATE PlayerController::GetGrabbingState(void)
 {
-	return grabState_;
+	return grabStateCtrl_.state_;
+}
+
+float PlayerController::GetMoveSpeed(void)
+{
+	return moveSpeed_;
+}
+
+int PlayerController::GetInvincibleTime(void)
+{
+	return invincibleTime_;
 }
 
 VECTOR PlayerController::GetLineStartPos(void)
@@ -289,17 +192,6 @@ VECTOR PlayerController::GetLineEndPos(void)
 	return downPos;
 }
 
-void PlayerController::StartGrabbing(float range)
-{
-	// 掴んだ音
-	AudioManager::GetInstance()->PlaySE(SoundID::SE_GRAB);
-
-	// 掴み状態を始める
-	grabState_ = GRABBING_STATE::IS_GRABBING;
-
-	range_ = range;
-}
-
 void PlayerController::SetWisp(Wisp* wisp)
 {
 	// ランタンクラスのポインタを設定
@@ -318,21 +210,30 @@ void PlayerController::SetGrabObject(Cart* cart)
 	grabObject_ = cart;
 }
 
+void PlayerController::StartGrabbing(float range)
+{
+	// 掴み状態を始める
+	ChangeGrabState(IS_GRABBING);
+
+	// 指定された距離を設定
+	range_ = range;
+
+	// 掴んだ音
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_GRAB);
+}
+
 void PlayerController::SetDamage(int damage)
 {
 	// 無敵時間があればダメージを与えない
 	if (invincibleTime_ > 0)return;
 
+	// HPにダメージを与える
 	hp_ -= damage;
 
-	// ビネット
-	SceneManager::GetInstance()->GetShader()->SetVignettePower(1.0f);
-
-	// プレイヤーのダメージ音
-	AudioManager::GetInstance()->PlaySE(SoundID::SE_DAMAGE);
-
+	// HPが0以下になったら
 	if (hp_ <= 0)
 	{
+		// 0初期化しておく
 		hp_ = 0;
 	}
 	else
@@ -343,6 +244,12 @@ void PlayerController::SetDamage(int damage)
 		// HP描画を揺らす
 		hitStopCounter_ = SHAKE_TIME;
 	}
+	
+	// ビネット
+	SceneManager::GetInstance()->GetShader()->SetVignettePower(1.0f);
+
+	// プレイヤーのダメージ音
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_DAMAGE);
 
 	// プレイヤーステータスに反映
 	PlayerStatusManager::GetInstance().SetHp(hp_);
@@ -350,11 +257,13 @@ void PlayerController::SetDamage(int damage)
 
 void PlayerController::SetHitReact(VECTOR moveDir, float moveSpeed, float jumpPow)
 {
+	// 指定された移動向きを設定
 	moveDir_ = moveDir;
 
+	// 指定された移動速度を設定
 	moveSpeed_ = moveSpeed;
 
-	// ジャンプ力を設定
+	// 指定されたジャンプ力を設定
 	velocityY_ = jumpPow;
 
 	ChangeState(PLAYER_STATE_HIT_REACT);
@@ -368,8 +277,121 @@ void PlayerController::ChangeState(PLAYER_STATE state)
 	// nullチェック
 	if (stateCtrl_.initTable_[stateCtrl_.state_])
 	{
+		// 状態別初期化
 		stateCtrl_.initTable_[stateCtrl_.state_](*this);
 	}
+}
+
+void PlayerController::GrabStateUpdate(void)
+{
+	// nullチェック
+	if (grabStateCtrl_.updateTable_[grabStateCtrl_.state_])
+	{
+		// 状態別更新
+		grabStateCtrl_.updateTable_[grabStateCtrl_.state_](*this);
+	}
+}
+
+void PlayerController::NotGrabbingUpdate(PlayerController& player)
+{
+	// 掴もうとしていたら
+	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::GRAB))
+	{
+		// 掴もうとしている状態へ
+		player.ChangeGrabState(TRY_GRABBING);
+	}
+}
+
+void PlayerController::TryGrabbingUpdate(PlayerController& player)
+{
+	// 掴もうとしていなくなったら
+	if (!InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::GRAB))
+	{
+		// 掴もうとしていない状態へ
+		player.ChangeGrabState(NOT_GRABBING);
+	}
+}
+
+void PlayerController::IsGrabbingUpdate(PlayerController& player)
+{
+	// マウスの左クリックを押されていなかったら
+	if (!InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::GRAB))
+	{
+		// 掴み動作を終わる
+		player.ChangeGrabState(NOT_GRABBING);
+
+		// 中身がアイテムだったら
+		// 持っている状態を終了させる
+		if (player.GetGrabItem())
+		{
+			// アイテムを離した状態にする
+			player.GetGrabItem()->EndGrabbed();
+
+			// 空状態にする
+			player.grabObject_ = std::monostate{};
+		}
+		// 中身がカートだったら
+		else if (player.GetGrabCart())
+		{
+			// カートを離した状態にする
+			player.GetGrabCart()->EndGrabbed();
+
+			// 空状態にする
+			player.grabObject_ = std::monostate{};
+		}
+	}
+
+
+	// 中身が空では無かったら(アイテム)
+	if (player.GetGrabItem())
+	{
+		// つかめる範囲に変更があったら
+		if (player.RangeUpdate())
+		{
+			// アイテムに反映させる
+			player.GetGrabItem()->SetLocalPosZ(player.range_);
+
+			// チュートリアル時にカウンタに加算される
+			SceneManager::GetInstance()->TutorialCounter(Tutorial::RANGE);
+		}
+	}
+	// 中身が空では無かったら(カート)
+	else if (player.GetGrabCart())
+	{
+		// カートとプレイヤーの距離を取る
+		float distance = 
+			VSize(VSub(player.transform_->pos_,
+				player.GetGrabCart()->GetTransform()->pos_));
+
+		// カートとプレイヤーの距離が一定距離超えたら
+		if (distance > END_GRAB_CART_DISTANCE)
+		{
+			// 掴み動作を終わる
+			player.ChangeGrabState(NOT_GRABBING);
+
+			// 強制的にカートを離させる
+			player.GetGrabCart()->EndGrabbed();
+
+			// 空状態にする
+			player.grabObject_ = std::monostate{};
+			return;
+		}
+
+		// カートとの距離を計算
+		/*auto capdistance =
+			VSize(VSub(player.owner_->GetComponent<CapsuleCollider>()->GetStart(),
+				player.owner_->GetComponent<CapsuleCollider>()->GetEnd()));
+
+		capdistance += (player.owner_->GetComponent<CapsuleCollider>()->GetRadius() + 5.0f);
+
+		player.GetGrabCart()->SetLocalPos({ 0.0f,capdistance ,CART_DISTANCE });*/
+	}
+}
+
+void PlayerController::ChangeGrabState(GRABBING_STATE state)
+{
+	// 指定されたステートへ変更
+	grabStateCtrl_.state_ = state;
 }
 
 void PlayerController::StateUpdate(void)
@@ -380,289 +402,112 @@ void PlayerController::StateUpdate(void)
 	// nullチェック
 	if (stateCtrl_.updateTable_[stateCtrl_.state_])
 	{
-		// 状態別更新処理
+		// 状態別更新
 		stateCtrl_.updateTable_[stateCtrl_.state_](*this);
 	}
 }
 
-// 重力処理
-void PlayerController::ApplyGravity()
+void PlayerController::IdleInit(PlayerController& player)
 {
-	// StageCollider取得
-	auto stageCol = owner_->GetComponent<StageCollider>();
-	
-	if (!stageCol) return;
+	// 移動速度を初期化
+	player.moveSpeed_ = 0.0f;
 
-	// Y座標へ反映
-	transform_->pos_.y += velocityY_;
-
-	// 接地判定
-	
-	// 空中
-	if (!stageCol->IsGround())
+	// カプセルのオフセットを初期化する
+	if (player.capColl_ != nullptr)
 	{
-		// 重力加算
-		velocityY_ += GRAVITY;
-		
-		// 最大落下速度
-		if (velocityY_ < MAX_FALL)
-			velocityY_ = MAX_FALL;
+		player.capColl_->SetStartOffset(STANDING_CAP_START_OFFSET);
 	}
-	else
-	{
-		// 地面上なら少し下方向に押す
-		// 0だと浮く場合があるため
-		velocityY_ = -0.1f;
 
-		// ジャンプした回数を初期化
-		jumpNum_ = 0;
+	// ライトの範囲設定が最大値でなければ
+	if (!player.wisp_->GetIsRangeMax())
+	{
+		// 最大値設定にする
+		player.wispRangeChange(true);
 	}
 }
 
-void PlayerController::HealStamina(void)
+void PlayerController::MoveInit(PlayerController& player)
 {
-	float staminaMax = PlayerStatusManager::GetInstance().GetPlayerStatus().staminaMax_;
-
-	// スタミナがMaxだったら処理を飛ばす
-	if (stamina_ >= staminaMax)return;
-
-	// カウンターを進める
-	staminaCounter_++;
-
-	// しゃがみ状態だったら
-	if (stateCtrl_.state_ == PLAYER_STATE_CROUCHING)
-	{
-		// スタミナ回復させる
-		stamina_ += RECOVERY_STAMINA;
-
-		if (stamina_ > staminaMax)
-		{
-			// 最大スタミナを超えないようにする
-			stamina_ = staminaMax;
-		}
-
-		return;
-	}
-
-	// スタミナ回復を行うまでの制限時間を超えたら入る
-	if (staminaCounter_ >= RECOVERY_STAMINA_WAIT_TIME)
-	{
-		// スタミナ回復させる
-		stamina_ += RECOVERY_STAMINA;
-
-		if (stamina_ > staminaMax)
-		{
-			// 最大スタミナを超えないようにする
-			stamina_ = staminaMax;
-		}
-	}
+	// プレイヤーの移動速度を普通の移動速度にする
+	player.moveSpeed_ = DEFAULT_SPEED;
 }
 
-void PlayerController::Jump(void)
+void PlayerController::DashInit(PlayerController& player)
 {
-	if (stateCtrl_.state_ == PLAYER_STATE_HIT_REACT)return;
+	// プレイヤーの移動速度をダッシュの移動速度にする
+	player.moveSpeed_ = PlayerStatusManager::GetInstance().GetPlayerStatus().dashMoveSpeed_;
+}
 
-	// StageCollider取得
-	auto stageCol = owner_->GetComponent<StageCollider>();
+void PlayerController::CrouchingInit(PlayerController& player)
+{
+	// プレイヤーの移動速度を普通の移動速度にする
+	player.moveSpeed_ = DEFAULT_SPEED;
 
-	if (!stageCol) return;
-
-	// ジャンプボタンを押されたかつ、ジャンプ中では無いかつ、ジャンプ回数がMaxまで到達していなかったら
-	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::JUMP)
-		&& jumpNum_ < PlayerStatusManager::GetInstance().GetPlayerStatus().jumpNumMax_)
+	// カプセルのオフセットを初期化する
+	if (player.capColl_ != nullptr)
 	{
-		// ジャンプ音
-		AudioManager::GetInstance()->PlaySE(SoundID::SE_JUMP);
+		player.capColl_->SetStartOffset(CROUCHING_CAP_START_OFFSET);
+	}
 
-		// ジャンプした回数を加算
-		++jumpNum_;
+	// ライトの範囲設定が最大値だったら
+	if (player.wisp_->GetIsRangeMax())
+	{
+		// 最小値設定にする
+		player.wispRangeChange(false);
+	}
 
-		// ジャンプ力を設定
-		velocityY_ = JUMP_POW;
+	// しゃがみサウンド
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_CROUCH);
+}
 
+void PlayerController::SlidingInit(PlayerController& player)
+{
+	// プレイヤーのスライディングの移動速度とダッシュ移動速度を加算
+	player.moveSpeed_ = SLIDING_SPEED + PlayerStatusManager::GetInstance().GetPlayerStatus().dashMoveSpeed_;
+
+	// カプセルのオフセットを初期化する
+	if (player.capColl_ != nullptr)
+	{
+		player.capColl_->SetStartOffset(CROUCHING_CAP_START_OFFSET);
+	}
+
+	// ライトの範囲設定が最大値だったら
+	if (player.wisp_->GetIsRangeMax())
+	{
+		// 最小値設定にする
+		player.wispRangeChange(false);
+	}
+
+	// スライディング可能時間を初期化
+	player.slidingInputBufferTime = 0;
+
+	// チュートリアル時にカウンタに加算される
+	SceneManager::GetInstance()->TutorialCounter(Tutorial::SLIDING);
+
+	// スライディングのサウンド再生
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_SLIDING);
+
+}
+
+void PlayerController::HitReactInit(PlayerController& player)
+{
+	if (player.stageColl_)
+	{
 		// 接地フラグを折る
-		stageCol->IsGroundFold();
+		player.stageColl_->IsGroundFold();
+	}
 
-		// チュートリアル時にカウンタに加算される
-		SceneManager::GetInstance()->TutorialCounter(Tutorial::JUMP);
+	// ライトの範囲設定が最大値だったら
+	if (player.wisp_->GetIsRangeMax())
+	{
+		// 最小値設定にする
+		player.wispRangeChange(false);
 	}
 }
 
-void PlayerController::Grabbing(void)
+void PlayerController::DeadInit(PlayerController& player)
 {
-	switch (grabState_)
-	{
-	case GRABBING_STATE::NOT_GRABBING:
-
-		// 掴もうとしていたら
-		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::GRAB))
-		{
-			// 状態を変更
-			grabState_ = GRABBING_STATE::TRY_GRABBING;
-		}
-
-		break;
-	case GRABBING_STATE::TRY_GRABBING:
-
-		// 掴もうとしていなくなったら
-		if (!InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::GRAB))
-		{
-			// 状態を変更
-			grabState_ = GRABBING_STATE::NOT_GRABBING;
-		}
-
-		break;
-	case GRABBING_STATE::IS_GRABBING:
-
-		// マウスの左クリックを押されていなかったら
-		if (!InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::GRAB))
-		{
-			// 掴み動作を終わる
-			grabState_ = GRABBING_STATE::NOT_GRABBING;
-
-			// 中身がアイテムだったら
-			// 持っている状態を終了させる
-			if (GetGrabItem() != nullptr)
-			{
-				// アイテムを離した状態にする
-				GetGrabItem()->EndGrabbed();
-
-				// 空状態にする
-				grabObject_ = std::monostate{};
-			}
-			// 中身がカートだったら
-			else if (GetGrabCart() != nullptr)
-			{
-				// カートを離した状態にする
-				GetGrabCart()->EndGrabbed();
-
-				// 空状態にする
-				grabObject_ = std::monostate{};
-			}
-		}
-
-
-		// 中身が空では無かったら(アイテム)
-		if (GetGrabItem() != nullptr)
-		{
-			// つかめる範囲に変更があったら
-			if (RangeUpdate())
-			{
-				// アイテムに反映させる
-				GetGrabItem()->SetLocalPosZ(range_);
-
-				// チュートリアル時にカウンタに加算される
-				SceneManager::GetInstance()->TutorialCounter(Tutorial::RANGE);
-			}
-		}
-		// 中身が空では無かったら(カート)
-		else if (GetGrabCart() != nullptr)
-		{
-			// カートとプレイヤーの距離を取る
-			float distance = VSize(VSub(transform_->pos_, GetGrabCart()->GetTransform()->pos_));
-
-			// カートとプレイヤーの距離が一定距離超えたら
-			if (distance > END_GRAB_CART_DISTANCE)
-			{
-				// 掴み動作を終わる
-				grabState_ = GRABBING_STATE::NOT_GRABBING;
-
-				// 強制的にカートを離させる
-				GetGrabCart()->EndGrabbed();
-
-				// 空状態にする
-				grabObject_ = std::monostate{};
-				return;
-			}
-
-			auto capdistance = 
-				VSize(VSub(owner_->GetComponent<CapsuleCollider>()->GetStart() ,
-					owner_->GetComponent<CapsuleCollider>()->GetEnd()));
-
-			capdistance += (owner_->GetComponent<CapsuleCollider>()->GetRadius()+5.0f);
-
-			GetGrabCart()->SetLocalPos({ 0.0f,capdistance ,CART_DISTANCE });
-		}
-
-		break;
-	default:
-		break;
-	}
-}
-
-bool PlayerController::RangeUpdate(void)
-{
-	float rangeMax = PlayerStatusManager::GetInstance().GetPlayerStatus().rangeMax_;
-
-	// 物との距離を大きくする操作が行われていたら
-	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::ITEM_PUSH))
-	{
-		// 物との距離を大きくする
-		range_ += EXTEND_RENGE_MOVE;
-
-		// 最大値が超えないようにする
-		if (range_ > rangeMax)
-		{
-			range_ = rangeMax;
-		}
-
-		// 変更があったらtrueを返す
-		return true;
-	}
-	// 物との距離を小さくする操作が行われていたら
-	else if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::ITEM_PULL))
-	{
-		// 物との距離を小さくする
-		range_ -= EXTEND_RENGE_MOVE;
-
-		// 最小値が超えないようにする
-		if (range_ < MIN_RENGE + GetGrabItem()->GetInfo().collisionRadiusX_)
-		{
-			range_ = MIN_RENGE + GetGrabItem()->GetInfo().collisionRadiusX_;
-		}
-
-		// 変更があったらtrueを返す
-		return true;
-	}
-
-	// 変更がなかったらfalseを返す
-	return false;
-}
-
-void PlayerController::MapDrawUpdate(void)
-{
-	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::MAP))
-	{
-		auto* map = owner_->GetComponent<Map>();
-
-		// 中身が無かったら処理しない
-		if (map == nullptr)	return;
-
-		// マップが表示中なら
-		if (map->GetIsDraw())
-		{
-			// マップを非表示にする
-			map->SetIsDraw(false);
-		}
-		// マップが非表示中なら
-		else
-		{
-			// マップを表示する
-			map->SetIsDraw(true);
-
-			// チュートリアル時にカウンタに加算される
-			SceneManager::GetInstance()->TutorialCounter(Tutorial::MAP);
-		}
-	}
-}
-
-void PlayerController::DebugDraw(void)
-{
-	DrawFormatString(20,
-		300,
-		0xff0000, 
-		"プレイヤー座標 : %.f,%.f,%.f",
-		transform_->pos_.x, transform_->pos_.y, transform_->pos_.z);
+	SceneManager::GetInstance()->TrueGameOver();
 }
 
 void PlayerController::IdleUpdate(PlayerController& player)
@@ -679,7 +524,6 @@ void PlayerController::IdleUpdate(PlayerController& player)
 	{
 		player.ChangeState(PLAYER_STATE_CROUCHING);
 	}
-
 }
 
 void PlayerController::MoveUpdate(PlayerController& player)
@@ -725,14 +569,10 @@ void PlayerController::MoveUpdate(PlayerController& player)
 	// 移動していたら
 	if (player.InputMove())
 	{
-		// 方向×スピードで移動量を作って、座標に足して移動
-		player.transform_->pos_ =
-			VAdd(player.transform_->pos_,
-				VScale(player.moveDir_, player.moveSpeed_));
+		// 指定された方向と移動速度を使用し座標に反映
+		player.Move();
 
-		auto stageCol = player.owner_->GetComponent<StageCollider>();
-
-		if (!stageCol) return;
+		if (!player.stageColl_) return;
 
 		// 足音がなる間隔
 		if (player.moveSoundInterval_ > MOVE_SOUND_INTERVAL - (player.moveSpeed_ * MOVE_SPEED_UP_MULTI))
@@ -796,14 +636,10 @@ void PlayerController::DashUpdate(PlayerController& player)
 	// 移動していたら
 	if (player.InputMove())
 	{
-		// 方向×スピードで移動量を作って、座標に足して移動
-		player.transform_->pos_ =
-			VAdd(player.transform_->pos_,
-				VScale(player.moveDir_, player.moveSpeed_));
+		// 指定された方向と移動速度を使用し座標に反映
+		player.Move();
 
-		auto stageCol = player.owner_->GetComponent<StageCollider>();
-
-		if (!stageCol) return;
+		if (!player.stageColl_) return;
 
 		// 足音がなる間隔
 		if (player.moveSoundInterval_ > MOVE_SOUND_INTERVAL - (player.moveSpeed_ * MOVE_SPEED_UP_MULTI))
@@ -833,11 +669,10 @@ void PlayerController::DashUpdate(PlayerController& player)
 
 void PlayerController::CrouchingUpdate(PlayerController& player)
 {
-	auto stageCol = player.owner_->GetComponent<StageCollider>();
-
 	// しゃがみボタンを押されてないかつ、頭に障害物がなかった場合にしゃがみを解除
 	if (!InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CROUCH)
-		&& !stageCol->CeilingColl())
+		&& player.stageColl_
+		&& !player.stageColl_->CeilingColl())
 	{
 		// 待機状態へ
 		player.ChangeState(PLAYER_STATE_IDLE);
@@ -847,12 +682,10 @@ void PlayerController::CrouchingUpdate(PlayerController& player)
 	// 移動していたら
 	if (player.InputMove())
 	{
-		// 方向×スピードで移動量を作って、座標に足して移動
-		player.transform_->pos_ =
-			VAdd(player.transform_->pos_,
-				VScale(player.moveDir_, player.moveSpeed_));
+		// 指定された方向と移動速度を使用し座標に反映
+		player.Move();
 	}
-	
+
 	// チュートリアル時にカウンタに加算される
 	SceneManager::GetInstance()->TutorialCounter(Tutorial::CROUCH);
 }
@@ -873,10 +706,8 @@ void PlayerController::SlidingUpdate(PlayerController& player)
 			return;
 		}
 
-		// 方向×スピードで移動量を作って、座標に足して移動
-		player.transform_->pos_ =
-			VAdd(player.transform_->pos_,
-				VScale(player.moveDir_, player.moveSpeed_));
+		// 指定された方向と移動速度を使用し座標に反映
+		player.Move();
 	}
 }
 
@@ -887,26 +718,227 @@ void PlayerController::HitReactUpdate(PlayerController& player)
 	{
 		// 移動速度を減算
 		player.moveSpeed_ -= HIT_REACT_FRICTION;
-		auto stageCol = player.owner_->GetComponent<StageCollider>();
-		if (!stageCol) return;
+
+		if (!player.stageColl_) return;
 
 		// スピードがゼロになるか、接地していたら
-		if (player.moveSpeed_ <= 0.0f || stageCol->IsGround())
+		if (player.moveSpeed_ <= 0.0f || player.stageColl_->IsGround())
 		{
 			// しゃがみ状態へ
 			player.ChangeState(PLAYER_STATE_CROUCHING);
 			return;
 		}
 
-		// 方向×スピードで移動量を作って、座標に足して移動
-		player.transform_->pos_ =
-			VAdd(player.transform_->pos_,
-				VScale(player.moveDir_, player.moveSpeed_));
+		// 指定された方向と移動速度を使用し座標に反映
+		player.Move();
 	}
 }
 
 void PlayerController::DeadUpdate(PlayerController& player)
 {
+}
+
+void PlayerController::ApplyGravity()
+{
+	// ステージコライダが無ければ処理を行わない
+	if (!stageColl_) return;
+
+	// Y座標へ反映
+	transform_->pos_.y += velocityY_;
+
+	// 接地判定
+	
+	// 空中
+	if (!stageColl_->IsGround())
+	{
+		// 重力加算
+		velocityY_ += GRAVITY;
+		
+		// 最大落下速度
+		if (velocityY_ < MAX_FALL)
+			velocityY_ = MAX_FALL;
+	}
+	else
+	{
+		// 地面上なら少し下方向に押す
+		// 0だと浮く場合があるため
+		velocityY_ = -0.1f;
+
+		// ジャンプした回数を初期化
+		jumpNum_ = 0;
+	}
+}
+
+void PlayerController::HealStamina(void)
+{
+	// スタミナの最大値を取得
+	float staminaMax = PlayerStatusManager::GetInstance().GetPlayerStatus().staminaMax_;
+
+	// スタミナがMaxだったら処理を飛ばす
+	if (stamina_ >= staminaMax)return;
+
+	// カウンターを進める
+	staminaCounter_++;
+
+	// しゃがみ状態かスタミナ回復を行うまでの制限時間を超えたら入る
+	if (stateCtrl_.state_ == PLAYER_STATE_CROUCHING
+		|| staminaCounter_ >= RECOVERY_STAMINA_WAIT_TIME)
+	{
+		// スタミナ回復させる
+		stamina_ += RECOVERY_STAMINA;
+
+		if (stamina_ > staminaMax)
+		{
+			// 最大スタミナを超えないようにする
+			stamina_ = staminaMax;
+		}
+	}
+}
+
+void PlayerController::Jump(void)
+{
+	// ダメージ時は処理を行わない
+	if (stateCtrl_.state_ == PLAYER_STATE_HIT_REACT)return;
+
+	if (!stageColl_) return;
+
+	// ジャンプボタンを押されたかつ、ジャンプ中では無いかつ、ジャンプ回数がMaxまで到達していなかったら
+	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::JUMP)
+		&& jumpNum_ < PlayerStatusManager::GetInstance().GetPlayerStatus().jumpNumMax_)
+	{
+		// ジャンプした回数を加算
+		++jumpNum_;
+
+		// ジャンプ力を設定
+		velocityY_ = JUMP_POW;
+
+		// 接地フラグを折る
+		stageColl_->IsGroundFold();
+
+		// ジャンプ音
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_JUMP);
+
+		// チュートリアル時にカウンタに加算される
+		SceneManager::GetInstance()->TutorialCounter(Tutorial::JUMP);
+	}
+}
+
+bool PlayerController::RangeUpdate(void)
+{
+	// 掴む距離の最大値を取得
+	float rangeMax = PlayerStatusManager::GetInstance().GetPlayerStatus().rangeMax_;
+
+	// 物との距離を大きくする操作が行われていたら
+	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::ITEM_PUSH))
+	{
+		// 物との距離を大きくする
+		range_ += EXTEND_RENGE_MOVE;
+
+		// 最大値を超えないようにする
+		if (range_ > rangeMax)
+		{
+			range_ = rangeMax;
+		}
+
+		// 変更があったらtrueを返す
+		return true;
+	}
+	// 物との距離を小さくする操作が行われていたら
+	else if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::ITEM_PULL))
+	{
+		// 物との距離を小さくする
+		range_ -= EXTEND_RENGE_MOVE;
+
+		// 最小値を超えないようにする
+		if (range_ < MIN_RENGE + GetGrabItem()->GetInfo().collisionRadiusX_)
+		{
+			range_ = MIN_RENGE + GetGrabItem()->GetInfo().collisionRadiusX_;
+		}
+
+		// 変更があったらtrueを返す
+		return true;
+	}
+
+	// 変更がなかったらfalseを返す
+	return false;
+}
+
+void PlayerController::MapDrawUpdate(void)
+{
+	// マップボタンを押されたら
+	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::MAP))
+	{
+		// マップを取得
+		auto* map = owner_->GetComponent<Map>();
+
+		// 中身が無かったら処理しない
+		if (map == nullptr)	return;
+
+		// マップが表示中なら
+		if (map->GetIsDraw())
+		{
+			// マップを非表示にする
+			map->SetIsDraw(false);
+		}
+		// マップが非表示中なら
+		else
+		{
+			// マップを表示する
+			map->SetIsDraw(true);
+
+			// チュートリアル時にカウンタに加算される
+			SceneManager::GetInstance()->TutorialCounter(Tutorial::MAP);
+		}
+	}
+}
+
+void PlayerController::InvincibleUodate(void)
+{
+	// 無敵時間を減らす
+	if (invincibleTime_ > 0)
+	{
+		--invincibleTime_;
+	}
+	else
+	{
+		SceneManager::GetInstance()->GetShader()->SetVignettePower(0.5f);
+	}
+}
+
+void PlayerController::HitStopUodate(void)
+{
+	// ヒットストップ更新処理
+	if (hitStopCounter_ > 0) {
+		hitStopCounter_--;
+	}
+}
+
+void PlayerController::GetShakeOffset(int& offset)
+{
+	if (hitStopCounter_ > 0) {
+		// 振動先をカウンターから計算する----------
+		// 0 or 1
+		offset = (hitStopCounter_ / 5) % 2;
+		// 0 or 2　中心を作る
+		offset *= 2;
+		// -1 or 1　0を中心にする
+		offset -= 1;
+		// -3 or 3　振れ幅を付ける
+		offset *= 5;
+		// ----------------------------------------
+	}
+}
+
+bool PlayerController::IsGrabbing(void)
+{
+	if (std::holds_alternative<std::monostate>(grabObject_))
+	{
+		// 中身がない
+		return false;
+	}
+
+	// 中身がある
+	return true;
 }
 
 Item* PlayerController::GetGrabItem(void)
@@ -922,23 +954,11 @@ Item* PlayerController::GetGrabItem(void)
 Cart* PlayerController::GetGrabCart(void)
 {
 	if (auto cart = std::get_if<Cart*>(&grabObject_)) {
-		// アイテムポインタを取り出す
+		// カートポインタを取り出す
 		return *cart;
 	}
 
 	return nullptr;
-}
-
-bool PlayerController::IsGrabbing(void)
-{
-	if (std::holds_alternative<std::monostate>(grabObject_)) 
-	{
-		// 中身がない
-		return false;
-	}
-
-	// 中身がある
-	return true;
 }
 
 bool PlayerController::InputMove(void)
@@ -973,142 +993,128 @@ bool PlayerController::InputMove(void)
 	return false;
 }
 
-void PlayerController::GetShakeOffset(int& offset)
+void PlayerController::Move(void)
 {
-	if (hitStopCounter_ > 0) {
-		// 振動先をカウンターから計算する----------
-		// 0 or 1
-		offset = (hitStopCounter_ / 5) % 2;
-		// 0 or 2　中心を作る
-		offset *= 2;
-		// -1 or 1　0を中心にする
-		offset -= 1;
-		// -3 or 3　振れ幅を付ける
-		offset *= 5;
-		// ----------------------------------------
-	}
+	// 方向×スピードで移動量を作って、座標に足して移動
+	transform_->pos_ =
+		VAdd(transform_->pos_,
+			VScale(moveDir_, moveSpeed_));
 }
 
-void PlayerController::IdleInit(PlayerController& player)
+void PlayerController::wispRangeChange(bool flg)
 {
-	// 移動速度を初期化
-	player.moveSpeed_ = 0.0f;
+	// 範囲を設定する
+	wisp_->SetIsRangeMax(flg);
 
-	// カプセルのオフセットを初期化する
-	auto cap = player.owner_->GetComponent<CapsuleCollider>();
-	if (cap != nullptr)
+	if (flg)
 	{
-		cap->SetStartOffset(STANDING_CAP_START_OFFSET);
-	}
-
-	// ライトの範囲設定が最大値でなければ
-	if (!player.wisp_->GetIsRangeMax())
-	{
-		// 最大値設定にする
-		player.wisp_->SetIsRangeMax(true);
 		// ライトアニメーションの火を元に戻す
-		player.wisp_->SetAnimation(Wisp::ANIM::NORMAL);
+		wisp_->SetAnimation(Wisp::ANIM::NORMAL);
 		// ライトONサウンド
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_ON);
 	}
-}
-
-void PlayerController::MoveInit(PlayerController& player)
-{
-	// プレイヤーの移動速度を普通の移動速度にする
-	player.moveSpeed_ = DEFAULT_SPEED;
-}
-
-void PlayerController::DashInit(PlayerController& player)
-{
-	// プレイヤーの移動速度をダッシュの移動速度にする
-	player.moveSpeed_ = PlayerStatusManager::GetInstance().GetPlayerStatus().dashMoveSpeed_;
-}
-
-void PlayerController::CrouchingInit(PlayerController& player)
-{
-	// プレイヤーの移動速度を普通の移動速度にする
-	player.moveSpeed_ = DEFAULT_SPEED;
-
-	// カプセルのオフセットを初期化する
-	auto cap = player.owner_->GetComponent<CapsuleCollider>();
-	if (cap != nullptr)
+	else
 	{
-		cap->SetStartOffset(CROUCHING_CAP_START_OFFSET);
-	}
-
-	// ライトの範囲設定が最大値だったら
-	if (player.wisp_->GetIsRangeMax())
-	{
+		// ライトアニメーションの火を小さく
+		wisp_->SetAnimation(Wisp::ANIM::SMALL);
 		// ライトOFFサウンド
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_OFF);
-		// ライトの範囲を最小値設定にする
-		player.wisp_->SetIsRangeMax(false);
-		// ライトアニメーションの火を小さく
-		player.wisp_->SetAnimation(Wisp::ANIM::SMALL);
-	}
-
-	// しゃがみサウンド
-	AudioManager::GetInstance()->PlaySE(SoundID::SE_CROUCH);
-}
-
-void PlayerController::SlidingInit(PlayerController& player)
-{
-	// プレイヤーのスライディングの移動速度とダッシュ移動速度を加算
-	player.moveSpeed_ = SLIDING_SPEED + PlayerStatusManager::GetInstance().GetPlayerStatus().dashMoveSpeed_;
-
-	// カプセルのオフセットを初期化する
-	auto cap = player.owner_->GetComponent<CapsuleCollider>();
-	if (cap != nullptr)
-	{
-		cap->SetStartOffset(CROUCHING_CAP_START_OFFSET);
-	}
-
-	// ライトの範囲設定が最大値だったら
-	if (player.wisp_->GetIsRangeMax())
-	{
-		// ライトOFFサウンド
-		AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_OFF);
-		// ライトの範囲を最小値設定にする
-		player.wisp_->SetIsRangeMax(false);
-		// ライトアニメーションの火を小さく
-		player.wisp_->SetAnimation(Wisp::ANIM::SMALL);
-	}
-
-	// スライディング可能時間を初期化
-	player.slidingInputBufferTime = 0;
-
-	// チュートリアル時にカウンタに加算される
-	SceneManager::GetInstance()->TutorialCounter(Tutorial::SLIDING);
-
-	// スライディングのサウンド再生
-	AudioManager::GetInstance()->PlaySE(SoundID::SE_SLIDING);
-
-}
-
-void PlayerController::HitReactInit(PlayerController& player)
-{
-	auto stageCol = player.owner_->GetComponent<StageCollider>();
-
-	if (stageCol != nullptr)
-	{
-		// 接地フラグを折る
-		stageCol->IsGroundFold();
-	}
-
-	// ライトの範囲設定が最大値だったら
-	if (player.wisp_->GetIsRangeMax())
-	{
-		// ライトOFFサウンド
-		AudioManager::GetInstance()->PlaySE(SoundID::SE_LANTERN_OFF);
-		// ライトの範囲を最小値設定にする
-		player.wisp_->SetIsRangeMax(false);
-		// ライトアニメーションの火を小さく
-		player.wisp_->SetAnimation(Wisp::ANIM::SMALL);
 	}
 }
 
-void PlayerController::DeadInit(PlayerController& player)
+void PlayerController::IsReachedDeadPos(void)
 {
-	SceneManager::GetInstance()->TrueGameOver();
+	// 一定の座標いったら
+	if (transform_->pos_.y < DEAD_POS_Y)
+	{
+		hp_ = 0;
+		return;
+	}
+}
+
+void PlayerController::DrawHP(void)
+{
+	int HPWidth = GetDrawStringWidthToHandle("HP: ", 4, Application::GetInstance()->GetFont(FONT_SIZE_20));
+	int playerHpWidth = GetDrawFormatStringWidthToHandle(Application::GetInstance()->GetFont(FONT_SIZE_30), "%d", hp_);
+
+	// HPの表示
+	DrawStringToHandle(STATUS_DRAW_POS_X, HP_DRAW_POS_Y, "HP:", 0x00fa9a, Application::GetInstance()->GetFont(FONT_SIZE_20));
+
+	// ヒットストップカウンタが0じゃない場合
+	if (hitStopCounter_ > 0)
+	{
+		int shake = 0;
+		// ヒットストップカウンタが0じゃない場合に揺らし量を計算
+		GetShakeOffset(shake);
+
+		// プレイヤーのhpの表示 赤
+		DrawFormatStringToHandle(
+			STATUS_DRAW_POS_X + HPWidth + shake,
+			(HP_DRAW_POS_Y - STATUS_DRAW_POS_OFFSET) + shake,
+			0xff0000,
+			Application::GetInstance()->GetFont(FONT_SIZE_30),
+			"%d",
+			hp_);
+	}
+	else
+	{
+		// プレイヤーのhpの表示 緑
+		DrawFormatStringToHandle(
+			STATUS_DRAW_POS_X + HPWidth,
+			HP_DRAW_POS_Y - STATUS_DRAW_POS_OFFSET,
+			0x00fa9a,
+			Application::GetInstance()->GetFont(FONT_SIZE_30),
+			"%d",
+			hp_);
+	}
+
+	// プレイヤーのhpMaxの表示
+	DrawFormatStringToHandle(
+		STATUS_DRAW_POS_X + HPWidth + playerHpWidth,
+		HP_DRAW_POS_Y,
+		0x00fa9a,
+		Application::GetInstance()->GetFont(FONT_SIZE_20),
+		" / %d",
+		PlayerStatusManager::GetInstance().GetPlayerStatus().hpMax_);
+}
+
+void PlayerController::DrawStamina(void)
+{
+	int STAMINAWidth = GetDrawStringWidthToHandle("STAMINA: ", 9, Application::GetInstance()->GetFont(FONT_SIZE_20));
+	int playerStaminaWidth = GetDrawFormatStringWidthToHandle(Application::GetInstance()->GetFont(FONT_SIZE_30), "%.f", stamina_);
+
+	// STAMINAの表示
+	DrawStringToHandle(
+		STATUS_DRAW_POS_X,
+		STAMINA_DRAW_POS_Y,
+		"STAMINA:",
+		0xffc800,
+		Application::GetInstance()->GetFont(FONT_SIZE_20));
+
+	// プレイヤースタミナの表示
+	DrawFormatStringToHandle(
+		STATUS_DRAW_POS_X + STAMINAWidth,
+		STAMINA_DRAW_POS_Y - STATUS_DRAW_POS_OFFSET,
+		0xffc800,
+		Application::GetInstance()->GetFont(FONT_SIZE_30),
+		"%.f",
+		stamina_);
+
+	// スタミナMaxの表示
+	DrawFormatStringToHandle(
+		STATUS_DRAW_POS_X + STAMINAWidth + playerStaminaWidth,
+		STAMINA_DRAW_POS_Y,
+		0xffc800,
+		Application::GetInstance()->GetFont(FONT_SIZE_20),
+		" / %.f",
+		PlayerStatusManager::GetInstance().GetPlayerStatus().staminaMax_);
+}
+
+void PlayerController::DebugDraw(void)
+{
+	DrawFormatString(20,
+		300,
+		0xff0000,
+		"プレイヤー座標 : %.f,%.f,%.f",
+		transform_->pos_.x, transform_->pos_.y, transform_->pos_.z);
 }
