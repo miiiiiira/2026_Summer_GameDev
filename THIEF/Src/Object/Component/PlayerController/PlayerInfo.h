@@ -1,4 +1,5 @@
 #pragma once
+#include <DxLib.h>
 
 class PlayerController; // 前方宣言
 
@@ -47,4 +48,29 @@ struct playerGrabStateCtrl
 
 	// ステートテーブル
 	playerStateFunction updateTable_[GRABBING_MAX];
+};
+
+struct playerInfo
+{
+	float velocityY_ = 0.0f;	// 現在の落下速度
+
+	VECTOR moveDir_ = {};	// 移動方向
+	float moveSpeed_ = 0;	// 移動速度
+
+	int hp_;	// 今現在のHP
+
+	int invincibleTime_ = 0;	// 無敵時間
+
+	float stamina_;				// 今現在のスタミナ
+	int staminaCounter_ = 0;	// スタミナを回復させるまでの時間カウンタ
+
+	int slidingInputBufferTime = 0;	// スライディング可能時間
+
+	int jumpNum_ = 0;	// ジャンプ数
+
+	float range_;		// 実際に持っている掴み距離
+
+	int moveSoundInterval_ = 0;	// 足音を連続再生するインターバル
+
+	int hitStopCounter_ = 0;			// ヒットストップ用のカウンター
 };

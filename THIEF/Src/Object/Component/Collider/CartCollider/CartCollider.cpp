@@ -28,7 +28,6 @@ void CartCollider::Update(void)
 
 	// カートとプレイヤー掴み機能との当たり判定
 	CartToPlayerGrabbingCollision();
-
 }
 
 void CartCollider::Draw2D(void)

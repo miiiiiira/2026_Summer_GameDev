@@ -65,14 +65,20 @@ void PlayerController::Init()
 	// プレイヤーステータスマネージャー
 	auto status = PlayerStatusManager::GetInstance().GetPlayerStatus();
 
+	// 移動速度
+	info_.moveSpeed_ = DEFAULT_SPEED;
+
 	// HPの初期化
-	hp_ = status.hp_;
+	info_.hp_ = status.hp_;
 
 	// スタミナの初期化
-	stamina_ = status.staminaMax_;
+	info_.stamina_ = status.staminaMax_;
 
 	// 掴み距離の初期化
-	range_ = status.rangeMax_;
+	info_.range_ = status.rangeMax_;
+
+	// 足音を連続再生するインターバル
+	info_.moveSoundInterval_ = MOVE_SOUND_INTERVAL;
 
 	// プレイヤーの状態初期化
 	ChangeState(PLAYER_STATE_IDLE);
@@ -85,7 +91,7 @@ void PlayerController::Init()
 void PlayerController::Update()
 {
 	// 体力が0以下になっていたら
-	if (hp_ <= 0)
+	if (info_.hp_ <= 0)
 	{
 		// 死亡状態へ
 		ChangeState(PLAYER_STATE_DEAD);
@@ -108,7 +114,7 @@ void PlayerController::Update()
 	if (stageColl_)
 	{
 		// ステージの当たり判定の計算処理
-		stageColl_->StageColl(velocityY_);
+		stageColl_->StageColl(info_.velocityY_);
 	}
 
 	// 掴み状態更新
@@ -166,12 +172,12 @@ GRABBING_STATE PlayerController::GetGrabbingState(void)
 
 float PlayerController::GetMoveSpeed(void)
 {
-	return moveSpeed_;
+	return info_.moveSpeed_;
 }
 
 int PlayerController::GetInvincibleTime(void)
 {
-	return invincibleTime_;
+	return info_.invincibleTime_;
 }
 
 VECTOR PlayerController::GetLineStartPos(void)
@@ -216,7 +222,7 @@ void PlayerController::StartGrabbing(float range)
 	ChangeGrabState(IS_GRABBING);
 
 	// 指定された距離を設定
-	range_ = range;
+	info_.range_ = range;
 
 	// 掴んだ音
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_GRAB);
@@ -225,24 +231,24 @@ void PlayerController::StartGrabbing(float range)
 void PlayerController::SetDamage(int damage)
 {
 	// 無敵時間があればダメージを与えない
-	if (invincibleTime_ > 0)return;
+	if (info_.invincibleTime_ > 0)return;
 
 	// HPにダメージを与える
-	hp_ -= damage;
+	info_.hp_ -= damage;
 
 	// HPが0以下になったら
-	if (hp_ <= 0)
+	if (info_.hp_ <= 0)
 	{
 		// 0初期化しておく
-		hp_ = 0;
+		info_.hp_ = 0;
 	}
 	else
 	{
 		// 無敵時間を設ける
-		invincibleTime_ = INVINCIBLE_TIME;
+		info_.invincibleTime_ = INVINCIBLE_TIME;
 
 		// HP描画を揺らす
-		hitStopCounter_ = SHAKE_TIME;
+		info_.hitStopCounter_ = SHAKE_TIME;
 	}
 	
 	// ビネット
@@ -252,19 +258,19 @@ void PlayerController::SetDamage(int damage)
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_DAMAGE);
 
 	// プレイヤーステータスに反映
-	PlayerStatusManager::GetInstance().SetHp(hp_);
+	PlayerStatusManager::GetInstance().SetHp(info_.hp_);
 }
 
 void PlayerController::SetHitReact(VECTOR moveDir, float moveSpeed, float jumpPow)
 {
 	// 指定された移動向きを設定
-	moveDir_ = moveDir;
+	info_.moveDir_ = moveDir;
 
 	// 指定された移動速度を設定
-	moveSpeed_ = moveSpeed;
+	info_.moveSpeed_ = moveSpeed;
 
 	// 指定されたジャンプ力を設定
-	velocityY_ = jumpPow;
+	info_.velocityY_ = jumpPow;
 
 	ChangeState(PLAYER_STATE_HIT_REACT);
 }
@@ -349,7 +355,7 @@ void PlayerController::IsGrabbingUpdate(PlayerController& player)
 		if (player.RangeUpdate())
 		{
 			// アイテムに反映させる
-			player.GetGrabItem()->SetLocalPosZ(player.range_);
+			player.GetGrabItem()->SetLocalPosZ(player.info_.range_);
 
 			// チュートリアル時にカウンタに加算される
 			SceneManager::GetInstance()->TutorialCounter(Tutorial::RANGE);
@@ -410,7 +416,7 @@ void PlayerController::StateUpdate(void)
 void PlayerController::IdleInit(PlayerController& player)
 {
 	// 移動速度を初期化
-	player.moveSpeed_ = 0.0f;
+	player.info_.moveSpeed_ = 0.0f;
 
 	// カプセルのオフセットを初期化する
 	if (player.capColl_ != nullptr)
@@ -429,19 +435,19 @@ void PlayerController::IdleInit(PlayerController& player)
 void PlayerController::MoveInit(PlayerController& player)
 {
 	// プレイヤーの移動速度を普通の移動速度にする
-	player.moveSpeed_ = DEFAULT_SPEED;
+	player.info_.moveSpeed_ = DEFAULT_SPEED;
 }
 
 void PlayerController::DashInit(PlayerController& player)
 {
 	// プレイヤーの移動速度をダッシュの移動速度にする
-	player.moveSpeed_ = PlayerStatusManager::GetInstance().GetPlayerStatus().dashMoveSpeed_;
+	player.info_.moveSpeed_ = PlayerStatusManager::GetInstance().GetPlayerStatus().dashMoveSpeed_;
 }
 
 void PlayerController::CrouchingInit(PlayerController& player)
 {
 	// プレイヤーの移動速度を普通の移動速度にする
-	player.moveSpeed_ = DEFAULT_SPEED;
+	player.info_.moveSpeed_ = DEFAULT_SPEED;
 
 	// カプセルのオフセットを初期化する
 	if (player.capColl_ != nullptr)
@@ -463,7 +469,7 @@ void PlayerController::CrouchingInit(PlayerController& player)
 void PlayerController::SlidingInit(PlayerController& player)
 {
 	// プレイヤーのスライディングの移動速度とダッシュ移動速度を加算
-	player.moveSpeed_ = SLIDING_SPEED + PlayerStatusManager::GetInstance().GetPlayerStatus().dashMoveSpeed_;
+	player.info_.moveSpeed_ = SLIDING_SPEED + PlayerStatusManager::GetInstance().GetPlayerStatus().dashMoveSpeed_;
 
 	// カプセルのオフセットを初期化する
 	if (player.capColl_ != nullptr)
@@ -479,7 +485,7 @@ void PlayerController::SlidingInit(PlayerController& player)
 	}
 
 	// スライディング可能時間を初期化
-	player.slidingInputBufferTime = 0;
+	player.info_.slidingInputBufferTime = 0;
 
 	// チュートリアル時にカウンタに加算される
 	SceneManager::GetInstance()->TutorialCounter(Tutorial::SLIDING);
@@ -529,22 +535,22 @@ void PlayerController::IdleUpdate(PlayerController& player)
 void PlayerController::MoveUpdate(PlayerController& player)
 {
 	// スライディングの可能時間があれば
-	if (player.slidingInputBufferTime > 0)
+	if (player.info_.slidingInputBufferTime > 0)
 	{
 		// スライディング可能時間を減らす
-		player.slidingInputBufferTime--;
+		player.info_.slidingInputBufferTime--;
 
-		if (player.slidingInputBufferTime < 0)
+		if (player.info_.slidingInputBufferTime < 0)
 		{
 			// 0以下にならないようにする
-			player.slidingInputBufferTime = 0;
+			player.info_.slidingInputBufferTime = 0;
 		}
 	}
 
 	// しゃがみボタンを押された
 	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CROUCH))
 	{
-		if (player.slidingInputBufferTime > 0)
+		if (player.info_.slidingInputBufferTime > 0)
 		{
 			// スライディング状態へ
 			player.ChangeState(PLAYER_STATE_SLIDING);
@@ -559,7 +565,7 @@ void PlayerController::MoveUpdate(PlayerController& player)
 
 	// 走るボタンを押されたかつスタミナがあったら
 	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::DASH)
-		&& player.stamina_ >= 0.1f)
+		&& player.info_.stamina_ >= 0.1f)
 	{
 		// 走り状態へ
 		player.ChangeState(PLAYER_STATE_DASH);
@@ -575,19 +581,19 @@ void PlayerController::MoveUpdate(PlayerController& player)
 		if (!player.stageColl_) return;
 
 		// 足音がなる間隔
-		if (player.moveSoundInterval_ > MOVE_SOUND_INTERVAL - (player.moveSpeed_ * MOVE_SPEED_UP_MULTI))
+		if (player.info_.moveSoundInterval_ > MOVE_SOUND_INTERVAL - (player.info_.moveSpeed_ * MOVE_SPEED_UP_MULTI))
 		{
 			// 接地している場合
-			if (player.velocityY_ <= 0)
+			if (player.info_.velocityY_ <= 0)
 			{
 				// 移動サウンドの再生
 				AudioManager::GetInstance()->PlaySE(SoundID::SE_MOVE);
-				player.moveSoundInterval_ = 0;
+				player.info_.moveSoundInterval_ = 0;
 			}
 		}
 		else
 		{
-			player.moveSoundInterval_++;
+			player.info_.moveSoundInterval_++;
 		}
 	}
 	else
@@ -603,18 +609,18 @@ void PlayerController::MoveUpdate(PlayerController& player)
 void PlayerController::DashUpdate(PlayerController& player)
 {
 	// スタミナを減らす
-	player.stamina_ -= 0.1f;
-	if (player.stamina_ <= 0.0f)
+	player.info_.stamina_ -= 0.1f;
+	if (player.info_.stamina_ <= 0.0f)
 	{
 		// 0を超えないようにする
-		player.stamina_ = 0.0f;
+		player.info_.stamina_ = 0.0f;
 	}
 
 	// カウンターリセット
-	player.staminaCounter_ = 0;
+	player.info_.staminaCounter_ = 0;
 
 	// スライディング可能時間(秒数)を設定
-	player.slidingInputBufferTime = SLIDING_INPUT_BUFFER_TIME;
+	player.info_.slidingInputBufferTime = SLIDING_INPUT_BUFFER_TIME;
 
 	// しゃがみボタンを押された
 	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CROUCH))
@@ -626,7 +632,7 @@ void PlayerController::DashUpdate(PlayerController& player)
 
 	// 走るボタンを押されていないかスタミナがなくなったら
 	if (!InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::DASH)
-		|| player.stamina_ < 0.1f)
+		|| player.info_.stamina_ < 0.1f)
 	{
 		// 普通の移動状態へ
 		player.ChangeState(PLAYER_STATE_MOVE);
@@ -642,19 +648,19 @@ void PlayerController::DashUpdate(PlayerController& player)
 		if (!player.stageColl_) return;
 
 		// 足音がなる間隔
-		if (player.moveSoundInterval_ > MOVE_SOUND_INTERVAL - (player.moveSpeed_ * MOVE_SPEED_UP_MULTI))
+		if (player.info_.moveSoundInterval_ > MOVE_SOUND_INTERVAL - (player.info_.moveSpeed_ * MOVE_SPEED_UP_MULTI))
 		{
 			// 接地している場合
-			if (player.velocityY_ <= 0)
+			if (player.info_.velocityY_ <= 0)
 			{
 				// 移動サウンドの再生
 				AudioManager::GetInstance()->PlaySE(SoundID::SE_MOVE);
-				player.moveSoundInterval_ = 0;
+				player.info_.moveSoundInterval_ = 0;
 			}
 		}
 		else
 		{
-			player.moveSoundInterval_++;
+			player.info_.moveSoundInterval_++;
 		}
 	}
 	else
@@ -693,13 +699,13 @@ void PlayerController::CrouchingUpdate(PlayerController& player)
 void PlayerController::SlidingUpdate(PlayerController& player)
 {
 	// スライディング状態かつ移動速度が0より大きく移動している場合
-	if (player.moveSpeed_ > 0.0f)
+	if (player.info_.moveSpeed_ > 0.0f)
 	{
 		// 移動速度を減算
-		player.moveSpeed_ -= SLIDING_FRICTION;
+		player.info_.moveSpeed_ -= SLIDING_FRICTION;
 
 		// END_SLIDING_SPEED以下になったら
-		if (player.moveSpeed_ <= END_SLIDING_SPEED)
+		if (player.info_.moveSpeed_ <= END_SLIDING_SPEED)
 		{
 			// しゃがみ状態にする
 			player.ChangeState(PLAYER_STATE_CROUCHING);
@@ -714,15 +720,15 @@ void PlayerController::SlidingUpdate(PlayerController& player)
 void PlayerController::HitReactUpdate(PlayerController& player)
 {
 	// 移動速度が0より大きく移動している場合
-	if (player.moveSpeed_ > 0.0f)
+	if (player.info_.moveSpeed_ > 0.0f)
 	{
 		// 移動速度を減算
-		player.moveSpeed_ -= HIT_REACT_FRICTION;
+		player.info_.moveSpeed_ -= HIT_REACT_FRICTION;
 
 		if (!player.stageColl_) return;
 
 		// スピードがゼロになるか、接地していたら
-		if (player.moveSpeed_ <= 0.0f || player.stageColl_->IsGround())
+		if (player.info_.moveSpeed_ <= 0.0f || player.stageColl_->IsGround())
 		{
 			// しゃがみ状態へ
 			player.ChangeState(PLAYER_STATE_CROUCHING);
@@ -744,7 +750,7 @@ void PlayerController::ApplyGravity()
 	if (!stageColl_) return;
 
 	// Y座標へ反映
-	transform_->pos_.y += velocityY_;
+	transform_->pos_.y += info_.velocityY_;
 
 	// 接地判定
 	
@@ -752,20 +758,20 @@ void PlayerController::ApplyGravity()
 	if (!stageColl_->IsGround())
 	{
 		// 重力加算
-		velocityY_ += GRAVITY;
+		info_.velocityY_ += GRAVITY;
 		
 		// 最大落下速度
-		if (velocityY_ < MAX_FALL)
-			velocityY_ = MAX_FALL;
+		if (info_.velocityY_ < MAX_FALL)
+			info_.velocityY_ = MAX_FALL;
 	}
 	else
 	{
 		// 地面上なら少し下方向に押す
 		// 0だと浮く場合があるため
-		velocityY_ = -0.1f;
+		info_.velocityY_ = -0.1f;
 
 		// ジャンプした回数を初期化
-		jumpNum_ = 0;
+		info_.jumpNum_ = 0;
 	}
 }
 
@@ -775,22 +781,22 @@ void PlayerController::HealStamina(void)
 	float staminaMax = PlayerStatusManager::GetInstance().GetPlayerStatus().staminaMax_;
 
 	// スタミナがMaxだったら処理を飛ばす
-	if (stamina_ >= staminaMax)return;
+	if (info_.stamina_ >= staminaMax)return;
 
 	// カウンターを進める
-	staminaCounter_++;
+	info_.staminaCounter_++;
 
 	// しゃがみ状態かスタミナ回復を行うまでの制限時間を超えたら入る
 	if (stateCtrl_.state_ == PLAYER_STATE_CROUCHING
-		|| staminaCounter_ >= RECOVERY_STAMINA_WAIT_TIME)
+		|| info_.staminaCounter_ >= RECOVERY_STAMINA_WAIT_TIME)
 	{
 		// スタミナ回復させる
-		stamina_ += RECOVERY_STAMINA;
+		info_.stamina_ += RECOVERY_STAMINA;
 
-		if (stamina_ > staminaMax)
+		if (info_.stamina_ > staminaMax)
 		{
 			// 最大スタミナを超えないようにする
-			stamina_ = staminaMax;
+			info_.stamina_ = staminaMax;
 		}
 	}
 }
@@ -804,13 +810,13 @@ void PlayerController::Jump(void)
 
 	// ジャンプボタンを押されたかつ、ジャンプ中では無いかつ、ジャンプ回数がMaxまで到達していなかったら
 	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::JUMP)
-		&& jumpNum_ < PlayerStatusManager::GetInstance().GetPlayerStatus().jumpNumMax_)
+		&& info_.jumpNum_ < PlayerStatusManager::GetInstance().GetPlayerStatus().jumpNumMax_)
 	{
 		// ジャンプした回数を加算
-		++jumpNum_;
+		++info_.jumpNum_;
 
 		// ジャンプ力を設定
-		velocityY_ = JUMP_POW;
+		info_.velocityY_ = JUMP_POW;
 
 		// 接地フラグを折る
 		stageColl_->IsGroundFold();
@@ -832,12 +838,12 @@ bool PlayerController::RangeUpdate(void)
 	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::ITEM_PUSH))
 	{
 		// 物との距離を大きくする
-		range_ += EXTEND_RENGE_MOVE;
+		info_.range_ += EXTEND_RENGE_MOVE;
 
 		// 最大値を超えないようにする
-		if (range_ > rangeMax)
+		if (info_.range_ > rangeMax)
 		{
-			range_ = rangeMax;
+			info_.range_ = rangeMax;
 		}
 
 		// 変更があったらtrueを返す
@@ -847,12 +853,12 @@ bool PlayerController::RangeUpdate(void)
 	else if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::ITEM_PULL))
 	{
 		// 物との距離を小さくする
-		range_ -= EXTEND_RENGE_MOVE;
+		info_.range_ -= EXTEND_RENGE_MOVE;
 
 		// 最小値を超えないようにする
-		if (range_ < MIN_RENGE + GetGrabItem()->GetInfo().collisionRadiusX_)
+		if (info_.range_ < MIN_RENGE + GetGrabItem()->GetInfo().collisionRadiusX_)
 		{
-			range_ = MIN_RENGE + GetGrabItem()->GetInfo().collisionRadiusX_;
+			info_.range_ = MIN_RENGE + GetGrabItem()->GetInfo().collisionRadiusX_;
 		}
 
 		// 変更があったらtrueを返す
@@ -895,9 +901,9 @@ void PlayerController::MapDrawUpdate(void)
 void PlayerController::InvincibleUodate(void)
 {
 	// 無敵時間を減らす
-	if (invincibleTime_ > 0)
+	if (info_.invincibleTime_ > 0)
 	{
-		--invincibleTime_;
+		--info_.invincibleTime_;
 	}
 	else
 	{
@@ -908,17 +914,17 @@ void PlayerController::InvincibleUodate(void)
 void PlayerController::HitStopUodate(void)
 {
 	// ヒットストップ更新処理
-	if (hitStopCounter_ > 0) {
-		hitStopCounter_--;
+	if (info_.hitStopCounter_ > 0) {
+		info_.hitStopCounter_--;
 	}
 }
 
 void PlayerController::GetShakeOffset(int& offset)
 {
-	if (hitStopCounter_ > 0) {
+	if (info_.hitStopCounter_ > 0) {
 		// 振動先をカウンターから計算する----------
 		// 0 or 1
-		offset = (hitStopCounter_ / 5) % 2;
+		offset = (info_.hitStopCounter_ / 5) % 2;
 		// 0 or 2　中心を作る
 		offset *= 2;
 		// -1 or 1　0を中心にする
@@ -983,7 +989,7 @@ bool PlayerController::InputMove(void)
 		mat = MMult(mat, MGetRotY(CameraUtility::GetCameraAngle().y));
 
 		// 回転行列を使用して、ベクトルを回転させる
-		moveDir_ = VTransform(dir, mat);
+		info_.moveDir_ = VTransform(dir, mat);
 
 		// 移動している
 		return true;
@@ -998,7 +1004,7 @@ void PlayerController::Move(void)
 	// 方向×スピードで移動量を作って、座標に足して移動
 	transform_->pos_ =
 		VAdd(transform_->pos_,
-			VScale(moveDir_, moveSpeed_));
+			VScale(info_.moveDir_, info_.moveSpeed_));
 }
 
 void PlayerController::wispRangeChange(bool flg)
@@ -1027,7 +1033,7 @@ void PlayerController::IsReachedDeadPos(void)
 	// 一定の座標いったら
 	if (transform_->pos_.y < DEAD_POS_Y)
 	{
-		hp_ = 0;
+		info_.hp_ = 0;
 		return;
 	}
 }
@@ -1035,13 +1041,13 @@ void PlayerController::IsReachedDeadPos(void)
 void PlayerController::DrawHP(void)
 {
 	int HPWidth = GetDrawStringWidthToHandle("HP: ", 4, Application::GetInstance()->GetFont(FONT_SIZE_20));
-	int playerHpWidth = GetDrawFormatStringWidthToHandle(Application::GetInstance()->GetFont(FONT_SIZE_30), "%d", hp_);
+	int playerHpWidth = GetDrawFormatStringWidthToHandle(Application::GetInstance()->GetFont(FONT_SIZE_30), "%d", info_.hp_);
 
 	// HPの表示
 	DrawStringToHandle(STATUS_DRAW_POS_X, HP_DRAW_POS_Y, "HP:", 0x00fa9a, Application::GetInstance()->GetFont(FONT_SIZE_20));
 
 	// ヒットストップカウンタが0じゃない場合
-	if (hitStopCounter_ > 0)
+	if (info_.hitStopCounter_ > 0)
 	{
 		int shake = 0;
 		// ヒットストップカウンタが0じゃない場合に揺らし量を計算
@@ -1054,7 +1060,7 @@ void PlayerController::DrawHP(void)
 			0xff0000,
 			Application::GetInstance()->GetFont(FONT_SIZE_30),
 			"%d",
-			hp_);
+			info_.hp_);
 	}
 	else
 	{
@@ -1065,7 +1071,7 @@ void PlayerController::DrawHP(void)
 			0x00fa9a,
 			Application::GetInstance()->GetFont(FONT_SIZE_30),
 			"%d",
-			hp_);
+			info_.hp_);
 	}
 
 	// プレイヤーのhpMaxの表示
@@ -1081,7 +1087,7 @@ void PlayerController::DrawHP(void)
 void PlayerController::DrawStamina(void)
 {
 	int STAMINAWidth = GetDrawStringWidthToHandle("STAMINA: ", 9, Application::GetInstance()->GetFont(FONT_SIZE_20));
-	int playerStaminaWidth = GetDrawFormatStringWidthToHandle(Application::GetInstance()->GetFont(FONT_SIZE_30), "%.f", stamina_);
+	int playerStaminaWidth = GetDrawFormatStringWidthToHandle(Application::GetInstance()->GetFont(FONT_SIZE_30), "%.f", info_.stamina_);
 
 	// STAMINAの表示
 	DrawStringToHandle(
@@ -1098,7 +1104,7 @@ void PlayerController::DrawStamina(void)
 		0xffc800,
 		Application::GetInstance()->GetFont(FONT_SIZE_30),
 		"%.f",
-		stamina_);
+		info_.stamina_);
 
 	// スタミナMaxの表示
 	DrawFormatStringToHandle(

@@ -12,140 +12,107 @@ class Item :public Component
 {
 protected:
 
-	// アイテムにかける重力
-	static constexpr float GRAVITY = -0.25f;
+	static constexpr float GRAVITY = -0.25f;	// アイテムにかける重力
+	
+	static constexpr float MAX_FALL = -15.0f;	// 最大落下速度
+	
+	static constexpr float COEFFICIENT = 0.3f;	// 線形補間の係数
 
-	// 最大落下速度
-	static constexpr float MAX_FALL = -15.0f;
+	static constexpr int DAMAGE_DRAW_COUNT = 90;	// ダメージ表記用のカウント
 
-	// 線形補間の係数
-	static constexpr float COEFFICIENT = 0.3f;
-
-	// ダメージ表記用のカウント
-	static constexpr int DAMAGE_DRAW_COUNT = 90;
-
-	// 無敵時間
-	static constexpr int INVINCIBILITY_FRAMES = 20;
+	static constexpr int INVINCIBILITY_FRAMES = 20;	// 無敵時間
 	static constexpr int INVINCIBILITY_FRAMES_ISGRABB = 30;
 
-	// アイテムが壊れる座標
-	static constexpr float DEAD_POS_Y = -1000.0f;
-public:
-	// デストラクタ
-	virtual ~Item(void)override;
+	static constexpr float DEAD_POS_Y = -1000.0f;	// アイテムが壊れる座標
 
-	// 初期化処理
-	void Init(void)override;
-	// 更新処理
-	void Update(void)override;
-	// 描画処理
-	void Draw2D(void)override;
-	void Draw3D(void)override;
+public:
+	
+	virtual ~Item(void)override;	// デストラクタ
+
+	void Init(void)override;	// 初期化
+	void Update(void)override;	// 更新
+	void Draw2D(void)override;	// 2D描画
+	void Draw3D(void)override;	// 3D描画
 
 public:
 
-	// Transformを返す
-	Transform* GetTransform();
+	Transform* GetTransform();	// Transformを返す
 
-	// アイテムの情報を渡す
-	const ItemInfo& GetInfo(void);
+	const ItemInfo& GetInfo(void);	// アイテムの情報を渡す
 
-	// モデルIDを渡す
-	int GetModelID(void) { return info_.modelId_; }
-
-	// カメラとの距離を渡す
-	float GetCameraDistance(void);
+	int GetModelID(void) { return info_.modelId_; }	// モデルIDを渡す
+	
+	float GetCameraDistance(void);	// カメラとの距離を渡す
 
 public:
 
-	// アイテムにダメージを与える(ダメージ数、当たった場所)
-	void SetDamage(VECTOR pos);
+	void SetDamage(VECTOR pos);	// アイテムにダメージを与える(ダメージ数、当たった場所)
+	
+	void SetPos(const VECTOR& pos);	// 指定された座標をアイテムの座標に反映
+	
+	void SetPrevPos(const VECTOR& prevPos);	// 指定された座標をアイテムの前回座標に反映
 
-	// 指定された座標をアイテムの座標に反映
-	void SetPos(const VECTOR& pos);
+	void SetLocalPosZ(float localPosZ);	// ローカル座標を設定 Z軸のみ
+	
+	void StartGrabbing(VECTOR localPos);	// 掴まれた状態にする
 
-	// 指定された座標をアイテムの前回座標に反映
-	void SetPrevPos(const VECTOR& prevPos);
+	void EndGrabbed(void);	// 掴まれた状態を終了する
 
-	// ローカル座標を設定
-	// Z軸のみ
-	void SetLocalPosZ(float localPosZ);
+	void SetHasTouchedDelivery(bool flg) { info_.hasTouchedDeliveryLocation_ = flg; }	// 納品場所に入ったかどうかを変更
+	
+	void SetHasTouchedCart(bool flg) { info_.hasTouchedCart_ = flg; }	// カートに入ったかどうかを変更
 
-	// 掴まれた状態にする
-	void StartGrabbing(VECTOR localPos);
+	void SetVelocityYZero(void) { info_.velocity_.y = 0.0f; }	// 下方向の加速度を0にする
 
-	// 掴まれた状態を終了する
-	void EndGrabbed(void);
-
-	// 納品場所に入ったかどうかを変更
-	void SetHasTouchedDelivery(bool flg) { info_.hasTouchedDeliveryLocation_ = flg; }
-
-	// かーとに入ったかどうかを変更
-	void SetHasTouchedCart(bool flg) { info_.hasTouchedCart_ = flg; }
-
-	// 下方向の加速度を0にする
-	void SetVelocityYZero(void) { info_.velocity_.y = 0.0f; }
-
-	// 発見したことにする
-	void TrueIsFound(void);
-
-	// 地面についた
-	void OnFloor(void);
+	void TrueIsFound(void);	// 発見したことにする
+	
+	void OnFloor(void);	// 地面についた
 
 protected:
 
-	// ダメージの補正値
-	static constexpr int DAMAGE_MULT = 15;
+	virtual void SetParam(void) {};	// 個々のパラメータを設定する
+	virtual void Break(void) {};	// 個々の破壊時の処理
+	virtual void Damage(void) {};	// 個々のダメージ時の処理
 
-	// 発見時のハイライトカウンタ時間
-	static constexpr int FOUND_COUNTER_MAX = 60;
+	void IsNotAliveTutorial(void);	// 生存していない場合　チュートリアル時の生成処理
+
+	void Gravity(void);	// 重力をかける
+	
+	void Weight(void);	// アイテムの重み
+	
+	void TrackingPlayer(void);	// プレイヤーの位置をみて移動処理を行う
+	
+	void UpdateInvincibility(void);	// 無敵時間の更新処理
+	
+	void CountUpdate(void);	// ダメージ表記用のカウントを更新
+
+	void FoundCounterUodate(void);		// ハイライトカウンタ更新
+
+	void IsReachedDeadPos(void);	// 死亡座標へ到達しているか
+
+	void PriceDamageDraw(void);	// お金・ダメージ表記描画
+	void HighLightDraw(void);	// ハイライト表示描画
+	void DrawDebug(void);		// デバッグ用の描画
+
+protected:
+
+	static constexpr int DAMAGE_MULT = 15;	// ダメージの補正値
+
+	static constexpr int FOUND_COUNTER_MAX = 60;	// 発見時のハイライトカウンタ時間
 
 	// 発見時のハイライトの大きさ
-	static constexpr Vector2 HIGHLIGHT_SIZE_BIG = { 100,160 };
-	static constexpr Vector2 HIGHLIGHT_SIZE_MEDIUM = { 60,70 };
-	static constexpr Vector2 HIGHLIGHT_SIZE_SMALL = { 50,60 };
+	static constexpr Vector2 HIGHLIGHT_SIZE_BIG = { 100,160 };	// 大きい
+	static constexpr Vector2 HIGHLIGHT_SIZE_MEDIUM = { 60,70 };	// 中くらい
+	static constexpr Vector2 HIGHLIGHT_SIZE_SMALL = { 50,60 };	// 小さい
+
+protected:
 	
-	struct DamageInfo
-	{
-		VECTOR pos = {};
-		int damage = 0;
-		int count = 0;
-	};
+	Transform* trans_;	// Transform
 
-	// アイテムの情報
-	ItemInfo info_;
-
-	// Transform
-	Transform* trans_;
-
-	// ダメージ数
-	std::vector<DamageInfo> damageDrawList_;
-
-	// 重力をかける
-	void Gravity(void);
-
-	// アイテムの重み
-	void Weight(void);
-
-	// プレイヤーの位置をみて移動処理を行う
-	void TrackingPlayer(void);
-
-	// 無敵時間の更新処理
-	void UpdateInvincibility(void);
-
-	// 個々のパラメータを設定する
-	virtual void SetParam(void) {};
-
-	// 個々の破壊時の処理
-	virtual void Break(void) {};
-
-	// 個々のダメージ時の処理
-	virtual void Damage(void) {};
+protected:
 	
-	// ダメージ表記用のカウントを更新
-	void CountUpdate(void);
+	ItemInfo info_;	// アイテムの情報
 
-	// デバッグ用の描画
-	void DrawDebug(void);
+	std::vector<DamageInfo> damageDrawList_;	// ダメージ数
 };
 

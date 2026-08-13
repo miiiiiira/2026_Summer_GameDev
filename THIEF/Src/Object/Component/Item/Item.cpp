@@ -28,36 +28,15 @@ void Item::Init(void)
 
 	// オーナーからTransformを取得
 	trans_ = owner_->GetComponent<Transform>();
-
 	// 座標の更新
 	MV1SetPosition(info_.modelId_, trans_->pos_);
-
 	// 向きの更新
 	MV1SetRotationXYZ(info_.modelId_, trans_->angle_);
 
 	// 離された時の座標を初期化
 	info_.grabbedPos_ = trans_->pos_;
-
-	// プレイヤーとの相対座標初期化
-	info_.localPos_ = { 0.0f,0.0f,0.0f };
-
 	// 初期座標を保持しておく
 	info_.defaultPos_ = trans_->pos_;
-
-	// 重力の初期化
-	info_.velocity_ = VGet(0.0f, 0.0f, 0.0f);
-
-	// 初めは掴まれていない状態にする
-	info_.isGrabbed_ = false;
-
-	// 地面に接触していることにする
-	info_.hasTouchedStage_ = true;
-
-	// 納品場所に入っていない状態にする
-	info_.hasTouchedDeliveryLocation_ = false;
-
-	// まだ見つかっていないことにする
-	info_.isFound_ = false;
 
 	// 無敵時間を初期化しておく
 	info_.invincibilityFrames_ = INVINCIBILITY_FRAMES;
@@ -82,23 +61,8 @@ void Item::Update(void)
 	// 生存していなかったら
 	if (!info_.isAlive_)
 	{
-		// チュートリアルシーンだったら
-		if (SceneManager::GetInstance()->GetNowSceneTag() == TUTORIAL)
-		{
-			// 位置を初期化
-			SetPos(info_.defaultPos_);
-
-			// 掴まれていない状態にする
-			info_.isGrabbed_ = false;
-
-			// 描画フラグを折る
-			auto render = owner_->GetComponent<Render3D>();
-			render->SetIsDraw(true);
-
-			// パラメータ設定をしなおして復活させる
-			SetParam();
-		}
-
+		// 生存していない場合　チュートリアル時の生成処理
+		IsNotAliveTutorial();
 		return;
 	}
 
@@ -123,126 +87,20 @@ void Item::Update(void)
 		Gravity();
 	}
 
-	// ハイライトカウンタが0より大きいかつ見つかったフラグが立っていたら
-	if (info_.foundCounter_ > 0 &&info_.isFound_)
-	{
-		// ハイライトカウンタを減らす
-		info_.foundCounter_--;
-	}
+	// ハイライトカウンタ更新
+	FoundCounterUodate();
 
-	// 一定の座標いったら
-	if (trans_->pos_.y < DEAD_POS_Y)
-	{
-		// 0初期化
-		info_.price_ = 0;
-
-		// 生存フラグを折る
-		info_.isAlive_ = false;
-
-		// 描画フラグを折る
-		auto render = owner_->GetComponent<Render3D>();
-		render->SetIsDraw(false);
-
-		// 壊れた瞬間の処理
-		Break();
-		return;
-	}
+	// 死亡座標へ到達しているか
+	IsReachedDeadPos();
 }
 
 void Item::Draw2D(void)
 {
-	int priceWidth = GetDrawFormatStringWidthToHandle(Application::GetInstance()->GetFont(FONT_SIZE_20), "%d", info_.price_);
+	// お金・ダメージ表記描画
+	PriceDamageDraw();
 
-	// 生存していなかったら描画しない
-	if (info_.isAlive_)
-	{
-		if (info_.isGrabbed_)
-		{
-			// 場所が視界内に入っていないのであれば処理をスキップ
-			if (CheckCameraViewClip(trans_->pos_))return;
-
-			// ワールド座標をスクリーン座標にする
-			VECTOR pricePos = ConvWorldPosToScreenPos(trans_->pos_);
-
-			// お金表示
-			// 縁
-			DrawFormatStringFToHandle(
-				pricePos.x - (priceWidth / 2),
-				pricePos.y,
-				0x000000,
-				Application::GetInstance()->GetFont(FONT_SIZE_21),
-				"%d",
-				info_.price_);
-
-			DrawFormatStringFToHandle(
-				pricePos.x - (priceWidth / 2),
-				pricePos.y,
-				0x00ff00,
-				Application::GetInstance()->GetFont(FONT_SIZE_20),
-				"%d",
-				info_.price_);
-		}
-	}
-
-	// ダメージ表記
-	for (const DamageInfo damage : damageDrawList_)
-	{
-		// ダメージの場所が視界内に入っていないのであれば処理をスキップ
-		if (CheckCameraViewClip(damage.pos))continue;
-
-		// ワールド座標をスクリーン座標にする
-		VECTOR pos = ConvWorldPosToScreenPos(damage.pos);
-
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, (255 * damage.count) / DAMAGE_DRAW_COUNT);
-		DrawFormatStringFToHandle(
-			pos.x - (priceWidth / 2),
-			pos.y,
-			0xff0000,
-			Application::GetInstance()->GetFont(FONT_SIZE_20),
-			"-%d",
-			damage.damage);
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	}
-
-	// 発見時のハイライト
-	// ハイライトカウンタが0じゃないかつ、発見フラグが立っていたら
-	if (info_.foundCounter_ > 0 && info_.isFound_)
-	{
-		// 場所が視界内に入っていないのであれば処理をスキップ
-		if (CheckCameraViewClip(trans_->pos_))return;
-
-		// ワールド座標をスクリーン座標にする
-		VECTOR pos = ConvWorldPosToScreenPos(trans_->pos_);
-
-		Vector2 boxSize = {};
-
-		// 設定されているサイズによってハイライトの大きさも変更
-		switch (info_.size_)
-		{
-		case ITEM_SIZE::BIG:
-			boxSize = HIGHLIGHT_SIZE_BIG;
-			break;
-		case ITEM_SIZE::MEDIUM:
-			boxSize = HIGHLIGHT_SIZE_MEDIUM;
-			break;
-		case ITEM_SIZE::SMALL:
-			boxSize = HIGHLIGHT_SIZE_SMALL;
-			break;
-		default:
-			break;
-		}
-
-		// 透明度設定したボックスを表示
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
-		DrawBox(
-			pos.x - boxSize.x,
-			pos.y - boxSize.y,
-			pos.x + boxSize.x,
-			pos.y + boxSize.y,
-			0xffff00,
-			true);
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	}
+	// ハイライト表示描画
+	HighLightDraw();
 }
 
 void Item::Draw3D(void)
@@ -250,8 +108,10 @@ void Item::Draw3D(void)
 	// 生存していなかったら描画しない
 	if (!info_.isAlive_)return;
 
+#ifdef _DEBUG
 	// デバッグ表示
 	DrawDebug();
+#endif // _DEBUG
 }
 
 Transform* Item::GetTransform()
@@ -376,6 +236,8 @@ void Item::StartGrabbing(VECTOR localPos)
 
 	// プレイヤーとの相対座標をセット
 	info_.localPos_ = localPos;
+
+	// 重力を初期化する
 	info_.velocity_.y = 0.0f;
 
 	// 空中状態で一度もステージに接触していないとする
@@ -390,6 +252,7 @@ void Item::EndGrabbed(void)
 	// 離された瞬間の座標を取っておく
 	info_.grabbedPos_ = trans_->pos_;
 
+	// モデルに座標を反映
 	MV1SetPosition(info_.modelId_, trans_->pos_);
 
 	// XとZの比率から、Y軸の角度を直接計算する
@@ -416,6 +279,26 @@ void Item::OnFloor(void)
 {
 	info_.grabbedPos_ = trans_->pos_;
 	info_.hasTouchedStage_ = false;
+}
+
+void Item::IsNotAliveTutorial(void)
+{
+	// チュートリアルシーンだったら
+	if (SceneManager::GetInstance()->GetNowSceneTag() == TUTORIAL)
+	{
+		// 位置を初期化
+		SetPos(info_.defaultPos_);
+
+		// 掴まれていない状態にする
+		info_.isGrabbed_ = false;
+
+		// 描画フラグを折る
+		auto render = owner_->GetComponent<Render3D>();
+		render->SetIsDraw(true);
+
+		// パラメータ設定をしなおして復活させる
+		SetParam();
+	}
 }
 
 void Item::Gravity(void)
@@ -511,10 +394,138 @@ void Item::CountUpdate(void)
 	}
 }
 
+void Item::FoundCounterUodate(void)
+{
+	// ハイライトカウンタが0より大きいかつ見つかったフラグが立っていたら
+	if (info_.foundCounter_ > 0 && info_.isFound_)
+	{
+		// ハイライトカウンタを減らす
+		info_.foundCounter_--;
+	}
+}
+
+void Item::IsReachedDeadPos(void)
+{
+	// 一定の座標いったら
+	if (trans_->pos_.y < DEAD_POS_Y)
+	{
+		// 0初期化
+		info_.price_ = 0;
+
+		// 生存フラグを折る
+		info_.isAlive_ = false;
+
+		// 描画フラグを折る
+		auto render = owner_->GetComponent<Render3D>();
+		render->SetIsDraw(false);
+
+		// 壊れた瞬間の処理
+		Break();
+		return;
+	}
+}
+
+void Item::PriceDamageDraw(void)
+{
+	int priceWidth = GetDrawFormatStringWidthToHandle(Application::GetInstance()->GetFont(FONT_SIZE_20), "%d", info_.price_);
+
+	// 生存していなかったら描画しない
+	if (info_.isAlive_)
+	{
+		if (info_.isGrabbed_)
+		{
+			// 場所が視界内に入っていないのであれば処理をスキップ
+			if (CheckCameraViewClip(trans_->pos_))return;
+
+			// ワールド座標をスクリーン座標にする
+			VECTOR pricePos = ConvWorldPosToScreenPos(trans_->pos_);
+
+			// お金表示
+			// 縁
+			DrawFormatStringFToHandle(
+				pricePos.x - (priceWidth / 2),
+				pricePos.y,
+				0x000000,
+				Application::GetInstance()->GetFont(FONT_SIZE_21),
+				"%d",
+				info_.price_);
+
+			DrawFormatStringFToHandle(
+				pricePos.x - (priceWidth / 2),
+				pricePos.y,
+				0x00ff00,
+				Application::GetInstance()->GetFont(FONT_SIZE_20),
+				"%d",
+				info_.price_);
+		}
+	}
+
+	// ダメージ表記
+	for (const DamageInfo damage : damageDrawList_)
+	{
+		// ダメージの場所が視界内に入っていないのであれば処理をスキップ
+		if (CheckCameraViewClip(damage.pos))continue;
+
+		// ワールド座標をスクリーン座標にする
+		VECTOR pos = ConvWorldPosToScreenPos(damage.pos);
+
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, (255 * damage.count) / DAMAGE_DRAW_COUNT);
+		DrawFormatStringFToHandle(
+			pos.x - (priceWidth / 2),
+			pos.y,
+			0xff0000,
+			Application::GetInstance()->GetFont(FONT_SIZE_20),
+			"-%d",
+			damage.damage);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
+}
+
+void Item::HighLightDraw(void)
+{
+	// 発見時のハイライト
+	// ハイライトカウンタが0じゃないかつ、発見フラグが立っていたら
+	if (info_.foundCounter_ > 0 && info_.isFound_)
+	{
+		// 場所が視界内に入っていないのであれば処理をスキップ
+		if (CheckCameraViewClip(trans_->pos_))return;
+
+		// ワールド座標をスクリーン座標にする
+		VECTOR pos = ConvWorldPosToScreenPos(trans_->pos_);
+
+		Vector2 boxSize = {};
+
+		// 設定されているサイズによってハイライトの大きさも変更
+		switch (info_.size_)
+		{
+		case ITEM_SIZE::BIG:
+			boxSize = HIGHLIGHT_SIZE_BIG;
+			break;
+		case ITEM_SIZE::MEDIUM:
+			boxSize = HIGHLIGHT_SIZE_MEDIUM;
+			break;
+		case ITEM_SIZE::SMALL:
+			boxSize = HIGHLIGHT_SIZE_SMALL;
+			break;
+		default:
+			break;
+		}
+
+		// 透明度設定したボックスを表示
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+		DrawBox(
+			pos.x - boxSize.x,
+			pos.y - boxSize.y,
+			pos.x + boxSize.x,
+			pos.y + boxSize.y,
+			0xffff00,
+			true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
+}
+
 void Item::DrawDebug(void)
 {
-#ifdef _DEBUG
-
 	VECTOR start = trans_->pos_;
 	start.y -= info_.collisionRadiusY_;
 	VECTOR end = trans_->pos_;
@@ -522,6 +533,4 @@ void Item::DrawDebug(void)
 
 	// 当たり判定用のカプセル大きさ確認
 	DrawCapsule3D(start, end, info_.collisionRadiusX_, 8, 0xff0000, 0xff0000, false);
-#endif // _DEBUG
-
 }

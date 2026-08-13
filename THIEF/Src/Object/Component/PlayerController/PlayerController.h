@@ -33,21 +33,22 @@ public:
 	static constexpr float MIN_RENGE = 60.0f;	// プレイヤーの掴み距離の最小値
 
 public:
+
 	PlayerController(void);		// コンストラクタ
 
 	void Init() override;		// 初期化
 	void Update() override;		// 更新
 	void Draw2D() override;		// 2D描画
 
-	// Transformを返す
-	Transform* GetTransform();
-	// CapsuleColliderを返す
-	CapsuleCollider* GetCapsule(void);
+public:
 
-	// プレイヤー状態を取得
-	PLAYER_STATE GetState(void);
-	// 掴んでいるかの状態を取得
-	GRABBING_STATE GetGrabbingState(void);
+	Transform* GetTransform();	// Transformを返す
+	
+	CapsuleCollider* GetCapsule(void);	// CapsuleColliderを返す
+	
+	PLAYER_STATE GetState(void);	// プレイヤー状態を取得
+	
+	GRABBING_STATE GetGrabbingState(void);	// 掴んでいるかの状態を取得
 
 	float GetMoveSpeed(void);		// 移動速度を渡す
 	
@@ -185,27 +186,7 @@ private:
 
 private:
 
-	float velocityY_ = 0.0f;	// 現在の落下速度
-
-	VECTOR moveDir_ = {};				// 移動方向
-	float moveSpeed_ = DEFAULT_SPEED;	// 移動速度
-
-	int hp_;	// 今現在のHP
-
-	int invincibleTime_ = 0;	// 無敵時間
-	
-	float stamina_;				// 今現在のスタミナ
-	int staminaCounter_ = 0;	// スタミナを回復させるまでの時間カウンタ
-
-	int slidingInputBufferTime = 0;	// スライディング可能時間
-	
-	int jumpNum_ = 0;	// ジャンプ数
-	
-	float range_;	// 実際に持っている掴み距離
-
-	int moveSoundInterval_ = MOVE_SOUND_INTERVAL;	// 足音を連続再生するインターバル
-
-	int hitStopCounter_ = 0;			// ヒットストップ用のカウンター
+	playerInfo info_;	// プレイヤー情報
 
 	playerStateCtrl stateCtrl_;			// プレイヤーの状態情報
 	playerGrabStateCtrl grabStateCtrl_;	// 掴み状態情報
