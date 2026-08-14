@@ -1,26 +1,21 @@
 #include <DxLib.h>
-#include "../../Application.h"
-#include "DamageEffect.h"
+#include "../../../Application.h"
+#include "FlashEffect.h"
 
-DamageEffect::DamageEffect(void)
-	:alpha_(0)
+FlashEffect::FlashEffect(void)
 {
 }
 
-DamageEffect::~DamageEffect(void)
+FlashEffect::~FlashEffect(void)
 {
 }
 
-void DamageEffect::Load(void)
-{
-}
-
-void DamageEffect::Init(void)
+void FlashEffect::Init(void)
 {
 	alpha_ = 0;
 }
 
-void DamageEffect::Update(void)
+void FlashEffect::Update(void)
 {
 	if (alpha_ > 0)
 	{
@@ -32,7 +27,7 @@ void DamageEffect::Update(void)
 	}
 }
 
-void DamageEffect::Draw(void)
+void FlashEffect::Draw2D(void)
 {
 	// アルファ値を設定
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha_);
@@ -42,7 +37,7 @@ void DamageEffect::Draw(void)
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
-void DamageEffect::SetEffect(int alpha, unsigned int color)
+void FlashEffect::SetEffect(int alpha, unsigned int color)
 {
 	// 指定されたアルファ値を設定
 	alpha_ = alpha;

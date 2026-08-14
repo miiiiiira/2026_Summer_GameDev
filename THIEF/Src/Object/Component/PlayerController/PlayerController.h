@@ -172,6 +172,9 @@ private:
 
 	static constexpr float COEFFICIENT = 0.2f;	// 線形補間の係数
 
+	static constexpr int DAMAGE_EFFECT_ALPHA = 128; // ダメージエフェクトのアルファ値
+	static constexpr unsigned int DAMAGE_EFFECT_COLOR = 0xff0000;	// ダメージエフェクトのカラー値
+
 private:
 
 	Wisp* wisp_ = nullptr;				// ライト

@@ -31,7 +31,6 @@
 #include "../../Object/Component/Wisp/Wisp.h"
 #include "../../Object/Component/Item/Item.h"
 #include "../../Object/Component/Item/ItemInfo.h"
-#include "../../Object/Component/Crosshair/Crosshair.h"
 #include "../../Object/Component/Item/Goblet/Goblet.h"
 #include "../../Object/Component/Item/Potion/Potion.h"
 #include "../../Object/Component/Item/Amphora/Amphora.h"
@@ -39,10 +38,11 @@
 #include "../../Object/Component/Item/Jar/Jar.h"
 #include "../../Object/Component/Item/Mug/Mug.h"
 #include "../../Object/Component/Item/Skull/Skull.h"
+#include "../../Object/Component/Crosshair/Crosshair.h"
+#include "../../Object/Component/Effect/FlashEffect.h"
 #include "../../Object/Component/Transform/Transform.h"
 #include "../../Common/Transform/MatrixUtility.h"
 #include "../../Common/CameraUtility/CameraUtility.h"
-#include "../../Common/Effect/DamageEffect.h"
 
 #include "../../Common/Collision/Collision.h"
 #include "../../Object/Component/Collider/CartCollider/CartCollider.h"
@@ -55,7 +55,6 @@ GameScene::GameScene(void)
 {
 	// マウスの表示を消す
 	MouseCursor::GetInstance().SetMouseDraw(false);
-	redEffect_ = nullptr;
 }
 
 GameScene::~GameScene(void)
@@ -69,9 +68,6 @@ void GameScene::Init(void)
 
 	// オブジェクトマネージャー初期化
 	objectManger_->Init();
-
-	// エフェクトの初期化
-	redEffect_->Init();
 
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 	auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
@@ -110,10 +106,6 @@ void GameScene::Load(void)
 
 	// オブジェクトマネージャーの生成
 	objectManger_ = new ObjectManager();
-
-	// エフェクトの生成・ロード
-	redEffect_ = new DamageEffect();
-	redEffect_->Load();
 
 	// クロスヘアの生成
 	CrosshairCreate();
@@ -182,9 +174,6 @@ void GameScene::Update(void)
 
 	enemyManager_->Update();
 
-	// エフェクトの更新
-	redEffect_->Update();
-
 	CheckEnemyAttack();
 	CollisionEnemyToStage();
 	CollisionEnemy2Player();
@@ -251,9 +240,6 @@ void GameScene::Draw(void)
 	// Effekseerにより再生中のエフェクトを描画する
 	DrawEffekseer3D();
 
-	// エフェクトの描画
-	redEffect_->Draw();
-
 	// オブジェクトの2D描画
 	objectManger_->Draw2D();
 
@@ -270,10 +256,6 @@ void GameScene::Release(void)
 	enemyManager_->Release();
 	delete enemyManager_;
 	enemyManager_ = nullptr;
-
-	// ダメージエフェクトの解放
-	delete redEffect_;
-	redEffect_ = nullptr;
 
 	// エフェクト管理解放
 	EffectResManager::GetInstance().Destroy();
@@ -428,6 +410,10 @@ void GameScene::PlayerCreate(void)
 	// マップの設定
 	auto map = player->AddComponent<Map>();
 	map->SetOwner(player);
+
+	// ダメージエフェクトの設定
+	auto effect = player->AddComponent<FlashEffect>();
+	effect->SetOwner(player);
 }
 
 void GameScene::EnemyCreate(void)
@@ -749,9 +735,6 @@ void GameScene::CheckEnemyAttack(void)
 			{
 				// プレイヤーにダメージを与える
 				player->SetDamage(static_cast<int>(enemy->GetAttackDamagePow()));
-
-				// 画面を赤くするエフェクトを付ける
-				redEffect_->SetEffect(DAMAGE_EFFECT_ALPHA, DAMAGE_EFFECT_COLOR);
 
 				VECTOR moveDir = VNorm(VSub(startPos, useWeapon->GetPos()));
 				moveDir.y = 0.0f;
@@ -1165,9 +1148,6 @@ void GameScene::CollisionEnemy2Player(void)
 			(pushVector.x > 0.1f || pushVector.y > 0.1f || pushVector.z > 0.1f))
 		{
 			player->SetDamage(static_cast<int>(enemy->GetAttackDamagePow()));
-
-			// 画面を赤くするエフェクトを付ける
-			redEffect_->SetEffect(DAMAGE_EFFECT_ALPHA, DAMAGE_EFFECT_COLOR);
 		}
 
 		// カプセル2（敵など）は引き算
@@ -1219,9 +1199,6 @@ void GameScene::CollisionEnemy2PlayerGrab(void)
 		{
 			// プレイヤーにダメージを与える
 			player->SetDamage(static_cast<int>(enemy->GetAttackDamagePow()));
-
-			// 画面を赤くするエフェクトを付ける
-			redEffect_->SetEffect(DAMAGE_EFFECT_ALPHA, DAMAGE_EFFECT_COLOR);
 
 			// クロスヘアの種類を掴めないに変更
 			crosshair->ChangeCrosshair(CROSSHAIR_TYPE::CROSSHAIR_NOT_GRAB);

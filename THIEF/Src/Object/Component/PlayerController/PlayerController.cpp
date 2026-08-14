@@ -19,6 +19,7 @@
 #include "../Item/Item.h"
 #include "../Wisp/Wisp.h"
 #include "../Cart/Cart.h"
+#include "../Effect/FlashEffect.h"
 #include "Map/Map.h"
 
 #include "../../../Scene/SceneManager.h"
@@ -259,6 +260,9 @@ void PlayerController::SetDamage(int damage)
 
 	// プレイヤーステータスに反映
 	PlayerStatusManager::GetInstance().SetHp(info_.hp_);
+
+	// 画面を赤くするエフェクトを付ける
+	owner_->GetComponent<FlashEffect>()->SetEffect(DAMAGE_EFFECT_ALPHA, DAMAGE_EFFECT_COLOR);
 }
 
 void PlayerController::SetHitReact(VECTOR moveDir, float moveSpeed, float jumpPow)

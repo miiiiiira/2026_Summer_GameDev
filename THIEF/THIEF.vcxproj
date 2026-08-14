@@ -42,7 +42,7 @@
     <ClCompile Include="Src\Object\Actor\Enemy\EnemyManager.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\Skeleton\Skeleton.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\Mushnub\Mushnub.cpp" />
-    <ClCompile Include="Src\Common\Effect\DamageEffect.cpp" />
+    <ClCompile Include="Src\Object\Component\Effect\FlashEffect.cpp" />
     <ClCompile Include="Src\Object\Component\Item\ItemInfo.cpp" />
     <ClCompile Include="Src\Object\Component\Item\Skull\Skull.cpp" />
     <ClCompile Include="Src\Object\Component\Item\Mug\Mug.cpp" />
@@ -135,7 +135,7 @@
     <ClInclude Include="Src\Object\Actor\Enemy\EnemyManager.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\Skeleton\Skeleton.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\Mushnub\Mushnub.h" />
-    <ClInclude Include="Src\Common\Effect\DamageEffect.h" />
+    <ClInclude Include="Src\Object\Component\Effect\FlashEffect.h" />
     <ClInclude Include="Src\Object\Component\Item\Skull\Skull.h" />
     <ClInclude Include="Src\Object\Component\Item\Mug\Mug.h" />
     <ClInclude Include="Src\Object\Component\Item\Jar\Jar.h" />

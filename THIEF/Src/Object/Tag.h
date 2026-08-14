@@ -9,6 +9,7 @@ enum class Tag
 	Stage,
 	Wisp,
 	Enemy,
+	Crosshair,
 	Player,
 	Cart,
 	Item_Goblet,
@@ -20,5 +21,4 @@ enum class Tag
 	Item_Jar,
 	Item_Mug,
 	Item_Skull,
-	Crosshair
 };

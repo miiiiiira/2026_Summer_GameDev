@@ -10,7 +10,6 @@
 class ObjectManager;
 class EnemyManager;
 class EnemyBase;
-class DamageEffect;
 
 enum STAGE_NUM
 {
@@ -46,18 +45,10 @@ public:
 	void CrosshairCreate(void);		// クロスヘアの作成
 private:
 
-	// ダメージエフェクトのアルファ値
-	static constexpr int DAMAGE_EFFECT_ALPHA = 128;
-	// ダメージエフェクトのカラー値
-	static constexpr unsigned int DAMAGE_EFFECT_COLOR = 0xff0000;
-
 	// オブジェクトマネージャー
 	ObjectManager* objectManger_;
 
 	EnemyManager* enemyManager_;
-
-	// エフェクト
-	DamageEffect* redEffect_;
 
 	// ステージ数別の初期化処理
 	void Stage1Init(void);
