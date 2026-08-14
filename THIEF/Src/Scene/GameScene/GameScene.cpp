@@ -325,6 +325,7 @@ void GameScene::StageCreate(std::string path, std::string collPath)
 
 	// 納品場所の当たり判定追加
 	auto delivery = stage->AddComponent<DeliveryLocationCollider>();
+
 	// クロスヘアの取得
 	auto crosshair = objectManger_->FindComponentWithTag<Crosshair>(Tag::Crosshair);
 	delivery->SetCrosshair(crosshair);
@@ -411,7 +412,7 @@ void GameScene::PlayerCreate(void)
 	auto map = player->AddComponent<Map>();
 	map->SetOwner(player);
 
-	// ダメージエフェクトの設定
+	// フラッシュエフェクトの設定
 	auto effect = player->AddComponent<FlashEffect>();
 	effect->SetOwner(player);
 }

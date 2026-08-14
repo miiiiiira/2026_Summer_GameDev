@@ -262,7 +262,11 @@ void PlayerController::SetDamage(int damage)
 	PlayerStatusManager::GetInstance().SetHp(info_.hp_);
 
 	// 画面を赤くするエフェクトを付ける
-	owner_->GetComponent<FlashEffect>()->SetEffect(DAMAGE_EFFECT_ALPHA, DAMAGE_EFFECT_COLOR);
+	auto effect = owner_->GetComponent<FlashEffect>();
+	if (effect)
+	{
+		effect->SetEffect(DAMAGE_EFFECT_ALPHA, DAMAGE_EFFECT_COLOR);
+	}
 }
 
 void PlayerController::SetHitReact(VECTOR moveDir, float moveSpeed, float jumpPow)
