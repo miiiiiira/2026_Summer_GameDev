@@ -10,7 +10,9 @@
 
 Statue::Statue(int modelId)
 	:
-	EnemyBase(modelId)
+	EnemyBase(modelId),
+	minAreaPos_(-1.0f, -1.0f, -1.0f),
+	maxAreaPos_(-1.0f, -1.0f, -1.0f)
 {
 }
 
@@ -31,7 +33,11 @@ void Statue::OnInitialize(void)
 	// 回転行列をモデルに反映
 	MV1SetRotationMatrix(modelId_, mat);
 
-	pos_ = DEFAULT_POS;
+	if (pos_.y <= 0.0f)
+	{
+		pos_ = DEFAULT_POS;
+	}
+
 	MV1SetPosition(modelId_, pos_);
 	prevPos_ = pos_;
 
@@ -42,6 +48,17 @@ void Statue::OnInitialize(void)
 	radius_ = 80.0f;
 
 	isGround_ = false;
+
+	if (minAreaPos_.x == -1.0f && maxAreaPos_.x == -1.0f)
+	{
+		minAreaPos_ = MIN_AREA_POS;
+		maxAreaPos_ = MAX_AREA_POS;
+	}
+
+	if (chasePos_.y <= 0.0f)
+	{
+		chasePos_ = DEFAULT_POS;
+	}
 
 	attackMoveSpeed_ = 20.0f;
 	attackJumpPow_ = 25.0f;
@@ -96,7 +113,7 @@ void Statue::Draw(void)
 
 #ifdef _DEBUG
 
-	DrawCube3D(MIN_AREA_POS, MAX_AREA_POS, 0xff00ff, 0xff00ff, false);
+	DrawCube3D(minAreaPos_, maxAreaPos_, 0xff00ff, 0xff00ff, false);
 
 
 	for (int i = 0; i < (int)edgeList_->size(); i++)
@@ -209,7 +226,7 @@ void Statue::ChangeEnd(void)
 
 void Statue::UpdateIdle(void)
 {
-	if (IsPlayerInArea(MIN_AREA_POS, MAX_AREA_POS))
+	if (IsPlayerInArea(minAreaPos_, maxAreaPos_))
 	{
 		ChangeState(STATE::SURPRISE);
 		return;
@@ -256,7 +273,7 @@ void Statue::UpdateChase(void)
 	bool isPlayerVisible = !CheckChaseLineCollision(enemyHead, playerHead, 40.0f);
 
 	// プレイヤーがエリア内にいるなら
-	if (IsPlayerInArea(MIN_AREA_POS, MAX_AREA_POS))
+	if (IsPlayerInArea(minAreaPos_, maxAreaPos_))
 	{
 		//　攻撃範囲内にいたら、攻撃状態にする
 		if (distance <= 200.0f)
@@ -319,13 +336,13 @@ void Statue::UpdateChase(void)
 		{
 
 			// 帰還先との間に障害物があるかチェック
-			if (CheckChaseLineCollision(enemyPos, DEFAULT_POS, 40.0f))
+			if (CheckChaseLineCollision(enemyPos, chasePos_, 30.0f))
 			{
 				// 障害物あり
 				if (path_.empty())
 				{
 					int enemyNearNode = FindNearestNode(enemyPos);
-					int defaultNearNode = FindNearestNode(DEFAULT_POS);
+					int defaultNearNode = FindNearestNode(chasePos_);
 					FindPath(enemyNearNode, defaultNearNode);
 					if (path_.size() > 1)
 					{
@@ -350,7 +367,7 @@ void Statue::UpdateChase(void)
 			else
 			{
 				// 相手へのベクトルを計算
-				VECTOR diff = VSub(DEFAULT_POS, enemyPos);
+				VECTOR diff = VSub(chasePos_, enemyPos);
 				diff.y = 0.0f;
 
 				// ベクトルの正規化で単位ベクトル（方向）を取得
@@ -359,7 +376,7 @@ void Statue::UpdateChase(void)
 				// 回転はY軸のみ
 				angle_.x = angle_.z = 0.0f;
 
-				float enemyDist2 = GetDistance(enemyPos, DEFAULT_POS);
+				float enemyDist2 = GetDistance(enemyPos, chasePos_);
 
 				if (enemyDist2 <= 100.0f * 100.0f)
 				{
@@ -378,13 +395,13 @@ void Statue::UpdateChase(void)
 				moveDir_ = { 0.0f, 0.0f, 0.0f };
 			}
 			// 帰還先との間に障害物があるかチェック
-			else if (CheckChaseLineCollision(enemyPos, DEFAULT_POS, 40.0f))
+			else if (CheckChaseLineCollision(enemyPos, chasePos_, 40.0f))
 			{
 				// 障害物あり
 				if (path_.empty())
 				{
 					int enemyNearNode = FindNearestNode(enemyPos);
-					int defaultNearNode = FindNearestNode(DEFAULT_POS);
+					int defaultNearNode = FindNearestNode(chasePos_);
 					FindPath(enemyNearNode, defaultNearNode);
 					if (path_.size() > 1)
 					{
@@ -409,7 +426,7 @@ void Statue::UpdateChase(void)
 			else
 			{
 				// 相手へのベクトルを計算
-				VECTOR diff = VSub(DEFAULT_POS, enemyPos);
+				VECTOR diff = VSub(chasePos_, enemyPos);
 				diff.y = 0.0f;
 
 				// ベクトルの正規化で単位ベクトル（方向）を取得
@@ -418,7 +435,7 @@ void Statue::UpdateChase(void)
 				// 回転はY軸のみ
 				angle_.x = angle_.z = 0.0f;
 
-				float enemyDist2 = GetDistance(enemyPos, DEFAULT_POS);
+				float enemyDist2 = GetDistance(enemyPos, chasePos_);
 
 				if (enemyDist2 <= 100.0f * 100.0f)
 				{

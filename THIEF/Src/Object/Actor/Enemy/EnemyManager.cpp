@@ -198,6 +198,21 @@ void EnemyManager::CreateEnemyStage3(void)
 	mushnub->Init(player_, stageId_, way_, edgeList_);
 	// リストに追加
 	enemys_.push_back(mushnub);
+
+	// Statueを生成
+	Statue* statue = new Statue(enemyModelIds_[ENEMY_TAG::STATUE]);
+	statue->Load();
+	statue->SetTag(ENEMY_TAG::STATUE);
+	// 座標とエリア指定
+	pos = { 45.0f, 10.0f, 4680.0f };
+	statue->SetPos(pos);
+	minAreaPos = { -1200.0f, 1.0f, 4450.0f };
+	maxAreaPos = { 250.0f, 700.0f, 5810.0f };
+	statue->SetAreaPos(minAreaPos, maxAreaPos);
+	statue->SetChasePos({ 45.0f, 40.0f, 4680.0f });
+	statue->Init(player_, stageId_, way_, edgeList_);
+	// リストに追加
+	enemys_.push_back(statue);
 }
 
 void EnemyManager::LoadStage1(void)
@@ -221,6 +236,8 @@ void EnemyManager::LoadStage3(void)
 {
 	enemyModelIds_[ENEMY_TAG::YETI] = MV1LoadModel((Application::PATH_MODEL + "Enemy/Yeti.mv1").c_str());
 	enemyModelIds_[ENEMY_TAG::MUSHNUB] = MV1LoadModel((Application::PATH_MODEL + "Enemy/Mushnub_Evolved.mv1").c_str());
+	enemyModelIds_[ENEMY_TAG::STATUE] = MV1LoadModel((Application::PATH_MODEL + "Enemy/Statue.mv1").c_str());
+
 	LoadCsvData("Data/pointSave3.csv");
 }
 
