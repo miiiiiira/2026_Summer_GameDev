@@ -10,7 +10,6 @@
 class ObjectManager;
 class EnemyManager;
 class EnemyBase;
-class Crosshair;
 class TutorialWall;
 
 class TutorialScene : public SceneBase
@@ -32,6 +31,7 @@ public:
 	void PlayerCreate(void);		// プレイヤーの作成
 	void CartCreate(void);			// カートの作成
 	void ItemCreateTutorial(void);	// アイテムの作成
+	void CrosshairCreate(void);		// クロスヘアの作成
 
 public:
 
@@ -47,9 +47,6 @@ private:
 
 	// オブジェクトマネージャー
 	ObjectManager* objectManger_;
-
-	// クロスヘア
-	Crosshair* crosshair_;
 
 	// チュートリアル用の壁
 	TutorialWall* tutorialWall_;

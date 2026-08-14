@@ -7,7 +7,7 @@
 #include "../../../../Common/Manager/Score/ScoreManager.h"
 #include "../../../../Common/Manager/Audio/AudioManager.h"
 #include "../../../../Common/Collision/Collision.h"
-#include "../../../../Common/Crosshair/Crosshair.h"
+#include "../../Crosshair/Crosshair.h"
 #include "../../../../Application.h"
 #include "../../../../Scene/SceneManager.h"
 #include "../../../../Common/Manager/PlayerStatus/PlayerStatusManager.h"
@@ -120,7 +120,7 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 	if (!Collision::HitLineSphere(lineStartPos, lineEndPos, doneSwitchPos, doneSwitchRad))
 	{
 		// クロスヘアの種類を掴めないに変更
-		crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::NOT_GRAB);
+		crosshair_->ChangeCrosshair(CROSSHAIR_NOT_GRAB);
 
 		// 掴めない
 		isGrab = false;
@@ -166,7 +166,7 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 
 	// 当たっている
 	// クロスヘアの種類を掴めるに変更
-	crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::CAN_GRAB);
+	crosshair_->ChangeCrosshair(CROSSHAIR_CAN_GRAB);
 
 	// 掴もうとしていたら
 	if (player_->GetGrabbingState() == GRABBING_STATE::TRY_GRABBING)

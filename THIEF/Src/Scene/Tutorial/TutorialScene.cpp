@@ -17,7 +17,6 @@
 #include "../../Object/Actor/Enemy/EnemyManager.h"
 #include "../../Object/Actor/Enemy/EnemyBase.h"
 #include "../../Object/Actor/Enemy/Weapon/WeaponBase.h"
-#include "../../Common/Crosshair/Crosshair.h"
 #include "../../Object/ObjectManager/ObjectManager.h"
 #include "../../Object/Component/Component.h"
 
@@ -42,6 +41,7 @@
 #include "../../Object/Component/Item/Jar/Jar.h"
 #include "../../Object/Component/Item/Mug/Mug.h"
 #include "../../Object/Component/Item/Skull/Skull.h"
+#include "../../Object/Component/Crosshair/Crosshair.h"
 #include "../../Object/Component/Transform/Transform.h"
 #include "../../Common/Transform/MatrixUtility.h"
 #include "../../Common/CameraUtility/CameraUtility.h"
@@ -64,7 +64,6 @@ TutorialScene::TutorialScene(void)
 {
 	// マウスの表示を消す
 	MouseCursor::GetInstance().SetMouseDraw(false);
-	crosshair_ = nullptr;
 	tutorialWall_ = nullptr;
 
 	// 状態の登録
@@ -112,9 +111,6 @@ void TutorialScene::Init(void)
 	// オブジェクトマネージャー初期化
 	objectManger_->Init();
 
-	// クロスヘアの初期化処理
-	crosshair_->Init();
-
 	tutorialWall_->Init();
 
 	// BGM再生
@@ -137,15 +133,13 @@ void TutorialScene::Load(void)
 	// オブジェクトマネージャーの生成
 	objectManger_ = new ObjectManager();
 
-	// クロスヘアの作成
-	crosshair_ = new Crosshair();
-	crosshair_->Load();
+	// クロスヘアの生成
+	CrosshairCreate();
 
 	WallCreate();
 
 	// チュートリアルに使用するオブジェクトの初期化処理
 	TutorialCreate();
-
 }
 
 void TutorialScene::LoadEnd(void)
@@ -179,9 +173,6 @@ void TutorialScene::Update(void)
 	objectManger_->Update();
 
 	tutorialWall_->Update(currentState_, isClearState_, clearStateEndCount_, MAX_CLEAR_COUNT);
-
-	// クロスヘアの更新
-	crosshair_->Update();
 
 	// Effekseerにより再生中のエフェクトを更新する
 	UpdateEffekseer3D();
@@ -234,9 +225,6 @@ void TutorialScene::Draw(void)
 
 	// Effekseerにより再生中のエフェクトを描画する
 	DrawEffekseer3D();
-
-	// クロスヘアの描画
-	crosshair_->Draw();
 
 	// オブジェクトの2D描画
 	objectManger_->Draw2D();
@@ -303,10 +291,6 @@ void TutorialScene::Release(void)
 
 	// オブジェクトマネージャー削除
 	delete objectManger_;
-
-	crosshair_->Release();
-	delete crosshair_;
-	crosshair_ = nullptr;
 
 	if (tutorialWall_ != nullptr)
 	{
@@ -624,7 +608,9 @@ void TutorialScene::StageCreate(std::string path, std::string collPath)
 
 	// 納品場所の当たり判定追加
 	auto delivery = stage->AddComponent<DeliveryLocationCollider>();
-	delivery->SetCrosshair(crosshair_);
+	// クロスヘアの取得
+	auto crosshair = objectManger_->FindComponentWithTag<Crosshair>(Tag::Crosshair);
+	delivery->SetCrosshair(crosshair);
 }
 
 void TutorialScene::WispCreate(void)
@@ -777,7 +763,10 @@ void TutorialScene::CartCreate(void)
 	// プレイヤーの取得
 	auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
 	cartColl->SetPlayer(player);
-	cartColl->SetCrosshair(crosshair_);
+
+	// クロスヘアの取得
+	auto crosshair = objectManger_->FindComponentWithTag<Crosshair>(Tag::Crosshair);
+	cartColl->SetCrosshair(crosshair);
 }
 
 void TutorialScene::ItemCreateTutorial(void)
@@ -797,6 +786,18 @@ void TutorialScene::ItemCreateTutorial(void)
 	ItemCreate(Tag::Item_Potion_Blue, { 393.0f,10.0f,13579.0f });
 	ItemCreate(Tag::Item_Amphora, { -368.0f,10.0f,13564.0f });
 	ItemCreate(Tag::Item_Mug, { -434.0f,10.0f,12693.0f });
+}
+
+void TutorialScene::CrosshairCreate(void)
+{
+	// クロスヘアの作成
+	auto crosshair = objectManger_->CreateObject();
+
+	// タグを付与
+	crosshair->SetTagAndPriority(Tag::Crosshair);
+
+	// クロスヘア付ける
+	crosshair->AddComponent<Crosshair>();
 }
 
 void TutorialScene::ItemCreate(Tag tag, VECTOR pos)
@@ -865,6 +866,9 @@ void TutorialScene::ItemCreate(Tag tag, VECTOR pos)
 	// カート取得
 	auto cart = objectManger_->FindComponentWithTag<Cart>(Tag::Cart);
 
+	// クロスヘアの取得
+	auto crosshair = objectManger_->FindComponentWithTag<Crosshair>(Tag::Crosshair);
+
 	// アイテムの当たり判定
 	auto itemCol = item->AddComponent<ItemCollider>();
 	// プレイヤーを渡す
@@ -874,7 +878,7 @@ void TutorialScene::ItemCreate(Tag tag, VECTOR pos)
 	// カートを渡す
 	itemCol->SetCart(cart);
 	// クロスヘアを渡す
-	itemCol->SetCrosshair(crosshair_);
+	itemCol->SetCrosshair(crosshair);
 
 	// ステージにアイテムを渡す
 	if (itemBase != nullptr)

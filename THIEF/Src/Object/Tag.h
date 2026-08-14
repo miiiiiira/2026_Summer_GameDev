@@ -20,4 +20,5 @@ enum class Tag
 	Item_Jar,
 	Item_Mug,
 	Item_Skull,
+	Crosshair
 };

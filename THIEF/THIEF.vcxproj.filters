@@ -152,7 +152,7 @@
     <ClCompile Include="Src\Object\Component\PlayerController\Upgrade\Upgrade.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Common\Crosshair\Crosshair.cpp">
+    <ClCompile Include="Src\Object\Component\Crosshair\Crosshair.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\Component\Item\Potion\Potion.cpp">
@@ -456,7 +456,7 @@
     <ClInclude Include="Src\Object\Component\PlayerController\Upgrade\Upgrade.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Common\Crosshair\Crosshair.h">
+    <ClInclude Include="Src\Object\Component\Crosshair\Crosshair.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\Component\Item\Potion\Potion.h">

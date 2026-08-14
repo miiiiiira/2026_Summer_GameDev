@@ -10,7 +10,6 @@
 class ObjectManager;
 class EnemyManager;
 class EnemyBase;
-class Crosshair;
 class DamageEffect;
 
 enum STAGE_NUM
@@ -44,6 +43,7 @@ public:
 	void ItemCreateStage1(void);	// ステージ1アイテムの作成
 	void ItemCreateStage2(void);	// ステージ2アイテムの作成
 	void ItemCreateStage3(void);	// ステージ3アイテムの作成
+	void CrosshairCreate(void);		// クロスヘアの作成
 private:
 
 	// ダメージエフェクトのアルファ値
@@ -55,9 +55,6 @@ private:
 	ObjectManager* objectManger_;
 
 	EnemyManager* enemyManager_;
-
-	// クロスヘア
-	Crosshair* crosshair_;
 
 	// エフェクト
 	DamageEffect* redEffect_;

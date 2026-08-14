@@ -4,7 +4,7 @@
 #include "../../Stage/Stage.h"
 #include "../../PlayerController/PlayerController.h"
 #include "../../Transform/Transform.h"
-#include "../../../../Common/Crosshair/Crosshair.h"
+#include "../../Crosshair/Crosshair.h"
 #include "../../../../Common/CameraUtility/CameraUtility.h"
 #include "../../../../Common/Collision/Collision.h"
 #include "../../../../Common/Manager/PlayerStatus/PlayerStatusManager.h"
@@ -114,7 +114,7 @@ void CartCollider::CartToPlayerGrabbingCollision(void)
 
 	// 当たっている
 	// クロスヘアの種類を掴めるに変更
-	crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::CAN_GRAB);
+	crosshair_->ChangeCrosshair(CROSSHAIR_CAN_GRAB);
 
 	// 掴もうとしていたら
 	if (player_->GetGrabbingState() == GRABBING_STATE::TRY_GRABBING)
@@ -126,6 +126,6 @@ void CartCollider::CartToPlayerGrabbingCollision(void)
 		player_->SetGrabObject(cart_);
 
 		// クロスヘアの種類を掴んでいるに変更
-		crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::GRABBING);
+		crosshair_->ChangeCrosshair(CROSSHAIR_GRABBING);
 	}
 }

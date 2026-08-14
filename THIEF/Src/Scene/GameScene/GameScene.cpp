@@ -15,7 +15,6 @@
 #include "../../Object/Actor/Enemy/EnemyManager.h"
 #include "../../Object/Actor/Enemy/EnemyBase.h"
 #include "../../Object/Actor/Enemy/Weapon/WeaponBase.h"
-#include "../../Common/Crosshair/Crosshair.h"
 #include "../../Object/ObjectManager/ObjectManager.h"
 
 #include "../../Object/Component/Collider/3DCollider/CapsuleCollider.h"
@@ -32,6 +31,7 @@
 #include "../../Object/Component/Wisp/Wisp.h"
 #include "../../Object/Component/Item/Item.h"
 #include "../../Object/Component/Item/ItemInfo.h"
+#include "../../Object/Component/Crosshair/Crosshair.h"
 #include "../../Object/Component/Item/Goblet/Goblet.h"
 #include "../../Object/Component/Item/Potion/Potion.h"
 #include "../../Object/Component/Item/Amphora/Amphora.h"
@@ -55,7 +55,6 @@ GameScene::GameScene(void)
 {
 	// マウスの表示を消す
 	MouseCursor::GetInstance().SetMouseDraw(false);
-	crosshair_ = nullptr;
 	redEffect_ = nullptr;
 }
 
@@ -70,9 +69,6 @@ void GameScene::Init(void)
 
 	// オブジェクトマネージャー初期化
 	objectManger_->Init();
-
-	// クロスヘアの初期化処理
-	crosshair_->Init();
 
 	// エフェクトの初期化
 	redEffect_->Init();
@@ -115,13 +111,12 @@ void GameScene::Load(void)
 	// オブジェクトマネージャーの生成
 	objectManger_ = new ObjectManager();
 
-	// クロスヘアの作成
-	crosshair_ = new Crosshair();
-	crosshair_->Load();
-
 	// エフェクトの生成・ロード
 	redEffect_ = new DamageEffect();
 	redEffect_->Load();
+
+	// クロスヘアの生成
+	CrosshairCreate();
 
 	// 現在のステージ数を見て初期化処理を変更
 	switch (SceneManager::GetInstance()->GetCurrentStage())
@@ -186,9 +181,6 @@ void GameScene::Update(void)
 	objectManger_->Update();
 
 	enemyManager_->Update();
-
-	// クロスヘアの更新
-	crosshair_->Update();
 
 	// エフェクトの更新
 	redEffect_->Update();
@@ -259,9 +251,6 @@ void GameScene::Draw(void)
 	// Effekseerにより再生中のエフェクトを描画する
 	DrawEffekseer3D();
 
-	// クロスヘアの描画
-	crosshair_->Draw();
-
 	// エフェクトの描画
 	redEffect_->Draw();
 
@@ -282,12 +271,7 @@ void GameScene::Release(void)
 	delete enemyManager_;
 	enemyManager_ = nullptr;
 
-	// クロスヘアの解放
-	crosshair_->Release();
-	delete crosshair_;
-	crosshair_ = nullptr;
-
-	// ポーズモードの解放
+	// ダメージエフェクトの解放
 	delete redEffect_;
 	redEffect_ = nullptr;
 
@@ -359,7 +343,9 @@ void GameScene::StageCreate(std::string path, std::string collPath)
 
 	// 納品場所の当たり判定追加
 	auto delivery = stage->AddComponent<DeliveryLocationCollider>();
-	delivery->SetCrosshair(crosshair_);
+	// クロスヘアの取得
+	auto crosshair = objectManger_->FindComponentWithTag<Crosshair>(Tag::Crosshair);
+	delivery->SetCrosshair(crosshair);
 }
 
 void GameScene::WispCreate(void)
@@ -550,7 +536,10 @@ void GameScene::CartCreate(void)
 	// プレイヤーの取得
 	auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
 	cartColl->SetPlayer(player);
-	cartColl->SetCrosshair(crosshair_);
+
+	// クロスヘアの取得
+	auto crosshair = objectManger_->FindComponentWithTag<Crosshair>(Tag::Crosshair);
+	cartColl->SetCrosshair(crosshair);
 }
 
 void GameScene::ItemCreateStage1(void)
@@ -611,6 +600,18 @@ void GameScene::ItemCreateStage3(void)
 	ItemCreate(Tag::Item_Goblet, { 254.0f,306.0f,5042.0f });
 	ItemCreate(Tag::Item_Skull, { -82.0f,10.0f,4499.0f });
 	ItemCreate(Tag::Item_Skull, { 5023.0f,167.0f,2540.0f });
+}
+
+void GameScene::CrosshairCreate(void)
+{
+	// クロスヘアの作成
+	auto crosshair = objectManger_->CreateObject();
+
+	// タグを付与
+	crosshair->SetTagAndPriority(Tag::Crosshair);
+
+	// クロスヘア付ける
+	crosshair->AddComponent<Crosshair>();
 }
 
 void GameScene::Stage1Init(void)
@@ -1207,9 +1208,11 @@ void GameScene::CollisionEnemy2PlayerGrab(void)
 		// ステージに当たっていたら
 		if (stageHitResult.HitFlag)return;
 
+		// クロスヘアの取得
+		auto crosshair = objectManger_->FindComponentWithTag<Crosshair>(Tag::Crosshair);
 		// 当たっている
 		// クロスヘアの種類を掴めるに変更
-		crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::CAN_GRAB);
+		crosshair->ChangeCrosshair(CROSSHAIR_TYPE::CROSSHAIR_CAN_GRAB);
 
 		// 掴もうとしていたら
 		if (player->GetGrabbingState() == GRABBING_STATE::TRY_GRABBING)
@@ -1221,7 +1224,7 @@ void GameScene::CollisionEnemy2PlayerGrab(void)
 			redEffect_->SetEffect(DAMAGE_EFFECT_ALPHA, DAMAGE_EFFECT_COLOR);
 
 			// クロスヘアの種類を掴めないに変更
-			crosshair_->ChangeCrosshair(CROSSHAIR_TYPE::NOT_GRAB);
+			crosshair->ChangeCrosshair(CROSSHAIR_TYPE::CROSSHAIR_NOT_GRAB);
 		}
 	}
 }
@@ -1292,6 +1295,9 @@ void GameScene::ItemCreate(Tag tag, VECTOR pos)
 	// カート取得
 	auto cart = objectManger_->FindComponentWithTag<Cart>(Tag::Cart);
 
+	// クロスヘアの取得
+	auto crosshair = objectManger_->FindComponentWithTag<Crosshair>(Tag::Crosshair);
+
 	// アイテムの当たり判定
 	auto itemCol = item->AddComponent<ItemCollider>();
 	// プレイヤーを渡す
@@ -1301,7 +1307,7 @@ void GameScene::ItemCreate(Tag tag, VECTOR pos)
 	// カートを渡す
 	itemCol->SetCart(cart);
 	// クロスヘアを渡す
-	itemCol->SetCrosshair(crosshair_);
+	itemCol->SetCrosshair(crosshair);
 
 	// ステージにアイテムを渡す
 	if (itemBase != nullptr)
