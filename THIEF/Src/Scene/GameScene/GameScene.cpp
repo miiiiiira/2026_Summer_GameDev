@@ -1178,7 +1178,7 @@ void GameScene::CollisionEnemy2PlayerGrab(void)
 		// 線分とカートモデル衝突判定
 		MV1_COLL_RESULT_POLY hitResult = MV1CollCheck_Line(enemy->GetModelId(), -1, lineStartPos, lineEndPos);
 		// 線分と当たっていないなら処理をしない
-		if (!hitResult.HitFlag)return;
+		if (!hitResult.HitFlag)continue;
 
 		// カメラとアイテムに線分をつなげてステージに当たっているか
 		// 線分とステージモデルの衝突判定
@@ -1187,7 +1187,7 @@ void GameScene::CollisionEnemy2PlayerGrab(void)
 			MV1CollCheck_Line(stage->GetModelId(), -1, lineStartPos, hitResult.HitPosition);
 
 		// ステージに当たっていたら
-		if (stageHitResult.HitFlag)return;
+		if (stageHitResult.HitFlag)continue;
 
 		// クロスヘアの取得
 		auto crosshair = objectManger_->FindComponentWithTag<Crosshair>(Tag::Crosshair);

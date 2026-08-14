@@ -10,8 +10,11 @@
 
 Mushnub::Mushnub(int modelId)
 	:
-	EnemyBase(modelId)
+	EnemyBase(-1),
+	minAreaPos_(-1.0f, -1.0f, -1.0f),
+	maxAreaPos_(-1.0f, -1.0f, -1.0f)
 {
+	baseModelId_ = modelId;
 }
 
 Mushnub::~Mushnub(void)
@@ -31,9 +34,17 @@ void Mushnub::OnInitialize(void)
 	// 回転行列をモデルに反映
 	MV1SetRotationMatrix(modelId_, mat);
 
-	pos_ = DEFAULT_POS;
+	if (pos_.y <= 0.0f)
+	{
+		pos_ = DEFAULT_POS;
+	}
 	MV1SetPosition(modelId_, pos_);
 	prevPos_ = pos_;
+
+	if (chasePos_.y <= 0.0f)
+	{
+		chasePos_ = CHASE_POS;
+	}
 
 	moveDir_ = { 0.0f, 0.0f, 0.0f };
 
@@ -45,6 +56,12 @@ void Mushnub::OnInitialize(void)
 
 	isGround_ = false;
 
+	if (minAreaPos_.x == -1.0f && maxAreaPos_.x == -1.0f)
+	{
+		minAreaPos_ = MIN_AREA_POS;
+		maxAreaPos_ = MAX_AREA_POS;
+	}
+
 	attackDamagePow_ = 10.0f;
 
 	// 初期アニメーション再生
@@ -55,6 +72,7 @@ void Mushnub::OnInitialize(void)
 
 void Mushnub::Load(void)
 {
+	modelId_ = MV1DuplicateModel(baseModelId_);
 	// モデルアニメーション制御の初期化
 	animationController_ = new AnimationController(modelId_);
 	for (int i = 0; i < static_cast<int>(ANIM_TYPE::MAX); i++)
@@ -103,7 +121,7 @@ void Mushnub::Draw(void)
 	VECTOR end = VAdd(pos_, endOffset_);
 	DrawCapsule3D(start, end, radius_, 8, 0xff0000, 0xff0000, false);
 
-	DrawCube3D(MIN_AREA_POS, MAX_AREA_POS, 0xff00ff, 0xff00ff, false);
+	DrawCube3D(minAreaPos_, maxAreaPos_, 0xff00ff, 0xff00ff, false);
 
 #endif
 }
@@ -159,7 +177,7 @@ void Mushnub::ChangeEnd(void)
 
 void Mushnub::UpdateIdle(void)
 {
-	if (IsPlayerInArea(MIN_AREA_POS, MAX_AREA_POS))
+	if (IsPlayerInArea(minAreaPos_, maxAreaPos_))
 	{
 		ChangeState(STATE::SURPRISE);
 		return;
@@ -179,14 +197,14 @@ void Mushnub::UpdateSurprise(void)
 
 void Mushnub::UpdateChase(void)
 {
-	if (IsPlayerInArea(MIN_AREA_POS, MAX_AREA_POS))
+	if (IsPlayerInArea(minAreaPos_, maxAreaPos_))
 	{
 		LookPlayer();
 	}
 	else
 	{
 		// 相手へのベクトルを計算
-		VECTOR diff = VSub(CHASE_POS, pos_);
+		VECTOR diff = VSub(chasePos_, pos_);
 		diff.y = 0.0f;
 
 		// ベクトルの正規化で単位ベクトル（方向）を取得
@@ -195,7 +213,7 @@ void Mushnub::UpdateChase(void)
 		// 回転はY軸のみ
 		angle_.x = angle_.z = 0.0f;
 
-		float enemyDist2 = GetDistance(pos_, CHASE_POS);
+		float enemyDist2 = GetDistance(pos_, chasePos_);
 
 		if (enemyDist2 <= 100.0f * 100.0f)
 		{
