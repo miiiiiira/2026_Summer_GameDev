@@ -548,7 +548,7 @@ void TutorialScene::TutorialCreate(void)
 	CameraUtility::SetCameraPoint(objectManger_->FindComponentWithTag<Camera>(Tag::Camera));
 
 	// ステージの作成
-	StageCreate("Data/Model/Stage/TutorialStage.mv1");
+	StageCreate("Data/Model/Stage/TutorialStage.mv1", "Data/Model/Stage/TutorialStageColl.mv1");
 
 	// ライトの作成
 	WispCreate();

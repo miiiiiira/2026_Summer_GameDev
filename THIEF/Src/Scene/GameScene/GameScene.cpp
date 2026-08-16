@@ -672,7 +672,7 @@ void GameScene::Stage3Init(void)
 	CameraUtility::SetCameraPoint(objectManger_->FindComponentWithTag<Camera>(Tag::Camera));
 
 	// ステージの作成
-	StageCreate("Data/Model/Stage/Stage3.mv1", "Data/Model/Stage/Stage3.mv1");
+	StageCreate("Data/Model/Stage/Stage3.mv1", "Data/Model/Stage/Stage3Coll.mv1");
 
 	// ライトの作成
 	WispCreate();
