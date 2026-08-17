@@ -478,34 +478,28 @@ void GameScene::CartCreate(void)
 	// カプセルコライダー
 	auto capsule = cart->AddComponent<CapsuleCollider>();
 
-	const float HEIGHT = 80.0f;
-	const float BOTTOM = 30.0f;
+	const float HEIGHT = 70.0f;
+	const float BOTTOM = 45.0f;
 
-	const float WIDTH = 50.0f;
-	const float DEPTH = 60.0f;
-	const float RADIUS = 40.0f;
+	const float WIDTH = 35.0f;
+	const float DEPTH = 50.0f;
+	const float RADIUS = 60.0f;
 
 	// 左列
 	capsule->AddCapsule(VGet(-WIDTH, HEIGHT, -DEPTH), VGet(-WIDTH, BOTTOM, -DEPTH), RADIUS);
-	capsule->AddCapsule(VGet(-WIDTH, HEIGHT, 0.0f), VGet(-WIDTH, BOTTOM, 0.0f), RADIUS);
 	capsule->AddCapsule(VGet(-WIDTH, HEIGHT, DEPTH), VGet(-WIDTH, BOTTOM, DEPTH), RADIUS);
-
-	// 中央列
-	capsule->AddCapsule(VGet(0.0f, HEIGHT, -DEPTH), VGet(0.0f, BOTTOM, -DEPTH), RADIUS);
-	capsule->AddCapsule(VGet(0.0f, HEIGHT, DEPTH), VGet(0.0f, BOTTOM, DEPTH), RADIUS);
 
 	// 右列
 	capsule->AddCapsule(VGet(WIDTH, HEIGHT, -DEPTH), VGet(WIDTH, BOTTOM, -DEPTH), RADIUS);
-	capsule->AddCapsule(VGet(WIDTH, HEIGHT, 0.0f), VGet(WIDTH, BOTTOM, 0.0f), RADIUS);
 	capsule->AddCapsule(VGet(WIDTH, HEIGHT, DEPTH), VGet(WIDTH, BOTTOM, DEPTH), RADIUS);
 
 	// ステージコライダー
 	auto stageCol = cart->AddComponent<StageCollider>();
-	stageCol->SetFloorNormalY(0.85f);
-	stageCol->SetWallNormalY(0.20f);
-	stageCol->SetSlopeNormalY(0.65f);
+	stageCol->SetFloorNormalY(0.90f);
+	stageCol->SetWallNormalY(0.75f);
+	stageCol->SetSlopeNormalY(0.85f);
 
-	stageCol->SetStepHeight(25.0f);
+	stageCol->SetStepHeight(5.0f);
 
 	// ステージ取得
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
