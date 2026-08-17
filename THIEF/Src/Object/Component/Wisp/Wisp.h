@@ -26,7 +26,7 @@ private:
 	static constexpr VECTOR SCALE = { 1.0f,1.0f,1.0f };
 
 	// ライトの範囲
-	static constexpr float POINTLIGHT_RANGE_MAX = 3000.0f;
+	static constexpr float POINTLIGHT_RANGE_MAX = 1700.0f;
 	static constexpr float POINTLIGHT_RANGE_MIN = 500.0f;
 
 	// プレイヤーとライトの相対座標
@@ -41,7 +41,7 @@ private:
 
 	// 距離減衰
 	static constexpr float ATTEN_0 = 0.0f;
-	static constexpr float LIGHT_POW_MAX = 0.0009f;
+	static constexpr float LIGHT_POW_MAX = 0.001f;
 	static constexpr float LIGHT_POW_MIN = 0.002f;
 	static constexpr float ATTEN_2 = 0.0f;
 
