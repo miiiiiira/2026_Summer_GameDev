@@ -338,8 +338,6 @@ void Yeti::UpdatePatrol(void)
 	{
 		seTimer_ = 0.0f;
 	}
-
-
 }
 
 void Yeti::UpdateSurprise(void)

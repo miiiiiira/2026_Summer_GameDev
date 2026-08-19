@@ -62,7 +62,8 @@ private:
 	
 	static constexpr float CHASE_INTERVAL = 0.5f;
 
-	static constexpr float LOST_LIMIT_TIME = 10.0f;
+	static constexpr float LOST_LIMIT_TIME = 6.0f;
+
 
 	STATE state_;
 
