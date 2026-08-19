@@ -62,7 +62,7 @@ void Statue::OnInitialize(void)
 
 	attackMoveSpeed_ = 20.0f;
 	attackJumpPow_ = 25.0f;
-	attackDamagePow_ = 80.0f;
+	attackDamagePow_ = 20.0f;
 
 	seTimer_ = 0.0f;
 

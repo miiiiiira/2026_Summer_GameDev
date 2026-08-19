@@ -52,8 +52,8 @@ void Yeti::OnInitialize(void)
 	isGround_ = false;
 
 	attackMoveSpeed_ = 30.0f;
-	attackJumpPow_ = 50.0f;
-	attackDamagePow_ = 50.0f;
+	attackJumpPow_ = 25.0f;
+	attackDamagePow_ = 20.0f;
 
 	// •Ší‚Ì‰Šú‰»
 	weaponPunch_ = new WeaponPunch();
