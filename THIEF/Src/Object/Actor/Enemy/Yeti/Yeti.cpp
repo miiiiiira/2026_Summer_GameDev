@@ -232,7 +232,7 @@ void Yeti::ChangeSurprise(void)
 {
 	step_ = 2.0f;
 	LookPlayer();
-	AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_YETI, & pos_);
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_YETI, & pos_,2000.0f);
 	animationController_->Play(static_cast<int>(ANIM_TYPE::HIT_REACT), false);
 }
 

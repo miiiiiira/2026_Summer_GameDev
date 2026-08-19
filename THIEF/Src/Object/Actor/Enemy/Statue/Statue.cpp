@@ -459,7 +459,7 @@ void Statue::UpdateChase(void)
 		seTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
 		if (seTimer_ <= 0.0f)
 		{
-			AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_STATUE, &pos_);
+			AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_STATUE, &pos_,3500.0f);
 			seTimer_ = 1.0f;
 		}
 	}
