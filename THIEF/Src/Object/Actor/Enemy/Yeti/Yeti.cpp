@@ -489,6 +489,23 @@ void Yeti::UpdateChase(void)
 		}
 	}
 	Move();
+
+	// ˆÚ“®‚µ‚Ä‚¢‚é‚©
+	bool isMoving = (VSize(moveDir_) > 0.001f);
+
+	if (isMoving)
+	{
+		seTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
+		if (seTimer_ <= 0.0f)
+		{
+			AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_YETI_MOVE, &pos_, 3500.0f);
+			seTimer_ = 0.3f;
+		}
+	}
+	else
+	{
+		seTimer_ = 0.0f;
+	}
 }
 
 void Yeti::UpdateAttack(void)
