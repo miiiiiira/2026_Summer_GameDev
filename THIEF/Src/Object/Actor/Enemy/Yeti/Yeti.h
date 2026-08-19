@@ -68,6 +68,8 @@ private:
 
 	float chaseTimer_;
 
+	float seTimer_;		// SE‚ª–Â‚èI‚í‚Á‚Ä‚¢‚é‚©
+
 	// ó‘Ô‘JˆÚ
 	void ChangeState(STATE state);
 	void ChangeThink(void);

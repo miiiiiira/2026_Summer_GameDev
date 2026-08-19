@@ -55,6 +55,8 @@ void Yeti::OnInitialize(void)
 	attackJumpPow_ = 25.0f;
 	attackDamagePow_ = 20.0f;
 
+	seTimer_ = 0.0f;
+
 	// •Ší‚Ì‰Šú‰»
 	weaponPunch_ = new WeaponPunch();
 	weaponPunch_->Init(WeaponBase::TYPE::PUNCH);
@@ -319,6 +321,25 @@ void Yeti::UpdatePatrol(void)
 		ChangeState(STATE::THINK);
 		return;
 	}
+
+	// ˆÚ“®‚µ‚Ä‚¢‚é‚©
+	bool isMoving = (VSize(moveDir_) > 0.001f);
+
+	if (isMoving)
+	{
+		seTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
+		if (seTimer_ <= 0.0f)
+		{
+			AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_YETI_MOVE, &pos_);
+			seTimer_ = 0.5f;
+		}
+	}
+	else
+	{
+		seTimer_ = 0.0f;
+	}
+
+
 }
 
 void Yeti::UpdateSurprise(void)
