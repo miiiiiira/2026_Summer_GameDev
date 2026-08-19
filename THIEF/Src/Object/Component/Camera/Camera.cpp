@@ -332,6 +332,16 @@ void Camera::RotGamePad(bool isLimit)
 	// 角度に反映
 	transform_->angle_.y += dirX * rotPow * deltaTime;
 	transform_->angle_.x += dirY * rotPow * deltaTime;
+
+	// ピッチ角の角度制限（真上や真下を向きすぎないようにする）
+	if (isLimit && transform_->angle_.x > LIMIT_X_DW_RAD)
+	{
+		transform_->angle_.x = LIMIT_X_DW_RAD;
+	}
+	if (isLimit && transform_->angle_.x < LIMIT_X_UP_RAD)
+	{
+		transform_->angle_.x = LIMIT_X_UP_RAD;
+	}
 }
 
 void Camera::RotMouse(bool isLimit)
