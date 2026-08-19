@@ -110,7 +110,16 @@ namespace SoundTable_Game
 	};
 }
 
-// メインメニュー画面用
+// ステージクリア画面用
+namespace SoundTable_StageClear
+{
+	const std::unordered_map<SoundID, SoundData> Table =
+	{
+		{ SoundID::BGM_STAGECLEAR, {"Data/Sound/GameClear/BGM_GAMECLEAR.mp3", SoundType::BGM, 120} },
+	};
+}
+
+// ショップ画面用
 namespace SoundTable_Shop
 {
 	const std::unordered_map<SoundID, SoundData> Table =

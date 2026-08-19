@@ -50,6 +50,7 @@
 #include "../../Common/Manager/EffectResManager/EffectResManager.h"
 #include <EffekseerForDXLib.h>
 #include "../../Common/Manager/PlayerStatus/PlayerStatusManager.h"
+#include "../StageClear/StageClear.h"
 
 GameScene::GameScene(void)
 {
@@ -196,8 +197,6 @@ void GameScene::Update(void)
 
 	if (SceneManager::GetInstance()->GetIsClear())
 	{
-		// トータルスコアを初期化
-		ScoreManager::GetInstance().ResetTotalPrice();
 		// ステージ情報などを初期化する
 		SceneManager::GetInstance()->ResetGame();
 		// ゲームクリアシーンへ
@@ -220,8 +219,8 @@ void GameScene::Update(void)
 	{
 		// 納品した文の金額をショップで使える金額に加算
 		ScoreManager::GetInstance().AddTotalPrice(ScoreManager::GetInstance().GetDeliveryPrice());
-		// ショップシーンへ
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<ShopScene>(),SHOP);
+		// ステージクリアシーンへ
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<StageClear>(),STAGE_CLEAR);
 		return;
 	}
 

@@ -133,7 +133,7 @@ void GameOver::Release(void)
 	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::GAME_OVER);
 }
 
-void GameOver::SelectUpgrade(void)
+void GameOver::SelectUpdate(void)
 {
 	// 前回の選択物を入れておく
 	TYPE prevType = currentType_;
@@ -319,7 +319,7 @@ void GameOver::UpdateSelect(void)
 	else
 	{
 		// 選択処理
-		SelectUpgrade();
+		SelectUpdate();
 
 		// マウスを左クリックしなかったら、処理を行わない
 		if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE) && !InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DECIDE)) return;

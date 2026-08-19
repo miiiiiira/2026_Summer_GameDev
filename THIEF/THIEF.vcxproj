@@ -107,6 +107,7 @@
     <ClCompile Include="Src\Object\Actor\Enemy\Statue\Statue.cpp" />
     <ClCompile Include="Src\Scene\Tutorial\TutorialScene.cpp" />
     <ClCompile Include="Src\Object\Component\Collider\TutorialWallCollider\TutorialWallCollider.cpp" />
+    <ClCompile Include="Src\Scene\StageClear\StageClear.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Common\Easing\Easing.h" />
@@ -214,6 +215,7 @@
     <ClInclude Include="Src\Scene\Tutorial\TutorialInfo.h" />
     <ClInclude Include="Src\Scene\Tutorial\TutorialScene.h" />
     <ClInclude Include="Src\Object\Component\Collider\TutorialWallCollider\TutorialWallCollider.h" />
+    <ClInclude Include="Src\Scene\StageClear\StageClear.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Src\Common\Shader\CtrShader.hlsl">

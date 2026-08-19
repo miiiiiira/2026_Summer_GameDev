@@ -133,7 +133,7 @@ private:
 
 	// フォグのスタート位置終了位置
 	static constexpr float FOG_START = 0.0f;
-	static constexpr float FOG_END = 3000.0f;
+	static constexpr float FOG_END = 3150.0f;
 
 	// シーンマネージャーの状態
 	CHANGE_STATE changeState_;

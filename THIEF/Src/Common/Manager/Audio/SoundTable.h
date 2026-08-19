@@ -29,6 +29,11 @@ namespace SoundTable_Game
 	extern const std::unordered_map<SoundID, SoundData> Table;
 }
 
+namespace SoundTable_StageClear
+{
+	extern const std::unordered_map<SoundID, SoundData> Table;
+}
+
 namespace SoundTable_Shop
 {
 	extern const std::unordered_map<SoundID, SoundData> Table;

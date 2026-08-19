@@ -4,22 +4,13 @@
 #include "../../Application.h"
 #include <vector>
 
-class GameOver : public SceneBase
+class StageClear : public SceneBase
 {
 public:
 
-	enum class STATE
-	{
-		NONE,
-		SHAKE,
-		CRACK,
-		SELECT,
-		MAX,
-	};
-
 	enum TYPE
 	{
-		RETRY,
+		NEXT_STAGE,
 		RETURN_TITLE,
 		NONE,
 	};
@@ -32,8 +23,7 @@ public:
 		int sizeX, sizeY;
 	};
 
-	GameOver(void);				// コンストラクタ
-	~GameOver(void) override;		// デストラクタ
+	StageClear(void);				// コンストラクタ
 
 	void Init(void)		override;	// 初期化
 	void Load(void)		override;	// 読み込み
@@ -44,12 +34,12 @@ public:
 
 private:
 
-	// RETRY画像サイズ
-	static constexpr int RETRY_SIZE_X = 152;
-	static constexpr int RETRY_SIZE_Y = 32;
+	// NEXT_STAGE画像サイズ
+	static constexpr int NEXT_STAGE_SIZE_X = 295;
+	static constexpr int NEXT_STAGE_SIZE_Y = 33;
 
 	// RETRY
-	static constexpr int RETRY_POS_X = Application::SCREEN_SIZE_X / 2 - RETRY_SIZE_X / 2;
+	static constexpr int RETRY_POS_X = Application::SCREEN_SIZE_X / 2 - NEXT_STAGE_SIZE_X / 2;
 	static constexpr int RETRY_POS_Y = 485;
 
 	// RETURN_TITLE画像サイズ
@@ -63,31 +53,17 @@ private:
 	// フレームのオフセット
 	static constexpr int FRAME_OFFSET = 10;
 
-	// 揺らす時間
-	static constexpr int SHAKE_TIME = 30;
-
-	// 透明度の加算値
-	static constexpr int ADD_ALPHA = 3;
-	// 透明度の最大値
-	static constexpr int ALPHA_MAX = 255;
-
 	// 画像ハンドル
 	int handle_;
-	int crackHandle_;
 
 	// ボタンの情報を格納する配列
-	std::vector<IMG_INFO> buttons_;	
-
-	// 現在のステート
-	STATE state_;
-
-	float step_;
+	std::vector<IMG_INFO> buttons_;
 
 	// アルファ値(ボタン表示に使用)
 	int alpha_ = 0;
 
 	// 現在選択しているメニュー
-	TYPE currentType_;					
+	TYPE currentType_;
 
 	// 選択処理
 	void SelectUpdate(void);
@@ -97,20 +73,5 @@ private:
 
 	// パッド選択
 	void PadSelect(void);
-
-	// ヒットストップカウンタが0じゃない場合に揺らし量を計算
-	void GetShakeOffset(int& offset);
-
-	int hitStopCounter_ = 0;		// ヒットストップ用のカウンター
-
-	void ChangeState(STATE state);
-	void ChangeNone(void);
-	void ChangeShake(void);
-	void ChangeCrack(void);
-	void ChangeSelect(void);
-	void UpdateNone(void);
-	void UpdateShake(void);
-	void UpdateCrack(void);
-	void UpdateSelect(void);
 };
 

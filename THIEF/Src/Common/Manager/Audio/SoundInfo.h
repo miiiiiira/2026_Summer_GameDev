@@ -22,6 +22,7 @@ enum class SoundID
 	BGM_GAME_1,
 	BGM_GAME_2,
 	BGM_GAME_3,
+	BGM_STAGECLEAR,
 	BGM_SHOP,
 	BGM_GAMEOVER,
 	BGM_GAMECLEAR,
@@ -101,6 +102,7 @@ enum class LoadScene
 	MAIN_MENU,		// メインメニュー
 	LIGHT_SELECT,	// ライト選択
 	GAME,			// ゲーム
+	STAGE_CLEAR,		// ステージクリア
 	SHOP,			// ショップ
 	GAME_OVER,		// ゲームオーバー
 	GAME_CLEAR,		// ゲームクリア

@@ -445,6 +445,9 @@ void SceneManager::ResetGame(void)
 
 	// プレイヤーのステータスを初期化
 	PlayerStatusManager::GetInstance().ResetStatus();
+
+	// トータルスコアを初期化
+	ScoreManager::GetInstance().ResetTotalPrice();
 }
 
 void SceneManager::SetTutorialStateAndValue(Tutorial::STATE state, float value)
