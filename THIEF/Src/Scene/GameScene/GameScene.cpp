@@ -176,9 +176,9 @@ void GameScene::Update(void)
 	enemyManager_->Update();
 
 	CheckEnemyAttack();
-	CollisionEnemyToStage();
 	CollisionEnemy2Player();
 	CollisionEnemy2PlayerGrab();
+	CollisionEnemyToStage();
 
 	// Effekseerにより再生中のエフェクトを更新する
 	UpdateEffekseer3D();
