@@ -96,12 +96,13 @@ void EnemyManager::CreateEnemyStage2(void)
 	enemys_.push_back(newEnemy);
 
 	// Statueを生成
-	newEnemy = new Statue(enemyModelIds_[ENEMY_TAG::STATUE]);
-	newEnemy->Load();
-	newEnemy->SetTag(ENEMY_TAG::STATUE);
-	newEnemy->Init(player_, stageId_, way_, edgeList_);
+	Statue* statue = new Statue(enemyModelIds_[ENEMY_TAG::STATUE]);
+	statue->Load();
+	statue->SetTag(ENEMY_TAG::STATUE);
+	statue->SetChasePos({ -7444.0f,40.0f,3570.0f });
+	statue->Init(player_, stageId_, way_, edgeList_);
 	// リストに追加
-	enemys_.push_back(newEnemy);
+	enemys_.push_back(statue);
 
 	// Skeletonを生成
 	float startX = -4000.0f;	// 檻の並びの開始X座標
