@@ -237,15 +237,15 @@ void TutorialScene::Draw(void)
 
 	// テキスト背景用のボックス
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
-	DrawBox(0, 520, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, 0x000000, true);
+	DrawBox(690, 250, Application::SCREEN_SIZE_X, 450, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	// 達成率バー
-	DrawBox(0, 540, achievementRate_, 545, 0xffc800, true);
+	DrawBox(690, 280, 690 + achievementRate_, 283, 0xffc800, true);
 
 	if (isClearState_)
 	{
-		DrawStringToHandle(150, 570, "Good Job!", 0xffffff, Application::GetInstance()->GetFont(FONT_SIZE_20));
+		DrawStringToHandle(700, 300, "Good Job!", 0xffffff, Application::GetInstance()->GetFont(FONT_SIZE_16));
 	}
 	// CLEAR以外の時は、CSVから読み込む
 	else
@@ -257,13 +257,14 @@ void TutorialScene::Draw(void)
 
 		if (index >= 0 && index < static_cast<int>(steps_.size()))
 		{
-			// steps_ から取得し、描画
-			std::string textEN = ConvertTutorialTagToKeyName(steps_[index].textEN);
-			std::string textJP = ConvertTutorialTagToKeyName(steps_[index].textJP);
+			// テキスト描画範囲を設定
+			SetDrawArea(700, 250, Application::SCREEN_SIZE_X, 450);
 
 			// 置換後のテキストを描画
-			DrawTutorialTextWithHighlight(150, 570, steps_[index].textEN, 0xffffff, 0xffc800, Application::GetInstance()->GetFont(FONT_SIZE_20));
-			DrawTutorialTextWithHighlight(150, 600, steps_[index].textJP, 0xffffff, 0xffc800, Application::GetInstance()->GetDefaultFont());
+			DrawTutorialTextWithHighlight(700, 300, steps_[index].textEN, 0xffffff, 0xffc800, Application::GetInstance()->GetFont(FONT_SIZE_16));
+			DrawTutorialTextWithHighlight(700, 370, steps_[index].textJP, 0xffffff, 0xffc800, Application::GetInstance()->GetDefaultFont());
+
+			SetDrawArea(0, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y);
 
 			// ステート表示
 			DrawFormatStringToHandle(10, 230, 0xffffff, 
@@ -387,15 +388,17 @@ void TutorialScene::LoadCsvData(void)
 
 void TutorialScene::UpdateAchievementRate(void)
 {
+	int count = Application::SCREEN_SIZE_X - 700;
+
 	if (isClearState_)
 	{
 		float ratio = static_cast<float>(clearStateEndCount_) / static_cast<float>(MAX_CLEAR_COUNT);
-		achievementRate_ = static_cast<int>(Application::SCREEN_SIZE_X * ratio);
+		achievementRate_ = static_cast<int>(count * ratio);
 	}
 	else
 	{
 		float ratio = PlayerActionCounter::GetInstance()->GetCounter(currentState_) / 100.0f;
-		achievementRate_ = static_cast<int>(Application::SCREEN_SIZE_X * ratio);
+		achievementRate_ = static_cast<int>(count * ratio);
 	}
 }
 
@@ -1078,6 +1081,19 @@ void TutorialScene::DrawTutorialTextWithHighlight(int x, int y, const std::strin
 	// % から次の % までのタグを検出して描画する
 	size_t currentPos = 0;
 	int currentX = x;
+	int currentY = y;
+	int lineHeight = 20;
+
+	int rightLimitX = Application::SCREEN_SIZE_X - 50;
+
+	auto CheckAndWrap = [&](const std::string& str) {
+		int strWidth = GetDrawStringWidthToHandle(str.c_str(), static_cast<int>(str.length()), fontHandle);
+		// もし現在のX位置に文字の幅を足して、右端限界を超えるなら
+		if (currentX + strWidth > rightLimitX) {
+			currentX = x;          // X座標をはじめの位置（左端）に戻す
+			currentY += lineHeight; // Y座標を1行分下に下げる（改行）
+		}
+		};
 
 	// 文字列の後ろになるまでループ
 	while (currentPos < originalText.length())
@@ -1088,18 +1104,19 @@ void TutorialScene::DrawTutorialTextWithHighlight(int x, int y, const std::strin
 		// '%' がこれ以上存在しないなら
 		if (tagStart == std::string::npos)
 		{
-			// 残りの文字列を描画
 			std::string sub = originalText.substr(currentPos);
-			DrawStringToHandle(currentX, y, sub.c_str(), normalColor, fontHandle);
+			// 描画前に、右端をはみ出るかチェックして必要なら改行
+			CheckAndWrap(sub);
+			DrawStringToHandle(currentX, currentY, sub.c_str(), normalColor, fontHandle);
 			break;
 		}
 		// '%' の直前までに通常テキストが存在するなら
 		if (tagStart > currentPos)
 		{
-			// タグ手前までの通常文字列を取り出して描画する
 			std::string normalStr = originalText.substr(currentPos, tagStart - currentPos);
-			DrawStringToHandle(currentX, y, normalStr.c_str(), normalColor, fontHandle);
-			// 描画した長さ分、X座標を進める
+			// 描画前に、右端をはみ出るかチェックして必要なら改行
+			CheckAndWrap(normalStr);
+			DrawStringToHandle(currentX, currentY, normalStr.c_str(), normalColor, fontHandle);
 			currentX += GetDrawStringWidthToHandle(normalStr.c_str(), static_cast<int>(normalStr.length()), fontHandle);
 		}
 
@@ -1109,9 +1126,9 @@ void TutorialScene::DrawTutorialTextWithHighlight(int x, int y, const std::strin
 		// 閉じの '%' が見つからないなら
 		if (tagEnd == std::string::npos)
 		{
-			// 残りの文字列をすべて通常色で描画して終了
 			std::string sub = originalText.substr(tagStart);
-			DrawStringToHandle(currentX, y, sub.c_str(), normalColor, fontHandle);
+			CheckAndWrap(sub);
+			DrawStringToHandle(currentX, currentY, sub.c_str(), normalColor, fontHandle);
 			break;
 		}
 
@@ -1122,8 +1139,8 @@ void TutorialScene::DrawTutorialTextWithHighlight(int x, int y, const std::strin
 		std::string keyName = ConvertTutorialTagToKeyName(tag);
 
 		// 置換後のキー名をハイライト色で描画
-		DrawStringToHandle(currentX, y, keyName.c_str(), highlightColor, fontHandle);
-		// 描画した長さ分、X座標を進める
+		CheckAndWrap(keyName);
+		DrawStringToHandle(currentX, currentY, keyName.c_str(), highlightColor, fontHandle);
 		currentX += GetDrawStringWidthToHandle(keyName.c_str(), static_cast<int>(keyName.length()), fontHandle);
 
 		// 次の検索位置へ進める
