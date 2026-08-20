@@ -16,6 +16,7 @@
 #include <algorithm>
 #include "../../../../Common/Manager/PlayerStatus/PlayerStatusManager.h"
 #include "../../../../Common/Manager/System/SystemManager.h"
+#include "../../../../Common/Manager/Score/ScoreManager.h"
 
 void ItemCollider::Init(void)
 {
@@ -459,11 +460,17 @@ bool ItemCollider::ItemInCartCollision(void)
 
 		// チュートリアル時にカウンタに加算される
 		SceneManager::GetInstance()->TutorialCounter(Tutorial::CART);
+
+		// カート内金額にアイテムの金額を加算
+		ScoreManager::GetInstance().AddCartPrice(item_->GetInfo().price_);
 	}
 	// 当たっていないかつ、カートに入っているフラグが立っていたら
 	else if (!isHit && item_->GetInfo().hasTouchedCart_)
 	{
 		item_->SetHasTouchedCart(false);
+
+		// カート内金額にアイテムの金額を減算
+		ScoreManager::GetInstance().AddCartPrice(-item_->GetInfo().price_);
 	}
 
 	return item_->GetInfo().hasTouchedCart_;

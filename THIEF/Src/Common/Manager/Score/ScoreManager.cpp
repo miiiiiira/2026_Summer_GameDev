@@ -83,7 +83,6 @@ void ScoreManager::Draw(void)
 {
 	// 納品金額 / 目標金額の描画
 	int font = Application::GetInstance()->GetFont(FONT_SIZE_20);
-	int strWidth = GetDrawFormatStringWidthToHandle(font, "%d　/　%d", deliveryPrice_, targetPrice_);
 	
 	unsigned int priceCol = 0xffffff;
 
@@ -92,18 +91,42 @@ void ScoreManager::Draw(void)
 		priceCol = 0xffff00;
 	}
 
-	DrawFormatStringToHandle(Application::SCREEN_SIZE_X - strWidth , 50, priceCol, font,
+	// 納品金額
+	int strWidth = GetDrawStringWidthToHandle("Score / Target", 14, font);
+	DrawStringToHandle(Application::SCREEN_SIZE_X - strWidth , 30,"Score / Target", priceCol, font);
+
+	strWidth = GetDrawFormatStringWidthToHandle(font, "%d　/　%d", deliveryPrice_, targetPrice_);
+	DrawFormatStringToHandle(Application::SCREEN_SIZE_X - strWidth , 70, priceCol, font,
 		"%d　/　%d",
 		deliveryPrice_, targetPrice_);
+
+
+	unsigned int cartPriceCol = 0xffffff;
+
+	if (cartPrice_ >= targetPrice_)
+	{
+		cartPriceCol = 0xffff00;
+	}
+
+	// カート内の金額
+	strWidth = GetDrawStringWidthToHandle("CartTotal",9,font);
+	DrawStringToHandle(Application::SCREEN_SIZE_X - strWidth , 130, "CartTotal", cartPriceCol, font);
+	strWidth = GetDrawFormatStringWidthToHandle(font, "%d", cartPrice_);
+	DrawFormatStringToHandle(Application::SCREEN_SIZE_X - strWidth , 170, cartPriceCol, font,
+		"%d",
+		cartPrice_);
+
+
+
 
 	// 生存中のアイテムが目標金額より下回ってしまったら
 	if (showWarning_)
 	{
 		strWidth = GetDrawStringWidthToHandle( "Target Score at Risk!",22, font);
-
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(alpha_));
+
 		// 警告文を付ける
-		DrawStringToHandle(Application::SCREEN_SIZE_X - strWidth, 90,"Target Score at Risk!", 0xff0000, font);
+		DrawStringToHandle(Application::SCREEN_SIZE_X - strWidth, 210,"Target Score at Risk!", 0xff0000, font);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 }
@@ -136,11 +159,13 @@ void ScoreManager::SetItems(std::vector<Item*> items)
 
 	if (SceneManager::GetInstance()->GetNowSceneTag() == TUTORIAL)
 	{
+		cartPrice_ = 0;
 		targetPrice_ = 1;
 		warningPrice_ = 0;
 	}
 	else
 	{
+		cartPrice_ = 0;
 		int allPrice = 0;
 		targetPrice_ = 0;
 		warningPrice_ = 0;

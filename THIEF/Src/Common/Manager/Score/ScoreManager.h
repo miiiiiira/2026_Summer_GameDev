@@ -43,6 +43,12 @@ public:
 	// アイテム設定
 	void SetItems(std::vector<Item*> items);
 
+	// カート内金額に加算
+	void AddCartPrice(const int price) { cartPrice_ += price; }
+
+	// カート内を返す
+	const int GetCartPrice(void) const { return cartPrice_; }
+
 	// 納品金額に加算
 	void AddDeliveryPrice(const int price) { deliveryPrice_ += price; }
 
@@ -71,6 +77,9 @@ private:
 
 	// アイテム
 	std::vector<Item*> items_;
+
+	// カート内金額
+	int cartPrice_;
 
 	// 納品金額
 	int deliveryPrice_;

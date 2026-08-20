@@ -453,16 +453,16 @@ void GameScene::CartCreate(void)
 	switch (stageNum)
 	{
 	case STAGE_1:
-		trans->pos_ = { 500.0f,0.0f,0.0f };
+		trans->pos_ = { 500.0f,30.0f,0.0f };
 		trans->angle_ = { 0.0f,90.0f * (DX_PI_F / 180.0f),0.0f };
 		break;
 	case STAGE_2:
-		trans->pos_ = { 0.0f,5.0f,500.0f };
+		trans->pos_ = { 0.0f,30.0f,500.0f };
 		trans->angle_ = { 0.0f,0.0f,0.0f };
 		break;
 	case STAGE_3:
 
-		trans->pos_ = { 500.0f,0.0f,0.0f };
+		trans->pos_ = { 500.0f,30.0f,0.0f };
 		trans->angle_ = { 0.0f,90.0f * (DX_PI_F / 180.0f),0.0f };
 
 		break;
@@ -478,7 +478,7 @@ void GameScene::CartCreate(void)
 	auto capsule = cart->AddComponent<CapsuleCollider>();
 
 	const float HEIGHT = 70.0f;
-	const float BOTTOM = 45.0f;
+	const float BOTTOM = 30.0f;
 
 	const float WIDTH = 35.0f;
 	const float DEPTH = 50.0f;
