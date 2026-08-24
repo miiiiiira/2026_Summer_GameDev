@@ -40,8 +40,8 @@ void TitleScene::Init(void)
 void TitleScene::Load(void)
 {
 	AudioManager::GetInstance()->LoadSceneSound(LoadScene::TITLE);
-	handle_ = LoadGraph("Data/Image/Title.png");
-	buttonHandle_ = LoadGraph("Data/Image/PushAnyButton.png");
+	handle_ = LoadGraph("Data/Image/Common/Title.png");
+	buttonHandle_ = LoadGraph("Data/Image/Title/PushAnyButton.png");
 
 	confirm_ = std::make_shared<Confirm>();
 }

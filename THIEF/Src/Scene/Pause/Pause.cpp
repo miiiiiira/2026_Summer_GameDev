@@ -36,21 +36,21 @@ void Pause::Init(void)
 
 void Pause::Load(void)
 {
-	handle_ = LoadGraph((Application::PATH_IMAGE + "pause.png").c_str());		// PAUSE‚Ì•¶Žš‰æ‘œ
+	handle_ = LoadGraph((Application::PATH_IMAGE + "Pause/pause.png").c_str());		// PAUSE‚Ì•¶Žš‰æ‘œ
 
 	menuButtons_.clear();
 
 	// CONTINUE‰æ‘œ
-	menuButtons_.push_back({ MENU::CONTINUE, LoadGraph((Application::PATH_IMAGE + "continue.png").c_str()),
+	menuButtons_.push_back({ MENU::CONTINUE, LoadGraph((Application::PATH_IMAGE + "Pause/continue.png").c_str()),
 								CONTINUE_POS_X, CONTINUE_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
 	// OPTION‰æ‘œ
-	menuButtons_.push_back({ MENU::OPTION, LoadGraph((Application::PATH_IMAGE + "option.png").c_str()),
+	menuButtons_.push_back({ MENU::OPTION, LoadGraph((Application::PATH_IMAGE + "Common/option.png").c_str()),
 								OPTION_POS_X, OPTION_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
 	// MAIN MENU‰æ‘œ
-	menuButtons_.push_back({ MENU::MAINMENU,  LoadGraph((Application::PATH_IMAGE + "mainMenu.png").c_str()),
+	menuButtons_.push_back({ MENU::MAINMENU,  LoadGraph((Application::PATH_IMAGE + "Pause/mainMenu.png").c_str()),
 								MAINMENU_POS_X, MAINMENU_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
 	// QUIT‰æ‘œ
-	menuButtons_.push_back({ MENU::QUIT, LoadGraph((Application::PATH_IMAGE + "quit.png").c_str()),
+	menuButtons_.push_back({ MENU::QUIT, LoadGraph((Application::PATH_IMAGE + "Common/quit.png").c_str()),
 								QUIT_POS_X, QUIT_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
 
 }

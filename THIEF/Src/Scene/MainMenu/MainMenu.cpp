@@ -42,18 +42,18 @@ void MainMenu::Load(void)
 	// メインメニューサウンド読みこみ
 	AudioManager::GetInstance()->LoadSceneSound(LoadScene::MAIN_MENU);
 
-	handle_ = LoadGraph((Application::PATH_IMAGE + "Title.png").c_str());
+	handle_ = LoadGraph((Application::PATH_IMAGE + "Common/Title.png").c_str());
 
 	menuButtons_.clear();
 
 	// PLAY画像
-	menuButtons_.push_back({ MENU::PLAY, LoadGraph((Application::PATH_IMAGE + "play.png").c_str()),
+	menuButtons_.push_back({ MENU::PLAY, LoadGraph((Application::PATH_IMAGE + "MainMenu/play.png").c_str()),
 								PLAY_POS_X, PLAY_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
 	// OPTION画像
-	menuButtons_.push_back({ MENU::OPTION, LoadGraph((Application::PATH_IMAGE + "option.png").c_str()),
+	menuButtons_.push_back({ MENU::OPTION, LoadGraph((Application::PATH_IMAGE + "Common/option.png").c_str()),
 							OPTION_POS_X, OPTION_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
 	// QUIT画像
-	menuButtons_.push_back({ MENU::QUIT, LoadGraph((Application::PATH_IMAGE + "quit.png").c_str()),
+	menuButtons_.push_back({ MENU::QUIT, LoadGraph((Application::PATH_IMAGE + "Common/quit.png").c_str()),
 						QUIT_POS_X, QUIT_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
 
 }

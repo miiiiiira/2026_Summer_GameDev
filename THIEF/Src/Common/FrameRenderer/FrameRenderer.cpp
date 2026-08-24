@@ -11,7 +11,7 @@ namespace FrameRenderer
 
 	void Load(void)
 	{
-		frame_ = LoadGraph("Data/Image/Frame.png");
+		frame_ = LoadGraph("Data/Image/Common/Frame.png");
 	}
 
 	void Draw(int x, int y)

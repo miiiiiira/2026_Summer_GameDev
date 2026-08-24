@@ -55,19 +55,19 @@ void Upgrade::Init(void)
 	confirm_ = std::make_shared<Confirm>();
 
 	// 画像のロード
-	imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::HP_UP)] = LoadGraph("Data/Image/hpUp.png");
-	imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::STAMINA_UP)] = LoadGraph("Data/Image/staminaUp.png");
-	imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::DASH_SPEED_UP)] = LoadGraph("Data/Image/dashSpeedUp.png");
-	imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::RANGE_UP)] = LoadGraph("Data/Image/rangeUp.png");
-	imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::JUMP_NUM_UP)] = LoadGraph("Data/Image/jumpNumUp.png");
-	imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::HEAL_HP_25)] = LoadGraph("Data/Image/healHp25.png");
-	imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::HEAL_HP_50)] = LoadGraph("Data/Image/healHp50.png");
+	imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::HP_UP)] = LoadGraph("Data/Image/Shop/Item/hpUp.png");
+	imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::STAMINA_UP)] = LoadGraph("Data/Image/Shop/Item/staminaUp.png");
+	imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::DASH_SPEED_UP)] = LoadGraph("Data/Image/Shop/Item/dashSpeedUp.png");
+	imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::RANGE_UP)] = LoadGraph("Data/Image/Shop/Item/rangeUp.png");
+	imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::JUMP_NUM_UP)] = LoadGraph("Data/Image/Shop/Item/jumpNumUp.png");
+	imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::HEAL_HP_25)] = LoadGraph("Data/Image/Shop/Item/healHp25.png");
+	imgHandle_[static_cast<int>(PLAYER_UPGRADE_TYPE::HEAL_HP_50)] = LoadGraph("Data/Image/Shop/Item/healHp50.png");
 
 	// SoldOut画像
-	soldOutImg_ = LoadGraph("Data/Image/SoldOut.png");
+	soldOutImg_ = LoadGraph("Data/Image/Shop/SoldOut.png");
 
 	// 終了ボタン画像
-	endButtonImg_ = LoadGraph("Data/Image/endButton.png");
+	endButtonImg_ = LoadGraph("Data/Image/Shop/endButton.png");
 
 	// 座標初期化
 	for (int y = 0; y < DRAW_NUM_Y; y++)

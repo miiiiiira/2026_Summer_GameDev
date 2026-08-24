@@ -25,7 +25,7 @@ MouseCursor::MouseCursor(void)
 void MouseCursor::Load(void)
 {
 	// ƒ}ƒEƒX‰æ‘œ‚Ì“Ç‚İ‚İ
-	mouseImg_ = LoadGraph("Data/Image/cursor.png");
+	mouseImg_ = LoadGraph("Data/Image/Common/cursor.png");
 }
 
 void MouseCursor::Init(void)

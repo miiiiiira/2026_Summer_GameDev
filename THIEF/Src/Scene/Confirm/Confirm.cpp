@@ -83,10 +83,10 @@ void Confirm::Load(void)
 	// 配列をクリアにしてから、画像を追加
 	selectButtons_.clear();
 	// YES画像
-	selectButtons_.push_back({ SELECT::YES, LoadGraph((Application::PATH_IMAGE + "Yes.png").c_str()),
+	selectButtons_.push_back({ SELECT::YES, LoadGraph((Application::PATH_IMAGE + "Confirm/Yes.png").c_str()),
 								YES_POS_X, YES_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
 	// NO画像
-	selectButtons_.push_back({ SELECT::NO,  LoadGraph((Application::PATH_IMAGE + "No.png").c_str()),
+	selectButtons_.push_back({ SELECT::NO,  LoadGraph((Application::PATH_IMAGE + "Confirm/No.png").c_str()),
 							NO_POS_X, NO_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
 }
 
