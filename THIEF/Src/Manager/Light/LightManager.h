@@ -24,13 +24,15 @@ private:
 	// 静的インスタンス
 	static LightManager* instance_;
 
-	// 現在のライトタイプ
-	LIGHT_TYPE nowLightType_;
-
 	// コピー・ムーブ操作を禁止
 	LightManager(const LightManager&) = delete;
 	LightManager& operator=(const LightManager&) = delete;
 	LightManager(LightManager&&) = delete;
 	LightManager& operator=(LightManager&&) = delete;
+
+private:
+
+	// 現在のライトタイプ
+	LIGHT_TYPE nowLightType_;
 };
 

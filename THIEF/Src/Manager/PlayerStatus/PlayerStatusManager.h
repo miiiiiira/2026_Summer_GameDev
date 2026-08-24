@@ -4,96 +4,71 @@ class PlayerStatusManager
 {
 public:
 
-	// HP
-	static constexpr int DEFAULT_HP = 100;
+	struct Status 
+	{
+		int hp_;	// HP
+		int hpMax_; // 最大HP
 
-	// ダッシュ時の移動速度
-	static constexpr float DASH_SPEED = 15.0f;
+		float staminaMax_;	// 最大スタミナ
 
-	// プレイヤーの掴み距離
-	static constexpr float DEFAULT_RENGE = 400.0f;
+		float dashMoveSpeed_;	// 移動速度
 
-	// スタミナ
-	static constexpr float DEFAULT_STAMINA = 40.0f;
-
-	// ジャンプ可能数
-	static constexpr int DEFAULT_JUMP_NUM = 1;
-
-	struct Status {
-
-		// HP
-		int hp_;
-		int hpMax_;
-
-		// スタミナ
-		float staminaMax_;
-
-		// 移動速度
-		float dashMoveSpeed_;
-
-		// ジャンプ可能回数
-		int jumpNumMax_;
-
-		// 掴み距離
-		float rangeMax_;
+		int jumpNumMax_;	// ジャンプ可能回数
+		
+		float rangeMax_;	// 掴み距離
 	};
 
-	// 明示的にインステンスを生成する
-	static void CreateInstance(void);
+public:
 
-	// 静的インスタンスの取得
-	static PlayerStatusManager& GetInstance(void);
+	static constexpr int DEFAULT_HP = 100;	// HP
 
-	// 更新処理
-	void Update(void);
+	static constexpr float DASH_SPEED = 15.0f;	// ダッシュ時の移動速度
 
-	// 解放処理
-	void Destroy(void);
+	static constexpr float DEFAULT_RENGE = 400.0f;	// プレイヤーの掴み距離
 
-	//リセット
-	void ResetStatus(void);
+	static constexpr float DEFAULT_STAMINA = 40.0f;	// スタミナ
 
-	// HPをMaxHPの値でリセットする
-	void ResetHP(void);
+	static constexpr int DEFAULT_JUMP_NUM = 1;	// ジャンプ可能数
 
-	// プレイヤーのステータスを渡す
-	const Status& GetPlayerStatus(void) { return status_; }
+public:
 
-	// 最大HPを上げる
-	void HpUp(int upNum);
+	// シングルトン（生成・取得・削除）
+	static void CreateInstance(void) { if (instance_ == nullptr) { instance_ = new PlayerStatusManager(); } }
+	static PlayerStatusManager* GetInstance(void) { return instance_; }
+	static void DeleteInstance(void) { if (instance_ != nullptr) { delete instance_; instance_ = nullptr; } }
 
-	// 最大スタミナを上げる
-	void StaminaUp(float upNum);
+	PlayerStatusManager();	// コンストラクタ
+	
+	void Destroy(void);	// 解放
 
-	// ダッシュ時のスピードを上げる
-	void DashSpeedUp(float upNum);
+	void ResetStatus(void);	// デフォルトのステータスにリセット
 
-	// 掴み可能範囲を大きくする
-	void RangeUp(float upNum);
+	void ResetHP(void);	// HPをMaxHPの値でリセットする
 
-	// ジャンプの回数を増やす
-	void JumpNumUp(int upNum);
+	const Status& GetPlayerStatus(void) { return status_; }	// プレイヤーのステータスを渡す
 
-	// HPを回復する
-	void HealHp(int upNum);
-
-	// ダメージを与える
-	void SetHp(int hp);
+	void HpUp(int upNum);			// 最大HPを上げる
+	void StaminaUp(float upNum);	// 最大スタミナを上げる
+	void DashSpeedUp(float upNum);	// ダッシュ時のスピードを上げる
+	void RangeUp(float upNum);		// 掴み可能範囲を大きくする
+	void JumpNumUp(int upNum);		// ジャンプの回数を増やす
+	void HealHp(int upNum);			// HPを回復する
+	void SetHp(int hp);				// ダメージを与える
 
 private:
 
 	// 静的インスタンス
 	static PlayerStatusManager* instance_;
 
+	// コピー・ムーブ操作を禁止
+	PlayerStatusManager(const PlayerStatusManager&) = delete;
+	PlayerStatusManager& operator=(const PlayerStatusManager&) = delete;
+	PlayerStatusManager(PlayerStatusManager&&) = delete;
+	PlayerStatusManager& operator=(PlayerStatusManager&&) = delete;
+
+private:
+
 	// プレイヤーのステータス
 	Status status_;
-
-	// デフォルトコンストラクタをprivateにして、
-	// 外部から生成できない様にする
-	PlayerStatusManager(void);
-	// コピーコンストラクタも同様
-	PlayerStatusManager(const PlayerStatusManager& manager) = default;
-	// デストラクタも同様
-	~PlayerStatusManager(void) = default;
 };
 

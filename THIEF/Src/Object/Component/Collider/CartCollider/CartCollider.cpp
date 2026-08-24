@@ -77,7 +77,7 @@ void CartCollider::CartToPlayerGrabbingCollision(void)
 		// プレイヤーの掴める距離にカートが入っていなければ処理を行わない
 		if (!Collision::HitSpherePoint(
 			player_->GetTransform()->pos_,
-			PlayerStatusManager::GetInstance().GetPlayerStatus().rangeMax_,
+			PlayerStatusManager::GetInstance()->GetPlayerStatus().rangeMax_,
 			cartHandlePos))return;
 
 		// 場所が視界内に入っていないため処理を行わない

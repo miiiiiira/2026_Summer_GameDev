@@ -9,11 +9,14 @@ public:
 	static void DeleteInstance(void) { if (instance_ != nullptr) { delete instance_; instance_ = nullptr; } }
 
 private:
-	// 静的インスタンス
-	static PlayerActionCounter* instance_;
 
 	PlayerActionCounter();		// コンストラクタ
 	~PlayerActionCounter();		// デストラクタ
+
+private:
+
+	// 静的インスタンス
+	static PlayerActionCounter* instance_;
 
 	// コピー・ムーブ操作を禁止
 	PlayerActionCounter(const PlayerActionCounter&) = delete;
@@ -35,10 +38,11 @@ public:
 	{ if (state != Tutorial::STATE::MAX)counter_[state] += counter; }
 
 	// 指定されたステートのカウンターを初期化する
-	void ResetCounter(Tutorial::STATE state) { if(Tutorial::STATE::MAX != state) counter_[state] = 0.0f; }
+	void ResetCounter(Tutorial::STATE state) 
+	{ if(Tutorial::STATE::MAX != state) counter_[state] = 0.0f; }
+
 private:
 
-	// 確認項目ごとのカウンター
-	float counter_[Tutorial::STATE::MAX];
+	float counter_[Tutorial::STATE::MAX];	// 確認項目ごとのカウンター
 };
 

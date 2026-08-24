@@ -64,7 +64,7 @@ void PlayerController::Init()
 	stageColl_ = owner_->GetComponent<StageCollider>();
 
 	// プレイヤーステータスマネージャー
-	auto status = PlayerStatusManager::GetInstance().GetPlayerStatus();
+	auto status = PlayerStatusManager::GetInstance()->GetPlayerStatus();
 
 	// 移動速度
 	info_.moveSpeed_ = DEFAULT_SPEED;
@@ -191,7 +191,7 @@ VECTOR PlayerController::GetLineEndPos(void)
 {
 	// 相対座標
 	VECTOR LOCAL_POS =
-	{ 0.0f,0.0f, PlayerStatusManager::GetInstance().GetPlayerStatus().rangeMax_ };
+	{ 0.0f,0.0f, PlayerStatusManager::GetInstance()->GetPlayerStatus().rangeMax_ };
 
 	// 座標に反映
 	VECTOR downPos = CameraUtility::AddCameraPosLocalPos(LOCAL_POS);
@@ -259,7 +259,7 @@ void PlayerController::SetDamage(int damage)
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_DAMAGE);
 
 	// プレイヤーステータスに反映
-	PlayerStatusManager::GetInstance().SetHp(info_.hp_);
+	PlayerStatusManager::GetInstance()->SetHp(info_.hp_);
 
 	// 画面を赤くするエフェクトを付ける
 	auto effect = owner_->GetComponent<FlashEffect>();
@@ -449,7 +449,7 @@ void PlayerController::MoveInit(PlayerController& player)
 void PlayerController::DashInit(PlayerController& player)
 {
 	// プレイヤーの移動速度をダッシュの移動速度にする
-	player.info_.moveSpeed_ = PlayerStatusManager::GetInstance().GetPlayerStatus().dashMoveSpeed_;
+	player.info_.moveSpeed_ = PlayerStatusManager::GetInstance()->GetPlayerStatus().dashMoveSpeed_;
 }
 
 void PlayerController::CrouchingInit(PlayerController& player)
@@ -477,7 +477,7 @@ void PlayerController::CrouchingInit(PlayerController& player)
 void PlayerController::SlidingInit(PlayerController& player)
 {
 	// プレイヤーのスライディングの移動速度とダッシュ移動速度を加算
-	player.info_.moveSpeed_ = SLIDING_SPEED + PlayerStatusManager::GetInstance().GetPlayerStatus().dashMoveSpeed_;
+	player.info_.moveSpeed_ = SLIDING_SPEED + PlayerStatusManager::GetInstance()->GetPlayerStatus().dashMoveSpeed_;
 
 	// カプセルのオフセットを初期化する
 	if (player.capColl_ != nullptr)
@@ -786,7 +786,7 @@ void PlayerController::ApplyGravity()
 void PlayerController::HealStamina(void)
 {
 	// スタミナの最大値を取得
-	float staminaMax = PlayerStatusManager::GetInstance().GetPlayerStatus().staminaMax_;
+	float staminaMax = PlayerStatusManager::GetInstance()->GetPlayerStatus().staminaMax_;
 
 	// スタミナがMaxだったら処理を飛ばす
 	if (info_.stamina_ >= staminaMax)return;
@@ -818,7 +818,7 @@ void PlayerController::Jump(void)
 
 	// ジャンプボタンを押されたかつ、ジャンプ中では無いかつ、ジャンプ回数がMaxまで到達していなかったら
 	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::JUMP)
-		&& info_.jumpNum_ < PlayerStatusManager::GetInstance().GetPlayerStatus().jumpNumMax_)
+		&& info_.jumpNum_ < PlayerStatusManager::GetInstance()->GetPlayerStatus().jumpNumMax_)
 	{
 		// ジャンプした回数を加算
 		++info_.jumpNum_;
@@ -840,7 +840,7 @@ void PlayerController::Jump(void)
 bool PlayerController::RangeUpdate(void)
 {
 	// 掴む距離の最大値を取得
-	float rangeMax = PlayerStatusManager::GetInstance().GetPlayerStatus().rangeMax_;
+	float rangeMax = PlayerStatusManager::GetInstance()->GetPlayerStatus().rangeMax_;
 
 	// 物との距離を大きくする操作が行われていたら
 	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::ITEM_PUSH))
@@ -1089,7 +1089,7 @@ void PlayerController::DrawHP(void)
 		0x00fa9a,
 		Application::GetInstance()->GetFont(FONT_SIZE_20),
 		" / %d",
-		PlayerStatusManager::GetInstance().GetPlayerStatus().hpMax_);
+		PlayerStatusManager::GetInstance()->GetPlayerStatus().hpMax_);
 }
 
 void PlayerController::DrawStamina(void)
@@ -1121,7 +1121,7 @@ void PlayerController::DrawStamina(void)
 		0xffc800,
 		Application::GetInstance()->GetFont(FONT_SIZE_20),
 		" / %.f",
-		PlayerStatusManager::GetInstance().GetPlayerStatus().staminaMax_);
+		PlayerStatusManager::GetInstance()->GetPlayerStatus().staminaMax_);
 }
 
 void PlayerController::DebugDraw(void)

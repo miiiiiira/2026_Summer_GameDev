@@ -149,7 +149,7 @@ void ItemCollider::PlayerGrabCollision(void)
 		// プレイヤーの掴める距離にアイテムが入っていなければ処理を行わない
 		if (!Collision::HitSpheres(
 			player_->GetTransform()->pos_,
-			PlayerStatusManager::GetInstance().GetPlayerStatus().rangeMax_,
+			PlayerStatusManager::GetInstance()->GetPlayerStatus().rangeMax_,
 			itemPos,
 			item_->GetInfo().collisionRadiusX_))return;
 

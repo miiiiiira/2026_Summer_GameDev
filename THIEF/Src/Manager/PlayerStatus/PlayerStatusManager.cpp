@@ -2,28 +2,9 @@
 
 PlayerStatusManager* PlayerStatusManager::instance_ = nullptr;
 
-void PlayerStatusManager::CreateInstance(void)
-{
-	if (instance_ == nullptr)
-	{
-		instance_ = new PlayerStatusManager();
-	}
-}
-
-PlayerStatusManager& PlayerStatusManager::GetInstance(void)
-{
-	return *instance_;
-}
-
-void PlayerStatusManager::Update(void)
-{
-	
-}
-
 void PlayerStatusManager::Destroy()
 {
-	delete instance_;
-	instance_ = nullptr;
+	DeleteInstance();
 }
 
 void PlayerStatusManager::ResetStatus()
@@ -95,6 +76,7 @@ void PlayerStatusManager::HealHp(int upNum)
 
 void PlayerStatusManager::SetHp(int hp)
 {
+	// HP‚ğ•Û‚³‚¹‚Ä‚¨‚­
 	status_.hp_ = hp;
 }
 

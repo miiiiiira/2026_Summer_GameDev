@@ -552,43 +552,43 @@ void Upgrade::ApplyUpgrade(void)
 	case PLAYER_UPGRADE_TYPE::HP_UP:
 
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_SHOP_BUY_HP_UP);
-		PlayerStatusManager::GetInstance().HpUp(HP_UP_NUM);
+		PlayerStatusManager::GetInstance()->HpUp(HP_UP_NUM);
 
 		break;
 	case PLAYER_UPGRADE_TYPE::STAMINA_UP:
 
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_SHOP_BUY_STAMINA_UP);
-		PlayerStatusManager::GetInstance().StaminaUp(STAMINA_UP_NUM);
+		PlayerStatusManager::GetInstance()->StaminaUp(STAMINA_UP_NUM);
 
 		break;
 	case PLAYER_UPGRADE_TYPE::DASH_SPEED_UP:
 
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_SHOP_BUY_DASH_UP);
-		PlayerStatusManager::GetInstance().DashSpeedUp(DASHSPPED_UP_NUM);
+		PlayerStatusManager::GetInstance()->DashSpeedUp(DASHSPPED_UP_NUM);
 
 		break;
 	case PLAYER_UPGRADE_TYPE::RANGE_UP:
 
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_SHOP_BUY_RANGE_UP);
-		PlayerStatusManager::GetInstance().RangeUp(RANGE_UP_NUM);
+		PlayerStatusManager::GetInstance()->RangeUp(RANGE_UP_NUM);
 
 		break;
 	case PLAYER_UPGRADE_TYPE::JUMP_NUM_UP:
 
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_SHOP_BUY_JUMP_UP);
-		PlayerStatusManager::GetInstance().JumpNumUp(JUMP_UP_NUM);
+		PlayerStatusManager::GetInstance()->JumpNumUp(JUMP_UP_NUM);
 
 		break;
 	case PLAYER_UPGRADE_TYPE::HEAL_HP_25:
 
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_SHOP_BUY_HEAL_25);
-		PlayerStatusManager::GetInstance().HealHp(HEAL_HP_25);
+		PlayerStatusManager::GetInstance()->HealHp(HEAL_HP_25);
 
 		break;
 	case PLAYER_UPGRADE_TYPE::HEAL_HP_50:
 
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_SHOP_BUY_HEAL_50);
-		PlayerStatusManager::GetInstance().HealHp(HEAL_HP_50);
+		PlayerStatusManager::GetInstance()->HealHp(HEAL_HP_50);
 
 		break;
 	default:

@@ -209,7 +209,7 @@ void GameScene::Update(void)
 		// トータルスコアを初期化
 		ScoreManager::GetInstance().ResetTotalPrice();
 		// HP情報のみ初期化(リトライ時に自己強化した項目は残しておきたいため)
-		PlayerStatusManager::GetInstance().ResetHP();
+		PlayerStatusManager::GetInstance()->ResetHP();
 		// ゲームオーバーシーンへ
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameOver>(),OVER);
 		return;

@@ -284,7 +284,7 @@ void SceneManager::Delete(void)
 	ScoreManager::GetInstance().Destroy();
 
 	// プレイヤーのステータス管理解放
-	PlayerStatusManager::GetInstance().Destroy();
+	PlayerStatusManager::GetInstance()->Destroy();
 
 	// アップグレード管理解放
 	UpgradeManager::GetInstance().Destroy();
@@ -444,7 +444,7 @@ void SceneManager::ResetGame(void)
 	prevStage_ = currentStage_ = STAGE_NUM::STAGE_1;
 
 	// プレイヤーのステータスを初期化
-	PlayerStatusManager::GetInstance().ResetStatus();
+	PlayerStatusManager::GetInstance()->ResetStatus();
 
 	// トータルスコアを初期化
 	ScoreManager::GetInstance().ResetTotalPrice();
