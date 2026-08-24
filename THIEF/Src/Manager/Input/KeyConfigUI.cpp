@@ -1,13 +1,13 @@
 #include "KeyConfigUI.h"
 
 #include <DxLib.h>
-#include "../../../Application.h"
+#include "../../Application.h"
 #include "../Audio/AudioManager.h"
-#include "../../Collision/Collision.h"
+#include "../../Common/Collision/Collision.h"
+#include "../../Common/FrameRenderer/FrameRenderer.h"
+#include "../../Scene/Confirm/Confirm.h"
+#include "../../Scene/SceneManager.h"
 #include "InputManager.h"
-#include "../../FrameRenderer/FrameRenderer.h"
-#include "../../../Scene/Confirm/Confirm.h"
-#include "../../../Scene/SceneManager.h"
 #include "InputIO.h"
 
 namespace

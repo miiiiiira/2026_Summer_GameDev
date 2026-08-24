@@ -4,8 +4,8 @@
 #include "../../Object.h"
 #include "../../../Common/Math/Math.h"
 #include "../../../Common/Easing/Easing.h"
-#include "../../../Common/Manager/Input/InputManager.h"
-#include "../../../Common/Manager/System/SystemManager.h"
+#include "../../../Manager/Input/InputManager.h"
+#include "../../../Manager/System/SystemManager.h"
 #include "../../../Scene/SceneManager.h"
 #include "../../../Application.h"
 

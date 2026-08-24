@@ -6,10 +6,10 @@
 
 #include "../../../../Application.h"
 #include "../../../../Common/Collision/Collision.h"
-#include "../../../../Common/Manager/Audio/AudioManager.h"
-#include "../../../../Common/Manager/System/SystemManager.h"
-#include "../../../../Common/Manager/Input/InputManager.h"
-#include "../../../../Common/Manager/Score/ScoreManager.h"
+#include "../../../../Manager/Audio/AudioManager.h"
+#include "../../../../Manager/System/SystemManager.h"
+#include "../../../../Manager/Input/InputManager.h"
+#include "../../../../Manager/Score/ScoreManager.h"
 #include "../../../../Common/FrameRenderer/FrameRenderer.h"
 #include "../../../../Scene/Confirm/Confirm.h"
 #include "../../../../Scene/SceneManager.h"
@@ -130,12 +130,20 @@ void Upgrade::Draw2D(void)
 	for (int i = 0; i < selectUpgrades_.size(); ++i)
 	{
 		// âÊëúÇÃï`âÊ
-		DrawGraphF(pos_[i].x, pos_[i].y,
-			imgHandle_[static_cast<int>(selectUpgrades_[i].first.type)], true);
+		DrawGraphF(
+			pos_[i].x, 
+			pos_[i].y,
+			imgHandle_[static_cast<int>(selectUpgrades_[i].first.type)], 
+			true);
 
 		// ã‡äzÇÃï`âÊ
-		DrawFormatStringToHandle(pos_[i].x + OFFSET / 2, pos_[i].y, 0x000000, font,
-			"%d", selectUpgrades_[i].first.price);
+		DrawFormatStringFToHandle(
+			pos_[i].x + OFFSET / 2,
+			pos_[i].y, 
+			0x000000, 
+			font,
+			"%d",
+			selectUpgrades_[i].first.price);
 
 		// îÑÇËêÿÇÍÇƒÇ¢ÇΩÇÁ
 		if (!selectUpgrades_[i].second)
@@ -143,16 +151,22 @@ void Upgrade::Draw2D(void)
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
 
 			// âÊëúÇ…îñÇ¢É{ÉbÉNÉXÇèdÇÀÇÈ
-			DrawBox(static_cast<int>(pos_[i].x)
-				, static_cast<int>(pos_[i].y),
-				static_cast<int>(pos_[i].x + COL_SIZE_X)
-				, static_cast<int>(pos_[i].y + COL_SIZE_Y)
-				, 0x000000, true);
+			DrawBox(
+				static_cast<int>(pos_[i].x),
+				static_cast<int>(pos_[i].y),
+				static_cast<int>(pos_[i].x + COL_SIZE_X),
+				static_cast<int>(pos_[i].y + COL_SIZE_Y),
+				0x000000, 
+				true);
 
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 			// îÑÇËêÿÇÍâÊëúï`âÊ
-			DrawGraphF(pos_[i].x + SOLDOUT_OFFSET_X, pos_[i].y + SOLDOUT_OFFSET_Y, soldOutImg_, true);
+			DrawGraphF(
+				pos_[i].x + SOLDOUT_OFFSET_X, 
+				pos_[i].y + SOLDOUT_OFFSET_Y, 
+				soldOutImg_, 
+				true);
 		}
 
 

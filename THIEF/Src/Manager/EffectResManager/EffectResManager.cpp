@@ -1,5 +1,5 @@
 #include <EffekseerForDXLib.h>
-#include "../../../Application.h"
+#include "../../Application.h"
 #include "EffectResManager.h"
 
 // ’†g‚ğnullptr‚Å‰Šú‰»

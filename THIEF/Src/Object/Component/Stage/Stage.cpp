@@ -5,8 +5,8 @@
 #include "../../../Scene/SceneManager.h"
 #include "../../Object.h"
 #include "DeliveryInfo.h"
-#include "../../../Common/Manager/Score/ScoreManager.h"
-#include "../../../Common/Manager/Audio/AudioManager.h"
+#include "../../../Manager/Score/ScoreManager.h"
+#include "../../../Manager/Audio/AudioManager.h"
 #include "../Animation/Animation.h"
 #include "../../../Application.h"
 

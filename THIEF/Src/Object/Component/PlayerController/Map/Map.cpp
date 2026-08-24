@@ -6,9 +6,9 @@
 #include "../../../../Application.h"
 #include "../../../../Common/CameraUtility/CameraUtility.h"
 #include "../../../../Scene/SceneManager.h"
+#include "../../../../Manager/Audio/AudioManager.h"
 #include "MapInfo.h"
 #include "Map.h"
-#include "../../../../Common/Manager/Audio/AudioManager.h"
 
 Map::Map(void)
 {
@@ -83,8 +83,8 @@ void Map::Update(void)
 	// プレイヤーの3D座標を2D座標に変換して移動分マップの位置を動かす
 	auto* player = owner_->GetComponent<PlayerController>();
 	VECTOR plaPos = player->GetTransform()->pos_;
-	mapImgPosX_ = playerSpawnPosX + (plaPos.x * 0.1f);
-	mapImgPosY_ = playerSpawnPosY - (plaPos.z * 0.1f);
+	mapImgPosX_ = playerSpawnPosX + static_cast<int>((plaPos.x * 0.1f));
+	mapImgPosY_ = playerSpawnPosY - static_cast<int>((plaPos.z * 0.1f));
 
 }
 
@@ -150,8 +150,8 @@ void Map::Draw2D(void)
 		float rotatedX = localX * cosf(angle) - localZ * sinf(angle);
 		float rotatedY = localX * sinf(angle) + localZ * cosf(angle);
 
-		float posX = MAP_CENTER_POS_X + rotatedX;
-		float posY = MAP_CENTER_POS_Y + rotatedY;
+		int posX = MAP_CENTER_POS_X + static_cast<int>(rotatedX);
+		int posY = MAP_CENTER_POS_Y + static_cast<int>(rotatedY);
 		// プレイヤーのスポーン位置から実際のアイテムの座標分をスケーリングして足してあげる
 		switch (item->GetInfo().size_)
 		{

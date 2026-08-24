@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../Component.h"
-#include "../../../../Common/Manager/PlayerStatus/PlayerStatusManager.h"
+#include "../../../../Manager/PlayerStatus/PlayerStatusManager.h"
 #include "UpgradeType.h"
 #include "../../../../Common/Math/Vector2.h"
 #include "../../../../Application.h"

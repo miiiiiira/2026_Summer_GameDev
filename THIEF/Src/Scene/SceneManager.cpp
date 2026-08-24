@@ -5,16 +5,16 @@
 #include "Shop/ShopScene.h"
 #include "../Application.h"
 
-#include "../Common/Manager/System/SystemManager.h"
-#include "../Common/Manager/Light/LightManager.h"
-#include "../Common/Manager/Score/ScoreManager.h"
-#include "../Common/Manager/Input/InputManager.h"
-#include "../Common/Manager/PlayerStatus/PlayerStatusManager.h"
-#include "../Common/Manager/PlayerActionCounter/PlayerActionCounter.h"
+#include "../Manager/System/SystemManager.h"
+#include "../Manager/Light/LightManager.h"
+#include "../Manager/Score/ScoreManager.h"
+#include "../Manager/Input/InputManager.h"
+#include "../Manager/PlayerStatus/PlayerStatusManager.h"
+#include "../Manager/PlayerActionCounter/PlayerActionCounter.h"
 #include "../Common/FrameRenderer/FrameRenderer.h"
-#include "../Object/Component/PlayerController/Upgrade/UpgradeManager.h"
 #include "../Common/MouseCursor/MouseCursor.h"
 #include "../Common/Shader/Shader.h"
+#include "../Object/Component/PlayerController/Upgrade/UpgradeManager.h"
 
 SceneManager* SceneManager::instance_ = nullptr;
 

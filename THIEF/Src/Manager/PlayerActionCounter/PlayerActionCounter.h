@@ -1,5 +1,5 @@
 #pragma once
-#include "../../../Scene/Tutorial/TutorialInfo.h"
+#include "../../Scene/Tutorial/TutorialInfo.h"
 class PlayerActionCounter
 {
 public:

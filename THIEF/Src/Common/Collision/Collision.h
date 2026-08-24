@@ -1,6 +1,5 @@
 #pragma once
 #include "../Math/Vector2.h"
-#include "../Manager/Input/InputManager.h"
 
 namespace Collision
 {

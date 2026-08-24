@@ -7,9 +7,10 @@
 #include "../../Crosshair/Crosshair.h"
 #include "../../../../Common/CameraUtility/CameraUtility.h"
 #include "../../../../Common/Collision/Collision.h"
-#include "../../../../Common/Manager/PlayerStatus/PlayerStatusManager.h"
+#include "../../../../Manager/PlayerStatus/PlayerStatusManager.h"
 #include "../../../../Application.h"
-#include "../../../../Common/Manager/System/SystemManager.h"
+#include "../../../../Manager/System/SystemManager.h"
+#include "../../../../Manager/Input/InputManager.h"
 
 void CartCollider::Init(void)
 {

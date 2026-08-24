@@ -3,11 +3,13 @@
 #include <algorithm>
 #include <unordered_map>
 
-#include "../../Common/Manager/PlayerActionCounter/PlayerActionCounter.h"
 #include "../../Application.h"
-#include "../../Common/Manager/Input/InputManager.h"
-#include "../../Common/Manager/Audio/AudioManager.h"
-#include "../../Common/Manager/Score/ScoreManager.h"
+#include "../../Manager/Input/InputManager.h"
+#include "../../Manager/PlayerActionCounter/PlayerActionCounter.h"
+#include "../../Manager/Audio/AudioManager.h"
+#include "../../Manager/Score/ScoreManager.h"
+#include "../../Manager/EffectResManager/EffectResManager.h"
+#include "../../Manager/Light/LightManager.h"
 #include "../SceneManager.h"
 #include "../GameClear/GameClear.h"
 #include "../GameOver/GameOver.h"
@@ -56,9 +58,7 @@
 #include "../MainMenu/MainMenu.h"
 #include "../LightSelectScene/LightSelectScene.h"
 #include "../../Object/Component/Collider/TutorialWallCollider/TutorialWallCollider.h"
-#include "../../Common/Manager/EffectResManager/EffectResManager.h"
 #include <EffekseerForDXLib.h>
-#include "../../Common/Manager/Light/LightManager.h"
 
 TutorialScene::TutorialScene(void)
 {

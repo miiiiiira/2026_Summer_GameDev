@@ -1,8 +1,8 @@
 #include "ScoreManager.h"
 #include <DxLib.h>
-#include "../../../Object/Component/Item/Item.h"
-#include "../../../Scene/SceneManager.h"
-#include "../../../Application.h"
+#include "../../Object/Component/Item/Item.h"
+#include "../../Scene/SceneManager.h"
+#include "../../Application.h"
 
 ScoreManager* ScoreManager::instance_ = nullptr;
 
@@ -175,7 +175,7 @@ void ScoreManager::SetItems(std::vector<Item*> items)
 		}
 
 		//	–Ú•W‹àŠz‚ğ50%‚É‚·‚é
-		targetPrice_ = allPrice * TARGET_PRICE_RATIO;
+		targetPrice_ = static_cast<int>(allPrice * TARGET_PRICE_RATIO);
 
 		// 100‰~ˆÈ‰º‚ÍØ‚èÌ‚Ä
 		int price = targetPrice_ % 100;
@@ -183,7 +183,7 @@ void ScoreManager::SetItems(std::vector<Item*> items)
 		targetPrice_ -= price;
 
 		//	Œx•¶‚ğo‚·–ÚˆÀ‹àŠz‚ğ70%‚É‚·‚é
-		warningPrice_ = allPrice * SHOW_WARNING_PRICE_RATIO;
+		warningPrice_ = static_cast<int>(allPrice * SHOW_WARNING_PRICE_RATIO);
 
 #ifdef _DEBUG
 		targetPrice_ = 1;

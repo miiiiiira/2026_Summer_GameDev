@@ -41,6 +41,12 @@ private:
 	// スキップ時間の最大値
 	static constexpr float MAX_SKIP_TIME = 120.0f;
 
+	// 最大アルファ値
+	static constexpr int ALPHA_MAX = 255;
+
+	// アルファ値下げる量
+	static constexpr int SUB_ALPHA = 10;
+
 
 	int handle_;	// 画像ハンドル
 
@@ -54,7 +60,7 @@ private:
 
 	int scrollY_;	// Y座標のスクロール値
 
-	float alpha_;	// アルファ値
+	int alpha_;	// アルファ値
 
 	void ShaderInit(void);
 };

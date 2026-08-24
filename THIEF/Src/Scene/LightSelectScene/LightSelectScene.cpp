@@ -1,10 +1,10 @@
 #include "LightSelectScene.h"
-#include "../../Common/Manager/Light/LightManager.h"
-#include "../../Common/Manager/Input/InputManager.h"
+#include "../../Manager/Light/LightManager.h"
+#include "../../Manager/Input/InputManager.h"
+#include "../../Manager/System/SystemManager.h"
+#include "../../Manager/Audio/AudioManager.h"
 #include "../SceneManager.h"
 #include "../../Application.h"
-#include "../../Common/Manager/System/SystemManager.h"
-#include "../../Common/Manager/Audio/AudioManager.h"
 #include "../../Common/MouseCursor/MouseCursor.h"
 #include "../../Common/Collision/Collision.h"
 #include "../MainMenu/MainMenu.h"
@@ -88,7 +88,7 @@ void LightSelectScene::Draw(void)
 
 	for (auto selectTypeTable : LightSelectTypeTable::Table)
 	{
-		DrawRotaGraph(
+		DrawRotaGraphF(
 			selectTypeTable.second.pos.x,
 			selectTypeTable.second.pos.y,
 			1.0,
@@ -103,7 +103,7 @@ void LightSelectScene::Draw(void)
 	// ’†g‚ª‚ ‚Á‚½‚ç
 	if (typeTable != LightSelectTypeTable::Table.end())
 	{
-		DrawRotaGraph(
+		DrawRotaGraphF(
 			typeTable->second.pos.x,
 			typeTable->second.pos.y,
 			1.0,

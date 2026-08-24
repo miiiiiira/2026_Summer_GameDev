@@ -4,14 +4,15 @@
 #include "../../Stage/Stage.h"
 #include "../../Item/Item.h"
 #include "../../PlayerController/PlayerController.h"
-#include "../../../../Common/Manager/Score/ScoreManager.h"
-#include "../../../../Common/Manager/Audio/AudioManager.h"
+#include "../../../../Manager/Score/ScoreManager.h"
+#include "../../../../Manager/Audio/AudioManager.h"
+#include "../../../../Manager/PlayerStatus/PlayerStatusManager.h"
+#include "../../../../Manager/System/SystemManager.h"
+#include "../../../../Manager/Input/InputManager.h"
 #include "../../../../Common/Collision/Collision.h"
 #include "../../Crosshair/Crosshair.h"
 #include "../../../../Application.h"
 #include "../../../../Scene/SceneManager.h"
-#include "../../../../Common/Manager/PlayerStatus/PlayerStatusManager.h"
-#include "../../../../Common/Manager/System/SystemManager.h"
 
 void DeliveryLocationCollider::Init(void)
 {

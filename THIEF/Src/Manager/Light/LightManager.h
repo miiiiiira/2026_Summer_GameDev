@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../Object/Component/Wisp/LightInfo.h"
+#include "../../Object/Component/Wisp/LightInfo.h"
 
 class LightManager
 {

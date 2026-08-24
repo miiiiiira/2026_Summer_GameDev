@@ -1,6 +1,5 @@
 #include "MouseCursor.h"
-#include "../Manager/Input/InputManager.h"
-#include "../Manager/System/SystemManager.h"
+#include "../../Manager/Input/InputManager.h"
 #include "../../Application.h"
 
 MouseCursor* MouseCursor::instance_ = nullptr;
@@ -94,10 +93,13 @@ void MouseCursor::SetMouseDraw(bool flg)
 
 void MouseCursor::DebugDraw(void)
 {
+	int posX = static_cast<int>(mousePos_.x);
+	int posy = static_cast<int>(mousePos_.y);
+
 	// “–‚½‚è”»’è•`‰æ
-	DrawBox(mousePos_.x - MOUSE_IMG_SIZE_WID / 2,
-		mousePos_.y - MOUSE_IMG_SIZE_HIG / 2,
-		mousePos_.x + MOUSE_IMG_SIZE_WID / 2,
-		mousePos_.y + MOUSE_IMG_SIZE_HIG / 2,
+	DrawBox(posX - MOUSE_IMG_SIZE_WID / 2,
+		posy - MOUSE_IMG_SIZE_HIG / 2,
+		posX + MOUSE_IMG_SIZE_WID / 2,
+		posy + MOUSE_IMG_SIZE_HIG / 2,
 		0xff0000, false);
 }

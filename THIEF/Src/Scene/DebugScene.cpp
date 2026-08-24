@@ -1,8 +1,8 @@
 #include<fstream>
 
 #include "../Application.h"
-#include "../Common/Manager/Input/InputManager.h" 
-#include "../Common/Manager/Audio/AudioManager.h"
+#include "../Manager/Input/InputManager.h" 
+#include "../Manager/Audio/AudioManager.h"
 #include "SceneManager.h"
 #include "GameClear/GameClear.h"
 #include "GameOver/GameOver.h"

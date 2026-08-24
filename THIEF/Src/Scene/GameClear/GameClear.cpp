@@ -2,8 +2,8 @@
 
 #include <DxLib.h>
 
-#include "../../Common/Manager/Input/InputManager.h"
-#include "../../Common/Manager/Audio/AudioManager.h"
+#include "../../Manager/Input/InputManager.h"
+#include "../../Manager/Audio/AudioManager.h"
 #include "../SceneManager.h"
 #include "../TitleScene/TitleScene.h"
 #include "../../Common/Shader/Shader.h"
@@ -63,22 +63,22 @@ void GameClear::Update(void)
 	{
 		skipTimer_++;	// ボタンが押されるとスキップカウンターをカウントさせる
 
-		alpha_ += 10.0f;
+		alpha_ += SUB_ALPHA;
 
-		if (alpha_ >= 255.0f)
+		if (alpha_ >= ALPHA_MAX)
 		{
-			alpha_ = 255.0f;
+			alpha_ = ALPHA_MAX;
 		}
 	}
 	else
 	{
 		skipTimer_ = 0.0f;	// ボタンが離されたら、カウンターを0にする
 
-		alpha_ -= 10.0f;
+		alpha_ -= SUB_ALPHA;
 
-		if (alpha_ <= 0.0f)
+		if (alpha_ <= 0)
 		{
-			alpha_ = 0.0f;
+			alpha_ = 0;
 		}
 	}
 
@@ -146,7 +146,7 @@ void GameClear::Draw(void)
 
 	int gaugePosX = Application::SCREEN_SIZE_X - SKIP_IMAGE_SIZE / 2;
 	int gaugePosY = Application::SCREEN_SIZE_Y - SKIP_IMAGE_SIZE / 2;
-	float rate = (static_cast<float>(skipTimer_) / MAX_SKIP_TIME) * 100.0;
+	float rate = (static_cast<float>(skipTimer_) / MAX_SKIP_TIME) * 100.0f;
 	DrawCircleGauge(gaugePosX, gaugePosY, rate, skipGauge_, 0.0);
 
 	int posX = Application::SCREEN_SIZE_X - SKIP_IMAGE_SIZE;

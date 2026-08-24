@@ -1,4 +1,9 @@
-#include "ItemCollider.h"
+#include <algorithm>
+#include "../../../../Manager/Audio/AudioManager.h"
+#include "../../../../Manager/PlayerStatus/PlayerStatusManager.h"
+#include "../../../../Manager/System/SystemManager.h"
+#include "../../../../Manager/Score/ScoreManager.h"
+#include "../../../../Manager/Input/InputManager.h"
 #include "../../../Object.h"
 #include "../../PlayerController/PlayerController.h"
 #include "../../Stage/Stage.h"
@@ -7,16 +12,11 @@
 #include "../../Wisp/Wisp.h"
 #include "../../../../Common/Transform/MatrixUtility.h"
 #include "../../../../Common/CameraUtility/CameraUtility.h"
-#include "../../../../Common/Manager/Audio/AudioManager.h"
 #include "../../../../Common/Collision/Collision.h"
 #include "../../Crosshair/Crosshair.h"
 #include "../../../../Scene/SceneManager.h"
 #include "../../../../Application.h"
-
-#include <algorithm>
-#include "../../../../Common/Manager/PlayerStatus/PlayerStatusManager.h"
-#include "../../../../Common/Manager/System/SystemManager.h"
-#include "../../../../Common/Manager/Score/ScoreManager.h"
+#include "ItemCollider.h"
 
 void ItemCollider::Init(void)
 {
@@ -60,14 +60,16 @@ void ItemCollider::Draw2D(void)
 {
 #ifdef _DEBUG
 
-	// デバイスによって処理を変更
+	// パッド時のみ補正用ボックスデバック表示
 	if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::PAD)
 	{
-		Vector2 checkBoxPos = { Application::SCREEN_SIZE_X / 2 - SystemManager::CONTROLLER_GRAB_SCREEN_RANGE_RAD ,
-			Application::SCREEN_SIZE_Y / 2 - SystemManager::CONTROLLER_GRAB_SCREEN_RANGE_RAD };
-
-		DrawBox(checkBoxPos.x, checkBoxPos.y,
-			checkBoxPos.x + SystemManager::CONTROLLER_GRAB_SCREEN_RANGE, checkBoxPos.y + SystemManager::CONTROLLER_GRAB_SCREEN_RANGE,
+		int checkBoxPosX = Application::SCREEN_SIZE_X / 2 - SystemManager::CONTROLLER_GRAB_SCREEN_RANGE_RAD;
+		int checkBoxPosY = Application::SCREEN_SIZE_Y / 2 - SystemManager::CONTROLLER_GRAB_SCREEN_RANGE_RAD;
+		DrawBox(
+			checkBoxPosX,
+			checkBoxPosY,
+			checkBoxPosX + SystemManager::CONTROLLER_GRAB_SCREEN_RANGE,
+			checkBoxPosY + SystemManager::CONTROLLER_GRAB_SCREEN_RANGE,
 			0xff0000, false);
 	}
 

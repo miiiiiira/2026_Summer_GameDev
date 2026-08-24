@@ -3,6 +3,7 @@
 
 #include "Collision.h"
 #include "../Math/Math.h"
+#include "../../Manager/Input/InputManager.h"
 #include "../MouseCursor/MouseCursor.h"
 
 namespace Collision

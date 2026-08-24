@@ -3,9 +3,11 @@
 #include <algorithm>
 
 #include "../../Application.h"
-#include "../../Common/Manager/Input/InputManager.h"
-#include "../../Common/Manager/Audio/AudioManager.h"
-#include "../../Common/Manager/Score/ScoreManager.h"
+#include "../../Manager/Input/InputManager.h"
+#include "../../Manager/Audio/AudioManager.h"
+#include "../../Manager/Score/ScoreManager.h"
+#include "../../Manager/EffectResManager/EffectResManager.h"
+#include "../../Manager/PlayerStatus/PlayerStatusManager.h"
 #include "../SceneManager.h"
 #include "../GameClear/GameClear.h"
 #include "../GameOver/GameOver.h"
@@ -47,9 +49,7 @@
 #include "../../Common/Collision/Collision.h"
 #include "../../Object/Component/Collider/CartCollider/CartCollider.h"
 #include "../../Common/MouseCursor/MouseCursor.h"
-#include "../../Common/Manager/EffectResManager/EffectResManager.h"
 #include <EffekseerForDXLib.h>
-#include "../../Common/Manager/PlayerStatus/PlayerStatusManager.h"
 #include "../StageClear/StageClear.h"
 
 GameScene::GameScene(void)

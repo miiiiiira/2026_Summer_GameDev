@@ -1,7 +1,7 @@
-#include "../../../../Common/Manager/Audio/AudioManager.h"
+#include "../../../../Manager/Audio/AudioManager.h"
+#include "../../../../Manager/EffectResManager/EffectResManager.h"
 #include "../../Transform/Transform.h"
 #include "Skull.h"
-#include "../../../../Common/Manager/EffectResManager/EffectResManager.h"
 
 Skull::Skull(void)
 {

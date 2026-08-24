@@ -8,7 +8,7 @@
 #include "../../../Common/CameraUtility/CameraUtility.h"
 #include "../../../Application.h"
 #include "../../../Scene/SceneManager.h"
-#include "../../../Common/Manager/Audio/AudioManager.h"
+#include "../../../Manager/Audio/AudioManager.h"
 
 Item::~Item(void)
 {
@@ -514,10 +514,10 @@ void Item::HighLightDraw(void)
 		// 透明度設定したボックスを表示
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
 		DrawBox(
-			pos.x - boxSize.x,
-			pos.y - boxSize.y,
-			pos.x + boxSize.x,
-			pos.y + boxSize.y,
+			static_cast<int>(pos.x - boxSize.x),
+			static_cast<int>(pos.y - boxSize.y),
+			static_cast<int>(pos.x + boxSize.x),
+			static_cast<int>(pos.y + boxSize.y),
 			0xffff00,
 			true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);

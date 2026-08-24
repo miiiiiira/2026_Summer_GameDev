@@ -1,9 +1,8 @@
 #include<DxLib.h>
-#include "Potion.h"
-
-#include "../../../../Common/Manager/Audio/AudioManager.h"
+#include "../../../../Manager/Audio/AudioManager.h"
+#include "../../../../Manager/EffectResManager/EffectResManager.h"
 #include "../../Transform/Transform.h"
-#include "../../../../Common/Manager/EffectResManager/EffectResManager.h"
+#include "Potion.h"
 
 Potion::Potion(void)
 {

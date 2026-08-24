@@ -1,8 +1,8 @@
 #include "OptionScene.h"
 
 #include "../../Application.h"
-#include "../../Common/Manager/Input/KeyConfigUI.h"
-#include "../../Common/Manager/Input/InputManager.h"
+#include "../../Manager/Input/KeyConfigUI.h"
+#include "../../Manager/Input/InputManager.h"
 #include "../../Scene/SceneManager.h"
 
 OptionScene::OptionScene(void)

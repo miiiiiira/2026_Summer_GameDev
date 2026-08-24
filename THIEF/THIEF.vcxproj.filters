@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Src\Common\Manager\Audio\AudioManager.cpp">
+    <ClCompile Include="Src\Manager\Audio\AudioManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Common\Manager\Audio\SoundTable.cpp">
+    <ClCompile Include="Src\Manager\Audio\SoundTable.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Common\Collision\Collision.cpp">
@@ -42,7 +42,7 @@
     <ClCompile Include="Src\Common\Transform\Quaternion.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Common\Manager\Input\InputManager.cpp">
+    <ClCompile Include="Src\Manager\Input\InputManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\Common\AnimationController.cpp">
@@ -75,7 +75,7 @@
     <ClCompile Include="Src\Scene\SceneManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Common\Manager\System\SystemManager.cpp">
+    <ClCompile Include="Src\Manager\System\SystemManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application.cpp">
@@ -140,7 +140,7 @@
     <ClCompile Include="Src\Object\Actor\Enemy\Yeti\Yeti.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Common\Manager\Score\ScoreManager.cpp">
+    <ClCompile Include="Src\Manager\Score\ScoreManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Common\CameraUtility\CameraUtility.cpp">
@@ -161,7 +161,7 @@
     <ClCompile Include="Src\Scene\Shop\ShopScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Common\Manager\PlayerStatus\PlayerStatusManager.cpp">
+    <ClCompile Include="Src\Manager\PlayerStatus\PlayerStatusManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\Component\PlayerController\Upgrade\UpgradeManager.cpp">
@@ -227,7 +227,7 @@
     <ClCompile Include="Src\Object\Component\Wisp\LightInfo.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Common\Manager\Light\LightManager.cpp">
+    <ClCompile Include="Src\Manager\Light\LightManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\Component\PlayerController\Map\MapInfo.cpp">
@@ -242,13 +242,13 @@
     <ClCompile Include="Src\Common\MouseCursor\MouseCursor.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Common\Manager\Input\InputIO.cpp">
+    <ClCompile Include="Src\Manager\Input\InputIO.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Common\Manager\Input\KeyConfig.cpp">
+    <ClCompile Include="Src\Manager\Input\KeyConfig.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Common\Manager\Input\KeyConfigUI.cpp">
+    <ClCompile Include="Src\Manager\Input\KeyConfigUI.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Scene\Option\OptionScene.cpp">
@@ -260,13 +260,13 @@
     <ClCompile Include="Src\Scene\LightSelectScene\LightSelectInfo.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Common\Manager\PlayerActionCounter\PlayerActionCounter.cpp">
+    <ClCompile Include="Src\Manager\PlayerActionCounter\PlayerActionCounter.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\Component\Collider\TutorialWallCollider\TutorialWallCollider.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Common\Manager\EffectResManager\EffectResManager.cpp">
+    <ClCompile Include="Src\Manager\EffectResManager\EffectResManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\Actor\Wall\TutorialWall.cpp">
@@ -283,13 +283,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Src\Common\Manager\Audio\AudioManager.h">
+    <ClInclude Include="Src\Manager\Audio\AudioManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Common\Manager\Audio\SoundInfo.h">
+    <ClInclude Include="Src\Manager\Audio\SoundInfo.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Common\Manager\Audio\SoundTable.h">
+    <ClInclude Include="Src\Manager\Audio\SoundTable.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Common\Collision\Collision.h">
@@ -316,7 +316,7 @@
     <ClInclude Include="Src\Common\Transform\Quaternion.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Common\Manager\Input\InputManager.h">
+    <ClInclude Include="Src\Manager\Input\InputManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\Common\AnimationController.h">
@@ -349,7 +349,7 @@
     <ClInclude Include="Src\Scene\SceneManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Common\Manager\System\SystemManager.h">
+    <ClInclude Include="Src\Manager\System\SystemManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Application.h">
@@ -447,7 +447,7 @@
     <ClInclude Include="Src\Object\Actor\Enemy\Yeti\Yeti.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Common\Manager\Score\ScoreManager.h">
+    <ClInclude Include="Src\Manager\Score\ScoreManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Common\CameraUtility\CameraUtility.h">
@@ -471,7 +471,7 @@
     <ClInclude Include="Src\Scene\Shop\ShopScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Common\Manager\PlayerStatus\PlayerStatusManager.h">
+    <ClInclude Include="Src\Manager\PlayerStatus\PlayerStatusManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\Component\PlayerController\Upgrade\UpgradeManager.h">
@@ -534,7 +534,7 @@
     <ClInclude Include="Src\Object\Component\Wisp\LightInfo.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Common\Manager\Light\LightManager.h">
+    <ClInclude Include="Src\Manager\Light\LightManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\Component\PlayerController\Map\MapInfo.h">
@@ -552,16 +552,16 @@
     <ClInclude Include="Src\Common\MouseCursor\MouseCursor.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Common\Manager\Input\InputInfo.h">
+    <ClInclude Include="Src\Manager\Input\InputInfo.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Common\Manager\Input\InputIO.h">
+    <ClInclude Include="Src\Manager\Input\InputIO.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Common\Manager\Input\KeyConfig.h">
+    <ClInclude Include="Src\Manager\Input\KeyConfig.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Common\Manager\Input\KeyConfigUI.h">
+    <ClInclude Include="Src\Manager\Input\KeyConfigUI.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Scene\Option\OptionScene.h">
@@ -573,7 +573,7 @@
     <ClInclude Include="Src\Scene\LightSelectScene\LightSelectInfo.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Common\Manager\PlayerActionCounter\PlayerActionCounter.h">
+    <ClInclude Include="Src\Manager\PlayerActionCounter\PlayerActionCounter.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Scene\SceneTag.h">
@@ -582,7 +582,7 @@
     <ClInclude Include="Src\Object\Component\Collider\TutorialWallCollider\TutorialWallCollider.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Common\Manager\EffectResManager\EffectResManager.h">
+    <ClInclude Include="Src\Manager\EffectResManager\EffectResManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\Actor\Wall\TutorialWall.h">

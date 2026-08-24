@@ -6,7 +6,7 @@
 #include <string>
 
 #include "InputInfo.h"
-#include "../../Math/Vector2.h"
+#include "../../Common/Math/Vector2.h"
 
 class InputManager
 {

@@ -4,10 +4,10 @@
 #include <EffekseerForDXLib.h>
 
 #include "Common/System/FpsControl.h"
-#include "Common/Manager/Input/InputManager.h"
-#include "Common/Manager/Input/InputIO.h"
+#include "Manager/Input/InputManager.h"
+#include "Manager/Input/InputIO.h"
+#include "Manager/Audio/AudioManager.h"
 #include "Scene/SceneManager.h"
-#include "Common/Manager/Audio/AudioManager.h"
 
 Application* Application::instance_ = nullptr;
 
