@@ -12,7 +12,7 @@
 LightSelectScene::LightSelectScene(void)
 {
 	// マウスの表示
-	MouseCursor::GetInstance().SetMouseDraw(true);
+	MouseCursor::GetInstance()->SetMouseDraw(true);
 }
 
 LightSelectScene::~LightSelectScene(void)
@@ -276,7 +276,7 @@ void LightSelectScene::ConfirmUpgrade(void)
 		AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_2);
 
 		// ライトの設定をする
-		LightManager::GetInstance().SetLightType(lightType_);
+		LightManager::GetInstance()->SetLightType(lightType_);
 
 		// ゲームシーンへ移行
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameScene>(),GAME);

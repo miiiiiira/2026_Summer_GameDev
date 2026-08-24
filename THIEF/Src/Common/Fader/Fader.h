@@ -2,12 +2,7 @@
 
 class Fader
 {
-
 public:
-
-	// フェードが進む速さ
-	static constexpr float SPEED_ALPHA = 3;
-
 	// 状態
 	enum class STATE
 	{
@@ -43,11 +38,17 @@ public:
 
 private:
 
+	// 最大アルファ値
+	static constexpr int ALPHA_MAX = 255;
+	// フェードが進む速さ
+	static constexpr int SPEED_ALPHA = 3;
+
 	// シャッター画像のサイズ
 	static constexpr int SHUTTER_SIZE_WID = 1024;
 	static constexpr int SHUTTER_SIZE_HIG = 320;
 	static constexpr int SHUTTER_IMG_NUM = 2;
 
+private:
 	// コンストラクタ・デストラクタ
 	Fader(void);
 	~Fader(void);
@@ -65,7 +66,7 @@ private:
 	unsigned int color_;
 
 	// 透明度
-	float alpha_;
+	int alpha_;
 
 	// シャッター画像
 	int shutterImg_[SHUTTER_IMG_NUM];

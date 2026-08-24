@@ -7,6 +7,7 @@ Fader* Fader::instance_ = nullptr;
 
 Fader::Fader(void)
 {
+	// シャッター画像読み込み
 	for (int i = 0; i < SHUTTER_IMG_NUM; ++i)
 	{
 		shutterImg_[i] = LoadGraph("Data/Image/Fade/shutter.png");
@@ -15,6 +16,7 @@ Fader::Fader(void)
 
 Fader::~Fader(void)
 {
+	// シャッター画像解放
 	for (int i = 0; i < SHUTTER_IMG_NUM; ++i)
 	{
 		DeleteGraph( shutterImg_[i]);
@@ -25,38 +27,50 @@ void Fader::Init(void)
 {
 	state_ = STATE::NONE;
 	type_ = TYPE::NORMAL;
-	alpha_ = 0.0f;
+	alpha_ = 0;
 	color_ = 0x000000;
 }
 
 void Fader::Update(void)
 {
-
 	switch (state_)
 	{
 	case STATE::NONE:
 		return;
 
 	case STATE::FADE_OUT:
+
+		// アルファ値を増やす
 		alpha_ += SPEED_ALPHA;
-		if (alpha_ > 255)
+
+		// 最大アルファ値に達したら
+		if (alpha_ > ALPHA_MAX)
 		{
 			// フェード終了
 			state_ = STATE::END;
 		}
+
 		break;
 
 	case STATE::FADE_IN:
+
+		// アルファ値を減らす
 		alpha_ -= SPEED_ALPHA;
+
+		// 最低アルファ値に達したら
 		if (alpha_ < 0)
 		{
 			// フェード終了
 			state_ = STATE::END;
 		}
+
 		break;
 
 	case STATE::END:
+
+		// 初期化
 		Init();
+
 		break;
 	default:
 		return;
@@ -86,13 +100,18 @@ void Fader::Draw(void)
 	switch (type_)
 	{
 	case Fader::TYPE::NORMAL:
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(alpha_));
+
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha_);
+
+		// 画面全体に指定された色のボックスを描画
 		DrawBox(
 			0, 0,
 			Application::SCREEN_SIZE_X,
 			Application::SCREEN_SIZE_Y,
 			color_, true);
+
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
 		break;
 	case Fader::TYPE::SHUTTER:
 	{
@@ -106,12 +125,15 @@ void Fader::Draw(void)
 	}
 		break;
 	case Fader::TYPE::WIPE:
+
 		w = static_cast<int>(screenX * 0.5f * rate);
 
 		DrawBox(0, 0, w, screenY, color_, true);
 		DrawBox(screenX - w, 0, screenX, screenY, color_, true);
+
 		break;
 	case Fader::TYPE::CROSS:
+
 		h = static_cast<int>(screenY * 0.5f * rate);
 		w =	static_cast<int>(screenX * 0.5f * rate);
 
@@ -119,6 +141,7 @@ void Fader::Draw(void)
 		DrawBox(0, screenY - h, screenX, screenY, color_, true);
 		DrawBox(0, 0, w, screenY, color_, true);
 		DrawBox(screenX - w, 0, screenX, screenY, color_, true);
+
 		break;
 	default:
 		break;
@@ -140,7 +163,7 @@ void Fader::SetFade(STATE state, TYPE type, unsigned int color)
 	case Fader::STATE::NONE:
 		break;
 	case Fader::STATE::FADE_IN:
-		alpha_ = 255;
+		alpha_ = ALPHA_MAX;
 		color_ = color;
 		break;
 	case Fader::STATE::FADE_OUT:

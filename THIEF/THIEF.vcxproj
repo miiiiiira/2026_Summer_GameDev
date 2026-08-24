@@ -81,7 +81,6 @@
     <ClCompile Include="Src\Manager\Audio\AudioManager.cpp" />
     <ClCompile Include="Src\Manager\Audio\SoundTable.cpp" />
     <ClCompile Include="Src\Common\Collision\Collision.cpp" />
-    <ClCompile Include="Src\Common\Draw\Draw.cpp" />
     <ClCompile Include="Src\Common\Fader\Fader.cpp" />
     <ClCompile Include="Src\Common\Math\Math.cpp" />
     <ClCompile Include="Src\Common\System\FpsControl.cpp" />
@@ -187,7 +186,6 @@
     <ClInclude Include="Src\Manager\Audio\SoundInfo.h" />
     <ClInclude Include="Src\Manager\Audio\SoundTable.h" />
     <ClInclude Include="Src\Common\Collision\Collision.h" />
-    <ClInclude Include="Src\Common\Draw\Draw.h" />
     <ClInclude Include="Src\Common\Fader\Fader.h" />
     <ClInclude Include="Src\Common\Math\Math.h" />
     <ClInclude Include="Src\Common\Math\Vector2.h" />

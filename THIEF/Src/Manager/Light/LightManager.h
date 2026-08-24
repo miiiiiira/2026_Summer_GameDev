@@ -5,20 +5,19 @@
 class LightManager
 {
 public:
-	// 明示的にインステンスを生成する
-	static void CreateInstance(void);
+	// シングルトン（生成・取得・削除）
+	static void CreateInstance(void) { if (instance_ == nullptr) { instance_ = new LightManager(); } }
+	static LightManager* GetInstance(void) { return instance_; }
+	static void DeleteInstance(void) { if (instance_ != nullptr) { delete instance_; instance_ = nullptr; } }
 
-	// 静的インスタンスの取得
-	static LightManager& GetInstance(void);
+	LightManager();	// コンストラクタ
 
-	// 解放処理
-	void Destroy(void);
+	void Destroy(void);	// 解放
+	
+	void ResetLight(void);	// デフォルトカラーにする
 
-	//リセット
-	void ResetLight(void);
-
-	LIGHT_TYPE GetLightType(void);
-	void SetLightType(LIGHT_TYPE lightType);
+	LIGHT_TYPE GetLightType(void);	// ライトのタイプを渡す
+	void SetLightType(LIGHT_TYPE lightType);	// ライトのタイプを保持させる
 
 private:
 
@@ -28,12 +27,10 @@ private:
 	// 現在のライトタイプ
 	LIGHT_TYPE nowLightType_;
 
-	// デフォルトコンストラクタをprivateにして、
-	// 外部から生成できない様にする
-	LightManager(void);
-	// コピーコンストラクタも同様
-	LightManager(const LightManager& manager) = default;
-	// デストラクタも同様
-	~LightManager(void) = default;
+	// コピー・ムーブ操作を禁止
+	LightManager(const LightManager&) = delete;
+	LightManager& operator=(const LightManager&) = delete;
+	LightManager(LightManager&&) = delete;
+	LightManager& operator=(LightManager&&) = delete;
 };
 

@@ -15,7 +15,7 @@ GameClear::GameClear(void)
 	skipHandle_ = -1;
 	skipGauge_ = -1;
 	// マウスの表示する
-	MouseCursor::GetInstance().SetMouseDraw(true);
+	MouseCursor::GetInstance()->SetMouseDraw(true);
 	waitTimer_ = 0;
 	scrollY_ = 0;
 	skipTimer_ = 0;

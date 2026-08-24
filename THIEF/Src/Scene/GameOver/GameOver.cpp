@@ -19,7 +19,7 @@ GameOver::GameOver(void)
 	crackHandle_ = -1;
 	step_ = 0;
 	// マウスの表示する
-	MouseCursor::GetInstance().SetMouseDraw(true);
+	MouseCursor::GetInstance()->SetMouseDraw(true);
 	currentType_ = NONE;
 }
 

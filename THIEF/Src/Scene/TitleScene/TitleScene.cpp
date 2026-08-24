@@ -21,7 +21,7 @@ TitleScene::TitleScene(void)
 	isPlaySoundSE_ = false;
 	confirm_ = nullptr;
 	// マウスの表示する
-	MouseCursor::GetInstance().SetMouseDraw(true);
+	MouseCursor::GetInstance()->SetMouseDraw(true);
 }
 
 TitleScene::~TitleScene(void)

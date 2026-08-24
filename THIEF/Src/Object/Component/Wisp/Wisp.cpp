@@ -42,7 +42,7 @@ Wisp::Wisp(void)
 		textures_.emplace(table.first, LoadGraph(table.second.path.c_str()));
 	}
 
-	lightType_ = LightManager::GetInstance().GetLightType();
+	lightType_ = LightManager::GetInstance()->GetLightType();
 }
 
 Wisp::~Wisp(void)
@@ -116,43 +116,43 @@ void Wisp::Update(void)
 		switch (lightType_)
 		{
 		case COLOR_0:
-			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_1);
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_1);
 			break;
 		case COLOR_1:
-			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_2);
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_2);
 			break;
 		case COLOR_2:
-			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_3);
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_3);
 			break;
 		case COLOR_3:
-			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_4);
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_4);
 			break;
 		case COLOR_4:
-			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_5);
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_5);
 			break;
 		case COLOR_5:
-			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_6);
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_6);
 			break;
 		case COLOR_6:
-			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_7);
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_7);
 			break;
 		case COLOR_7:
-			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_8);
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_8);
 			break;
 		case COLOR_8:
-			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_9);
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_9);
 			break;
 		case COLOR_9:
-			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_10);
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_10);
 			break;
 		case COLOR_10:
-			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_11);
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_11);
 			break;
 		case COLOR_11:
-			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_12);
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_12);
 			break;
 		case COLOR_12:
-			LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_0);
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_0);
 			break;
 		default:
 			break;
@@ -162,9 +162,9 @@ void Wisp::Update(void)
 #endif // _DEBUG
 
 	// ƒ‰ƒCƒg‚ÌÝ’è‚É•ÏX‚ª‚ ‚Á‚½‚çÝ’è‚µ’¼‚µ
-	if (LightManager::GetInstance().GetLightType() != lightType_)
+	if (LightManager::GetInstance()->GetLightType() != lightType_)
 	{
-		ChangeLightTexture(LightManager::GetInstance().GetLightType());
+		ChangeLightTexture(LightManager::GetInstance()->GetLightType());
 	}
 }
 

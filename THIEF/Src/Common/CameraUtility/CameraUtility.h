@@ -8,6 +8,7 @@ namespace CameraUtility
 {
 	namespace
 	{
+		// カメラポインタ
 		Camera* camera_ = nullptr;
 	}
 

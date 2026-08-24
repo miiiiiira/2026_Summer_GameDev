@@ -63,7 +63,7 @@
 TutorialScene::TutorialScene(void)
 {
 	// マウスの表示を消す
-	MouseCursor::GetInstance().SetMouseDraw(false);
+	MouseCursor::GetInstance()->SetMouseDraw(false);
 	tutorialWall_ = nullptr;
 
 	// 状態の登録
@@ -117,7 +117,7 @@ void TutorialScene::Init(void)
 	AudioManager::GetInstance()->PlayBGM(SoundID::BGM_GAME_1);
 
 	// ライトをデフォルト色に設定する
-	LightManager::GetInstance().SetLightType(LIGHT_TYPE::COLOR_0);
+	LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_0);
 }
 
 void TutorialScene::Load(void)

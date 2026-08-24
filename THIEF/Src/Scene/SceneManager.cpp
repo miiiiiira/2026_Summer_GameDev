@@ -57,8 +57,8 @@ void SceneManager::Init(void)
 
 	// マウスカーソルクラスを生成
 	MouseCursor::CreateInstance();
-	MouseCursor::GetInstance().Load();
-	MouseCursor::GetInstance().Init();
+	MouseCursor::GetInstance()->Load();
+	MouseCursor::GetInstance()->Init();
 
 	// プレイヤー行動のカウンタクラス生成
 	PlayerActionCounter::CreateInstance();
@@ -165,7 +165,7 @@ void SceneManager::Update(void)
 			// 現在のシーンの更新
 			scenes_.back()->Update();
 			// マウスカーソルの座標更新処理
-			MouseCursor::GetInstance().Update();
+			MouseCursor::GetInstance()->Update();
 		}
 	}
 
@@ -259,7 +259,7 @@ void SceneManager::Draw(void)
 		}
 
 		// マウスカーソルの描画
-		MouseCursor::GetInstance().Draw();
+		MouseCursor::GetInstance()->Draw();
 	}
 
 	// フェード描画
@@ -277,8 +277,8 @@ void SceneManager::Delete(void)
 	// システム管理解放
 	SystemManager::GetInstance().Destroy();
 
-	// システム管理解放
-	LightManager::GetInstance().Destroy();
+	// ライトマネージャー管理解放
+	LightManager::GetInstance()->Destroy();
 
 	// 金額管理解放
 	ScoreManager::GetInstance().Destroy();
@@ -293,7 +293,7 @@ void SceneManager::Delete(void)
 	Fader::GetInstance()->DeleteInstance();
 
 	// マウスカーソル解放
-	MouseCursor::GetInstance().Destroy();
+	MouseCursor::GetInstance()->Destroy();
 
 	// プレイヤー行動カウンタクラス破棄
 	PlayerActionCounter::DeleteInstance();

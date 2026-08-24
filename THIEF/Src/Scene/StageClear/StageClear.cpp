@@ -16,7 +16,7 @@ StageClear::StageClear(void)
 {
 	handle_ = -1;
 	// マウスの表示する
-	MouseCursor::GetInstance().SetMouseDraw(true);
+	MouseCursor::GetInstance()->SetMouseDraw(true);
 	currentType_ = NONE;
 }
 

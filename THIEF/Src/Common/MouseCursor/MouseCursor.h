@@ -9,25 +9,20 @@ public:
 	static constexpr int MOUSE_IMG_SIZE_WID = 30;
 	static constexpr int MOUSE_IMG_SIZE_HIG = 40;
 
-	// 明示的にインステンスを生成する
-	static void CreateInstance(void);
+public:
 
-	// 静的インスタンスの取得
-	static MouseCursor& GetInstance(void);
+	//シングルトン
+	static void  CreateInstance(void) { if (instance_ == nullptr) { instance_ = new MouseCursor(); } }
+	static MouseCursor* GetInstance(void) { return instance_; }
+	static void DeleteInstance(void) { if (instance_ != nullptr) { delete instance_; } }
 
-	// 読み込み処理
-	void Load(void);
-	// 初期化処理
-	void Init(void);
-	// 更新処理
-	void Update(void);
-	// 描画処理
-	void Draw(void);
-	// 解放処理
-	void Destroy(void);
-
-	// マウスの描画フラグを設定
-	void SetMouseDraw(bool flg);
+	void Load(void);	// 読み込み
+	void Init(void);	// 初期化
+	void Update(void);	// 更新
+	void Draw(void);	// 描画
+	void Destroy(void);	// 解放
+	
+	void SetMouseDraw(bool flg);	// マウスの描画フラグを設定
 
 private:
 
@@ -35,7 +30,7 @@ private:
 	int mouseImg_ = -1;
 
 	// マウス表示フラグ　true / 表示,false / 非表示
-	bool mouseDrawFlg_;
+	bool mouseDrawFlg_ = true;
 
 	// マウス座標
 	Vector2 mousePos_;

@@ -55,7 +55,7 @@
 GameScene::GameScene(void)
 {
 	// マウスの表示を消す
-	MouseCursor::GetInstance().SetMouseDraw(false);
+	MouseCursor::GetInstance()->SetMouseDraw(false);
 }
 
 GameScene::~GameScene(void)

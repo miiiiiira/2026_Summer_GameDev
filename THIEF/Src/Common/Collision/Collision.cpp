@@ -1,10 +1,11 @@
 #include <DxLib.h>
 #include <algorithm>
 
-#include "Collision.h"
 #include "../Math/Math.h"
 #include "../../Manager/Input/InputManager.h"
 #include "../MouseCursor/MouseCursor.h"
+
+#include "Collision.h"
 
 namespace Collision
 {

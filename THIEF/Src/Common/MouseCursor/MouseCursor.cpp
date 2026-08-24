@@ -4,19 +4,6 @@
 
 MouseCursor* MouseCursor::instance_ = nullptr;
 
-void MouseCursor::CreateInstance(void)
-{
-	if (instance_ == nullptr)
-	{
-		instance_ = new MouseCursor();
-	}
-}
-
-MouseCursor& MouseCursor::GetInstance(void)
-{
-	return *instance_;
-}
-
 MouseCursor::MouseCursor(void)
 {
 }
@@ -51,6 +38,7 @@ void MouseCursor::Update(void)
 	// 描画フラグが立っていなかったら処理を行わない
 	if (!mouseDrawFlg_)return;
 
+	// マウスの場所を取得
 	mousePos_ = InputManager::GetInstance()->GetMousePos();
 }
 
@@ -79,10 +67,11 @@ void MouseCursor::Draw(void)
 
 void MouseCursor::Destroy(void)
 {
+	// 画像解放
 	DeleteGraph(mouseImg_);
 
-	delete instance_;
-	instance_ = nullptr;
+	// インスタンス解放
+	DeleteInstance();
 }
 
 void MouseCursor::SetMouseDraw(bool flg)

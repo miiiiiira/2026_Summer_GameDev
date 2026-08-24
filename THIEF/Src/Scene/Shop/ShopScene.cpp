@@ -12,7 +12,7 @@
 ShopScene::ShopScene(void)
 {
 	// マウスを表示させる
-	MouseCursor::GetInstance().SetMouseDraw(true);
+	MouseCursor::GetInstance()->SetMouseDraw(true);
 }
 
 ShopScene::~ShopScene(void)
