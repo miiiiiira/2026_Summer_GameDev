@@ -14,7 +14,6 @@ public:
 	virtual bool CheckCollision(Collider* other) = 0;
 
 	virtual void Init() override;		// 初期化
-	virtual void Update() override;		// 更新
 
 	// 所有オブジェクト取得
 	Object* GetOwner() { return owner_; }

@@ -37,8 +37,13 @@ void Crosshair::Draw2D(void)
 	if (img[type_] == -1)return;
 
 	// 画面の中心位置にクロスヘアを描画
-	DrawRotaGraph(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2,
-		1.0, 0.0, img[type_] ,true);
+	DrawRotaGraph(
+		Application::SCREEN_SIZE_X / 2, 
+		Application::SCREEN_SIZE_Y / 2,
+		1.0,
+		0.0, 
+		img[type_] ,
+		true);
 }
 
 void Crosshair::ChangeCrosshair(const CROSSHAIR_TYPE type)

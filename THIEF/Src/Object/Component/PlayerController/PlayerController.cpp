@@ -4,7 +4,6 @@
 #include "../../Object.h"
 
 #include "../../../Manager/Input/InputManager.h"
-#include "../../../Manager/System/SystemManager.h"
 #include "../../../Manager/PlayerStatus/PlayerStatusManager.h"
 #include "../../../Manager/PlayerActionCounter/PlayerActionCounter.h"
 #include "../../../Manager/Audio/AudioManager.h"

@@ -3,31 +3,17 @@
 class PlayerActionCounter
 {
 public:
+
 	// シングルトン（生成・取得・削除）
 	static void CreateInstance(void) { if (instance_ == nullptr) { instance_ = new PlayerActionCounter(); } }
 	static PlayerActionCounter* GetInstance(void) { return instance_; }
 	static void DeleteInstance(void) { if (instance_ != nullptr) { delete instance_; instance_ = nullptr; } }
 
-private:
-
-	PlayerActionCounter();		// コンストラクタ
-	~PlayerActionCounter();		// デストラクタ
-
-private:
-
-	// 静的インスタンス
-	static PlayerActionCounter* instance_;
-
-	// コピー・ムーブ操作を禁止
-	PlayerActionCounter(const PlayerActionCounter&) = delete;
-	PlayerActionCounter& operator=(const PlayerActionCounter&) = delete;
-	PlayerActionCounter(PlayerActionCounter&&) = delete;
-	PlayerActionCounter& operator=(PlayerActionCounter&&) = delete;
-
 public:
 
-	// 初期化処理
-	void Init(void);
+	PlayerActionCounter(void);
+
+	void Init(void);	// 初期化
 
 	// 指定されたステートのカウンターを渡す
 	float GetCounter(Tutorial::STATE state) 
@@ -40,6 +26,16 @@ public:
 	// 指定されたステートのカウンターを初期化する
 	void ResetCounter(Tutorial::STATE state) 
 	{ if(Tutorial::STATE::MAX != state) counter_[state] = 0.0f; }
+
+private:
+
+	static PlayerActionCounter* instance_;	// 静的インスタンス
+
+	// コピー・ムーブ操作を禁止
+	PlayerActionCounter(const PlayerActionCounter&) = delete;
+	PlayerActionCounter& operator=(const PlayerActionCounter&) = delete;
+	PlayerActionCounter(PlayerActionCounter&&) = delete;
+	PlayerActionCounter& operator=(PlayerActionCounter&&) = delete;
 
 private:
 

@@ -9,7 +9,6 @@
 #include "../../../../Common/Collision/Collision.h"
 #include "../../../../Manager/PlayerStatus/PlayerStatusManager.h"
 #include "../../../../Application.h"
-#include "../../../../Manager/System/SystemManager.h"
 #include "../../../../Manager/Input/InputManager.h"
 
 void CartCollider::Init(void)
@@ -87,15 +86,15 @@ void CartCollider::CartToPlayerGrabbingCollision(void)
 		VECTOR pos = ConvWorldPosToScreenPos(cartHandlePos);
 		Vector2 screenPos = { pos.x,pos.y };
 		// スクリーン上で掴み可能な範囲
-		Vector2 checkBoxPos = { Application::SCREEN_SIZE_X / 2 - SystemManager::CONTROLLER_GRAB_SCREEN_RANGE_RAD ,
-			Application::SCREEN_SIZE_Y / 2 - SystemManager::CONTROLLER_GRAB_SCREEN_RANGE_RAD };
+		Vector2 checkBoxPos = { Application::SCREEN_SIZE_X / 2 - Crosshair::CONTROLLER_GRAB_SCREEN_RANGE_RAD ,
+			Application::SCREEN_SIZE_Y / 2 - Crosshair::CONTROLLER_GRAB_SCREEN_RANGE_RAD };
 
 		// 掴み可能な範囲に入っている
 		if (Collision::HitPoint2Box(
 			screenPos,
 			checkBoxPos,
-			SystemManager::CONTROLLER_GRAB_SCREEN_RANGE,
-			SystemManager::CONTROLLER_GRAB_SCREEN_RANGE))
+			Crosshair::CONTROLLER_GRAB_SCREEN_RANGE,
+			Crosshair::CONTROLLER_GRAB_SCREEN_RANGE))
 		{
 			// 掴める
 			isGrab = true;

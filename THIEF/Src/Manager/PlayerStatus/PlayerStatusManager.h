@@ -37,7 +37,9 @@ public:
 	static PlayerStatusManager* GetInstance(void) { return instance_; }
 	static void DeleteInstance(void) { if (instance_ != nullptr) { delete instance_; instance_ = nullptr; } }
 
-	PlayerStatusManager();	// コンストラクタ
+public:
+
+	PlayerStatusManager(void);	// コンストラクタ
 	
 	void Destroy(void);	// 解放
 
@@ -57,8 +59,7 @@ public:
 
 private:
 
-	// 静的インスタンス
-	static PlayerStatusManager* instance_;
+	static PlayerStatusManager* instance_;	// 静的インスタンス
 
 	// コピー・ムーブ操作を禁止
 	PlayerStatusManager(const PlayerStatusManager&) = delete;
@@ -68,7 +69,6 @@ private:
 
 private:
 
-	// プレイヤーのステータス
-	Status status_;
+	Status status_;	// プレイヤーのステータス
 };
 

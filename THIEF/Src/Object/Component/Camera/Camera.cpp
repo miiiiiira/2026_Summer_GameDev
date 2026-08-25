@@ -5,7 +5,6 @@
 #include "../../../Common/Math/Math.h"
 #include "../../../Common/Easing/Easing.h"
 #include "../../../Manager/Input/InputManager.h"
-#include "../../../Manager/System/SystemManager.h"
 #include "../../../Scene/SceneManager.h"
 #include "../../../Application.h"
 
@@ -362,8 +361,8 @@ void Camera::RotMouse(bool isLimit)
 	}
 
 	// マウスの移動量からカメラの回転量を更新する
-	transform_->angle_.y += deltaX * SystemManager::GetInstance().GetMouseSensitivity();
-	transform_->angle_.x += deltaY * SystemManager::GetInstance().GetMouseSensitivity();
+	transform_->angle_.y += deltaX * MOUSE_SENSITIVITY;
+	transform_->angle_.x += deltaY * MOUSE_SENSITIVITY;
 
 	// ピッチ角の角度制限（真上や真下を向きすぎないようにする）
 	if (isLimit && transform_->angle_.x > LIMIT_X_DW_RAD)

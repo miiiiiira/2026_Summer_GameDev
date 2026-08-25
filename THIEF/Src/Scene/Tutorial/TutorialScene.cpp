@@ -106,7 +106,7 @@ void TutorialScene::Init(void)
 	PlayerActionCounter::GetInstance()->Init();
 
 	// スコアの初期化
-	ScoreManager::GetInstance().ResetGame();
+	ScoreManager::GetInstance()->ResetGame();
 
 	// オブジェクトマネージャー初期化
 	objectManger_->Init();
@@ -151,7 +151,7 @@ void TutorialScene::LoadEnd(void)
 
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 	// スコアマネージャーに空のベクターを渡す(チュートリアルの場合納品金額が1円になる)
-	ScoreManager::GetInstance().SetItems(stage->GetItems());
+	ScoreManager::GetInstance()->SetItems(stage->GetItems());
 
 	auto map = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player)->GetOwner()->GetComponent<Map>();
 	// マップにアイテムたちを渡す
@@ -178,7 +178,7 @@ void TutorialScene::Update(void)
 	UpdateEffekseer3D();
 
 	// スコアマネージャーの更新
-	ScoreManager::GetInstance().Update();
+	ScoreManager::GetInstance()->Update();
 
 	// 確認項目がクリア判定になっていたら「Good job!」のための時間を取る
 	if (isClearState_)
@@ -200,7 +200,7 @@ void TutorialScene::Update(void)
 	if (currentState_ == Tutorial::MAX)
 	{
 		// トータルスコアを初期化
-		ScoreManager::GetInstance().ResetTotalPrice();
+		ScoreManager::GetInstance()->ResetTotalPrice();
 
 		// ステージ情報などを初期化する
 		SceneManager::GetInstance()->ResetGame();
@@ -230,7 +230,7 @@ void TutorialScene::Draw(void)
 	objectManger_->Draw2D();
 
 	// 納品金額 / 目標金額の描画
-	ScoreManager::GetInstance().Draw();
+	ScoreManager::GetInstance()->Draw();
 
 #ifdef _DEBUG
 #endif //_DEBUG

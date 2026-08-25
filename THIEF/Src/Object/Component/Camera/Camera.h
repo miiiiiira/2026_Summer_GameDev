@@ -9,6 +9,9 @@ class Camera : public Component
 {
 public:
 
+	// マウス感度
+	static constexpr float MOUSE_SENSITIVITY = 0.003f;
+
 	// 追従対象から注視点への相対座標
 	static constexpr VECTOR FOLLOW_TARGET_LOCAL_POS = { 0.0f, 0.0f, 300.0f };
 

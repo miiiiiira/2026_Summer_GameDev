@@ -1,7 +1,6 @@
 #include <algorithm>
 #include "../../../../Manager/Audio/AudioManager.h"
 #include "../../../../Manager/PlayerStatus/PlayerStatusManager.h"
-#include "../../../../Manager/System/SystemManager.h"
 #include "../../../../Manager/Score/ScoreManager.h"
 #include "../../../../Manager/Input/InputManager.h"
 #include "../../../Object.h"
@@ -63,13 +62,13 @@ void ItemCollider::Draw2D(void)
 	// パッド時のみ補正用ボックスデバック表示
 	if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::PAD)
 	{
-		int checkBoxPosX = Application::SCREEN_SIZE_X / 2 - SystemManager::CONTROLLER_GRAB_SCREEN_RANGE_RAD;
-		int checkBoxPosY = Application::SCREEN_SIZE_Y / 2 - SystemManager::CONTROLLER_GRAB_SCREEN_RANGE_RAD;
+		int checkBoxPosX = Application::SCREEN_SIZE_X / 2 - Crosshair::CONTROLLER_GRAB_SCREEN_RANGE_RAD;
+		int checkBoxPosY = Application::SCREEN_SIZE_Y / 2 - Crosshair::CONTROLLER_GRAB_SCREEN_RANGE_RAD;
 		DrawBox(
 			checkBoxPosX,
 			checkBoxPosY,
-			checkBoxPosX + SystemManager::CONTROLLER_GRAB_SCREEN_RANGE,
-			checkBoxPosY + SystemManager::CONTROLLER_GRAB_SCREEN_RANGE,
+			checkBoxPosX + Crosshair::CONTROLLER_GRAB_SCREEN_RANGE,
+			checkBoxPosY + Crosshair::CONTROLLER_GRAB_SCREEN_RANGE,
 			0xff0000, false);
 	}
 
@@ -160,15 +159,15 @@ void ItemCollider::PlayerGrabCollision(void)
 		VECTOR pos = ConvWorldPosToScreenPos(itemPos);
 		Vector2 screenPos = { pos.x,pos.y };
 		// スクリーン上で掴み可能な範囲
-		Vector2 checkBoxPos = { Application::SCREEN_SIZE_X / 2 - SystemManager::CONTROLLER_GRAB_SCREEN_RANGE_RAD ,
-			Application::SCREEN_SIZE_Y / 2 - SystemManager::CONTROLLER_GRAB_SCREEN_RANGE_RAD };
+		Vector2 checkBoxPos = { Application::SCREEN_SIZE_X / 2 - Crosshair::CONTROLLER_GRAB_SCREEN_RANGE_RAD ,
+			Application::SCREEN_SIZE_Y / 2 - Crosshair::CONTROLLER_GRAB_SCREEN_RANGE_RAD };
 
 		// 掴み可能な範囲に入っている
 		if (Collision::HitPoint2Box(
 			screenPos,
 			checkBoxPos,
-			SystemManager::CONTROLLER_GRAB_SCREEN_RANGE,
-			SystemManager::CONTROLLER_GRAB_SCREEN_RANGE))
+			Crosshair::CONTROLLER_GRAB_SCREEN_RANGE,
+			Crosshair::CONTROLLER_GRAB_SCREEN_RANGE))
 		{
 			// 掴める
 			isGrab = true;
@@ -464,7 +463,7 @@ bool ItemCollider::ItemInCartCollision(void)
 		SceneManager::GetInstance()->TutorialCounter(Tutorial::CART);
 
 		// カート内金額にアイテムの金額を加算
-		ScoreManager::GetInstance().AddCartPrice(item_->GetInfo().price_);
+		ScoreManager::GetInstance()->AddCartPrice(item_->GetInfo().price_);
 	}
 	// 当たっていないかつ、カートに入っているフラグが立っていたら
 	else if (!isHit && item_->GetInfo().hasTouchedCart_)
@@ -472,7 +471,7 @@ bool ItemCollider::ItemInCartCollision(void)
 		item_->SetHasTouchedCart(false);
 
 		// カート内金額にアイテムの金額を減算
-		ScoreManager::GetInstance().AddCartPrice(-item_->GetInfo().price_);
+		ScoreManager::GetInstance()->AddCartPrice(-item_->GetInfo().price_);
 	}
 
 	return item_->GetInfo().hasTouchedCart_;

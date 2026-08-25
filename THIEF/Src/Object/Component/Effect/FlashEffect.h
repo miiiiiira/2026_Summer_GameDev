@@ -7,7 +7,6 @@ class FlashEffect :public Component
 public:
 
 	FlashEffect(void);	// コンストラクタ
-	~FlashEffect(void)override;	// デストラクタ
 
 	void Init(void)override;	// 初期化
 	void Update(void)override;	// 更新
@@ -17,7 +16,7 @@ public:
 
 private:
 
-	int alpha_;	// アルファ値
+	int alpha_;				// アルファ値
 	unsigned int color_;	// カラー値
 };
 

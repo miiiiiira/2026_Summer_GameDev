@@ -1,5 +1,4 @@
 #include "ObjectManager.h"
-#include "../Collision/CollisionManager.h"
 #include "../Component/Component.h"
 #include <algorithm>
 
@@ -22,10 +21,6 @@ void ObjectManager::Update(void)
 {
 	for (auto& obj : objects_)
 		obj->Update();
-
-	CollisionManager::Instance().CheckAll();
-
-	CollisionManager::Instance().Clear();
 }
 
 void ObjectManager::PreDraw(void)

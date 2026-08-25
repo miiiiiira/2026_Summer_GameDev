@@ -65,7 +65,7 @@ GameScene::~GameScene(void)
 void GameScene::Init(void)
 {
 	// スコアの初期化
-	ScoreManager::GetInstance().ResetGame();
+	ScoreManager::GetInstance()->ResetGame();
 
 	// オブジェクトマネージャー初期化
 	objectManger_->Init();
@@ -146,7 +146,7 @@ void GameScene::LoadEnd(void)
 
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 	// スコアマネージャーにアイテムたちを渡す
-	ScoreManager::GetInstance().SetItems(stage->GetItems());
+	ScoreManager::GetInstance()->SetItems(stage->GetItems());
 
 	auto map = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player)->GetOwner()->GetComponent<Map>();
 	// マップにアイテムたちを渡す
@@ -184,7 +184,7 @@ void GameScene::Update(void)
 	UpdateEffekseer3D();
 
 	// スコアマネージャーの更新
-	ScoreManager::GetInstance().Update();
+	ScoreManager::GetInstance()->Update();
 
 	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::PAUSE))
 	{
@@ -207,7 +207,7 @@ void GameScene::Update(void)
 	if (SceneManager::GetInstance()->GetIsOver())
 	{
 		// トータルスコアを初期化
-		ScoreManager::GetInstance().ResetTotalPrice();
+		ScoreManager::GetInstance()->ResetTotalPrice();
 		// HP情報のみ初期化(リトライ時に自己強化した項目は残しておきたいため)
 		PlayerStatusManager::GetInstance()->ResetHP();
 		// ゲームオーバーシーンへ
@@ -218,7 +218,7 @@ void GameScene::Update(void)
 	if (SceneManager::GetInstance()->GetIsStageClear())
 	{
 		// 納品した文の金額をショップで使える金額に加算
-		ScoreManager::GetInstance().AddTotalPrice(ScoreManager::GetInstance().GetDeliveryPrice());
+		ScoreManager::GetInstance()->AddTotalPrice(ScoreManager::GetInstance()->GetDeliveryPrice());
 		// ステージクリアシーンへ
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<StageClear>(),STAGE_CLEAR);
 		return;
@@ -243,7 +243,7 @@ void GameScene::Draw(void)
 	objectManger_->Draw2D();
 
 	// 納品金額 / 目標金額の描画
-	ScoreManager::GetInstance().Draw();
+	ScoreManager::GetInstance()->Draw();
 }
 
 void GameScene::Release(void)

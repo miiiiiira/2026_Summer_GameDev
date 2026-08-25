@@ -7,7 +7,6 @@
 #include "../../../../Manager/Score/ScoreManager.h"
 #include "../../../../Manager/Audio/AudioManager.h"
 #include "../../../../Manager/PlayerStatus/PlayerStatusManager.h"
-#include "../../../../Manager/System/SystemManager.h"
 #include "../../../../Manager/Input/InputManager.h"
 #include "../../../../Common/Collision/Collision.h"
 #include "../../Crosshair/Crosshair.h"
@@ -81,7 +80,7 @@ void DeliveryLocationCollider::ItemToDeliveryLocationCollision(void)
 			item->SetHasTouchedDelivery(true);
 
 			// そのアイテム分納品金額に足す
-			ScoreManager::GetInstance().AddDeliveryPrice(item->GetInfo().price_);
+			ScoreManager::GetInstance()->AddDeliveryPrice(item->GetInfo().price_);
 		}
 		// 当たっていないかつ、納品場所に入っているフラグが立っていたら
 		else if (!Collision::HitAABBs(deliveryPos, deliverySize, itemPos, itemSize)
@@ -91,7 +90,7 @@ void DeliveryLocationCollider::ItemToDeliveryLocationCollision(void)
 			item->SetHasTouchedDelivery(false);
 
 			// そのアイテム分納品金額から引く
-			ScoreManager::GetInstance().AddDeliveryPrice(-item->GetInfo().price_);
+			ScoreManager::GetInstance()->AddDeliveryPrice(-item->GetInfo().price_);
 		}
 	}
 
@@ -144,15 +143,15 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 		VECTOR pos = ConvWorldPosToScreenPos(doneSwitchPos);
 		Vector2 screenPos = { pos.x,pos.y };
 		// スクリーン上で掴み可能な範囲
-		Vector2 checkBoxPos = { Application::SCREEN_SIZE_X / 2 - SystemManager::CONTROLLER_GRAB_SCREEN_RANGE_RAD ,
-			Application::SCREEN_SIZE_Y / 2 - SystemManager::CONTROLLER_GRAB_SCREEN_RANGE_RAD };
+		Vector2 checkBoxPos = { Application::SCREEN_SIZE_X / 2 - Crosshair::CONTROLLER_GRAB_SCREEN_RANGE_RAD ,
+			Application::SCREEN_SIZE_Y / 2 - Crosshair::CONTROLLER_GRAB_SCREEN_RANGE_RAD };
 
 		// 掴み可能な範囲に入っている
 		if (Collision::HitPoint2Box(
 			screenPos,
 			checkBoxPos,
-			SystemManager::CONTROLLER_GRAB_SCREEN_RANGE,
-			SystemManager::CONTROLLER_GRAB_SCREEN_RANGE))
+			Crosshair::CONTROLLER_GRAB_SCREEN_RANGE,
+			Crosshair::CONTROLLER_GRAB_SCREEN_RANGE))
 		{
 			// 掴める
 			isGrab = true;
@@ -176,9 +175,9 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 		stage_->TrueIsDoneSwitch();
 
 		// 納品済みの金額を確認
-		int deliveryPrice = ScoreManager::GetInstance().GetDeliveryPrice();
+		int deliveryPrice = ScoreManager::GetInstance()->GetDeliveryPrice();
 		// 目標金額を確認
-		int targetPrice = ScoreManager::GetInstance().GetTargetPrice();
+		int targetPrice = ScoreManager::GetInstance()->GetTargetPrice();
 
 		// 目標金額を達成していたら
 		if (deliveryPrice >= targetPrice)
@@ -222,9 +221,9 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 void DeliveryLocationCollider::DoneSwitchToPlayerCollision(void)
 {
 	// 納品済みの金額を確認
-	int deliveryPrice = ScoreManager::GetInstance().GetDeliveryPrice();
+	int deliveryPrice = ScoreManager::GetInstance()->GetDeliveryPrice();
 	// 目標金額を確認
-	int targetPrice = ScoreManager::GetInstance().GetTargetPrice();
+	int targetPrice = ScoreManager::GetInstance()->GetTargetPrice();
 
 	// 目標金額を達成していなかったら
 	if (deliveryPrice < targetPrice)

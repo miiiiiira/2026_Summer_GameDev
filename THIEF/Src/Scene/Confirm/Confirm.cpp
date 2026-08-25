@@ -4,7 +4,6 @@
 
 #include "../../Manager/Input/InputManager.h"
 #include "../../Manager/Audio/AudioManager.h"
-#include "../../Manager/System/SystemManager.h"
 #include "../SceneManager.h"
 #include "../../Common/Collision/Collision.h"
 #include "../MainMenu/MainMenu.h"

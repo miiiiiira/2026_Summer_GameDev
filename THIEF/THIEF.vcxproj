@@ -66,7 +66,6 @@
     <ClCompile Include="Src\Object\Actor\Enemy\EnemyBase.cpp" />
     <ClCompile Include="Src\Object\Component\Item\Goblet\Goblet.cpp" />
     <ClCompile Include="Src\Object\Component\Wisp\Wisp.cpp" />
-    <ClCompile Include="Src\Object\Collision\CollisionManager.cpp" />
     <ClCompile Include="Src\Object\Component\Animation\Animation.cpp" />
     <ClCompile Include="Src\Object\Component\Camera\Camera.cpp" />
     <ClCompile Include="Src\Object\Component\Collider\Collider.cpp" />
@@ -99,7 +98,6 @@
     <ClCompile Include="Src\Scene\SceneBase.cpp" />
     <ClCompile Include="Src\Scene\SceneManager.cpp" />
     <ClCompile Include="Src\Scene\TitleScene\TitleScene.cpp" />
-    <ClCompile Include="Src\Manager\System\SystemManager.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\Yeti\Yeti.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\Weapon\WeaponBase.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\Weapon\WeaponPunch.cpp" />
@@ -160,7 +158,6 @@
     <ClInclude Include="Src\Object\Actor\Enemy\EnemyBase.h" />
     <ClInclude Include="Src\Object\Component\Item\Goblet\Goblet.h" />
     <ClInclude Include="Src\Object\Component\Wisp\Wisp.h" />
-    <ClInclude Include="Src\Object\Collision\CollisionManager.h" />
     <ClInclude Include="Src\Object\Component\Animation\Animation.h" />
     <ClInclude Include="Src\Object\Component\Camera\Camera.h" />
     <ClInclude Include="Src\Object\Component\Collider\2DCollider\CircleCollider.h" />
@@ -205,7 +202,6 @@
     <ClInclude Include="Src\Scene\SceneBase.h" />
     <ClInclude Include="Src\Scene\SceneManager.h" />
     <ClInclude Include="Src\Scene\TitleScene\TitleScene.h" />
-    <ClInclude Include="Src\Manager\System\SystemManager.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\Yeti\Yeti.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\Weapon\WeaponBase.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\Weapon\WeaponPunch.h" />

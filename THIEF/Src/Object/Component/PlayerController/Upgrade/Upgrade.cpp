@@ -7,7 +7,6 @@
 #include "../../../../Application.h"
 #include "../../../../Common/Collision/Collision.h"
 #include "../../../../Manager/Audio/AudioManager.h"
-#include "../../../../Manager/System/SystemManager.h"
 #include "../../../../Manager/Input/InputManager.h"
 #include "../../../../Manager/Score/ScoreManager.h"
 #include "../../../../Common/FrameRenderer/FrameRenderer.h"
@@ -199,7 +198,7 @@ void Upgrade::Draw2D(void)
 	DrawGraphF(END_BUTTON_POS_X, END_BUTTON_POS_Y, endButtonImg_, true);
 
 	// 持っている金額
-	int price = ScoreManager::GetInstance().GetTotalPrice();
+	int price = ScoreManager::GetInstance()->GetTotalPrice();
 	int strWidth = GetDrawFormatStringWidthToHandle(font, "%d", price);
 	DrawFormatStringToHandle((Application::SCREEN_SIZE_X - strWidth) / 2, 50, 0xffffff, font,
 		"%d", price);
@@ -521,7 +520,7 @@ void Upgrade::ConfirmUpgrade(void)
 	if (!selectUpgrades_[upgradeNum_].second)return;
 
 	// お金が足りているなら
-	if (ScoreManager::GetInstance().GetTotalPrice() >= selectUpgrades_[upgradeNum_].first.price)
+	if (ScoreManager::GetInstance()->GetTotalPrice() >= selectUpgrades_[upgradeNum_].first.price)
 	{
 		// 決定したアップグレードの種類を保存
 		finalizeUpgrade_.type = selectUpgrades_[upgradeNum_].first.type;
@@ -543,7 +542,7 @@ void Upgrade::ConfirmUpgrade(void)
 void Upgrade::ApplyUpgrade(void)
 {
 	// 本当に買うならお金を減らす
-	ScoreManager::GetInstance().SubTotalPrice(finalizeUpgrade_.price);
+	ScoreManager::GetInstance()->SubTotalPrice(finalizeUpgrade_.price);
 	// 買われたことにする
 	selectUpgrades_[upgradeNum_].second = false;
 

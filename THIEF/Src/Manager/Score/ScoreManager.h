@@ -7,6 +7,41 @@ class Item;
 class ScoreManager
 {
 public:
+
+	// シングルトン（生成・取得・削除）
+	static void CreateInstance(void) { if (instance_ == nullptr) { instance_ = new ScoreManager(); } }
+	static ScoreManager* GetInstance(void) { return instance_; }
+	static void DeleteInstance(void) { if (instance_ != nullptr) { delete instance_; instance_ = nullptr; } }
+
+public:
+
+	ScoreManager(void);	// コンストラクタ
+
+	void Update(void);	// 更新
+	void Draw(void);	// 描画
+	void Destroy(void);	// 解放
+
+	void ResetGame(void);	//	次ステージ用のリセット納品金額など
+
+	void ResetTotalPrice(void);	// トータル金額をリセット
+	
+	void SetItems(std::vector<Item*> items);	// アイテム設定
+
+	void AddCartPrice(const int price) { cartPrice_ += price; }	// カート内金額に加算
+	const int GetCartPrice(void) const { return cartPrice_; }	// カート内を返す
+
+	void AddDeliveryPrice(const int price) { deliveryPrice_ += price; }	// 納品金額に加算
+	const int GetDeliveryPrice(void) const { return deliveryPrice_; }	// 納品金額を返す
+
+	
+	void SetTargetPrice(const int targetPrice) { targetPrice_ = targetPrice; }	// 指定の目標金額を設定
+	const int GetTargetPrice(void) const { return targetPrice_; }				// 指定の目標金額を返す
+	
+	void AddTotalPrice(const int deliveryPrice) { totalPrice_ += deliveryPrice; }	// ゲームクリア後のショップで使える金額に加算
+	void SubTotalPrice(const int deliveryPrice) { totalPrice_ -= deliveryPrice; }	// ゲームクリア後のショップで使える金額を減算
+	const int GetTotalPrice(void) const { return totalPrice_; }						// ゲームクリア後のショップで使える金額を返す
+
+private:
 	// 目標金額をアイテム全体の金額の50%とする
 	static constexpr float TARGET_PRICE_RATIO = 0.5f;
 
@@ -20,91 +55,35 @@ public:
 	static constexpr float ALPHA_MAX = 255.0f;
 	static constexpr float ALPHA_MIN = 0.0f;
 
-	// 明示的にインステンスを生成する
-	static void CreateInstance(void);
+private:
 
-	// 静的インスタンスの取得
-	static ScoreManager& GetInstance(void);
+	static ScoreManager* instance_;	// 静的インスタンス
 
-	// 更新処理
-	void Update(void);
-	// 描画処理
-	void Draw(void);
-
-	// 解放処理
-	void Destroy(void);
-
-	//リセット
-	void ResetGame(void);
-
-	// トータル金額をリセット
-	void ResetTotalPrice(void);
-
-	// アイテム設定
-	void SetItems(std::vector<Item*> items);
-
-	// カート内金額に加算
-	void AddCartPrice(const int price) { cartPrice_ += price; }
-
-	// カート内を返す
-	const int GetCartPrice(void) const { return cartPrice_; }
-
-	// 納品金額に加算
-	void AddDeliveryPrice(const int price) { deliveryPrice_ += price; }
-
-	// 納品金額を返す
-	const int GetDeliveryPrice(void) const { return deliveryPrice_; }
-
-	// 指定の目標金額を設定
-	void SetTargetPrice(const int targetPrice) { targetPrice_ = targetPrice; }
-
-	// 指定の目標金額を返す
-	const int GetTargetPrice(void) const { return targetPrice_; }
-	
-	// ゲームクリア後のショップで使える金額に加算
-	void AddTotalPrice(const int deliveryPrice) { totalPrice_ += deliveryPrice; }
-	
-	// ゲームクリア後のショップで使える金額を減算
-	void SubTotalPrice(const int deliveryPrice) { totalPrice_ -= deliveryPrice; }
-
-	// ゲームクリア後のショップで使える金額を返す
-	const int GetTotalPrice(void) const { return totalPrice_; }
+	// コピー・ムーブ操作を禁止
+	ScoreManager(const ScoreManager&) = delete;
+	ScoreManager& operator=(const ScoreManager&) = delete;
+	ScoreManager(ScoreManager&&) = delete;
+	ScoreManager& operator=(ScoreManager&&) = delete;
 
 private:
 
-	// 静的インスタンス
-	static ScoreManager* instance_;
+	std::vector<Item*> items_;	// アイテム
 
-	// アイテム
-	std::vector<Item*> items_;
+private:
 
-	// カート内金額
-	int cartPrice_;
+	int cartPrice_;		// カート内金額
 
-	// 納品金額
-	int deliveryPrice_;
+	int deliveryPrice_;	// 納品金額
 
-	// 目標金額
-	int targetPrice_;
+	int targetPrice_;	// 目標金額
 
-	// ゲームクリア後のショップで使える金額
-	int totalPrice_;
+	int totalPrice_;	// ゲームクリア後のショップで使える金額
+	
+	int warningPrice_;	// 警告文を出すときの目安金額
+	
+	bool showWarning_;	// 警告文出すか　true / 警告文を出す , false / 警告文を出さない
 
-	// 警告文を出すときの目安金額
-	int warningPrice_;
-
-	// 警告文出すか　true / 警告文を出す , false / 警告文を出さない
-	bool showWarning_;
-
-	float alpha_;
-	bool isIncreasing_;				// ボタンのアルファ値が増加しているかどうか
-
-	// デフォルトコンストラクタをprivateにして、
-	// 外部から生成できない様にする
-	ScoreManager(void);
-	// コピーコンストラクタも同様
-	ScoreManager(const ScoreManager& manager) = default;
-	// デストラクタも同様
-	~ScoreManager(void) = default;
+	float alpha_;		// アルファ値
+	bool isIncreasing_;	// ボタンのアルファ値が増加しているかどうか
 };
 

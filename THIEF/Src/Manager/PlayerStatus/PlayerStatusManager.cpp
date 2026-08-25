@@ -4,6 +4,7 @@ PlayerStatusManager* PlayerStatusManager::instance_ = nullptr;
 
 void PlayerStatusManager::Destroy()
 {
+	// インスタンス削除
 	DeleteInstance();
 }
 

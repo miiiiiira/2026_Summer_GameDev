@@ -6,10 +6,6 @@ FlashEffect::FlashEffect(void)
 {
 }
 
-FlashEffect::~FlashEffect(void)
-{
-}
-
 void FlashEffect::Init(void)
 {
 	// アルファ値初期化

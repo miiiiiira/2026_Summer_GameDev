@@ -300,9 +300,9 @@ void Stage::ClearCountUpdate(void)
 	}
 
 	// 納品済みの金額を確認
-	int deliveryPrice = ScoreManager::GetInstance().GetDeliveryPrice();
+	int deliveryPrice = ScoreManager::GetInstance()->GetDeliveryPrice();
 	// 目標金額を確認
-	int targetPrice = ScoreManager::GetInstance().GetTargetPrice();
+	int targetPrice = ScoreManager::GetInstance()->GetTargetPrice();
 
 	// 目標金額を達成していなかったら
 	if (deliveryPrice < targetPrice)

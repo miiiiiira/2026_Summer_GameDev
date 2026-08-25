@@ -5,16 +5,19 @@ class MouseCursor
 {
 public:
 
-	// マウス画像のサイズ
-	static constexpr int MOUSE_IMG_SIZE_WID = 30;
-	static constexpr int MOUSE_IMG_SIZE_HIG = 40;
+	static constexpr int MOUSE_IMG_SIZE_WID = 30;	// マウス画像の横サイズ
+	static constexpr int MOUSE_IMG_SIZE_HIG = 40;	// マウス画像の縦サイズ
 
 public:
 
-	//シングルトン
+	// シングルトン（生成・取得・削除）
 	static void  CreateInstance(void) { if (instance_ == nullptr) { instance_ = new MouseCursor(); } }
 	static MouseCursor* GetInstance(void) { return instance_; }
 	static void DeleteInstance(void) { if (instance_ != nullptr) { delete instance_; } }
+
+public:
+
+	MouseCursor(void);		// コンストラクタ
 
 	void Load(void);	// 読み込み
 	void Init(void);	// 初期化
@@ -26,27 +29,24 @@ public:
 
 private:
 
-	// マウス画像
-	int mouseImg_ = -1;
+	static MouseCursor* instance_;	// 静的インスタンス
 
-	// マウス表示フラグ　true / 表示,false / 非表示
-	bool mouseDrawFlg_ = true;
+	// コピー・ムーブ操作を禁止
+	MouseCursor(const MouseCursor&) = delete;
+	MouseCursor& operator=(const MouseCursor&) = delete;
+	MouseCursor(MouseCursor&&) = delete;
+	MouseCursor& operator=(MouseCursor&&) = delete;
 
-	// マウス座標
-	Vector2 mousePos_;
+private:
 
-	// 静的インスタンス
-	static MouseCursor* instance_;
+	void DebugDraw(void);	// デバッグ表示
 
-	// デフォルトコンストラクタをprivateにして、
-	// 外部から生成できない様にする
-	MouseCursor(void);
-	// コピーコンストラクタも同様
-	MouseCursor(const MouseCursor& manager) = default;
-	// デストラクタも同様
-	~MouseCursor(void) = default;
+private:
 
-	// デバッグ表示
-	void DebugDraw(void);
+	int mouseImg_ = -1;	// マウス画像
+
+	Vector2 mousePos_;	// マウス座標
+
+	bool mouseDrawFlg_ = true;	// マウス表示フラグ　true / 表示,false / 非表示
 };
 

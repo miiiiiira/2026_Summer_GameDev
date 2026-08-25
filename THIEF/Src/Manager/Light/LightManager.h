@@ -10,7 +10,9 @@ public:
 	static LightManager* GetInstance(void) { return instance_; }
 	static void DeleteInstance(void) { if (instance_ != nullptr) { delete instance_; instance_ = nullptr; } }
 
-	LightManager();	// コンストラクタ
+public:
+
+	LightManager(void);	// コンストラクタ
 
 	void Destroy(void);	// 解放
 	
@@ -21,8 +23,7 @@ public:
 
 private:
 
-	// 静的インスタンス
-	static LightManager* instance_;
+	static LightManager* instance_;	// 静的インスタンス
 
 	// コピー・ムーブ操作を禁止
 	LightManager(const LightManager&) = delete;
@@ -32,7 +33,6 @@ private:
 
 private:
 
-	// 現在のライトタイプ
-	LIGHT_TYPE nowLightType_;
+	LIGHT_TYPE nowLightType_;	// 現在のライトタイプ
 };
 

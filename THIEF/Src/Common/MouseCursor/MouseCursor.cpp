@@ -16,11 +16,11 @@ void MouseCursor::Load(void)
 
 void MouseCursor::Init(void)
 {
-	// マウス描画フラグの初期化
-	mouseDrawFlg_ = true;
-
 	// マウス座標の初期化
 	mousePos_ = { Application::SCREEN_SIZE_X / 2,Application::SCREEN_SIZE_Y / 2 };
+
+	// マウス描画フラグの初期化
+	mouseDrawFlg_ = true;
 }
 
 void MouseCursor::Update(void)

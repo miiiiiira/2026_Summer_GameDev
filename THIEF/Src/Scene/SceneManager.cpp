@@ -5,7 +5,6 @@
 #include "Shop/ShopScene.h"
 #include "../Application.h"
 
-#include "../Manager/System/SystemManager.h"
 #include "../Manager/Light/LightManager.h"
 #include "../Manager/Score/ScoreManager.h"
 #include "../Manager/Input/InputManager.h"
@@ -35,9 +34,6 @@ void SceneManager::Init(void)
 	load_ = new Loading();
 	load_->Init();
 	load_->Load();
-
-	//システム管理生成
-	SystemManager::CreateInstance();
 
 	//ライトの管理生成
 	LightManager::CreateInstance();
@@ -216,8 +212,6 @@ void SceneManager::Update(void)
 		break;
 	}
 
-	// デバイス切り替え処理
-	SystemManager::GetInstance().Update();
 }
 
 void SceneManager::Draw(void)
@@ -274,14 +268,11 @@ void SceneManager::Delete(void)
 
 	FrameRenderer::Release();
 
-	// システム管理解放
-	SystemManager::GetInstance().Destroy();
-
 	// ライトマネージャー管理解放
 	LightManager::GetInstance()->Destroy();
 
 	// 金額管理解放
-	ScoreManager::GetInstance().Destroy();
+	ScoreManager::GetInstance()->Destroy();
 
 	// プレイヤーのステータス管理解放
 	PlayerStatusManager::GetInstance()->Destroy();
@@ -447,7 +438,7 @@ void SceneManager::ResetGame(void)
 	PlayerStatusManager::GetInstance()->ResetStatus();
 
 	// トータルスコアを初期化
-	ScoreManager::GetInstance().ResetTotalPrice();
+	ScoreManager::GetInstance()->ResetTotalPrice();
 }
 
 void SceneManager::SetTutorialStateAndValue(Tutorial::STATE state, float value)

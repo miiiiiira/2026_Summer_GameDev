@@ -1,7 +1,6 @@
 #include "LightSelectScene.h"
 #include "../../Manager/Light/LightManager.h"
 #include "../../Manager/Input/InputManager.h"
-#include "../../Manager/System/SystemManager.h"
 #include "../../Manager/Audio/AudioManager.h"
 #include "../SceneManager.h"
 #include "../../Application.h"

@@ -4,11 +4,7 @@
 #include "../../Transform/Transform.h"
 #include "Amphora.h"
 
-Amphora::Amphora()
-{
-}
-
-Amphora::~Amphora(void)
+Amphora::Amphora(void)
 {
 }
 
@@ -40,12 +36,14 @@ void Amphora::SetParam(void)
 
 void Amphora::Break(void)
 {
-	// ‘å‚«‚¢•r”j‰óSE
+	// ”j‰óƒGƒtƒFƒNƒg‚ðÄ¶
 	EffectResManager::GetInstance().PlayEffect(1.0f, { 0.0f,0.0f, 0.0f }, trans_->pos_, EffectResManager::TYPE::ITEM_BREAK_AMPHORA);
+	// ‘å‚«‚¢•r”j‰óSEÄ¶
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_6, &trans_->pos_);
 }
 
 void Amphora::Damage(void)
 {
+	// ‘å‚«‚¢•rƒ_ƒ[ƒWSEÄ¶
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_DAMAGE_2, &trans_->pos_);
 }
