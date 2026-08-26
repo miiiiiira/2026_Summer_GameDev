@@ -11,9 +11,9 @@ public:
 
 public:
 
-	PlayerActionCounter(void);
+	PlayerActionCounter(void);	// コンストラクタ
 
-	void Init(void);	// 初期化
+	void Init(void);			// 初期化
 
 	// 指定されたステートのカウンターを渡す
 	float GetCounter(Tutorial::STATE state) 

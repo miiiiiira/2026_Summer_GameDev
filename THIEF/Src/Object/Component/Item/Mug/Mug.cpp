@@ -1,14 +1,10 @@
-#include<DxLib.h>
 #include "../../../../Manager/Audio/AudioManager.h"
 #include "../../../../Manager/EffectResManager/EffectResManager.h"
 #include "../../Transform/Transform.h"
+
 #include "Mug.h"
 
 Mug::Mug()
-{
-}
-
-Mug::~Mug(void)
 {
 }
 
@@ -40,12 +36,14 @@ void Mug::SetParam(void)
 
 void Mug::Break(void)
 {
-	// 木のマグカップ破壊SE
+	// 破壊エフェクトを再生
 	EffectResManager::GetInstance().PlayEffect(1.0f, { 0.0f,0.0f, 0.0f }, trans_->pos_, EffectResManager::TYPE::ITEM_BREAK_MUG);
+	// 木のマグカップ破壊SE再生
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_7, &trans_->pos_);
 }
 
 void Mug::Damage(void)
 {
+	// 木のマグカップダメージSE再生
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_DAMAGE_3, &trans_->pos_);
 }

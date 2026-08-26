@@ -1,14 +1,10 @@
-#include<DxLib.h>
 #include "../../../../Manager/Audio/AudioManager.h"
 #include "../../../../Manager/EffectResManager/EffectResManager.h"
 #include "../../Transform/Transform.h"
+
 #include "Potion.h"
 
 Potion::Potion(void)
-{
-}
-
-Potion::~Potion(void)
 {
 }
 
@@ -40,11 +36,14 @@ void Potion::SetParam(void)
 
 void Potion::Break(void)
 {
+	// 破壊エフェクトを再生
 	EffectResManager::GetInstance().PlayEffect(1.0f, { 0.0f,0.0f, 0.0f }, trans_->pos_, EffectResManager::TYPE::ITEM_BREAK_POTION);
+	// ポーション破壊SE再生
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_2, &trans_->pos_);
 }
 
 void Potion::Damage(void)
 {
+	// ポーションダメージSE再生
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_DAMAGE_1, &trans_->pos_);
 }

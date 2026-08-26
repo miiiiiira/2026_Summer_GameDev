@@ -20,14 +20,11 @@ public:
 
 public:
 
+	// 強化項目のデフォルト数値
 	static constexpr int DEFAULT_HP = 100;	// HP
-
 	static constexpr float DASH_SPEED = 15.0f;	// ダッシュ時の移動速度
-
 	static constexpr float DEFAULT_RENGE = 400.0f;	// プレイヤーの掴み距離
-
 	static constexpr float DEFAULT_STAMINA = 40.0f;	// スタミナ
-
 	static constexpr int DEFAULT_JUMP_NUM = 1;	// ジャンプ可能数
 
 public:
@@ -41,7 +38,7 @@ public:
 
 	PlayerStatusManager(void);	// コンストラクタ
 	
-	void Destroy(void);	// 解放
+	void Destroy(void);			// 解放
 
 	void ResetStatus(void);	// デフォルトのステータスにリセット
 

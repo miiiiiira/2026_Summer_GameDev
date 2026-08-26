@@ -12,27 +12,26 @@ class Item :public Component
 {
 protected:
 
+	// リミット設定
+	static constexpr int DAMAGE_DRAW_COUNT = 90;	// ダメージ表記用のカウント
+	static constexpr int INVINCIBILITY_FRAMES = 20;			// 初期無敵時間
+	static constexpr int INVINCIBILITY_FRAMES_ISGRABB = 30;	// ダメージ時の無敵時間
+	static constexpr float DEAD_POS_Y = -1000.0f;	// アイテムが壊れる座標
+
+	// 重力
 	static constexpr float GRAVITY = -0.25f;	// アイテムにかける重力
-	
 	static constexpr float MAX_FALL = -15.0f;	// 最大落下速度
 	
 	static constexpr float COEFFICIENT = 0.3f;	// 線形補間の係数
-
-	static constexpr int DAMAGE_DRAW_COUNT = 90;	// ダメージ表記用のカウント
-
-	static constexpr int INVINCIBILITY_FRAMES = 20;	// 無敵時間
-	static constexpr int INVINCIBILITY_FRAMES_ISGRABB = 30;
-
-	static constexpr float DEAD_POS_Y = -1000.0f;	// アイテムが壊れる座標
 
 public:
 	
 	virtual ~Item(void)override;	// デストラクタ
 
-	void Init(void)override;	// 初期化
-	void Update(void)override;	// 更新
-	void Draw2D(void)override;	// 2D描画
-	void Draw3D(void)override;	// 3D描画
+	void Init(void)override;		// 初期化
+	void Update(void)override;		// 更新
+	void Draw2D(void)override;		// 2D描画
+	void Draw3D(void)override;		// 3D描画
 
 public:
 
@@ -96,14 +95,14 @@ protected:
 
 protected:
 
-	static constexpr int DAMAGE_MULT = 15;	// ダメージの補正値
-
-	static constexpr int FOUND_COUNTER_MAX = 60;	// 発見時のハイライトカウンタ時間
-
 	// 発見時のハイライトの大きさ
 	static constexpr Vector2 HIGHLIGHT_SIZE_BIG = { 100,160 };	// 大きい
 	static constexpr Vector2 HIGHLIGHT_SIZE_MEDIUM = { 60,70 };	// 中くらい
 	static constexpr Vector2 HIGHLIGHT_SIZE_SMALL = { 50,60 };	// 小さい
+
+	static constexpr int FOUND_COUNTER_MAX = 60;	// 発見時のハイライトカウンタ時間
+
+	static constexpr int DAMAGE_MULT = 15;	// ダメージの補正値
 
 protected:
 	
@@ -113,6 +112,6 @@ protected:
 	
 	ItemInfo info_;	// アイテムの情報
 
-	std::vector<DamageInfo> damageDrawList_;	// ダメージ数
+	std::vector<DamageInfo> damageDrawList_;	// ダメージ表記用
 };
 

@@ -1,14 +1,11 @@
-#include "Cart.h"
-#include "../Render/Render3D.h"
 #include "../../Object.h"
+#include "../Render/Render3D.h"
 #include "../../../Common/CameraUtility/CameraUtility.h"
 #include "../../../Common/Math/Math.h"
 #include "../Collider/StageCollider/StageCollider.h"
 #include "../Collider/3DCollider/CapsuleCollider.h"
 
-Cart::~Cart(void)
-{
-}
+#include "Cart.h"
 
 void Cart::Init(void)
 {
@@ -28,20 +25,26 @@ void Cart::Init(void)
 	// モデルに座標を反映
 	MV1SetRotationXYZ(modelId_, trans_->angle_);
 
+	// 掴まれていない状態とする
 	isGrabbed_ = false;
 
 	// 衝突情報構築
+	// カート全体
 	MV1SetupCollInfo(modelId_, -1);
+	// 取っ手のみ
 	MV1SetupCollInfo(modelId_, 1);
 }
 
 void Cart::Update(void)
 {
+	// 掴まれていたら
 	if (isGrabbed_)
 	{
+		// プレイヤーに追従する
 		TrackingPlayer();
 	}
 
+	// 重力をかける
 	ApplyGravity();
 
 	// ステージコライダー取得
@@ -56,7 +59,9 @@ void Cart::Update(void)
 	MV1SetPosition(modelId_, trans_->pos_);
 
 	// 当たり判定情報を最新の状態に更新
+	// カート全体
 	MV1RefreshCollInfo(modelId_, -1);
+	// 取っ手のみ
 	MV1RefreshCollInfo(modelId_, 1);
 }
 
@@ -70,11 +75,6 @@ void Cart::Draw3D(void)
 Transform* Cart::GetTransform(void)
 {
 	return trans_;
-}
-
-float Cart::GetVelocityY(void)
-{
-	return velocityY_;
 }
 
 void Cart::StartGrabbing(VECTOR localPos)
@@ -123,7 +123,9 @@ void Cart::TrackingPlayer(void)
 	MV1SetRotationXYZ(modelId_, trans_->angle_);
 
 	// 当たり判定情報を最新の状態に更新
+	// カート全体
 	MV1RefreshCollInfo(modelId_, -1);
+	// 取っ手のみ
 	MV1RefreshCollInfo(modelId_, 1);
 }
 
@@ -160,7 +162,9 @@ void Cart::ApplyGravity(void)
 	MV1SetPosition(modelId_, trans_->pos_);
 
 	// 当たり判定情報を最新の状態に更新
+	// カート全体
 	MV1RefreshCollInfo(modelId_, -1);
+	// 取っ手のみ
 	MV1RefreshCollInfo(modelId_, 1);
 }
 

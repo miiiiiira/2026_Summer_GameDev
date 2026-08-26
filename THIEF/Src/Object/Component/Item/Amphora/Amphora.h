@@ -1,5 +1,7 @@
 #pragma once
+
 #include "../Item.h"
+
 class Amphora : public Item
 {
 public:
@@ -9,7 +11,7 @@ public:
 
 public:
 	
-	Amphora(void);				// コンストラクタ
+	Amphora(void);					// コンストラクタ
 	
 	void SetParam(void) override;	// 初期化
 	void Break(void) override;		// 破壊時
@@ -17,12 +19,10 @@ public:
 
 private:
 
-	static constexpr VECTOR SCALE = { 1.0f,1.0f,1.0f };	// 大きさ
+	// 大きさ
+	static constexpr VECTOR SCALE = { 1.0f,1.0f,1.0f };	
 
-	static constexpr int PRICE = 2200;	// 金額
-
+	static constexpr int PRICE = 2200;		// 金額
 	static constexpr int HARDNESS = 500;	// 頑丈さ
-
 	static constexpr float WEIGHT = -25.0f;	// 重さ
 };
-

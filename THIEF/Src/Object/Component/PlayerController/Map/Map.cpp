@@ -1,13 +1,15 @@
 #include <DxLib.h>
-#include "../../Item/Item.h"
-#include "../../../Object.h"
-#include "../PlayerController.h"
-#include "../../Transform/Transform.h"
+
 #include "../../../../Application.h"
+#include "../../../Object.h"
+#include "../../../../Manager/Audio/AudioManager.h"
+#include "../../Transform/Transform.h"
 #include "../../../../Common/CameraUtility/CameraUtility.h"
 #include "../../../../Scene/SceneManager.h"
-#include "../../../../Manager/Audio/AudioManager.h"
+#include "../../Item/Item.h"
+#include "../PlayerController.h"
 #include "MapInfo.h"
+
 #include "Map.h"
 
 Map::Map(void)
@@ -21,13 +23,13 @@ Map::Map(void)
 		// 地図画像の読み込み
 		mapImg_ = LoadGraph("Data/Image/GameScene/TutorialMap.png");
 
-		// 地図画像のサイズを取得
-		mapImgSizeX = 161;
-		mapImgSizeY = 1620;
+		// 地図画像のサイズを設定
+		mapImgSizeX = TUTORIAL_MAP_IMAGE_SIZE_X;
+		mapImgSizeY = TUTORIAL_MAP_IMAGE_SIZE_Y;
 
-		// 地図画像上でのプレイヤー座標を取得
-		playerSpawnPosX = 80;
-		playerSpawnPosY = 1536;
+		// 地図画像上でのプレイヤー座標を設定
+		playerSpawnPosX = PLAYER_SPAWN_POS_X;
+		playerSpawnPosY = PLAYER_SPAWN_POS_Y;
 	}
 	else
 	{
@@ -150,9 +152,11 @@ void Map::Draw2D(void)
 		float rotatedX = localX * cosf(angle) - localZ * sinf(angle);
 		float rotatedY = localX * sinf(angle) + localZ * cosf(angle);
 
+		// マップの中心位置から実際のアイテムの座標をスケーリングして回転させたものを足してあげる
 		int posX = MAP_CENTER_POS_X + static_cast<int>(rotatedX);
 		int posY = MAP_CENTER_POS_Y + static_cast<int>(rotatedY);
-		// プレイヤーのスポーン位置から実際のアイテムの座標分をスケーリングして足してあげる
+
+		// アイテムの大きさによって円の大きさを変更
 		switch (item->GetInfo().size_)
 		{
 		case ITEM_SIZE::BIG:

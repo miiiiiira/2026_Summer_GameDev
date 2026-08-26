@@ -1,14 +1,10 @@
-#include<DxLib.h>
 #include "../../../../Manager/Audio/AudioManager.h"
 #include "../../../../Manager/EffectResManager/EffectResManager.h"
 #include "../../Transform/Transform.h"
+
 #include "Bottle.h"
 
-Bottle::Bottle()
-{
-}
-
-Bottle::~Bottle(void)
+Bottle::Bottle(void)
 {
 }
 
@@ -40,12 +36,14 @@ void Bottle::SetParam(void)
 
 void Bottle::Break(void)
 {
-	// Žæ‚ÁŽè•t‚«•r”j‰óSE
+	// ”j‰óƒGƒtƒFƒNƒg‚ðÄ¶
 	EffectResManager::GetInstance().PlayEffect(1.0f, { 0.0f,0.0f, 0.0f }, trans_->pos_, EffectResManager::TYPE::ITEM_BREAK_BOTTLE);
+	// Žæ‚ÁŽè•t‚«•r”j‰óSEÄ¶
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_4, &trans_->pos_);
 }
 
 void Bottle::Damage(void)
 {
+	// Žæ‚ÁŽè•t‚«•rƒ_ƒ[ƒWSEÄ¶
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_DAMAGE_2, &trans_->pos_);
 }

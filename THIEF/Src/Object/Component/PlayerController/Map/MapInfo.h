@@ -5,8 +5,7 @@
 
 struct MapData
 {
-	// 地図画像のファイルパス
-	std::string path;
+	std::string path;	// 地図画像のファイルパス
 
 	// 地図画像のサイズ
 	int mapImgSizeX;

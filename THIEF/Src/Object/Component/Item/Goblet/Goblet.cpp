@@ -1,15 +1,10 @@
-#include<DxLib.h>
 #include "../../../../Manager/Audio/AudioManager.h"
 #include "../../../../Manager/EffectResManager/EffectResManager.h"
 #include "../../Transform/Transform.h"
+
 #include "Goblet.h"
 
-Goblet::Goblet()
-	:Item()
-{
-}
-
-Goblet::~Goblet(void)
+Goblet::Goblet(void)
 {
 }
 
@@ -41,11 +36,14 @@ void Goblet::SetParam(void)
 
 void Goblet::Break(void)
 {
+	// ”j‰óƒGƒtƒFƒNƒg‚ðÄ¶
 	EffectResManager::GetInstance().PlayEffect(1.0f, { 0.0f,0.0f, 0.0f }, trans_->pos_, EffectResManager::TYPE::ITEM_BREAK_GOBLET);
+	// ”t”j‰óSEÄ¶
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_1, &trans_->pos_);
 }
 
 void Goblet::Damage(void)
 {
+	// ”tƒ_ƒ[ƒWSEÄ¶
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_DAMAGE_1, &trans_->pos_);
 }

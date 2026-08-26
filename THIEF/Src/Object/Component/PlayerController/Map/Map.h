@@ -10,19 +10,18 @@ class Item;
 class Map : public Component
 {
 public:
-	Map(void);
-	~Map(void)override;
+	Map(void);					// コンストラクタ
+	~Map(void)override;			// デストラクタ
 
-	void Init(void)override;
-	void Update(void)override;
-	void Draw2D(void)override;
-
+	void Init(void)override;	// 初期化
+	void Update(void)override;	// 更新
+	void Draw2D(void)override;	// 2D描画
+								
 	// アイテムたちのポインタを格納
 	void SetItems(std::vector<Item*> items);
-
-	// 描画するかを設定
-	void SetIsDraw(bool flg);
-	bool GetIsDraw(void);
+	
+	void SetIsDraw(bool flg);	// 描画するかを設定
+	bool GetIsDraw(void);		// 描画しているかを渡す
 
 private:
 
@@ -37,15 +36,30 @@ private:
 	static constexpr int MAP_CENTER_POS_Y = Application::SCREEN_SIZE_Y / 2;
 
 	// アイテムのサイズによって表示する大きさを変更
-	static constexpr int BIG_RAD = 15;
-	static constexpr int MEDIUM_RAD = 10;
-	static constexpr int SMALL_RAD = 5;
+	static constexpr int BIG_RAD = 15;		// 大
+	static constexpr int MEDIUM_RAD = 10;	// 中
+	static constexpr int SMALL_RAD = 5;		// 小
 
-	// マップを表示するかしないカ
+	// チュートリアル時
+	// 地図画像のサイズ
+	static constexpr int TUTORIAL_MAP_IMAGE_SIZE_X = 161;
+	static constexpr int TUTORIAL_MAP_IMAGE_SIZE_Y = 1620;
+	// 地図画像上でのプレイヤー座標
+	static constexpr int PLAYER_SPAWN_POS_X = 80;
+	static constexpr int PLAYER_SPAWN_POS_Y = 1536;
+
+private:
+
+	std::vector<Item*> items_;	// ステージ上のアイテムたち
+
+private:
+
+	// 画像ハンドル
+	int mapImg_;	// 地図
+	int playerImg_;	// プレイヤー
+
+	// マップを表示するかしないか		true / 表示, false / 非表示
 	bool isDraw_;
-
-	// ステージ上のアイテムたち
-	std::vector<Item*> items_;
 
 	// 地図画像の位置
 	int mapImgPosX_;
@@ -58,11 +72,5 @@ private:
 	// 地図上でのプレイヤーのスポーン位置
 	int playerSpawnPosX;
 	int playerSpawnPosY;
-
-	// 地図画像
-	int mapImg_;
-
-	// プレイヤー画像
-	int playerImg_;
 };
 

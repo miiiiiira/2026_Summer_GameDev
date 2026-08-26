@@ -1,19 +1,23 @@
-#include "Item.h"
 #include <DxLib.h>
 #include <math.h>
-#include "../../../Common/Transform/MatrixUtility.h"
-#include "../../../Common/Math/Math.h"
-#include "../Render/Render3D.h"
-#include "../../Object.h"
-#include "../../../Common/CameraUtility/CameraUtility.h"
+
 #include "../../../Application.h"
+#include "../../Object.h"
+#include "../Render/Render3D.h"
 #include "../../../Scene/SceneManager.h"
 #include "../../../Manager/Audio/AudioManager.h"
+#include "../../../Common/Transform/MatrixUtility.h"
+#include "../../../Common/Math/Math.h"
+#include "../../../Common/CameraUtility/CameraUtility.h"
+
+#include "Item.h"
 
 Item::~Item(void)
 {
+	// ダメージ表記用vector型初期化
 	damageDrawList_.clear();
 
+	// コリジョン情報の後始末
 	MV1TerminateCollInfo(info_.modelId_, -1);
 }
 
@@ -150,8 +154,8 @@ void Item::SetDamage(VECTOR pos)
 	if (info_.isGrabbed_)
 	{
 		damage = static_cast<int>(VSize(VSub(pos, trans_->prevPos_)));
-
 		damage *= DAMAGE_MULT;
+
 		// 指定のダメージから頑丈さ分引いた数値を実際に与えるダメージとする
 		int dmg = damage - info_.hardness_;
 	}
@@ -171,10 +175,12 @@ void Item::SetDamage(VECTOR pos)
 	// ダメージ表記用に情報を保持しておく
 	if (damage <= info_.price_)
 	{
+		// ダメージが金額以下場合はダメージの数を保持させる
 		damageDrawList_.push_back({ pos,damage,DAMAGE_DRAW_COUNT });
 	}
 	else
 	{
+		// ダメージが金額より高い場合は残りの金額数を保持させる
 		damageDrawList_.push_back({ pos,info_.price_,DAMAGE_DRAW_COUNT });
 	}
 
@@ -221,11 +227,13 @@ void Item::SetPos(const VECTOR& pos)
 
 void Item::SetPrevPos(const VECTOR& prevPos)
 {
+	// 指定座標を前フレーム座標に設定
 	trans_->prevPos_ = prevPos;
 }
 
 void Item::SetLocalPosZ(float localPosZ)
 {
+	// 指定の距離をローカルZ軸に設定
 	info_.localPos_.z = localPosZ;
 }
 
@@ -260,6 +268,7 @@ void Item::EndGrabbed(void)
 	float forwardZ = CameraUtility::GetCameraMatrix().m[2][2];
 	// ベクトルから角度を出す
 	trans_->angle_.y = atan2f(forwardX, forwardZ);
+	// モデルに向きを反映させる
 	MV1SetRotationXYZ(info_.modelId_, trans_->angle_);
 
 	// 重力を初期化する
@@ -277,7 +286,9 @@ void Item::TrueIsFound(void)
 
 void Item::OnFloor(void)
 {
+	// 最終で掴んだ距離を現在位置にする
 	info_.grabbedPos_ = trans_->pos_;
+	// 掴み終わってからの空中判定を切る
 	info_.hasTouchedStage_ = false;
 }
 
@@ -381,6 +392,7 @@ void Item::CountUpdate(void)
 		// カウントを減らす
 		--it->count;
 
+		// ダメージ表記用のカウントが0より小さくなっていたら削除
 		if (it->count < 0)
 		{
 			// eraseは削除した次の要素のイテレータを返すので、それをitに代入する
@@ -432,6 +444,7 @@ void Item::PriceDamageDraw(void)
 	// 生存していなかったら描画しない
 	if (info_.isAlive_)
 	{
+		// 掴まれていたら
 		if (info_.isGrabbed_)
 		{
 			// 場所が視界内に入っていないのであれば処理をスキップ
@@ -449,7 +462,7 @@ void Item::PriceDamageDraw(void)
 				Application::GetInstance()->GetFont(FONT_SIZE_21),
 				"%d",
 				info_.price_);
-
+			// 本体
 			DrawFormatStringFToHandle(
 				pricePos.x - (priceWidth / 2),
 				pricePos.y,
@@ -469,7 +482,10 @@ void Item::PriceDamageDraw(void)
 		// ワールド座標をスクリーン座標にする
 		VECTOR pos = ConvWorldPosToScreenPos(damage.pos);
 
+		// カウントによってだんだん表記を薄くしていく
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, (255 * damage.count) / DAMAGE_DRAW_COUNT);
+
+		// ダメージ数を描画
 		DrawFormatStringFToHandle(
 			pos.x - (priceWidth / 2),
 			pos.y,
@@ -477,6 +493,7 @@ void Item::PriceDamageDraw(void)
 			Application::GetInstance()->GetFont(FONT_SIZE_20),
 			"-%d",
 			damage.damage);
+
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 }
@@ -513,6 +530,8 @@ void Item::HighLightDraw(void)
 
 		// 透明度設定したボックスを表示
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+
+		// ハイライトを指定の大きさで描画
 		DrawBox(
 			static_cast<int>(pos.x - boxSize.x),
 			static_cast<int>(pos.y - boxSize.y),
@@ -520,6 +539,7 @@ void Item::HighLightDraw(void)
 			static_cast<int>(pos.y + boxSize.y),
 			0xffff00,
 			true);
+
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 }

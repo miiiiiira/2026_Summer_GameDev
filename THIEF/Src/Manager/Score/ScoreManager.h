@@ -33,7 +33,6 @@ public:
 	void AddDeliveryPrice(const int price) { deliveryPrice_ += price; }	// 納品金額に加算
 	const int GetDeliveryPrice(void) const { return deliveryPrice_; }	// 納品金額を返す
 
-	
 	void SetTargetPrice(const int targetPrice) { targetPrice_ = targetPrice; }	// 指定の目標金額を設定
 	const int GetTargetPrice(void) const { return targetPrice_; }				// 指定の目標金額を返す
 	
@@ -72,15 +71,11 @@ private:
 private:
 
 	int cartPrice_;		// カート内金額
-
 	int deliveryPrice_;	// 納品金額
-
 	int targetPrice_;	// 目標金額
-
 	int totalPrice_;	// ゲームクリア後のショップで使える金額
 	
 	int warningPrice_;	// 警告文を出すときの目安金額
-	
 	bool showWarning_;	// 警告文出すか　true / 警告文を出す , false / 警告文を出さない
 
 	float alpha_;		// アルファ値

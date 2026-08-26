@@ -17,41 +17,41 @@ struct ItemInfo
 	int modelId_ = -1;	// モデルのハンドル
 
 	VECTOR scale_ = {};	// 大きさ
-
-	VECTOR grabbedPos_ = {};	// 離された時の座標
-
-	VECTOR localPos_ = {};	// プレイヤーとの相対座標
-
 	VECTOR defaultPos_ = {};	// 初期位置
-
-	int price_ = 0;	// 金額(HP)
-
-	int hardness_ = 0;	// アイテムの頑丈さ
-
-	ITEM_SIZE size_;	// アイテムの大きさ
+	VECTOR grabbedPos_ = {};	// 離された時の座標
+	VECTOR localPos_ = {};		// プレイヤーとの相対座標
 
 	VECTOR velocity_ = {};	// 重力
-
 	float weight_ = 0.0f;	// 重さ
+
+	// 当たり判定
+	float collisionRadiusX_ = 0.0f;	//X半径
+	float collisionRadiusY_ = 0.0f;	//Y半径
+
+	// アイテム個々のパラメータ
+	int price_ = 0;		// 金額(HP)
+	int hardness_ = 0;	// アイテムの頑丈さ
+	ITEM_SIZE size_;	// アイテムの大きさ
+
+	int invincibilityFrames_ = 0;	// 無敵時間
 	
-	float collisionRadiusX_ = 0.0f;	// 当たり判定用X半径
-	float collisionRadiusY_ = 0.0f;	// 当たり判定用Y半径
+	// 生存フラグ	true / 生存中にする , false / 生存している
+	bool isAlive_ = true;	
 	
-	bool isAlive_ = true;	// 生存フラグ	true / 生存中にする , false / 生存している
-	
-	bool isGrabbed_ = false;	// 掴まれているか　true / 掴まれている, false / 掴まれていない
+	// 掴まれているか　true / 掴まれている, false / 掴まれていない
+	bool isGrabbed_ = false;	
 
-	bool hasTouchedStage_ = true;	// 空中から1度でもステージに接触したか　true / 接触した , false / 接触していない
+	// 空中から1度でもステージに接触したか　true / 接触した , false / 接触していない
+	bool hasTouchedStage_ = true;	
 
-	bool hasTouchedDeliveryLocation_ = false;	// 納品場所に入っているか	true / 入っている , false / 入っていない
+	// 場所に入っているか	true / 入っている , false / 入っていない
+	bool hasTouchedDeliveryLocation_ = false;	// 納品場所	
+	bool hasTouchedCart_ = false;				// カート
 
-	bool hasTouchedCart_ = false;	// カートに入っているか	true / 入っている , false / 入っていない
-
+	// ハイライト表記
 	bool isFound_ = false;	// 一度でも発見したか　true / 見つけた , false / 見つけてない
-
 	int foundCounter_ = 0;	// 発見した物を一定時間ハイライトさせる用のカウンター
 	
-	int invincibilityFrames_ = 0;	// 無敵時間
 };
 
 struct DamageInfo

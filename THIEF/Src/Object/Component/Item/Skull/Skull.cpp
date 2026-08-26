@@ -1,13 +1,10 @@
 #include "../../../../Manager/Audio/AudioManager.h"
 #include "../../../../Manager/EffectResManager/EffectResManager.h"
 #include "../../Transform/Transform.h"
+
 #include "Skull.h"
 
 Skull::Skull(void)
-{
-}
-
-Skull::~Skull(void)
 {
 }
 
@@ -39,11 +36,14 @@ void Skull::SetParam(void)
 
 void Skull::Break(void)
 {
+	// ”j‰óƒGƒtƒFƒNƒg‚ðÄ¶
 	EffectResManager::GetInstance().PlayEffect(1.0f, { 0.0f,0.0f, 0.0f }, trans_->pos_, EffectResManager::TYPE::ITEM_BREAK_SKULL);
+	// “ªŠWœ”j‰óSEÄ¶
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_3, &trans_->pos_);
 }
 
 void Skull::Damage(void)
 {
+	// “ªŠWœƒ_ƒ[ƒWSEÄ¶
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_DAMAGE_4, &trans_->pos_);
 }

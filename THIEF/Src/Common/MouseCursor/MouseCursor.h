@@ -44,9 +44,8 @@ private:
 private:
 
 	int mouseImg_ = -1;	// マウス画像
-
 	Vector2 mousePos_;	// マウス座標
-
-	bool mouseDrawFlg_ = true;	// マウス表示フラグ　true / 表示,false / 非表示
+	// マウス表示フラグ　true / 表示,false / 非表示
+	bool mouseDrawFlg_ = true;	
 };
 

@@ -1,37 +1,30 @@
 #pragma once
+
 #include "../Item.h"
+
 class Bottle :public Item
 {
 public:
 
-	// 大きさ
-	static constexpr VECTOR SCALE = { 1.0f,1.0f,1.0f };
+	static constexpr float COLLISION_RADIUS_X = 23.0f;	// 当たり判定用の半径X軸
+	static constexpr float COLLISION_RADIUS_Y = 22.0f;	// 当たり判定用の半径Y軸
 
-	// 金額
-	static constexpr int PRICE = 1200;
+public:
 
-	// 当たり判定用の半径
-	static constexpr float COLLISION_RADIUS_X = 23.0f;
-	static constexpr float COLLISION_RADIUS_Y = 22.0f;
+	Bottle(void);					// コンストラクタ
 
-	// 頑丈さ
-	static constexpr int HARDNESS = 300;
+	void SetParam(void) override;	// 初期化
+	void Break(void) override;		// 破壊時
+	void Damage(void) override;		// ダメージ時
 
-	// 重さ
-	static constexpr float WEIGHT = -8.0f;
-
-	// コンストラクタ
-	Bottle();
-	// デストラクタ
-	~Bottle(void)override;
-
-	// 初期化処理
-	void SetParam(void) override;
-
-	// 破壊時の処理
-	void Break(void) override;
+private:
 	
-	// ダメージ時の処理
-	void Damage(void) override;
+	// 大きさ
+	static constexpr VECTOR SCALE = { 1.0f,1.0f,1.0f };	
+
+	static constexpr int PRICE = 1200;		// 金額
+	static constexpr int HARDNESS = 300;	// 頑丈さ
+	static constexpr float WEIGHT = -8.0f;	// 重さ
+
 };
 

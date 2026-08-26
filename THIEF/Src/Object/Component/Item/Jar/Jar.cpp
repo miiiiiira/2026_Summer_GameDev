@@ -1,14 +1,10 @@
-#include<DxLib.h>
 #include "../../../../Manager/Audio/AudioManager.h"
 #include "../../../../Manager/EffectResManager/EffectResManager.h"
 #include "../../Transform/Transform.h"
+
 #include "Jar.h"
 
 Jar::Jar(void)
-{
-}
-
-Jar::~Jar(void)
 {
 }
 
@@ -40,12 +36,14 @@ void Jar::SetParam(void)
 
 void Jar::Break(void)
 {
-	// 食べ物入ってるジャー破壊SE
+	// 破壊エフェクトを再生
 	EffectResManager::GetInstance().PlayEffect(1.0f, { 0.0f,0.0f, 0.0f }, trans_->pos_, EffectResManager::TYPE::ITEM_BREAK_JAR);
+	// 食べ物入ってるジャー破壊SE再生
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_5, &trans_->pos_);
 }
 
 void Jar::Damage(void)
 {
+	// 食べ物入ってるジャーダメージSE再生
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_DAMAGE_2, &trans_->pos_);
 }
