@@ -1,5 +1,6 @@
 #include "../../../../Manager/Audio/AudioManager.h"
 #include "../../../../Scene/SceneManager.h"
+#include "../EnemyCommon.h"
 #include "Giggle.h"
 
 Giggle::Giggle(int modelId)
@@ -10,11 +11,16 @@ Giggle::~Giggle(void)
 {
 }
 
-void Giggle::OnInitialize(void)
+void Giggle::Init(void)
 {
+	EnemyBase::Init();
+
+	const auto& data = EnemyTable::Table.at(ENEMY_TAG::GIGGLE);
+	SetEnemyData(data);
+
+	// 初期ステートへ遷移
 	ChangeState(STATE::IDLE);
 }
-
 void Giggle::Update(void)
 {
 	switch (state_)
@@ -43,7 +49,7 @@ void Giggle::ChangeState(STATE state)
 
 void Giggle::ChangeIdle(void)
 {
-	step_ = 10.0f;
+	info_.step_ = 10.0f;
 }
 
 void Giggle::ChangeThink(void)
@@ -52,15 +58,15 @@ void Giggle::ChangeThink(void)
 
 void Giggle::ChangeGiggling(void)
 {
-	step_ = 20.0f;
+	info_.step_ = 20.0f;
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_GIGGLE);
 }
 
 void Giggle::UpdateIdle(void)
 {
-	step_ -= SceneManager::GetInstance()->GetDeltaTime();
+	info_.step_ -= SceneManager::GetInstance()->GetDeltaTime();
 
-	if (step_ < 0.0f)
+	if (info_.step_ < 0.0f)
 	{
 		// 待機終了
 		ChangeState(STATE::THINK);
@@ -86,9 +92,9 @@ void Giggle::UpdateThink(void)
 
 void Giggle::UpdateGiggling(void)
 {
-	step_ -= SceneManager::GetInstance()->GetDeltaTime();
+	info_.step_ -= SceneManager::GetInstance()->GetDeltaTime();
 
-	if (step_ < 0.0f)
+	if (info_.step_ < 0.0f)
 	{
 		// 待機終了
 		ChangeState(STATE::IDLE);

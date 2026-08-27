@@ -20,7 +20,7 @@ public:
 	~Giggle(void)override;
 
 	// ‰Šú‰»
-	void OnInitialize(void) override;
+	void Init(void) override;
 
 	void Update(void)override;
 private:

@@ -33,17 +33,15 @@ public:
 	};
 
 	// コンストラクタ
-	Mushnub(int modelId);
+	Mushnub(void);
 
 	// デストラクタ
 	~Mushnub(void)override;
 
 	// 初期化
-	void OnInitialize(void) override;
-	// 読み込み処理
-	void Load(void) override;
-	void Update(void)override;
-	void Draw(void) override;
+	void Init(void) override;
+	void Update(void) override;
+	void Draw3D(void) override;
 
 	// 特定のエリアの最大、最小値を設定
 	void SetAreaPos(VECTOR minPos, VECTOR maxPos) { minAreaPos_ = minPos; maxAreaPos_ = maxPos; }

@@ -8,8 +8,6 @@
 class EnemyBase;
 class PlayerController;
 
-using namespace EnemyCommon;
-
 class EnemyManager
 {
 public:

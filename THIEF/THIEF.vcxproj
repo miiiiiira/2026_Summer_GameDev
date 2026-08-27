@@ -22,6 +22,7 @@
     <ClCompile Include="Src\Common\Easing\Easing.cpp" />
     <ClCompile Include="Src\Manager\EffectResManager\EffectResManager.cpp" />
     <ClCompile Include="Src\fontInfo.cpp" />
+    <ClCompile Include="Src\Object\Actor\Enemy\EnemyCommon.cpp" />
     <ClCompile Include="Src\Object\Actor\Wall\TutorialWall.cpp" />
     <ClCompile Include="Src\Scene\Option\OptionScene.cpp" />
     <ClCompile Include="Src\Manager\Input\InputIO.cpp" />
@@ -105,6 +106,7 @@
     <ClCompile Include="Src\Scene\Tutorial\TutorialScene.cpp" />
     <ClCompile Include="Src\Object\Component\Collider\TutorialWallCollider\TutorialWallCollider.cpp" />
     <ClCompile Include="Src\Scene\StageClear\StageClear.cpp" />
+    <ClCompile Include="Src\Object\Actor\Enemy\StagePathData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Common\Easing\Easing.h" />
@@ -210,6 +212,7 @@
     <ClInclude Include="Src\Scene\Tutorial\TutorialScene.h" />
     <ClInclude Include="Src\Object\Component\Collider\TutorialWallCollider\TutorialWallCollider.h" />
     <ClInclude Include="Src\Scene\StageClear\StageClear.h" />
+    <ClInclude Include="Src\Object\Actor\Enemy\StagePathData.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Src\Common\Shader\CtrShader.hlsl">
