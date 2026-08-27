@@ -2,47 +2,36 @@
 
 UpgradeManager* UpgradeManager::instance_ = nullptr;
 
-void UpgradeManager::CreateInstance(void)
-{
-	if (instance_ == nullptr)
-	{
-		instance_ = new UpgradeManager();
-	}
-}
-
-UpgradeManager& UpgradeManager::GetInstance(void)
-{
-	if (instance_ == nullptr)
-	{
-		UpgradeManager::CreateInstance();
-	}
-	return *instance_;
-}
-
 void UpgradeManager::Load()
 {
+	// アップグレードクラスの生成
 	upgrade_ = new Upgrade();
 }
 
 void UpgradeManager::Init(void)
 {
+	// 終了フラグの初期化
 	isUpgradeEnd_ = false;
 
+	// アップグレードクラスの初期化
 	upgrade_->Init();
 }
 
 void UpgradeManager::Update(void)
 {
+	// 終了フラグが立っていたら処理を行わない
 	if (isUpgradeEnd_)
 	{
 		return;
 	}
 
+	// アップグレードクラスの更新
 	upgrade_->Update();
 }
 
 void UpgradeManager::Draw(void)
 {
+	// アップグレードクラスの描画
 	upgrade_->Draw2D();
 }
 
@@ -51,16 +40,6 @@ void UpgradeManager::Release(void)
 	// アップグレードクラスの削除
 	delete upgrade_;
 	upgrade_ = nullptr;
-}
-
-void UpgradeManager::Destroy(void)
-{
-	if (instance_ != nullptr)
-	{
-		// インスタンスのメモリ解放
-		delete instance_;
-		instance_ = nullptr;
-	}
 }
 
 UpgradeManager::UpgradeManager(void)

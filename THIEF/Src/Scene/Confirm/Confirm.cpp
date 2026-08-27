@@ -36,14 +36,14 @@ void Confirm::Load(void)
 		confirmImg_ = LoadGraph((Application::PATH_IMAGE + "Confirm/ConfirmTutorial.png").c_str());	// TUTORIALの時の確認画面
 		break;
 	case TYPE::QUIT:
-		confirmImg_ = LoadGraph((Application::PATH_IMAGE + "Confirm/ConfirmQuit.png").c_str());			// QUITの時の確認画面;
+		confirmImg_ = LoadGraph((Application::PATH_IMAGE + "Confirm/ConfirmQuit.png").c_str());		// QUITの時の確認画面
 		break;
 	case TYPE::MAIN_MENU:
 		confirmImg_ = LoadGraph((Application::PATH_IMAGE + "Confirm/ConfirmMainMenu.png").c_str());	// MAIN MENUの時の確認画面
 		break;
 	case TYPE::BUY_UPGRADE:
 	{
-		PLAYER_UPGRADE_TYPE type = UpgradeManager::GetInstance().GetUpgrade()->GetFinalizeUpgrade().type;
+		PLAYER_UPGRADE_TYPE type = UpgradeManager::GetInstance()->GetUpgrade()->GetFinalizeUpgrade().type;
 
 		switch (type)
 		{
@@ -178,7 +178,7 @@ void Confirm::UpdateYes(void)
 		SceneManager::GetInstance()->ResetGame();
 		break;
 	case TYPE::BUY_UPGRADE:
-		UpgradeManager::GetInstance().GetUpgrade()->ChangeState(Upgrade::UPGRADE_STATE::APPLY);
+		UpgradeManager::GetInstance()->GetUpgrade()->ChangeState(Upgrade::UPGRADE_STATE::APPLY);
 		// 確認シーンを閉じる
 		SceneManager::GetInstance()->PopScene();
 		break;
@@ -257,21 +257,26 @@ void Confirm::PadSelect(void)
 	{
 	case Confirm::SELECT::NONE:
 
+		// NOボタンへ
 		ChangeSelect(SELECT::NO);
 
 		break;
 	case Confirm::SELECT::YES:
 
+		// 右押されたら
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_RIGHT))
 		{
+			// NOボタンへ
 			ChangeSelect(SELECT::NO);
 		}
 
 		break;
 	case Confirm::SELECT::NO:
 
+		// 左押されたら
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_LEFT))
 		{
+			// YESボタンへ
 			ChangeSelect(SELECT::YES);
 		}
 

@@ -12,13 +12,45 @@ class Animation;
 class Wisp :public Component
 {
 public:
+
+	// wispモデルのアニメーションの種類
 	enum class ANIM
 	{
 		NORMAL,		// 通常
 		SMALL,		// 小さい
 	};
 
+public:
+
+	Wisp(void);					// コンストラクタ
+	~Wisp(void) override;		// デストラクタ
+	
+	void Init(void)override;	// 初期化
+	void Update(void)override;	// 更新
+	void Draw3D(void)override;	// 描画
+
+	int GetWispModelId() const { return wispModelId_; }	// モデルIDを返す
+
+	void SetIsRangeMax(bool flg);	// 指定されたライト状態にする　true / ライトを付ける , false / ライトを消す
+	
+	bool GetIsRangeMax(void);	// ライトの状態を見る　true = 最大値にする処理が行われている / false = 最小値にする処理が行われている
+
+	void ChangeLightTexture(LIGHT_TYPE lightType);	// 指定されたテクスチャ番号に変更(0を設定するとモデルについていた元の色へ戻す)
+
+	void SetAnimation(ANIM anim);	// 指定されたアニメーションを再生する
+
 private:
+
+	void UpdatePos(void);	// 座標更新処理
+	
+	void UpdateRange(void);	// 範囲更新処理
+
+	void LookPlayer(void);	// プレイヤー側を向く
+
+	void DebugDraw(void);	// デバッグ用の描画処理
+
+private:
+
 	// 初期座標
 	static constexpr VECTOR DEFAULT_POS = { 0.0f,0.0f,0.0f };
 
@@ -48,81 +80,27 @@ private:
 	// デフォルトのライトカラー
 	static constexpr VECTOR DEFAULT_LIGHT_COLOR = { 0xe0,0xe0,0xe0 };
 
-public:
+private:
+	
+	Transform* trans_;	// Transform
 
-	// コンストラクタ
-	Wisp(void);
-
-	// デストラクタ
-	~Wisp(void) override;
-
-	// 初期化処理
-	void Init(void)override;
-	// 更新処理
-	void Update(void)override;
-	// 描画処理
-	void Draw3D(void)override;
-
-	// モデルIDを返す
-	int GetWispModelId() const { return wispModelId_; }
-
-	// 指定されたライト状態にする　true / ライトを付ける , false / ライトを消す
-	void SetIsRangeMax(bool flg);
-
-	// ライトの状態を見る　true = 最大値にする処理が行われている / false = 最小値にする処理が行われている
-	bool GetIsRangeMax(void);
-
-	// 指定されたテクスチャ番号に変更(MAXを設定するとモデルについていた元の色へ戻す)
-	void ChangeLightTexture(LIGHT_TYPE lightType);
-
-	// 指定されたアニメーションを再生する
-	void SetAnimation(ANIM anim);
+	Animation* anim_;	// アニメーション
 
 private:
-	// Transform
-	Transform* trans_;
 
-	// アニメーション
-	Animation* anim_;
-
-	// ポイントライトのハンドル
-	int pointLightHandle_ = -1;
-
-	VECTOR pointPos_;
-
-	// モデルのハンドル
-	int wispModelId_ = -1;
-
-	// テクスチャId
-	std::map<LIGHT_TYPE, int> textures_;
-
-	// ライトの光量(小さいほど光量が増す)
-	float lightPow_;
-
-	// ライトの範囲
-	float range_;
-
-	// 範囲設定を最大値にしているか　true / 最大値にする処理が行われる , false / 最小値にする処理が行われる
-	bool isRangeMax_;
-
-	// ライトを奥にしているか　true / 奥 , false / 手前
-	bool isPushLight_;
-
-	// モデルの大きさ
-	VECTOR scale_;
-
-	// 使用中のライトの種類
-	LIGHT_TYPE lightType_;
-
-	// 座標更新処理
-	void UpdatePos(void);
-	// 範囲更新処理
-	void UpdateRange(void);
-
-	// プレイヤー側を向く
-	void LookPlayer(void);
-
-	// デバッグ用の描画処理
-	void DebugDraw(void);
+	// ポイントライト
+	int pointLightHandle_ = -1;	// ハンドル
+	VECTOR pointPos_;			// 座標
+	float lightPow_;			// ライトの光量(小さいほど光量が増す)
+	float range_;				// ライトの範囲
+	bool isRangeMax_;			// 範囲設定を最大値にしているか　true / 最大値にする処理が行われる , false / 最小値にする処理が行われる
+	
+	// wisp
+	int wispModelId_ = -1;					// モデルのハンドル
+	std::map<LIGHT_TYPE, int> textures_;	// テクスチャId
+	VECTOR scale_;							// モデルの大きさ
+	LIGHT_TYPE lightType_;					// 使用中のライトの種類
+	
+	bool isPushLight_;	// ライトを奥にしているか　true / 奥 , false / 手前
 };
 

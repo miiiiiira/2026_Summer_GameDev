@@ -29,7 +29,7 @@ void ShopScene::Load(void)
 	// 背景読み込み
 	backImg_ = LoadGraph("Data/Image/Shop/shopBackScreen.png");
 
-	UpgradeManager::GetInstance().Load();
+	UpgradeManager::GetInstance()->Load();
 
 	AudioManager::GetInstance()->LoadSceneSound(LoadScene::SHOP);
 }
@@ -37,15 +37,15 @@ void ShopScene::Load(void)
 void ShopScene::LoadEnd(void)
 {
 	Init();
-	UpgradeManager::GetInstance().Init();
+	UpgradeManager::GetInstance()->Init();
 }
 
 void ShopScene::Update(void)
 {
-	UpgradeManager::GetInstance().Update();
+	UpgradeManager::GetInstance()->Update();
 
 	// アップグレードの終了フラグが立っていたら
-	if (UpgradeManager::GetInstance().GetIsUpgradeEnd())
+	if (UpgradeManager::GetInstance()->GetIsUpgradeEnd())
 	{
 		// ゲームシーンへ
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_SHOP_SHUTTER);
@@ -62,12 +62,12 @@ void ShopScene::Draw(void)
 
 #endif // _DEBUG
 
-	UpgradeManager::GetInstance().Draw();
+	UpgradeManager::GetInstance()->Draw();
 }
 
 void ShopScene::Release(void)
 {
 	DeleteGraph(backImg_);
 	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::SHOP);
-	UpgradeManager::GetInstance().Release();
+	UpgradeManager::GetInstance()->Release();
 }

@@ -1,5 +1,3 @@
-#include "GameOver.h"
-
 #include <DxLib.h>
 
 #include "../../Manager/Input/InputManager.h"
@@ -12,14 +10,14 @@
 #include "../TitleScene/TitleScene.h"
 #include "../../Common/MouseCursor/MouseCursor.h"
 
+#include "GameOver.h"
+
 GameOver::GameOver(void)
 {
-	handle_ = -1;
-	crackHandle_ = -1;
-	step_ = 0;
 	// マウスの表示する
 	MouseCursor::GetInstance()->SetMouseDraw(true);
-	currentType_ = NONE;
+
+
 }
 
 GameOver::~GameOver(void)
@@ -28,6 +26,10 @@ GameOver::~GameOver(void)
 
 void GameOver::Init(void)
 {
+	// 現在の選択タイプを初期化
+	currentType_ = NONE;
+
+	// ステートを初期化
 	ChangeState(STATE::NONE);
 
 	// ノイズ
@@ -40,9 +42,11 @@ void GameOver::Init(void)
 
 void GameOver::Load(void)
 {
+	// 画像を読み込み
+	// ゲームオーバー画像
 	handle_ = LoadGraph("Data/Image/GameOver/GameOver01.png");
+	// ひび割れ画像
 	crackHandle_ = LoadGraph("Data/Image/GameOver/GameOver02.png");
-
 	// RETRY画像
 	buttons_.push_back({ TYPE::RETRY, LoadGraph("Data/Image/GameOver/Retry.png"),
 								RETRY_POS_X, RETRY_POS_Y, RETRY_SIZE_X, RETRY_SIZE_Y });
@@ -50,16 +54,19 @@ void GameOver::Load(void)
 	buttons_.push_back({ TYPE::RETURN_TITLE, LoadGraph("Data/Image/GameOver/ReturnTitle.png"),
 							RETURN_TITLE_POS_X, RETURN_TITLE_POS_Y, RETURN_TITLE_SIZE_X, RETURN_TITLE_SIZE_Y });
 
+	// サウンドを読み込み
 	AudioManager::GetInstance()->LoadSceneSound(LoadScene::GAME_OVER);
 }
 
 void GameOver::LoadEnd(void)
 {
+	// 初期化
 	Init();
 }
 
 void GameOver::Update(void)
 {
+	// ステートによって変更
 	switch (state_)
 	{
 	case GameOver::STATE::NONE:
@@ -96,11 +103,14 @@ void GameOver::Draw(void)
 		break;
 	case GameOver::STATE::CRACK:
 	case GameOver::STATE::SELECT:
-		// 画像の描画
+
+		// ひび割れ画像の描画
 		DrawGraph(0, 0, crackHandle_, true);
 
 		// アルファ値を設定
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha_);
+
+		// ボタンを描画
 		for (const auto& button : buttons_)
 		{
 			if (button.type == currentType_)
@@ -109,8 +119,10 @@ void GameOver::Draw(void)
 			}
 			DrawGraph(button.x, button.y, button.graphHandle, true);
 		}
+
 		// アルファ値を元に戻す
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
 		break;
 	default:
 		break;
@@ -120,6 +132,7 @@ void GameOver::Draw(void)
 
 void GameOver::Release(void)
 {
+	// 画像の解放
 	DeleteGraph(handle_);
 	DeleteGraph(crackHandle_);
 
@@ -129,6 +142,7 @@ void GameOver::Release(void)
 	}
 	buttons_.clear();
 
+	// サウンドの解放
 	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::GAME_OVER);
 }
 
@@ -164,14 +178,17 @@ void GameOver::MouseSelect(void)
 	// 衝突判定
 	for (const auto& button : buttons_)
 	{
+		// 当たっていたら
 		if (Collision::HitMouseImg2Box({ static_cast<float>(button.x), static_cast<float>(button.y) },
 			static_cast<float>(button.sizeX), static_cast<float>(button.sizeY)))
 		{
+			// 選択している種類へ変更
 			nextType = button.type;
 			break;
 		}
 	}
 
+	// 選択している種類を反映
 	currentType_ = nextType;
 }
 
@@ -181,22 +198,27 @@ void GameOver::PadSelect(void)
 	{
 	case GameOver::RETRY:
 
+		// 下ボタンを押されたら
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
+			// タイトルを選択
 			currentType_ = RETURN_TITLE;
 		}
 
 		break;
 	case GameOver::RETURN_TITLE:
 
+		// 上ボタンを押されたら
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
 		{
+			// リトライを選択
 			currentType_ = RETRY;
 		}
 
 		break;
 	case GameOver::NONE:
 
+		// リトライを選択
 		currentType_ = RETRY;
 
 		break;
@@ -207,6 +229,7 @@ void GameOver::PadSelect(void)
 
 void GameOver::GetShakeOffset(int& offset)
 {
+	// ヒットストップカウンタが動いていたら
 	if (hitStopCounter_ > 0) {
 		// 振動先をカウンターから計算する----------
 		// 0 or 1
@@ -246,18 +269,23 @@ void GameOver::ChangeState(STATE state)
 
 void GameOver::ChangeNone(void)
 {
-	step_ = 1.5f;
+	// ステップを設定
+	step_ = NON_STEP;
 }
 
 void GameOver::ChangeShake(void)
 {
+	// 揺らし時間を設定
 	hitStopCounter_ = SHAKE_TIME;
 }
 
 void GameOver::ChangeCrack(void)
 {
+	// ひび割れSEを再生
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_CRACK);
-	step_ = 1.0f;
+
+	// ステップを設定
+	step_ = CRACK_STEP;
 }
 
 void GameOver::ChangeSelect(void)
@@ -268,12 +296,15 @@ void GameOver::ChangeSelect(void)
 
 void GameOver::UpdateNone(void)
 {
+	// ステップが0より小さくなっていたら
 	if (step_ < 0.0f)
 	{
+		// ステートを揺らすに変更
 		ChangeState(STATE::SHAKE);
 		return;
 	}
 
+	// ステップを減らす
 	step_ -= SceneManager::GetInstance()->GetDeltaTime();
 }
 
@@ -285,18 +316,22 @@ void GameOver::UpdateShake(void)
 	}
 	else
 	{
+		// 揺らしが終わったらステートをひび割れに変更
 		ChangeState(STATE::CRACK);
 	}
 }
 
 void GameOver::UpdateCrack(void)
 {
+	// ステップが0より小さくなっていたら
 	if (step_ < 0.0f)
 	{
+		// ステートを選択に変更
 		ChangeState(STATE::SELECT);
 		return;
 	}
 
+	// ステップを減らす
 	step_ -= SceneManager::GetInstance()->GetDeltaTime();
 }
 

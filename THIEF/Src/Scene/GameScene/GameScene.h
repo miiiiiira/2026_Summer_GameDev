@@ -43,12 +43,8 @@ public:
 	void ItemCreateStage2(void);	// ステージ2アイテムの作成
 	void ItemCreateStage3(void);	// ステージ3アイテムの作成
 	void CrosshairCreate(void);		// クロスヘアの作成
+
 private:
-
-	// オブジェクトマネージャー
-	ObjectManager* objectManger_;
-
-	EnemyManager* enemyManager_;
 
 	// ステージ数別の初期化処理
 	void Stage1Init(void);
@@ -56,19 +52,18 @@ private:
 	void Stage3Init(void);
 
 	// 敵の当たり判定処理
-	// 敵の攻撃とプレイヤーの当たり判定
-	void CheckEnemyAttack(void);
+	void CheckEnemyAttack(void);	// 敵の攻撃とプレイヤーの当たり判定
+	void CollisionEnemyToStage(void);	// 敵とステージの当たり判定
+	bool CanStepUp(EnemyBase* enemy, const VECTOR& pos, const VECTOR& move, float stepHeight);	// 小さな段差を登れるか判定する
+	void CollisionEnemy2Player(void);	// プレイヤーと敵の当たり判定
+	void CollisionEnemy2PlayerGrab(void);	// プレイヤーのつかみとと敵の当たり判定
 
-	// 敵とステージの当たり判定
-	void CollisionEnemyToStage(void);
-	// 小さな段差を登れるか判定する
-	bool CanStepUp(EnemyBase* enemy, const VECTOR& pos, const VECTOR& move, float stepHeight);
+	void ItemCreate(Tag tag, VECTOR pos);	// タグを使用し、アイテムを作る
 
-	// プレイヤーと敵の当たり判定
-	void CollisionEnemy2Player(void);
-	// プレイヤーのつかみとと敵の当たり判定
-	void CollisionEnemy2PlayerGrab(void);
+private:
 
-	// タグを使用し、アイテムを作る
-	void ItemCreate(Tag tag, VECTOR pos);
+	// オブジェクトマネージャー
+	ObjectManager* objectManger_;
+
+	EnemyManager* enemyManager_;
 };

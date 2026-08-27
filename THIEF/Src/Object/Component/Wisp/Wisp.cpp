@@ -1,5 +1,3 @@
-#include "Wisp.h"
-
 #include "../../../Common/Transform/MatrixUtility.h"
 #include "../../../Common/CameraUtility/CameraUtility.h"
 #include "../../../Common/Math/Math.h"
@@ -9,6 +7,8 @@
 #include "../Render/Render3D.h"
 #include "../../Object.h"
 #include "../Animation/Animation.h"
+
+#include "Wisp.h"
 
 Wisp::Wisp(void)
 {
@@ -42,6 +42,7 @@ Wisp::Wisp(void)
 		textures_.emplace(table.first, LoadGraph(table.second.path.c_str()));
 	}
 
+	// ライトセレクトシーンで選択されたライトのタイプを取得
 	lightType_ = LightManager::GetInstance()->GetLightType();
 }
 
@@ -61,6 +62,7 @@ Wisp::~Wisp(void)
 
 void Wisp::Init(void)
 {
+	// 座標を初期化
 	pointPos_ = DEFAULT_POS;
 
 	// 大きさの初期化
@@ -88,6 +90,7 @@ void Wisp::Init(void)
 	// モデルに大きさ、向き、座標を設定
 	MV1SetScale(wispModelId_, scale_);
 	MV1SetPosition(wispModelId_, trans_->pos_);
+
 	// プレイヤー側を向くようにする
 	LookPlayer();
 
@@ -111,6 +114,7 @@ void Wisp::Update(void)
 
 #ifdef _DEBUG
 
+	// カラーチェンジ　Hキー
 	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::COLOR_CHANGE))
 	{
 		switch (lightType_)
@@ -190,8 +194,10 @@ bool Wisp::GetIsRangeMax(void)
 
 void Wisp::ChangeLightTexture(LIGHT_TYPE lightType)
 {
+	// 指定のライトタイプを設定
 	lightType_ = lightType;
 
+	// 0を設定された場合はモデルについていた元のテクスチャを使用する
 	if (lightType_ == LIGHT_TYPE::COLOR_0)
 	{
 		// テクスチャをデフォルトに戻す
@@ -208,6 +214,7 @@ void Wisp::ChangeLightTexture(LIGHT_TYPE lightType)
 		return;
 	}
 
+	// ライトタイプを使用し対応するデータをテーブルから取得
 	auto lightData = LightTable::Table.find(lightType_);
 
 	// テクスチャを変更
@@ -279,16 +286,20 @@ void Wisp::UpdatePos(void)
 
 	}
 
+	// ライトが奥の設定だったら
 	if (isPushLight_)
 	{
-		// 座標に反映 奥
+		// モデル用座標に反映 奥
 		trans->pos_ = CameraUtility::AddCameraPosLocalPos(REACH_MAX_LIGHT);
+		// ポイントライト座標に反映
 		pointPos_ = CameraUtility::AddCameraPosLocalPos(VAdd(REACH_MAX_LIGHT, POINTLIGHT_OFFSET));
 	}
+	// ライトが手前の設定だったら
 	else
 	{
-		// 座標に反映 手前
+		// モデル用座標に反映 手前
 		trans->pos_ = CameraUtility::AddCameraPosLocalPos(REACH_DEFAULT_LIGHT);
+		// ポイントライト座標に反映
 		pointPos_ = CameraUtility::AddCameraPosLocalPos(VAdd(REACH_DEFAULT_LIGHT, POINTLIGHT_OFFSET));
 	}
 
@@ -312,6 +323,7 @@ void Wisp::UpdateRange(void)
 	float prevRange = range_;
 	float prevLightPow = lightPow_;
 
+	// 範囲設定が最大だったら
 	if (isRangeMax_)
 	{
 		// 最大値じゃなければ変更
@@ -325,6 +337,7 @@ void Wisp::UpdateRange(void)
 			lightPow_ = LIGHT_POW_MAX;
 		}
 	}
+	// 範囲設定が最小だったら
 	else
 	{
 		// 最小値じゃなければ変更

@@ -6,53 +6,43 @@ class UpgradeManager
 {
 public:
 
-	// 明示的にインステンスを生成する
-	static void CreateInstance(void);
+	// シングルトン（生成・取得・削除）
+	static void CreateInstance(void) { if (instance_ == nullptr) { instance_ = new UpgradeManager(); } }
+	static UpgradeManager* GetInstance(void) { return instance_; }
+	static void DeleteInstance(void) { if (instance_ != nullptr) { delete instance_; instance_ = nullptr; } }
 
-	// 静的インスタンスの取得
-	static UpgradeManager& GetInstance(void);
+public:
 
-	// 初期化
-	void Load(void);
-	void Init(void);
-	// 更新
-	void Update(void);
-	// 描画
-	void Draw(void);
-	// 解放処理
-	void Release(void);
+	UpgradeManager(void);	// コンストラクタ
 
-	// 解放処理
-	void Destroy(void);
+	void Load(void);		// 読み込み
+	void Init(void);		// 初期化
+	void Update(void);		// 更新
+	void Draw(void);		// 描画
+	void Release(void);		// 解放
 
-	// アップデートを渡す
-	Upgrade* GetUpgrade(void) { return upgrade_; }
+	Upgrade* GetUpgrade(void) { return upgrade_; }	// アップデートを渡す
+	
+	void TrueIsUpgradeEnd(void) { isUpgradeEnd_ = true; }	// アップグレードを終わらせる
 
-	// アップグレードを終わらせる
-	void TrueIsUpgradeEnd(void) { isUpgradeEnd_ = true; }
-
-	// アップグレードが終了したかどうかを渡す
-	bool GetIsUpgradeEnd(void)const { return isUpgradeEnd_; }
+	bool GetIsUpgradeEnd(void)const { return isUpgradeEnd_; }	// アップグレードが終了したかどうかを渡す
 
 private:
 
-	// 静的インスタンス
-	static UpgradeManager* instance_;
+	static UpgradeManager* instance_;	// 静的インスタンス
 
-	// アップグレード
-	Upgrade* upgrade_;
+	// コピー・ムーブ操作を禁止
+	UpgradeManager(const UpgradeManager&) = delete;
+	UpgradeManager& operator=(const UpgradeManager&) = delete;
+	UpgradeManager(UpgradeManager&&) = delete;
+	UpgradeManager& operator=(UpgradeManager&&) = delete;
 
-	// デフォルトコンストラクタをprivateにして、
-	// 外部から生成できない様にする
-	UpgradeManager(void);
+private:
+	
+	Upgrade* upgrade_;	// アップグレード
 
-	// コピーコンストラクタも同様
-	UpgradeManager(const UpgradeManager& instance) = default;
+private:
 
-	// デストラクタも同様
-	~UpgradeManager(void) = default;
-
-	bool isUpgradeEnd_;
-
+	bool isUpgradeEnd_;	// アップグレードが終了したか
 };
 

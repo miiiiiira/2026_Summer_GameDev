@@ -278,7 +278,7 @@ void SceneManager::Delete(void)
 	PlayerStatusManager::GetInstance()->Destroy();
 
 	// アップグレード管理解放
-	UpgradeManager::GetInstance().Destroy();
+	UpgradeManager::GetInstance()->DeleteInstance();
 
 	// フェーダー解放
 	Fader::GetInstance()->DeleteInstance();

@@ -1,5 +1,3 @@
-#include "Stage.h"
-
 #include "../Render/Render3D.h"
 #include "../Collider/DeliveryLocationCollider/DeliveryLocationCollider.h"
 #include "../../../Scene/SceneManager.h"
@@ -10,15 +8,21 @@
 #include "../Animation/Animation.h"
 #include "../../../Application.h"
 
+#include "Stage.h"
+
 Stage::Stage(void)
 {
+	// プッシュ画像を読み込み
 	pushImg_ = LoadGraph("Data/Image/GameScene/PushArrow.png");
 }
 
 Stage::~Stage(void)
 {
+	// モデルの削除
 	MV1DeleteModel(collModelId_);
+	// プッシュ画像の削除
 	DeleteGraph(pushImg_);
+	// アイテムたちのポインタをクリア
 	items_.clear();
 }
 
@@ -47,19 +51,23 @@ void Stage::Init()
 		anim->AddInFbx(0, 0.5f, 0);
 	}
 
+	// チュートリアルだった場合
 	if (SceneManager::GetInstance()->GetNowSceneTag() == TUTORIAL)
 	{
-		deliverySize_ = { 220.0f,220.0f,240.0f };
-		deliveryPos_ =  {-1.0f,220.0f,14630.0f};
-		doneSwitchPos_ = { 273.0f,148.0f,14310.0f };
+		// チュートリアル用の情報を設定
+		deliverySize_ = TUTORIAL_DELIVERY_SIZE;
+		deliveryPos_ = TUTORIAL_DELIVERY_POS;
+		doneSwitchPos_ = TUTORIAL_DELIVERY_SWITCH_POS;
 	}
 	else
 	{
 
 		// ステージ情報を取ってきて初期化処理を行う
 		auto stageNum = SceneManager::GetInstance()->GetCurrentStage();
+		// ステージ情報を使用しテーブルから納品場所のデータを取得
 		auto deliveryData = DeliveryTable::Table.find(stageNum);
 
+		// データがあれば
 		if (deliveryData != DeliveryTable::Table.end())
 		{
 			// 納品場所の大きさ
@@ -117,6 +125,30 @@ void Stage::Update(void)
 	PushUpDownUpdate();
 }
 
+void Stage::Draw2D(void)
+{
+	// クリアカウントが動いてなければ描画しない
+	if (clearCount_ <= 0)return;
+
+	// カウントを調べる
+	int count = (CLEAR_COUNT_MAX / 60) - (clearCount_ / 60);
+
+	// フォントハンドルを取得
+	int font = Application::GetInstance()->GetFont(FONT_SIZE_60);
+
+	// 文字の大きさを調べる
+	int strWidth = GetDrawFormatStringWidthToHandle(font, "%d", count);
+
+	// カウントを出す
+	DrawFormatStringToHandle(
+		Application::SCREEN_SIZE_X / 2 - strWidth / 2,
+		60,
+		0xffffff,
+		font,
+		"%d",
+		count);
+}
+
 void Stage::Draw3D(void)
 {
 	// プッシュ画像の描画フラグが立っていたら
@@ -134,30 +166,7 @@ void Stage::Draw3D(void)
 #endif // _DEBUG
 }
 
-void Stage::Draw2D(void)
-{
-	// クリアカウントが動いてなければ描画しない
-	if (clearCount_ <= 0)return;
-
-	// カウントを調べる
-	int count = (CLEAR_COUNT_MAX / 60) - (clearCount_ / 60);
-
-	int font = Application::GetInstance()->GetFont(FONT_SIZE_60);
-
-	// 文字の大きさを調べる
-	int strWidth = GetDrawFormatStringWidthToHandle(font, "%d", count);
-
-	// カウントを出す
-	DrawFormatStringToHandle(
-		Application::SCREEN_SIZE_X / 2 - strWidth / 2,
-		60,
-		0xffffff,
-		font,
-		"%d",
-		count);
-}
-
-Transform* Stage::GetTransform()
+Transform* Stage::GetTransform(void)
 {
 	return owner_->GetComponent<Transform>();
 }
@@ -257,13 +266,11 @@ void Stage::DrawDebug(void)
 	// 納品場所の当たり判定の視覚化
 	VECTOR startPos, endPos;
 	startPos = endPos = deliveryPos_;
-
 	startPos = VSub(startPos, deliverySize_);
-
 	endPos = VAdd(endPos, deliverySize_);
 
+	// 枠組みで描画
 	DrawCube3D(startPos, endPos, 0x0000ff, 0x0000ff, false);
-
 }
 
 void Stage::ClearCountUpdate(void)
@@ -276,6 +283,7 @@ void Stage::ClearCountUpdate(void)
 	// クリアカウントが規定量に達したらステージクリアへ
 	if (clearCount_ >= CLEAR_COUNT_MAX)
 	{
+		// チュートリアルだったら
 		if (SceneManager::GetInstance()->GetNowSceneTag() == SCENE_TAG::TUTORIAL)
 		{
 			// チュートリアル時にカウンタに加算される
