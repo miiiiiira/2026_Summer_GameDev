@@ -1,5 +1,3 @@
-#include "StageClear.h"
-
 #include <DxLib.h>
 
 #include "../../Manager/Input/InputManager.h"
@@ -11,22 +9,27 @@
 #include "../TitleScene/TitleScene.h"
 #include "../../Common/MouseCursor/MouseCursor.h"
 
+#include "StageClear.h"
+
 StageClear::StageClear(void)
 {
-	handle_ = -1;
 	// マウスの表示する
 	MouseCursor::GetInstance()->SetMouseDraw(true);
-	currentType_ = NONE;
 }
 
 void StageClear::Init(void)
 {
+	// 現在選択している種類の初期化
+	currentType_ = NONE;
+
 	// BGMを再生
 	AudioManager::GetInstance()->PlayBGM(SoundID::BGM_STAGECLEAR);
 }
 
 void StageClear::Load(void)
 {
+	// 画像を読み込み
+	// 「Stage Clear」画像
 	handle_ = LoadGraph("Data/Image/StageClear/StageClear.png");
 
 	// RETRY画像
@@ -36,11 +39,13 @@ void StageClear::Load(void)
 	buttons_.push_back({ TYPE::RETURN_TITLE, LoadGraph("Data/Image/StageClear/ReturnTitle.png"),
 							RETURN_TITLE_POS_X, RETURN_TITLE_POS_Y, RETURN_TITLE_SIZE_X, RETURN_TITLE_SIZE_Y });
 
+	// ステージクリア用の音を読み込み
 	AudioManager::GetInstance()->LoadSceneSound(LoadScene::STAGE_CLEAR);
 }
 
 void StageClear::LoadEnd(void)
 {
+	// 初期化処理
 	Init();
 }
 
@@ -62,7 +67,7 @@ void StageClear::Update(void)
 	{
 	case StageClear::NEXT_STAGE:
 
-		// ゲームシーンへ
+		// ショップシーンへ
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<ShopScene>(), SHOP);
 		return;
 
@@ -81,22 +86,25 @@ void StageClear::Update(void)
 
 void StageClear::Draw(void)
 {
-	// 画像の描画
+	// 「Stage Clear」画像の描画
 	DrawGraph(0, 0, handle_, true);
 
-	// ボタン表示
 	for (const auto& button : buttons_)
 	{
+		// 選択している種類の場所にフレームを描画
 		if (button.type == currentType_)
 		{
 			FrameRenderer::Draw(button.x, button.y, button.sizeX, button.sizeY, FRAME_OFFSET);
 		}
+
+		// ボタン表示
 		DrawGraph(button.x, button.y, button.graphHandle, true);
 	}
 }
 
 void StageClear::Release(void)
 {
+	// 画像を解放
 	DeleteGraph(handle_);
 
 	for (const auto& button : buttons_)
@@ -105,8 +113,8 @@ void StageClear::Release(void)
 	}
 	buttons_.clear();
 
+	// ステージクリア用の音を解放
 	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::STAGE_CLEAR);
-
 }
 
 void StageClear::SelectUpdate(void)
@@ -139,9 +147,11 @@ void StageClear::MouseSelect(void)
 	// 衝突判定
 	for (const auto& button : buttons_)
 	{
+		// 当たっていたら
 		if (Collision::HitMouseImg2Box({ static_cast<float>(button.x), static_cast<float>(button.y) },
 			static_cast<float>(button.sizeX), static_cast<float>(button.sizeY)))
 		{
+			// 現在選択している種類を変更
 			currentType_ = button.type;
 			break;
 		}
@@ -154,22 +164,27 @@ void StageClear::PadSelect(void)
 	{
 	case StageClear::NEXT_STAGE:
 
+		// 下を押したら
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
+			// タイトルボタンへ
 			currentType_ = RETURN_TITLE;
 		}
 
 		break;
 	case StageClear::RETURN_TITLE:
 
+		// 上を押したら
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
 		{
+			// ネクストステージボタンへ
 			currentType_ = NEXT_STAGE;
 		}
 
 		break;
 	case StageClear::NONE:
 
+		// ネクストステージボタンへ
 		currentType_ = NEXT_STAGE;
 
 		break;

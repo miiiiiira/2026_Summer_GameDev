@@ -2,36 +2,33 @@
 #include "../../Application.h"
 #include "Loading.h"
 
-// コンストラクタ
 Loading::Loading()
-	: posX_(0)
-	, posY_(0)
-	, isLoading_(false)
-	, loadTimer_(0)
 {
+	// 画像ハンドルの初期化
 	for (int i = 0; i < static_cast<int>(NOW_TYPE::MAX); i++)
 	{
 		handles_[i] = -1;
 	}
 }
 
-// デストラクタ
-Loading::~Loading()
-{}
-
-// 初期化
 void Loading::Init(void)
 {
+	// 描画種類の初期化
 	nowType_ = Loading0;
+
+	// 最低描画時間の初期化
 	loadTimer_ = 0;
+
+	// ローディング中かのフラグを初期化
 	isLoading_ = false;
-	posX_ = 0.0f;
-	posY_ = 0.0f;
+
+	// 座標の初期化
+	pos_ = { 0.0f,0.0f };
 }
 
-// 読み込み
 void Loading::Load(void)
 {
+	// 1枚の画像を分割して読み込み
 	for (int i = 0; i < static_cast<int>(NOW_TYPE::MAX); i++)
 	{
 		LoadDivGraph(
@@ -45,7 +42,6 @@ void Loading::Load(void)
 	}
 }
 
-// 更新
 void Loading::Update(void)
 {
 	loadTimer_++;
@@ -65,16 +61,28 @@ void Loading::Update(void)
 			switch (nowType_)
 			{
 			case Loading::Loading0:
+
+				// 現在の種類を1へ
 				nowType_ = Loading1;
+
 				break;
 			case Loading::Loading1:
+
+				// 現在の種類を2へ
 				nowType_ = Loading2;
+
 				break;
 			case Loading::Loading2:
+
+				// 現在の種類を3へ
 				nowType_ = Loading3;
+
 				break;
 			case Loading::Loading3:
+
+				// 現在の種類を0へ
 				nowType_ = Loading0;
+
 				break;
 			default:
 				break;
@@ -83,26 +91,25 @@ void Loading::Update(void)
 	}
 }
 
-// 描画
 void Loading::Draw(void)
 {
+	// ローディング画面を描画
 	DrawGraphF(
-		posX_, posY_,	// 座標
-		handles_[static_cast<int>(nowType_)],		// ハンドル
-		true			// 透過フラグ
-	);
+		pos_.x,
+		pos_.y,
+		handles_[static_cast<int>(nowType_)],
+		true);
 }
 
-// 解放
 void Loading::Release(void)
 {
+	// 画像ハンドルの解放
 	for (int i = 0; i < static_cast<int>(NOW_TYPE::MAX); i++)
 	{
 		DeleteGraph(handles_[i]);
 	}
 }
 
-// 非同期読み込みに切り替える
 void Loading::StartAsyncLoad(void)
 {
 	isLoading_ = true;
@@ -110,7 +117,6 @@ void Loading::StartAsyncLoad(void)
 	SetUseASyncLoadFlag(true);
 }
 
-// 同期読み込みに切り替える
 void Loading::EndAsyncLoad(void)
 {
 	// 非同期読み込み終了

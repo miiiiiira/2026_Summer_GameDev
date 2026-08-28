@@ -8,6 +8,7 @@ class StageClear : public SceneBase
 {
 public:
 
+	// 現在選択しているボタンの種類
 	enum TYPE
 	{
 		NEXT_STAGE,
@@ -15,13 +16,16 @@ public:
 		NONE,
 	};
 
+	// 画像の情報
 	struct IMG_INFO
 	{
-		TYPE type;
-		int graphHandle;
-		int x, y;
-		int sizeX, sizeY;
+		TYPE type;			// 現在選択しているボタンの種類
+		int graphHandle;	// ボタンの画像ハンドル
+		int x, y;			// 座標
+		int sizeX, sizeY;	// 大きさ
 	};
+
+public:
 
 	StageClear(void);				// コンストラクタ
 
@@ -31,6 +35,14 @@ public:
 	void Update(void)	override;	// 更新
 	void Draw(void)		override;	// 描画
 	void Release(void)	override;	// 解放
+
+private:
+
+	void SelectUpdate(void);	// 選択処理
+
+	void MouseSelect(void);		// マウス選択
+
+	void PadSelect(void);		// パッド選択
 
 private:
 
@@ -50,28 +62,16 @@ private:
 	static constexpr int RETURN_TITLE_POS_X = Application::SCREEN_SIZE_X / 2 - RETURN_TITLE_SIZE_X / 2;
 	static constexpr int RETURN_TITLE_POS_Y = 550;
 
-	// フレームのオフセット
-	static constexpr int FRAME_OFFSET = 10;
+	static constexpr int FRAME_OFFSET = 10;	// フレームのオフセット
 
-	// 画像ハンドル
-	int handle_;
+private:
 
-	// ボタンの情報を格納する配列
-	std::vector<IMG_INFO> buttons_;
-
-	// アルファ値(ボタン表示に使用)
-	int alpha_ = 0;
-
-	// 現在選択しているメニュー
-	TYPE currentType_;
-
-	// 選択処理
-	void SelectUpdate(void);
-
-	// マウス選択
-	void MouseSelect(void);
-
-	// パッド選択
-	void PadSelect(void);
+	int handle_ = -1;	// 画像ハンドル
+	
+	std::vector<IMG_INFO> buttons_;	// ボタンの情報を格納する配列
+	
+	int alpha_ = 0;	// アルファ値(ボタン表示に使用)
+	
+	TYPE currentType_;	// 現在選択している種類
 };
 

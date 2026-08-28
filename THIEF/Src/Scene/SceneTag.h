@@ -2,16 +2,16 @@
 
 enum SCENE_TAG
 {
-	TITLE,
-	MAINMANU,
-	TUTORIAL,
-	LIGHT_SELECT,
-	GAME,
-	STAGE_CLEAR,
-	SHOP,
-	PAUSE,
-	CLEAR,
-	OVER,
+	TITLE,			// タイトル
+	MAINMANU,		// メインメニュー
+	TUTORIAL,		// チュートリアル
+	LIGHT_SELECT,	// ライトセレクト
+	GAME,			// ゲーム
+	STAGE_CLEAR,	// ステージクリア
+	SHOP,			// ショップ
+	PAUSE,			// ポーズ
+	CLEAR,			// ゲームクリア
+	OVER,			// ゲームオーバー
 
 	DEBUG,
 };

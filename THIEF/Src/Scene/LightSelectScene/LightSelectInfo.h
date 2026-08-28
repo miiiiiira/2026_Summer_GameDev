@@ -14,12 +14,10 @@ struct selectTypeData
 	// 画像パス
 	std::string path;
 	std::string framePath;
-
-	// 画像座標
-	Vector2 pos;
-
-	// 画像サイズ
-	Vector2 size;
+	
+	Vector2 pos;	// 画像座標
+	
+	Vector2 size;	// 画像サイズ
 };
 
 namespace LightSelectTypeTable
@@ -27,8 +25,8 @@ namespace LightSelectTypeTable
 	enum SELECT_TYPE
 	{
 		RIGHT_ARROW,// 右矢印
-		LEFT_ARROW,// 左矢印
-		GAME_START,// ゲームスタート
+		LEFT_ARROW,	// 左矢印
+		GAME_START,	// ゲームスタート
 
 		MAX,
 		NON

@@ -1,13 +1,11 @@
 #pragma once
 #include "../SceneBase.h"
 
-class ShopScene :
-    public SceneBase
+class ShopScene : public SceneBase
 {
 public:
 
 	ShopScene(void);				// コンストラクタ
-	~ShopScene(void) override;		// デストラクタ
 
 	void Init(void)		override;	// 初期化
 	void Load(void)		override;	// 読み込み
@@ -18,7 +16,6 @@ public:
 
 private:
 
-	// 背景
-	int backImg_ = -1;
+	int backImg_ = -1;	// 背景画像ハンドル
 };
 

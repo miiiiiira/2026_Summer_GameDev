@@ -1,4 +1,3 @@
-#include "LightSelectScene.h"
 #include "../../Manager/Light/LightManager.h"
 #include "../../Manager/Input/InputManager.h"
 #include "../../Manager/Audio/AudioManager.h"
@@ -8,19 +7,17 @@
 #include "../../Common/Collision/Collision.h"
 #include "../MainMenu/MainMenu.h"
 
+#include "LightSelectScene.h"
+
 LightSelectScene::LightSelectScene(void)
 {
 	// マウスの表示
 	MouseCursor::GetInstance()->SetMouseDraw(true);
 }
 
-LightSelectScene::~LightSelectScene(void)
-{
-}
-
 void LightSelectScene::Init(void)
 {
-	// デフォルト
+	// ライトの種類を初期化
 	lightType_ = COLOR_0;
 
 	// マウスが現在選択している画像の種類
@@ -85,6 +82,7 @@ void LightSelectScene::Draw(void)
 		DrawGraph(0, 0, BestTextImg_, true);
 	}
 
+	// 選択可能なボタンたちを描画
 	for (auto selectTypeTable : LightSelectTypeTable::Table)
 	{
 		DrawRotaGraphF(
@@ -102,6 +100,7 @@ void LightSelectScene::Draw(void)
 	// 中身があったら
 	if (typeTable != LightSelectTypeTable::Table.end())
 	{
+		// 選択されているものにフレームを描画
 		DrawRotaGraphF(
 			typeTable->second.pos.x,
 			typeTable->second.pos.y,
@@ -186,41 +185,54 @@ void LightSelectScene::PadSelect(void)
 	{
 	case LightSelectTypeTable::RIGHT_ARROW:
 
+		// 左を押されたら
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_LEFT))
 		{
+			// 左矢印を選択
 			ChangeSelectType(LightSelectTypeTable::LEFT_ARROW);
 		}
 
+		// 下を押されたら
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
+			// ゲームスタートボタンを選択
 			ChangeSelectType(LightSelectTypeTable::GAME_START);
 		}
 
 		break;
 	case LightSelectTypeTable::LEFT_ARROW:
 
+		// 右を押されたら
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_RIGHT))
 		{
+			// 右矢印を選択
 			ChangeSelectType(LightSelectTypeTable::RIGHT_ARROW);
 		}
 
+		// 下を押されたら
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
+			// ゲームスタートボタンを選択
 			ChangeSelectType(LightSelectTypeTable::GAME_START);
 		}
 
 		break;
 	case LightSelectTypeTable::GAME_START:
 
+		// 上を押されたら
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
 		{
+			// 左矢印を選択
 			ChangeSelectType(LightSelectTypeTable::LEFT_ARROW);
 		}
 
 		break;
 	case LightSelectTypeTable::MAX:
 	case LightSelectTypeTable::NON:
+
+		// 左矢印を選択
 		ChangeSelectType(LightSelectTypeTable::LEFT_ARROW);
+
 		break;
 	default:
 		break;

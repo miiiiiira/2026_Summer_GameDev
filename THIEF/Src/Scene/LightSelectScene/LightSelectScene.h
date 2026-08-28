@@ -10,49 +10,38 @@ class LightSelectScene : public SceneBase
 public:
 
 	LightSelectScene(void);				// コンストラクタ
-	~LightSelectScene(void) override;		// デストラクタ
 
-	void Init(void)		override;	// 初期化
-	void Load(void)		override;	// 読み込み
-	void LoadEnd(void)	override;	// 読み込み後の処理
-	void Update(void)	override;	// 更新
-	void Draw(void)		override;	// 描画
-	void Release(void)	override;	// 解放
+	void Init(void)		override;		// 初期化
+	void Load(void)		override;		// 読み込み
+	void LoadEnd(void)	override;		// 読み込み後の処理
+	void Update(void)	override;		// 更新
+	void Draw(void)		override;		// 描画
+	void Release(void)	override;		// 解放
 
 private:
 
-	// 「カラーを選んでね」の画像
-	int selectLightColorTextImg_;
+	
+	void SelectUpgrade(void);	// どの能力をアップグレードするか選択を行う
 
-	// 「Best」の画像
-	int BestTextImg_;
+	// 選択処理
+	void MouseSelect(void);	// マウス
+	void PadSelect(void);	// パッド
 
-	// ライトの種類とそれに対応した画像ハンドルをもつ
-	std::map<LIGHT_TYPE,int> wispImgs_;
+	void ConfirmUpgrade(void);	// 決定処理
+	
+	void ChangeSelectType(LightSelectTypeTable::SELECT_TYPE type);	// 指定の選択種類に変更
 
-	// 使用中のライトの種類
-	LIGHT_TYPE lightType_;
+private:
 
-	// 選択できる画像のハンドル
-	int selectTypeImg_[LightSelectTypeTable::SELECT_TYPE::MAX];
-	// 選択できる画像のフレーム画像ハンドル
-	int selectTypeFrameImg_[LightSelectTypeTable::SELECT_TYPE::MAX];
+	// 画像ハンドル
+	int selectLightColorTextImg_;										// 「カラーを選んでね」
+	int BestTextImg_;													// 「Best」
+	int selectTypeImg_[LightSelectTypeTable::SELECT_TYPE::MAX];			// 選択可能ボタン
+	int selectTypeFrameImg_[LightSelectTypeTable::SELECT_TYPE::MAX];	// 選択時のフレーム
 
-	// マウスが現在選択している画像の種類
-	LightSelectTypeTable::SELECT_TYPE selectType_;
+	std::map<LIGHT_TYPE,int> wispImgs_;	// ライトの種類とそれに対応した画像ハンドルをもつ
 
-	// どの能力をアップグレードするか選択を行う
-	void SelectUpgrade(void);
-
-	// マウスの選択処理
-	void MouseSelect(void);
-
-	// パッドの選択処理
-	void PadSelect(void);
-
-	// 決定処理
-	void ConfirmUpgrade(void);
-
-	// 変更処理
-	void ChangeSelectType(LightSelectTypeTable::SELECT_TYPE type);
+	LIGHT_TYPE lightType_;	// 使用中のライトの種類
+	
+	LightSelectTypeTable::SELECT_TYPE selectType_;	// マウスが現在選択している画像の種類
 };
