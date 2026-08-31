@@ -26,12 +26,6 @@ public:
 		MAX,
 	};
 
-	enum class SIDE
-	{
-		RIGHT,
-		LEFT,
-	};
-
 	// コンストラクタ
 	Skeleton(void);
 
@@ -42,7 +36,7 @@ public:
 	void Update(void) override;
 	void Draw3D(void) override;
 
-	void SetSide(SIDE side);
+	void SetSide(ENEMY_SIDE side);
 
 private:
 
@@ -59,7 +53,7 @@ private:
 	static constexpr float TRIGGER_RANGE = 100.0f * 100.0f;
 
 	STATE state_ = STATE::NONE;
-	SIDE side_ = SIDE::RIGHT;
+	ENEMY_SIDE side_ = ENEMY_SIDE::RIGHT;
 
 	// 状態遷移
 	void ChangeState(STATE state);

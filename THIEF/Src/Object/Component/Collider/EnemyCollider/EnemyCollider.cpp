@@ -12,7 +12,6 @@
 
 void EnemyCollider::Init(void)
 {
-
 	enemy_ = GetOwner()->GetComponent<EnemyBase>();
 }
 

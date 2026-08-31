@@ -4,8 +4,9 @@
 #include "../../../Common/Math/Math.h"
 #include "StagePathData.h"
 
-StagePathData::StagePathData(void)
+StagePathData::StagePathData(int stageId)
 {
+	stageId_ = stageId;
 }
 
 StagePathData::~StagePathData(void)
@@ -67,9 +68,29 @@ void StagePathData::Load(const std::string& csvPath)
 
 void StagePathData::AddEdge(int fromId, int toId)
 {
+	VECTOR posA = way_[fromId].pos;
+	VECTOR posB = way_[toId].pos;
+
+	float checkRadius = 50.0f; // 敵の大きさに応じて調整
+
+	// posA から posB への間に障害物があるか判定
+	MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, posA, posB, checkRadius);
+
+	if (res.HitNum > 0)
+	{
+		// 障害物がある場合はエッジを接続せずに終了
+		MV1CollResultPolyDimTerminate(res);
+		return;
+	}
+
+	// 検出結果のメモリ解放
+	MV1CollResultPolyDimTerminate(res);
+
+	// 障害物がない場合のみエッジを追加
 	EDGE edge = {};
-	edge.way = way_[toId];
-	edge.cost = VSize(VSub(way_[toId].pos, way_[fromId].pos));
+	edge.way.id = way_[toId].id;
+	edge.way.pos = way_[toId].pos;
+	edge.cost = VSize(VSub(posB, posA));
 
 	edgeList_[fromId].push_back(edge);
 }

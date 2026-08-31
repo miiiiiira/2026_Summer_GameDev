@@ -45,64 +45,10 @@
 //		}
 //	}
 //}
-//
-//void EnemyManager::CreateEnemyStage1(void)
-//{
-//	// Giggleを生成
-//	EnemyBase* newEnemy = new Giggle();
-//	newEnemy->Load();
-//	newEnemy->SetTag(ENEMY_TAG::GIGGLE);
-//	newEnemy->Init();
-//	// リストに追加
-//	enemys_.push_back(newEnemy);
-//
-//	// Yetiを生成
-//	newEnemy = new Yeti(enemyModelIds_[ENEMY_TAG::YETI]);
-//	newEnemy->Load();
-//	newEnemy->SetTag(ENEMY_TAG::YETI);
-//	VECTOR pos = { -5617.04f,10.0f,6573.71f };
-//	newEnemy->SetPos(pos);
-//	newEnemy->Init(player_, stageId_, way_, edgeList_);
-//	// リストに追加
-//	enemys_.push_back(newEnemy);
-//
-//	// Mushnubを生成
-//	newEnemy = new Mushnub(enemyModelIds_[ENEMY_TAG::MUSHNUB]);
-//	newEnemy->Load();
-//	newEnemy->SetTag(ENEMY_TAG::MUSHNUB);
-//	newEnemy->Init(player_, stageId_, way_, edgeList_);
-//	// リストに追加
-//	enemys_.push_back(newEnemy);
-//}
+
 //
 //void EnemyManager::CreateEnemyStage2(void)
 //{
-//	// Giggleを生成
-//	EnemyBase* newEnemy = new Giggle();
-//	newEnemy->Load();
-//	newEnemy->SetTag(ENEMY_TAG::GIGGLE);
-//	newEnemy->Init();
-//	// リストに追加
-//	enemys_.push_back(newEnemy);
-//
-//	// Yetiを生成
-//	newEnemy = new Yeti(enemyModelIds_[ENEMY_TAG::YETI]);
-//	newEnemy->Load();
-//	newEnemy->SetTag(ENEMY_TAG::YETI);
-//	VECTOR pos = { -7887.0f,10.0f,1399.0f };
-//	newEnemy->SetPos(pos);
-//	newEnemy->Init(player_, stageId_, way_, edgeList_);
-//	// リストに追加
-//	enemys_.push_back(newEnemy);
-//
-//	// Statueを生成
-//	Statue* statue = new Statue(enemyModelIds_[ENEMY_TAG::STATUE]);
-//	statue->Load();
-//	statue->SetTag(ENEMY_TAG::STATUE);
-//	statue->SetChasePos({ -7444.0f,40.0f,3570.0f });
-//	statue->Init(player_, stageId_, way_, edgeList_);
-//	// リストに追加
-//	enemys_.push_back(statue);
 //
 //	// Skeletonを生成
 //	float startX = -4000.0f;	// 檻の並びの開始X座標
@@ -150,23 +96,6 @@
 //
 //void EnemyManager::CreateEnemyStage3(void)
 //{
-//	// Giggleを生成
-//	EnemyBase* newEnemy = new Giggle();
-//	newEnemy->Load();
-//	newEnemy->SetTag(ENEMY_TAG::GIGGLE);
-//	newEnemy->Init();
-//	// リストに追加
-//	enemys_.push_back(newEnemy);
-//
-//	// Yetiを生成
-//	newEnemy = new Yeti(enemyModelIds_[ENEMY_TAG::YETI]);
-//	newEnemy->Load();
-//	newEnemy->SetTag(ENEMY_TAG::YETI);
-//	VECTOR pos = { 5704.0f,10.0f,7919.0f };
-//	newEnemy->SetPos(pos);
-//	newEnemy->Init(player_, stageId_, way_, edgeList_);
-//	// リストに追加
-//	enemys_.push_back(newEnemy);
 //
 //	// Mushnubを生成
 //	Mushnub* mushnub = new Mushnub(enemyModelIds_[ENEMY_TAG::MUSHNUB]);

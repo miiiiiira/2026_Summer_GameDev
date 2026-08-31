@@ -17,6 +17,8 @@ void Giggle::Init(void)
 
 	const auto& data = EnemyTable::Table.at(ENEMY_TAG::GIGGLE);
 	SetEnemyData(data);
+	info_.tag_ = ENEMY_TAG::GIGGLE;
+
 
 	// 初期ステートへ遷移
 	ChangeState(STATE::IDLE);

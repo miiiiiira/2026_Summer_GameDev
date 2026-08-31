@@ -2,6 +2,7 @@
 #include <DxLib.h>
 #include <unordered_map>
 #include <string>
+#include <vector>
 
 #include "StagePathData.h"
 
@@ -14,6 +15,22 @@ enum class ENEMY_TAG
     STATUE,
     GIGGLE,
     MAX,
+};
+
+enum class ENEMY_SIDE
+{
+	RIGHT,
+	LEFT,
+};
+
+// 敵生成時のオプションパラメータ
+struct EnemySpawnParam
+{
+	VECTOR minAreaPos_ = { 0.0f, 0.0f, 0.0f };		// エリア最小座標（Mushnub, Statue等）
+	VECTOR maxAreaPos_ = { 0.0f, 0.0f, 0.0f };		// エリア最大座標（Mushnub, Statue等）
+	VECTOR chasePos_ = { 0.0f, 0.0f, 0.0f };		// 初期追跡・巡回座標
+	VECTOR angle_ = { 0.0f, 0.0f, 0.0f };			// 初期角度
+	ENEMY_SIDE side_ = ENEMY_SIDE::RIGHT;			// 左右の指定（Skeleton用）
 };
 
 // 敵のデータ

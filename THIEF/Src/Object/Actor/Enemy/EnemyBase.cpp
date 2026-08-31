@@ -124,7 +124,6 @@ void EnemyBase::SetPos(VECTOR pos)
 	transform_->pos_ = pos;
 }
 
-
 void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 {
 	if (!pathData_) return;
@@ -299,19 +298,20 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 		VECTOR playerOffsetStart = player_->GetCapsule()->GetStart();
 
 		// 敵の頭上位置
-		VECTOR enemyPos = VAdd(transform_->pos_, info_.startOffset_);
+		VECTOR enemyOffsetStart = capColl_->GetStart();
 
 		// 頭上同士を結ぶ直線上にステージがあるか
-		MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, enemyPos, playerOffsetStart, info_.radius_);
+		MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, enemyOffsetStart, playerOffsetStart, info_.radius_);
+
+		bool hit = (res.HitNum > 0);
+		MV1CollResultPolyDimTerminate(res);
 
 		// 障害物に当たらなかったら、目線が通っているとみなす
-		if (res.HitNum <= 0)
+		if (!hit)
 		{
-			MV1CollResultPolyDimTerminate(res);
 			info_.isNotice_ = true;
 			return true;
 		}
-		MV1CollResultPolyDimTerminate(res);
 	}
 
 	// 視野外、または障害物に遮られている場合
@@ -511,12 +511,10 @@ bool EnemyBase::CheckChaseLineCollision(VECTOR pPos, VECTOR ePos, float radius)
 	// 線分とモデルの衝突判定
 	MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, pPos, ePos, radius);
 
-	// 当たっていたら、trueを返す
-	if (res.HitNum > 0)
-	{
-		MV1CollResultPolyDimTerminate(res);
-		return true;
-	}
+	bool isHit = (res.HitNum > 0);
+
+	// 必ず最後に Terminate を呼んでから結果を返す
 	MV1CollResultPolyDimTerminate(res);
-	return false;
+
+	return isHit;
 }

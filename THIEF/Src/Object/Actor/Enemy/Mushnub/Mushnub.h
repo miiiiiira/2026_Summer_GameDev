@@ -42,6 +42,7 @@ public:
 	void Init(void) override;
 	void Update(void) override;
 	void Draw3D(void) override;
+	void Draw2D(void) override;
 
 	// 特定のエリアの最大、最小値を設定
 	void SetAreaPos(VECTOR minPos, VECTOR maxPos) { minAreaPos_ = minPos; maxAreaPos_ = maxPos; }

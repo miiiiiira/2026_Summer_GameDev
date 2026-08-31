@@ -21,6 +21,7 @@
 #include "../../Object/Actor/Enemy/Mushnub/Mushnub.h"
 #include "../../Object/Actor/Enemy/Statue/Statue.h"
 #include "../../Object/Actor/Enemy/Weapon/WeaponBase.h"
+
 #include "../../Object/ObjectManager/ObjectManager.h"
 
 #include "../../Object/Component/Collider/3DCollider/CapsuleCollider.h"
@@ -54,6 +55,7 @@
 #include "../../Common/Collision/Collision.h"
 #include "../../Object/Component/Collider/CartCollider/CartCollider.h"
 #include "../../Common/MouseCursor/MouseCursor.h"
+#include "../../Common/Math/Math.h"
 #include <EffekseerForDXLib.h>
 #include "../StageClear/StageClear.h"
 
@@ -74,6 +76,9 @@ void GameScene::Init(void)
 
 	// オブジェクトマネージャー初期化
 	objectManger_->Init();
+
+	// ステージ生成時に1回だけパスデータを生成・ロードする
+	InitPathData();
 
 	// BGM再生
 	AudioManager::GetInstance()->PlayBGM(SoundID::BGM_GAME_1);
@@ -223,6 +228,8 @@ void GameScene::Release(void)
 {
 	// オブジェクトマネージャー削除
 	delete objectManger_;
+
+	stagePathData_.reset();
 
 	// エフェクト管理解放
 	EffectResManager::GetInstance().Destroy();
@@ -544,21 +551,82 @@ void GameScene::CrosshairCreate(void)
 void GameScene::EnemyCreateStage1(void)
 {
 	EnemyCreate(ENEMY_TAG::GIGGLE, {0.0f, 0.0f, 0.0f});
+	EnemyCreate(ENEMY_TAG::YETI, { -5617.04f,10.0f,6573.71f });
 
-	//EnemyCreate(ENEMY_TAG::YETI, { -5617.04f,10.0f,6573.71f });
-	EnemyCreate(ENEMY_TAG::YETI, { 1291.0f,10.0f,104.0f });
+	EnemySpawnParam mushParam;
+	mushParam.minAreaPos_ = { -2150.0f, 1.0f, 5400.0f };
+	mushParam.maxAreaPos_ = { -560.0f, 700.0f, 7800.0f };
+	mushParam.chasePos_ = { -1506.83f, 10.0f, 6513.62f };
+	EnemyCreate(ENEMY_TAG::MUSHNUB, { -1526.83f, 10.0f, 5500.0f }, mushParam);
 }
 
 void GameScene::EnemyCreateStage2(void)
 {
 	EnemyCreate(ENEMY_TAG::GIGGLE, { 0.0f, 0.0f, 0.0f });
+	EnemyCreate(ENEMY_TAG::YETI, { -7887.0f, 10.0f, 1399.0f });
+
+	EnemySpawnParam statueParam;
+	statueParam.minAreaPos_ = { -7690.0f, 1.0f, 3450.0f };
+	statueParam.maxAreaPos_ = { -5870.0f, 1110.0f, 5920.0f };
+	statueParam.chasePos_ = { -7444.0f, 40.0f, 3570.0f };
+	EnemyCreate(ENEMY_TAG::STATUE, { -7444.0f, 10.0f, 3570.0f }, statueParam);
+
+	float startX = -4000.0f;
+	float spacingX = 200.0f;
+	float leftZ = 2197.0f;
+	float rightZ = 680.0f;
+	float posY = 12.0f;
+
+	// 右側のスケルトン
+	for (int i = 0; i < 8; ++i)
+	{
+		EnemySpawnParam param;
+		VECTOR pos = { startX - (i * spacingX), posY, rightZ };
+
+		float random = static_cast<float>(GetRand(360));
+		param.angle_ = { 0.0f, Math::Deg2Rad(random), 0.0f };
+		param.side_ = ENEMY_SIDE::RIGHT;
+
+		EnemyCreate(ENEMY_TAG::SKELETON, pos, param);
+	}
+
+	// 左側のスケルトン
+	for (int i = 0; i < 8; ++i)
+	{
+		EnemySpawnParam param;
+		VECTOR pos = { startX - (i * spacingX), posY, leftZ };
+
+		float random = static_cast<float>(GetRand(360));
+		param.angle_ = { 0.0f, Math::Deg2Rad(random), 0.0f };
+		param.side_ = ENEMY_SIDE::LEFT;
+
+		EnemyCreate(ENEMY_TAG::SKELETON, pos, param);
+	}
 
 }
 
 void GameScene::EnemyCreateStage3(void)
 {
 	EnemyCreate(ENEMY_TAG::GIGGLE, { 0.0f, 0.0f, 0.0f });
+	EnemyCreate(ENEMY_TAG::YETI, { 5704.0f, 10.0f, 7919.0f });
 
+	EnemySpawnParam mush1Param;
+	mush1Param.minAreaPos_ = { 6547.0f, 1.0f, -609.0f };
+	mush1Param.maxAreaPos_ = { 7688.0f, 700.0f, 882.0f };
+	mush1Param.chasePos_ = { 6996.0f, 10.0f, 623.0f };
+	EnemyCreate(ENEMY_TAG::MUSHNUB, { 6996.0f, 10.0f, 623.0f }, mush1Param);
+
+	EnemySpawnParam mush2Param;
+	mush2Param.minAreaPos_ = { 3458.0f, 1.0f, 2207.0f };
+	mush2Param.maxAreaPos_ = { 5081.0f, 700.0f, 3695.0f };
+	mush2Param.chasePos_ = { 3606.0f, 10.0f, 2610.0f };
+	EnemyCreate(ENEMY_TAG::MUSHNUB, { 3606.0f, 10.0f, 2610.0f }, mush2Param);
+
+	EnemySpawnParam statueParam;
+	statueParam.minAreaPos_ = { -1200.0f, 1.0f, 4450.0f };
+	statueParam.maxAreaPos_ = { 250.0f, 700.0f, 5810.0f };
+	statueParam.chasePos_ = { 45.0f, 40.0f, 4680.0f };
+	EnemyCreate(ENEMY_TAG::STATUE, { 45.0f, 10.0f, 4680.0f }, statueParam);
 }
 
 void GameScene::Stage1Init(void)
@@ -731,7 +799,7 @@ void GameScene::ItemCreate(Tag tag, VECTOR pos)
 	}
 }
 
-void GameScene::EnemyCreate(ENEMY_TAG tag, VECTOR pos)
+void GameScene::EnemyCreate(ENEMY_TAG tag, VECTOR pos, const EnemySpawnParam& param)
 {
 	// テーブルから敵のデータを検索
 	auto enemyData = EnemyTable::Table.find(tag);
@@ -748,6 +816,7 @@ void GameScene::EnemyCreate(ENEMY_TAG tag, VECTOR pos)
 	// 座標の設定
 	auto trans = enemyObj->AddComponent<Transform>();
 	trans->pos_ = pos;
+	trans->angle_ = param.angle_;
 
 	auto render = enemyObj->AddComponent<Render3D>();
 	render->SetModel(enemyData->second.path);
@@ -790,18 +859,37 @@ void GameScene::EnemyCreate(ENEMY_TAG tag, VECTOR pos)
 	case ENEMY_TAG::YETI:
 		enemyComp = enemyObj->AddComponent<Yeti>();
 		break;
+
 	case ENEMY_TAG::MUSHNUB:
-		enemyComp = enemyObj->AddComponent<Mushnub>();
+	{
+		auto mushnub = enemyObj->AddComponent<Mushnub>();
+		mushnub->SetAreaPos(param.minAreaPos_, param.maxAreaPos_);
+		mushnub->SetChasePos(param.chasePos_);
+		enemyComp = mushnub;
 		break;
+	}
+
 	case ENEMY_TAG::SKELETON:
-		enemyComp = enemyObj->AddComponent<Skeleton>();
+	{
+		auto skeleton = enemyObj->AddComponent<Skeleton>();
+		skeleton->SetSide(param.side_);
+		enemyComp = skeleton;
 		break;
+	}
+
 	case ENEMY_TAG::GIGGLE:
 		enemyComp = enemyObj->AddComponent<Giggle>();
 		break;
+
 	case ENEMY_TAG::STATUE:
-		enemyComp = enemyObj->AddComponent<Statue>();
+	{
+		auto statue = enemyObj->AddComponent<Statue>();
+		statue->SetAreaPos(param.minAreaPos_, param.maxAreaPos_);
+		statue->SetChasePos(param.chasePos_);
+		enemyComp = statue;
 		break;
+	}
+	
 	default:
 		break;
 	}
@@ -814,29 +902,26 @@ void GameScene::EnemyCreate(ENEMY_TAG tag, VECTOR pos)
 		auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
 		int stageModelId = (stage->GetCollModelId() == -1) ? stage->GetModelId() : stage->GetCollModelId();
 
-		auto pathData = std::make_shared<StagePathData>();
-		// ステージ情報を取ってきて初期化処理を行う
-		auto stageNum = SceneManager::GetInstance()->GetCurrentStage();
-		switch (stageNum)
-		{
-		case STAGE_1:
-			pathData->Load("Data/PointSave.csv");
-
-			break;
-		case STAGE_2:
-			pathData->Load("Data/PointSave2.csv");
-
-			break;
-		case STAGE_3:
-			pathData->Load("Data/PointSave3.csv");
-
-			break;
-		default:
-			break;
-		}
-		enemyComp->SetPathData(player, stageModelId, pathData);
+		enemyComp->SetPathData(player, stageModelId, stagePathData_);
 
 		// 初期化実行
 		enemyComp->Init();
+	}
+}
+
+void GameScene::InitPathData(void)
+{
+	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
+	int stageModelId = (stage->GetCollModelId() == -1) ? stage->GetModelId() : stage->GetCollModelId();
+
+	stagePathData_ = std::make_shared<StagePathData>(stageModelId);
+
+	auto stageNum = SceneManager::GetInstance()->GetCurrentStage();
+	switch (stageNum)
+	{
+	case STAGE_1: stagePathData_->Load("Data/PointSave.csv");  break;
+	case STAGE_2: stagePathData_->Load("Data/PointSave2.csv"); break;
+	case STAGE_3: stagePathData_->Load("Data/PointSave3.csv"); break;
+	default: break;
 	}
 }

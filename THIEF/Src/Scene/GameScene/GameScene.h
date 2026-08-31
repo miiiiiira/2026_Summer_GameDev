@@ -3,6 +3,7 @@
 #include <DxLib.h>
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "../../Object/Tag.h"
 #include "../SceneBase.h"
@@ -49,6 +50,9 @@ private:
 	// オブジェクトマネージャー
 	ObjectManager* objectManger_;
 
+	// 経路データ
+	std::shared_ptr<StagePathData> stagePathData_;
+
 	// ステージ数別の初期化処理
 	void Stage1Init(void);
 	void Stage2Init(void);
@@ -58,5 +62,6 @@ private:
 	void ItemCreate(Tag tag, VECTOR pos);
 
 	// タグを使用し、敵を作る
-	void EnemyCreate(ENEMY_TAG tag, VECTOR pos);
+	void EnemyCreate(ENEMY_TAG tag, VECTOR pos, const EnemySpawnParam& param = {});
+	void InitPathData(void);
 };

@@ -4,6 +4,7 @@
 #include "../../../../Common/Transform/MatrixUtility.h"
 #include "../../../Component/PlayerController/PlayerController.h"
 #include "../../../Component/Collider/3DCollider/CapsuleCollider.h"
+#include "../../../Component/Collider/StageCollider/StageCollider.h"
 #include "../../../Component/Transform/Transform.h"
 #include "../Weapon/WeaponPunch.h"
 #include "../EnemyCommon.h"
@@ -17,6 +18,7 @@ Statue::~Statue(void)
 {
 	if (useWeapon_)
 	{
+		useWeapon_->Release();
 		delete useWeapon_;
 		useWeapon_ = nullptr;
 	}
@@ -29,31 +31,27 @@ void Statue::Init(void)
 	const auto& data = EnemyTable::Table.at(ENEMY_TAG::STATUE);
 	SetEnemyData(data);
 
-	// Transform座標の設定
-	if (transform_)
-	{
-		if (transform_->pos_.y <= 0.0f)
-		{
-			transform_->pos_ = DEFAULT_POS;
-		}
-	}
-
-	if (minAreaPos_.x == -1.0f && maxAreaPos_.x == -1.0f)
-	{
-		minAreaPos_ = MIN_AREA_POS;
-		maxAreaPos_ = MAX_AREA_POS;
-	}
-
-	if (chasePos_.y <= 0.0f)
-	{
-		chasePos_ = DEFAULT_POS;
-	}
-
 	// パラメータ初期化
 	info_.moveDir_ = Math::VECTOR_ZERO;
 	info_.attackMoveSpeed_ = 20.0f;
 	info_.attackJumpPow_ = 25.0f;
 	info_.attackDamagePow_ = 20.0f;
+	info_.tag_ = ENEMY_TAG::STATUE;
+
+
+	if (transform_)
+	{
+		info_.scale_ = SCALE;
+		MV1SetScale(info_.modelId_, info_.scale_);
+
+		transform_->angle_ = DEFAULT_ANGLE;
+		info_.localAngle_ = { 0.0f, Math::Deg2Rad(180.0f), 0.0f };
+
+		MATRIX mat = Matrix::Multiplication(info_.localAngle_, transform_->angle_);
+
+		transform_->prevPos_ = transform_->pos_;
+	}
+
 
 	seTimer_ = 0.0f;
 
@@ -75,6 +73,18 @@ void Statue::Update(void)
 	// 遅延回転処理
 	DelayRotate();
 
+	if (info_.modelId_ != -1)
+	{
+		// 敵の現在の向き（遅延回転などで計算した角度）＋ ローカル回転補正
+		VECTOR finalAngle;
+		finalAngle.x = transform_->angle_.x + info_.localAngle_.x;
+		finalAngle.y = transform_->angle_.y + info_.localAngle_.y;
+		finalAngle.z = transform_->angle_.z + info_.localAngle_.z;
+
+		// モデルに回転をセット
+		MV1SetRotationXYZ(info_.modelId_, finalAngle);
+	}
+
 	switch (state_)
 	{
 	case Statue::STATE::IDLE: UpdateIdle(); break;
@@ -85,6 +95,15 @@ void Statue::Update(void)
 	default:
 		break;
 	}
+
+	// ステージとの衝突判定・押し出し計算
+	if (stageColl_)
+	{
+		stageColl_->StageColl(info_.velocityY_);
+	}
+
+	// モデルの更新
+	MV1RefreshCollInfo(info_.modelId_, -1);
 }
 
 void Statue::Draw3D(void)

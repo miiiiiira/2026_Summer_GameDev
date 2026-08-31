@@ -44,6 +44,8 @@ void Yeti::Init(void)
 	if (transform_)
 	{
 		info_.scale_ = SCALE;
+		MV1SetScale(info_.modelId_, info_.scale_);
+
 
 		transform_->angle_ = DEFAULT_ANGLE;
 		info_.localAngle_ = { 0.0f, Math::Deg2Rad(180.0f), 0.0f };
@@ -62,6 +64,9 @@ void Yeti::Init(void)
 	info_.attackMoveSpeed_ = 30.0f;
 	info_.attackJumpPow_ = 25.0f;
 	info_.attackDamagePow_ = 20.0f;
+
+	info_.tag_ = ENEMY_TAG::YETI;
+
 
 	seTimer_ = 0.0f;
 
@@ -96,6 +101,18 @@ void Yeti::Update(void)
 	// ’x‰„‰ñ“]ˆ—
 	DelayRotate();
 
+	if (info_.modelId_ != -1)
+	{
+		// “G‚ÌŒ»Ý‚ÌŒü‚«i’x‰„‰ñ“]‚È‚Ç‚ÅŒvŽZ‚µ‚½Šp“xj{ ƒ[ƒJƒ‹‰ñ“]•â³
+		VECTOR finalAngle;
+		finalAngle.x = transform_->angle_.x + info_.localAngle_.x;
+		finalAngle.y = transform_->angle_.y + info_.localAngle_.y;
+		finalAngle.z = transform_->angle_.z + info_.localAngle_.z;
+
+		// ƒ‚ƒfƒ‹‚É‰ñ“]‚ðƒZƒbƒg
+		MV1SetRotationXYZ(info_.modelId_, finalAngle);
+	}
+
 	switch (state_)
 	{
 	case Yeti::STATE::THINK: UpdateThink(); break;
@@ -125,23 +142,14 @@ void Yeti::Update(void)
 	{
 		anim_->Update();
 	}
+
+	// ƒ‚ƒfƒ‹‚ÌXV
+	MV1RefreshCollInfo(info_.modelId_, -1);
 }
 
 void Yeti::Draw3D(void)
 {
 	EnemyBase::Draw3D();
-
-	if (info_.modelId_ != -1)
-	{
-		// “G‚ÌŒ»Ý‚ÌŒü‚«i’x‰„‰ñ“]‚È‚Ç‚ÅŒvŽZ‚µ‚½Šp“xj{ ƒ[ƒJƒ‹‰ñ“]•â³
-		VECTOR finalAngle;
-		finalAngle.x = transform_->angle_.x + info_.localAngle_.x;
-		finalAngle.y = transform_->angle_.y + info_.localAngle_.y;
-		finalAngle.z = transform_->angle_.z + info_.localAngle_.z;
-
-		// ƒ‚ƒfƒ‹‚É‰ñ“]‚ðƒZƒbƒg
-		MV1SetRotationXYZ(info_.modelId_, finalAngle);
-	}
 	
 #ifdef _DEBUG
 	if (pathData_ && transform_)
@@ -203,7 +211,6 @@ void Yeti::Draw3D(void)
 
 void Yeti::Draw2D(void)
 {
-	DrawFormatString(10, 200, GetColor(255, 255, 255), "Yeti‚ÌÀ•W: %.2f, %.2f, %.2f",transform_->pos_.x, transform_->pos_.y, transform_->pos_.z);
 }
 
 void Yeti::ChangeState(STATE state)
