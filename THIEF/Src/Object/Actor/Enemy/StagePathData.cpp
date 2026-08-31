@@ -50,7 +50,7 @@ void StagePathData::Load(const std::string& csvPath)
 	// エッジリストの要素数をノード数に合わせる
 	edgeList_.resize(way_.size());
 
-	// 一定距離内のノード同士を自動接続（AddEdge）する
+	// 一定距離内のノード同士を自動接続する
 	for (int i = 0; i < static_cast<int>(way_.size()); i++)
 	{
 		for (int j = 0; j < static_cast<int>(way_.size()); j++)

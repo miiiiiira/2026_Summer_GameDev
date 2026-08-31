@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <memory>
 #include <DxLib.h>
 #include "../../Component/Component.h"
 #include "EnemyCommon.h"
@@ -27,13 +28,31 @@ public:
 	void Init(void) override;
 	void Update(void) override = 0;
 	void Draw3D(void) override;
+	void Draw2D(void) override;
 
 	// 初期データの読み込みとセット
-	void SetPathData(PlayerController* player, int stageId, StagePathData* pathData);
+	void SetPathData(PlayerController* player, int stageId, std::shared_ptr<StagePathData> pathData);
 	void SetEnemyData(const EnemyData& data);
 
 	// ゲッター・セッター
 	bool IsAlive(void) const{ return info_.isAlive_; }
+
+	Transform* GetTransform();	// Transformを返す
+
+	CapsuleCollider* GetCapsule(void);	// CapsuleColliderを返す
+
+	WeaponBase* GetWeapon(void);	// WeaponBaseを返す
+
+	float GetAttackDamagePow(void) const;
+	float GetAttackMoveSpeed(void) const;
+	float GetAttackJumpPow(void) const;
+
+	ENEMY_TAG GetTag(void) const;
+
+	// モデルIDを返す
+	int GetModelId() const { return info_.modelId_; }
+
+	void SetPos(VECTOR pos);
 
 protected:
 
@@ -46,7 +65,7 @@ protected:
 	// 外部参照
 	PlayerController* player_ = nullptr;
 	WeaponBase* useWeapon_ = nullptr;
-	StagePathData* pathData_ = nullptr;
+	std::shared_ptr<StagePathData> pathData_ = nullptr;
 
 	EnemyInfo info_;
 	int stageId_ = -1;

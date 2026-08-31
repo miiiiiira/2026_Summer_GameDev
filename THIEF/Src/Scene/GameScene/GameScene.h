@@ -6,10 +6,9 @@
 
 #include "../../Object/Tag.h"
 #include "../SceneBase.h"
+#include "../../Object/Actor/Enemy/EnemyCommon.h"
 
 class ObjectManager;
-class EnemyManager;
-class EnemyBase;
 
 enum STAGE_NUM
 {
@@ -37,38 +36,27 @@ public:
 	void StageCreate(std::string path, std::string collPath = "NoData");			// ステージの作成
 	void WispCreate(void);			// ライトの作成
 	void PlayerCreate(void);		// プレイヤーの作成
-	void EnemyCreate(void);			// 敵の作成
 	void CartCreate(void);			// カートの作成
 	void ItemCreateStage1(void);	// ステージ1アイテムの作成
 	void ItemCreateStage2(void);	// ステージ2アイテムの作成
 	void ItemCreateStage3(void);	// ステージ3アイテムの作成
 	void CrosshairCreate(void);		// クロスヘアの作成
+	void EnemyCreateStage1(void);	// 敵の作成
+	void EnemyCreateStage2(void);	// 敵の作成
+	void EnemyCreateStage3(void);	// 敵の作成
 private:
 
 	// オブジェクトマネージャー
 	ObjectManager* objectManger_;
-
-	EnemyManager* enemyManager_;
 
 	// ステージ数別の初期化処理
 	void Stage1Init(void);
 	void Stage2Init(void);
 	void Stage3Init(void);
 
-	// 敵の当たり判定処理
-	// 敵の攻撃とプレイヤーの当たり判定
-	void CheckEnemyAttack(void);
-
-	// 敵とステージの当たり判定
-	void CollisionEnemyToStage(void);
-	// 小さな段差を登れるか判定する
-	bool CanStepUp(EnemyBase* enemy, const VECTOR& pos, const VECTOR& move, float stepHeight);
-
-	// プレイヤーと敵の当たり判定
-	void CollisionEnemy2Player(void);
-	// プレイヤーのつかみとと敵の当たり判定
-	void CollisionEnemy2PlayerGrab(void);
-
 	// タグを使用し、アイテムを作る
 	void ItemCreate(Tag tag, VECTOR pos);
+
+	// タグを使用し、敵を作る
+	void EnemyCreate(ENEMY_TAG tag, VECTOR pos);
 };

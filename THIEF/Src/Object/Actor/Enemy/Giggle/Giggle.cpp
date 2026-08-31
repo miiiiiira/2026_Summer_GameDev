@@ -3,7 +3,7 @@
 #include "../EnemyCommon.h"
 #include "Giggle.h"
 
-Giggle::Giggle(int modelId)
+Giggle::Giggle(void)
 {
 }
 

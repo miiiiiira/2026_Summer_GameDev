@@ -22,6 +22,12 @@ void Mushnub::Init(void)
 {
 	EnemyBase::Init();
 
+	anim_->Init();
+	for (int i = 0; i < static_cast<int>(ANIM_TYPE::MAX); i++)
+	{
+		anim_->AddInFbx(i, static_cast<int>(i), static_cast<int>(i));
+	}
+
 	const auto& data = EnemyTable::Table.at(ENEMY_TAG::MUSHNUB);
 	SetEnemyData(data);
 

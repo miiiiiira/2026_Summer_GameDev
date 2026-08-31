@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Component\Collider\EnemyCollider\EnemyCollider.cpp" />
     <ClCompile Include="Src\Common\Easing\Easing.cpp" />
     <ClCompile Include="Src\Manager\EffectResManager\EffectResManager.cpp" />
     <ClCompile Include="Src\fontInfo.cpp" />
@@ -109,6 +110,7 @@
     <ClCompile Include="Src\Object\Actor\Enemy\StagePathData.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Component\Collider\EnemyCollider\EnemyCollider.h" />
     <ClInclude Include="Src\Common\Easing\Easing.h" />
     <ClInclude Include="Src\Manager\EffectResManager\EffectResManager.h" />
     <ClInclude Include="Src\fontInfo.h" />

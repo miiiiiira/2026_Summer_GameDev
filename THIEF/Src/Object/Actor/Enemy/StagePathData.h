@@ -38,6 +38,6 @@ private:
 	std::vector<std::vector<EDGE>> edgeList_;
 
 	// ノードを自動接続する最大距離（2乗）
-	static constexpr float NODE_CONNECT_MAX_DISTANCE_SQ = 500.0f * 500.0f;
+	static constexpr float NODE_CONNECT_MAX_DISTANCE_SQ = 1300.0f * 1300.0f;
 };
 

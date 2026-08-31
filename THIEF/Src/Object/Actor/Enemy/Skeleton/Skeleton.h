@@ -33,17 +33,14 @@ public:
 	};
 
 	// コンストラクタ
-	Skeleton(int modelId);
+	Skeleton(void);
 
 	// デストラクタ
 	~Skeleton(void)override;
 
-	// 初期化
-	void OnInitialize(void) override;
-	// 読み込み処理
-	void Load(void) override;
-	void Update(void)override;
-	void Draw(void)override;
+	void Init(void) override;
+	void Update(void) override;
+	void Draw3D(void) override;
 
 	void SetSide(SIDE side);
 
@@ -61,11 +58,8 @@ private:
 	// 特定のポイントからの反応距離
 	static constexpr float TRIGGER_RANGE = 100.0f * 100.0f;
 
-
-	int baseModelId_;
-
-	STATE state_;
-	SIDE side_;
+	STATE state_ = STATE::NONE;
+	SIDE side_ = SIDE::RIGHT;
 
 	// 状態遷移
 	void ChangeState(STATE state);

@@ -24,6 +24,8 @@ struct EnemyInfo
 	VECTOR scale_ = { 1.0f, 1.0f, 1.0f };	// 拡大率
 	VECTOR localAngle_ = {};				// モデルごとのローカル回転補正値
 
+	ENEMY_TAG tag_ = ENEMY_TAG::MAX;        // 敵のタグ
+
 	// ステータス
 	int hp_ = 0;                     // 現在のHP
 	float moveSpeed_ = 0.0f;         // 現在の移動速度

@@ -14,7 +14,7 @@ public:
 	};
 
 	// コンストラクタ
-	Giggle(int modelId = -1);
+	Giggle(void);
 
 	// デストラクタ
 	~Giggle(void)override;

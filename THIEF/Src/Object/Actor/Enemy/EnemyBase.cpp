@@ -8,6 +8,8 @@
 #include "../../Component/Collider/3DCollider/CapsuleCollider.h"
 #include "../../Component/Collider/StageCollider/StageCollider.h"
 #include "../../Component/Transform/Transform.h"
+#include "../../Component/Animation/Animation.h"
+#include "../../Component/Render/Render3D.h"
 
 #include "StagePathData.h"
 #include "EnemyBase.h"
@@ -16,7 +18,8 @@ EnemyBase::EnemyBase(void)
 	:
 	transform_(nullptr),
 	capColl_(nullptr),
-	stageColl_(nullptr)
+	stageColl_(nullptr),
+	anim_(nullptr)
 {
 	info_.moveSpeed_ = 0.0f;
 	info_.moveDir_ = Math::VECTOR_ZERO;
@@ -40,14 +43,34 @@ void EnemyBase::Init(void)
 	stageColl_ = owner_->GetComponent<StageCollider>();
 
 	// オーナーからAnimation取得
-	anim_ = owner_->GetComponent<Animation>();
+	anim_ = owner_->AddComponent<Animation>();
+
+	// オーナーから3D描画コンポーネントを取得
+	auto render = owner_->GetComponent<Render3D>();
+	if (!render) return;
+
+	// モデルIDを取得
+	info_.modelId_ = render->GetHandle();
 }
 
 void EnemyBase::Draw3D(void)
 {
+#ifdef _DEBUG
+	// デバッグ表示
+		VECTOR start = capColl_->GetStart();
+		VECTOR end = capColl_->GetEnd();
+
+		// 当たり判定用のカプセル大きさ確認
+		DrawCapsule3D(start, end, info_.radius_, 8, 0xff0000, 0xff0000, false);
+
+#endif // _DEBUG
 }
 
-void EnemyBase::SetPathData(PlayerController* player, int stageId, StagePathData* pathData)
+void EnemyBase::Draw2D(void)
+{
+}
+
+void EnemyBase::SetPathData(PlayerController* player, int stageId, std::shared_ptr<StagePathData> pathData)
 {
 	player_ = player;
 	stageId_ = stageId;
@@ -60,6 +83,47 @@ void EnemyBase::SetEnemyData(const EnemyData& data)
 	info_.endOffset_ = data.capEndOffset;
 	info_.radius_ = data.capRadius;
 }
+
+Transform* EnemyBase::GetTransform()
+{
+	return transform_;
+}
+
+CapsuleCollider* EnemyBase::GetCapsule(void)
+{
+	return capColl_;
+}
+
+WeaponBase* EnemyBase::GetWeapon(void)
+{
+	return useWeapon_;
+}
+
+float EnemyBase::GetAttackDamagePow(void) const
+{
+	return info_.attackDamagePow_;
+}
+
+float EnemyBase::GetAttackMoveSpeed(void) const
+{
+	return info_.attackMoveSpeed_;
+}
+
+float EnemyBase::GetAttackJumpPow(void) const
+{
+	return info_.attackJumpPow_;
+}
+
+ENEMY_TAG EnemyBase::GetTag(void) const
+{
+	return info_.tag_;
+}
+
+void EnemyBase::SetPos(VECTOR pos)
+{
+	transform_->pos_ = pos;
+}
+
 
 void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 {
@@ -126,7 +190,7 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 	int i = goalNodeId;
 	while (i != -1)
 	{
-		EDGE path;
+		StagePathData::EDGE path;
 		path.way.id = (*wayList)[i].id;
 		path.way.pos = (*wayList)[i].pos;
 		path.cost = info_.minCosts_[i];
