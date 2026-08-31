@@ -89,7 +89,7 @@ void EnemyCollider::CollisionEnemy2Player(void)
 	float playerRad = player_->GetCapsule()->GetRadius();
 
 	VECTOR enemyPos = enemy_->GetTransform()->pos_;
-	VECTOR enemyTop = VAdd(enemyPos, enemy_->GetCapsule()->GetStart());
+	VECTOR enemyTop = enemy_->GetCapsule()->GetStart();
 	float enemyRad = enemy_->GetCapsule()->GetRadius();
 
 	VECTOR pushVector = Collision::ExtrusionCollisionCapsule(playerPos, playerTop, playerRad, enemyPos, enemyTop, enemyRad);
@@ -107,7 +107,7 @@ void EnemyCollider::CollisionEnemy2Player(void)
 
 	// カプセル2（敵）の押し出し処理
 	enemyPos = VSub(enemyPos, pushVector);
-	enemy_->SetPos(enemyPos);
+	enemy_->GetTransform()->pos_ = enemyPos;
 }
 
 void EnemyCollider::CollisionEnemy2PlayerGrab(void)
