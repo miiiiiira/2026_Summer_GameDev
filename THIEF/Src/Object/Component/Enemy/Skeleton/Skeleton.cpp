@@ -2,11 +2,13 @@
 #include "../../../../Manager/Audio/AudioManager.h"
 #include "../../../../Common/Math/Math.h"
 #include "../../../../Common/Transform/MatrixUtility.h"
-#include "../../../Component/PlayerController/PlayerController.h"
-#include "../../../Component/Collider/3DCollider/CapsuleCollider.h"
-#include "../../../Component/Collider/StageCollider/StageCollider.h"
-#include "../../../Component/Transform/Transform.h"
-#include "../../../Component/Animation/Animation.h"
+
+#include "../../PlayerController/PlayerController.h"
+#include "../../Collider/3DCollider/CapsuleCollider.h"
+#include "../../Collider/StageCollider/StageCollider.h"
+#include "../../Transform/Transform.h"
+#include "../../Animation/Animation.h"
+
 #include "../EnemyCommon.h"
 #include "Skeleton.h"
 

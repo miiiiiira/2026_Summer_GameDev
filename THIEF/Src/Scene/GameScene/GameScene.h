@@ -7,7 +7,7 @@
 
 #include "../../Object/Tag.h"
 #include "../SceneBase.h"
-#include "../../Object/Actor/Enemy/EnemyCommon.h"
+#include "../../Object/Component/Enemy/EnemyCommon.h"
 
 class ObjectManager;
 

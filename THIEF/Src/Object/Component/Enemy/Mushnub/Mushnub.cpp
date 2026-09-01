@@ -2,12 +2,13 @@
 #include "../../../../Manager/Audio/AudioManager.h"
 #include "../../../../Common/Math/Math.h"
 #include "../../../../Common/Transform/MatrixUtility.h"
-#include "../../../Common/AnimationController.h"
-#include "../../../Component/PlayerController/PlayerController.h"
-#include "../../../Component/Collider/3DCollider/CapsuleCollider.h"
-#include "../../../Component/Collider/StageCollider/StageCollider.h"
-#include "../../../Component/Animation/Animation.h"
-#include "../../../Component/Transform/Transform.h"
+
+#include "../../PlayerController/PlayerController.h"
+#include "../../Collider/3DCollider/CapsuleCollider.h"
+#include "../../Collider/StageCollider/StageCollider.h"
+#include "../../Animation/Animation.h"
+#include "../../Transform/Transform.h"
+
 #include "../EnemyCommon.h"
 #include "Mushnub.h"
 
@@ -122,7 +123,6 @@ void Mushnub::Draw3D(void)
 
 void Mushnub::Draw2D(void)
 {
-	DrawFormatString(10, 200, 0xffffff, "À•W: (%.2f, %.2f, %.2f)", transform_->pos_.x, transform_->pos_.y, transform_->pos_.z);
 }
 
 void Mushnub::ChangeState(STATE state)

@@ -84,9 +84,6 @@
     <ClCompile Include="Src\Object\Component\Item\Goblet\Goblet.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Object\Actor\Enemy\EnemyBase.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Object\ObjectManager\ObjectManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -128,9 +125,6 @@
     </ClCompile>
     <ClCompile Include="Src\Object\Component\Item\Item.cpp">
     </ClCompile>
-    <ClCompile Include="Src\Object\Actor\Enemy\Yeti\Yeti.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Manager\Score\ScoreManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -164,12 +158,6 @@
     <ClCompile Include="Src\Object\Component\Transform\Transform.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Object\Actor\Enemy\Weapon\WeaponBase.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Object\Actor\Enemy\Weapon\WeaponPunch.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Object\Component\Item\Skull\Skull.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -191,15 +179,6 @@
     <ClCompile Include="Src\Object\Component\Effect\FlashEffect.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Object\Actor\Enemy\Mushnub\Mushnub.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Object\Actor\Enemy\Skeleton\Skeleton.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Object\Actor\Enemy\Statue\Statue.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Object\Component\PlayerController\Map\Map.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -207,9 +186,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\Component\Collider\CartCollider\CartCollider.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Object\Actor\Enemy\Giggle\Giggle.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\Component\Wisp\LightInfo.cpp">
@@ -269,13 +245,37 @@
     <ClCompile Include="Src\Scene\StageClear\StageClear.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Object\Actor\Enemy\EnemyCommon.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Object\Actor\Enemy\StagePathData.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Object\Component\Collider\EnemyCollider\EnemyCollider.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Object\Component\Enemy\Giggle\Giggle.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Object\Component\Enemy\Mushnub\Mushnub.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Object\Component\Enemy\Skeleton\Skeleton.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Object\Component\Enemy\Statue\Statue.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Object\Component\Enemy\Weapon\WeaponBase.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Object\Component\Enemy\Weapon\WeaponPunch.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Object\Component\Enemy\Yeti\Yeti.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Object\Component\Enemy\EnemyBase.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Object\Component\Enemy\EnemyCommon.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Object\Component\Enemy\StagePathData.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -355,9 +355,6 @@
     <ClInclude Include="Src\Object\Component\Item\Goblet\Goblet.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Object\Actor\Enemy\EnemyBase.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Object\Object.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -432,9 +429,6 @@
     </ClInclude>
     <ClInclude Include="Src\Object\Component\Item\ItemInfo.h">
     </ClInclude>
-    <ClInclude Include="Src\Object\Actor\Enemy\Yeti\Yeti.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Manager\Score\ScoreManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -468,12 +462,6 @@
     <ClInclude Include="Src\Common\FrameRenderer\FrameRenderer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Object\Actor\Enemy\Weapon\WeaponBase.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Object\Actor\Enemy\Weapon\WeaponPunch.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Object\Component\Item\Skull\Skull.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -492,28 +480,13 @@
     <ClInclude Include="Src\Object\Component\Effect\FlashEffect.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Object\Actor\Enemy\Mushnub\Mushnub.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Object\Actor\Enemy\Skeleton\Skeleton.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Object\Actor\Enemy\Statue\Statue.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Object\Component\PlayerController\Map\Map.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Object\Actor\Enemy\EnemyCommon.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\Component\Cart\Cart.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\Component\Collider\CartCollider\CartCollider.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Object\Actor\Enemy\Giggle\Giggle.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\Component\Wisp\LightInfo.h">
@@ -585,10 +558,37 @@
     <ClInclude Include="Src\Scene\StageClear\StageClear.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Object\Actor\Enemy\StagePathData.h">
+    <ClInclude Include="Src\Object\Component\Collider\EnemyCollider\EnemyCollider.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Object\Component\Collider\EnemyCollider\EnemyCollider.h">
+    <ClInclude Include="Src\Object\Component\Enemy\Giggle\Giggle.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Object\Component\Enemy\Mushnub\Mushnub.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Object\Component\Enemy\Skeleton\Skeleton.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Object\Component\Enemy\Statue\Statue.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Object\Component\Enemy\Weapon\WeaponBase.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Object\Component\Enemy\Weapon\WeaponPunch.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Object\Component\Enemy\Yeti\Yeti.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Object\Component\Enemy\EnemyBase.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Object\Component\Enemy\EnemyCommon.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Object\Component\Enemy\StagePathData.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

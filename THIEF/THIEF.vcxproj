@@ -23,8 +23,17 @@
     <ClCompile Include="Src\Common\Easing\Easing.cpp" />
     <ClCompile Include="Src\Manager\EffectResManager\EffectResManager.cpp" />
     <ClCompile Include="Src\fontInfo.cpp" />
-    <ClCompile Include="Src\Object\Actor\Enemy\EnemyCommon.cpp" />
     <ClCompile Include="Src\Object\Actor\Wall\TutorialWall.cpp" />
+    <ClCompile Include="Src\Object\Component\Enemy\EnemyBase.cpp" />
+    <ClCompile Include="Src\Object\Component\Enemy\EnemyCommon.cpp" />
+    <ClCompile Include="Src\Object\Component\Enemy\Giggle\Giggle.cpp" />
+    <ClCompile Include="Src\Object\Component\Enemy\Mushnub\Mushnub.cpp" />
+    <ClCompile Include="Src\Object\Component\Enemy\Skeleton\Skeleton.cpp" />
+    <ClCompile Include="Src\Object\Component\Enemy\StagePathData.cpp" />
+    <ClCompile Include="Src\Object\Component\Enemy\Statue\Statue.cpp" />
+    <ClCompile Include="Src\Object\Component\Enemy\Weapon\WeaponBase.cpp" />
+    <ClCompile Include="Src\Object\Component\Enemy\Weapon\WeaponPunch.cpp" />
+    <ClCompile Include="Src\Object\Component\Enemy\Yeti\Yeti.cpp" />
     <ClCompile Include="Src\Scene\Option\OptionScene.cpp" />
     <ClCompile Include="Src\Manager\Input\InputIO.cpp" />
     <ClCompile Include="Src\Manager\Input\KeyConfig.cpp" />
@@ -36,13 +45,10 @@
     <ClCompile Include="Src\Object\Component\Stage\DeliveryInfo.cpp" />
     <ClCompile Include="Src\Object\Component\PlayerController\Map\MapInfo.cpp" />
     <ClCompile Include="Src\Manager\Light\LightManager.cpp" />
-    <ClCompile Include="Src\Object\Actor\Enemy\Giggle\Giggle.cpp" />
     <ClCompile Include="Src\Object\Component\Wisp\LightInfo.cpp" />
     <ClCompile Include="Src\Object\Component\Collider\CartCollider\CartCollider.cpp" />
     <ClCompile Include="Src\Object\Component\Cart\Cart.cpp" />
     <ClCompile Include="Src\Object\Component\PlayerController\Map\Map.cpp" />
-    <ClCompile Include="Src\Object\Actor\Enemy\Skeleton\Skeleton.cpp" />
-    <ClCompile Include="Src\Object\Actor\Enemy\Mushnub\Mushnub.cpp" />
     <ClCompile Include="Src\Object\Component\Effect\FlashEffect.cpp" />
     <ClCompile Include="Src\Object\Component\Item\ItemInfo.cpp" />
     <ClCompile Include="Src\Object\Component\Item\Skull\Skull.cpp" />
@@ -64,7 +70,6 @@
     <ClCompile Include="Src\Scene\DebugScene.cpp" />
     <ClCompile Include="Src\Object\Component\Collider\ItemCollider\ItemCollider.cpp" />
     <ClCompile Include="Src\Common\Shader\Shader.cpp" />
-    <ClCompile Include="Src\Object\Actor\Enemy\EnemyBase.cpp" />
     <ClCompile Include="Src\Object\Component\Item\Goblet\Goblet.cpp" />
     <ClCompile Include="Src\Object\Component\Wisp\Wisp.cpp" />
     <ClCompile Include="Src\Object\Component\Animation\Animation.cpp" />
@@ -99,14 +104,9 @@
     <ClCompile Include="Src\Scene\SceneBase.cpp" />
     <ClCompile Include="Src\Scene\SceneManager.cpp" />
     <ClCompile Include="Src\Scene\TitleScene\TitleScene.cpp" />
-    <ClCompile Include="Src\Object\Actor\Enemy\Yeti\Yeti.cpp" />
-    <ClCompile Include="Src\Object\Actor\Enemy\Weapon\WeaponBase.cpp" />
-    <ClCompile Include="Src\Object\Actor\Enemy\Weapon\WeaponPunch.cpp" />
-    <ClCompile Include="Src\Object\Actor\Enemy\Statue\Statue.cpp" />
     <ClCompile Include="Src\Scene\Tutorial\TutorialScene.cpp" />
     <ClCompile Include="Src\Object\Component\Collider\TutorialWallCollider\TutorialWallCollider.cpp" />
     <ClCompile Include="Src\Scene\StageClear\StageClear.cpp" />
-    <ClCompile Include="Src\Object\Actor\Enemy\StagePathData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Object\Component\Collider\EnemyCollider\EnemyCollider.h" />
@@ -114,6 +114,16 @@
     <ClInclude Include="Src\Manager\EffectResManager\EffectResManager.h" />
     <ClInclude Include="Src\fontInfo.h" />
     <ClInclude Include="Src\Object\Actor\Wall\TutorialWall.h" />
+    <ClInclude Include="Src\Object\Component\Enemy\EnemyBase.h" />
+    <ClInclude Include="Src\Object\Component\Enemy\EnemyCommon.h" />
+    <ClInclude Include="Src\Object\Component\Enemy\Giggle\Giggle.h" />
+    <ClInclude Include="Src\Object\Component\Enemy\Mushnub\Mushnub.h" />
+    <ClInclude Include="Src\Object\Component\Enemy\Skeleton\Skeleton.h" />
+    <ClInclude Include="Src\Object\Component\Enemy\StagePathData.h" />
+    <ClInclude Include="Src\Object\Component\Enemy\Statue\Statue.h" />
+    <ClInclude Include="Src\Object\Component\Enemy\Weapon\WeaponBase.h" />
+    <ClInclude Include="Src\Object\Component\Enemy\Weapon\WeaponPunch.h" />
+    <ClInclude Include="Src\Object\Component\Enemy\Yeti\Yeti.h" />
     <ClInclude Include="Src\Object\Component\PlayerController\PlayerInfo.h" />
     <ClInclude Include="Src\Scene\Option\OptionScene.h" />
     <ClInclude Include="Src\Manager\Input\InputInfo.h" />
@@ -127,14 +137,10 @@
     <ClInclude Include="Src\Object\Component\Stage\DeliveryInfo.h" />
     <ClInclude Include="Src\Object\Component\PlayerController\Map\MapInfo.h" />
     <ClInclude Include="Src\Manager\Light\LightManager.h" />
-    <ClInclude Include="Src\Object\Actor\Enemy\Giggle\Giggle.h" />
     <ClInclude Include="Src\Object\Component\Wisp\LightInfo.h" />
     <ClInclude Include="Src\Object\Component\Collider\CartCollider\CartCollider.h" />
     <ClInclude Include="Src\Object\Component\Cart\Cart.h" />
     <ClInclude Include="Src\Object\Component\PlayerController\Map\Map.h" />
-    <ClInclude Include="Src\Object\Actor\Enemy\EnemyCommon.h" />
-    <ClInclude Include="Src\Object\Actor\Enemy\Skeleton\Skeleton.h" />
-    <ClInclude Include="Src\Object\Actor\Enemy\Mushnub\Mushnub.h" />
     <ClInclude Include="Src\Object\Component\Effect\FlashEffect.h" />
     <ClInclude Include="Src\Object\Component\Item\Skull\Skull.h" />
     <ClInclude Include="Src\Object\Component\Item\Mug\Mug.h" />
@@ -157,7 +163,6 @@
     <ClInclude Include="Src\Scene\DebugScene.h" />
     <ClInclude Include="Src\Object\Component\Collider\ItemCollider\ItemCollider.h" />
     <ClInclude Include="Src\Common\Shader\Shader.h" />
-    <ClInclude Include="Src\Object\Actor\Enemy\EnemyBase.h" />
     <ClInclude Include="Src\Object\Component\Item\Goblet\Goblet.h" />
     <ClInclude Include="Src\Object\Component\Wisp\Wisp.h" />
     <ClInclude Include="Src\Object\Component\Animation\Animation.h" />
@@ -204,15 +209,10 @@
     <ClInclude Include="Src\Scene\SceneBase.h" />
     <ClInclude Include="Src\Scene\SceneManager.h" />
     <ClInclude Include="Src\Scene\TitleScene\TitleScene.h" />
-    <ClInclude Include="Src\Object\Actor\Enemy\Yeti\Yeti.h" />
-    <ClInclude Include="Src\Object\Actor\Enemy\Weapon\WeaponBase.h" />
-    <ClInclude Include="Src\Object\Actor\Enemy\Weapon\WeaponPunch.h" />
-    <ClInclude Include="Src\Object\Actor\Enemy\Statue\Statue.h" />
     <ClInclude Include="Src\Scene\Tutorial\TutorialInfo.h" />
     <ClInclude Include="Src\Scene\Tutorial\TutorialScene.h" />
     <ClInclude Include="Src\Object\Component\Collider\TutorialWallCollider\TutorialWallCollider.h" />
     <ClInclude Include="Src\Scene\StageClear\StageClear.h" />
-    <ClInclude Include="Src\Object\Actor\Enemy\StagePathData.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Src\Common\Shader\CtrShader.hlsl">

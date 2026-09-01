@@ -3,7 +3,7 @@
 #include <string>
 #include <memory>
 #include <DxLib.h>
-#include "../../Component/Component.h"
+#include "../Component.h"
 #include "EnemyCommon.h"
 
 
