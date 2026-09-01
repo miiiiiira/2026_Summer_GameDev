@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include "../EnemyBase.h"
 
 class Yeti : public EnemyBase
@@ -41,16 +42,15 @@ public:
 	};
 
 	// コンストラクタ
-	Yeti(int modelId);
+	Yeti(void);
 
 	// デストラクタ
 	~Yeti(void)override;
-	// 初期化処理
-	void OnInitialize(void) override;
-	// 読み込み処理
-	void Load(void) override;
-	void Update(void)override;
-	void Draw(void) override;
+
+	void Init(void) override;
+	void Update(void) override;
+	void Draw3D(void) override;
+	void Draw2D(void) override;
 
 private:
 

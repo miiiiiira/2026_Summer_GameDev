@@ -2,75 +2,76 @@
 #include "../../../../Manager/Audio/AudioManager.h"
 #include "../../../../Common/Math/Math.h"
 #include "../../../../Common/Transform/MatrixUtility.h"
-#include "../../../Common/AnimationController.h"
-#include "../../../Common/AnimationController.h"
 #include "../../../Component/PlayerController/PlayerController.h"
 #include "../../../Component/Collider/3DCollider/CapsuleCollider.h"
+#include "../../../Component/Collider/StageCollider/StageCollider.h"
 #include "../../../Component/Transform/Transform.h"
+#include "../../../Component/Animation/Animation.h"
+#include "../EnemyCommon.h"
 #include "Skeleton.h"
 
-Skeleton::Skeleton(int modelId)
-	:
-	EnemyBase(-1)
+Skeleton::Skeleton(void)
 {
-	baseModelId_ = modelId;
 }
 
 Skeleton::~Skeleton(void)
 {
 }
 
-void Skeleton::OnInitialize(void)
+void Skeleton::Init(void)
 {
-	scale_ = SCALE;
-	MV1SetScale(modelId_, scale_);
+	EnemyBase::Init();
 
-
-	localAngle_ = { 0.0f, Math::Deg2Rad(180.0f), 0.0f };
-	// 行列の合成(子, 親と指定すると親⇒子の順に適用される)
-	MATRIX mat = Matrix::Multiplication(localAngle_, angle_);
-
-	// 回転行列をモデルに反映
-	MV1SetRotationMatrix(modelId_, mat);
-
-	MV1SetPosition(modelId_, pos_);
-	prevPos_ = pos_;
-
-	moveDir_ = { 0.0f, 0.0f, 0.0f };
-
-	startOffset_ = { 0.0f,80.0f,0.0f };
-	endOffset_ = { 0.0f,40.0f,0.0f };
-	radius_ = 50.0f;
-
-	isGround_ = false;
-
-	ChangeState(STATE::IDLE);
-}
-
-void Skeleton::Load(void)
-{
-	modelId_ = MV1DuplicateModel(baseModelId_);
-	// モデルアニメーション制御の初期化
-	animationController_ = new AnimationController(modelId_);
+	anim_->Init();
 	for (int i = 0; i < static_cast<int>(ANIM_TYPE::MAX); i++)
 	{
-		animationController_->AddInFbx(i, 1.0f, i);
+		anim_->AddInFbx(static_cast<int>(i), 0.3f, static_cast<int>(i));
 	}
+
+	const auto& data = EnemyTable::Table.at(ENEMY_TAG::SKELETON);
+	SetEnemyData(data);
+
+	// パラメータ初期化
+	info_.moveDir_ = Math::VECTOR_ZERO;
+	info_.tag_ = ENEMY_TAG::SKELETON;
+
+
+	if (transform_)
+	{
+		info_.scale_ = SCALE;
+		MV1SetScale(info_.modelId_, info_.scale_);
+
+
+		transform_->angle_ = DEFAULT_ANGLE;
+		info_.localAngle_ = { 0.0f, Math::Deg2Rad(180.0f), 0.0f };
+
+		MATRIX mat = Matrix::Multiplication(info_.localAngle_, transform_->angle_);
+
+		transform_->prevPos_ = transform_->pos_;
+	}
+
+	// 初期ステート設定
+	ChangeState(STATE::IDLE);
 }
 
 void Skeleton::Update(void)
 {
-	prevPos_ = pos_;
-
 	if (state_ != STATE::IDLE)
 	{
 		// 遅延回転処理
 		DelayRotate();
+	}
 
-		// 行列の合成(子, 親と指定すると親⇒子の順に適用される)
-		MATRIX mat = Matrix::Multiplication(localAngle_, angle_);
-		// 回転行列をモデルに反映
-		MV1SetRotationMatrix(modelId_, mat);
+	if (info_.modelId_ != -1)
+	{
+		// 敵の現在の向き（遅延回転などで計算した角度）＋ ローカル回転補正
+		VECTOR finalAngle;
+		finalAngle.x = transform_->angle_.x + info_.localAngle_.x;
+		finalAngle.y = transform_->angle_.y + info_.localAngle_.y;
+		finalAngle.z = transform_->angle_.z + info_.localAngle_.z;
+
+		// モデルに回転をセット
+		MV1SetRotationXYZ(info_.modelId_, finalAngle);
 	}
 
 
@@ -85,15 +86,21 @@ void Skeleton::Update(void)
 	}
 
 	// アニメーションの更新
-	animationController_->Update();
+	if (anim_)
+	{
+		anim_->Update();
+	}
+
+	// モデルの更新
+	MV1RefreshCollInfo(info_.modelId_, -1);
 }
 
-void Skeleton::Draw(void)
+void Skeleton::Draw3D(void)
 {
-	EnemyBase::Draw();
+	EnemyBase::Draw3D();
 }
 
-void Skeleton::SetSide(SIDE side)
+void Skeleton::SetSide(ENEMY_SIDE side)
 {
 	side_ = side;
 }
@@ -128,17 +135,17 @@ void Skeleton::ChangeScare(void)
 {
 	switch (side_)
 	{
-	case SIDE::RIGHT:
-		moveDir_ = { 0.0f, 0.0f, 1.0f };
+	case ENEMY_SIDE::RIGHT:
+		info_.moveDir_ = { 0.0f, 0.0f, 1.0f };
 		break;
-	case SIDE::LEFT:
-		moveDir_ = { 0.0f, 0.0f, -1.0f };
+	case ENEMY_SIDE::LEFT:
+		info_.moveDir_ = { 0.0f, 0.0f, -1.0f };
 		break;
 	}
 
-	moveSpeed_ = 20.0f;
+	info_.moveSpeed_ = 20.0f;
 
-	animationController_->Play(static_cast<int>(ANIM_TYPE::ATTACK), false);
+	anim_->Play(static_cast<int>(ANIM_TYPE::ATTACK), false);
 }
 
 void Skeleton::ChangeEnd(void)
@@ -174,11 +181,25 @@ void Skeleton::UpdateScare(void)
 {
 	Move();
 
-	if (isCollisionStage_)
+	if (transform_)
 	{
-		AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_SKELETON);
-		ChangeState(STATE::END);
-		return;
+		// 進行方向に少し進んだ位置を計算
+		VECTOR checkPos = VAdd(transform_->pos_, VScale(info_.moveDir_, 30.0f));
+		VECTOR start = VAdd(checkPos, info_.startOffset_);
+		VECTOR end = VAdd(checkPos, info_.endOffset_);
+
+		// 壁との衝突チェック
+		MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, start, end, info_.radius_);
+
+		if (res.HitNum > 0)
+		{
+			MV1CollResultPolyDimTerminate(res);
+
+			AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_SKELETON);
+			ChangeState(STATE::END);
+			return;
+		}
+		MV1CollResultPolyDimTerminate(res);
 	}
 }
 

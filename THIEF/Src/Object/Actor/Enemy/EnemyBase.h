@@ -1,132 +1,78 @@
 #pragma once
-#include<vector>
+#include <vector>
+#include <string>
+#include <memory>
 #include <DxLib.h>
+#include "../../Component/Component.h"
 #include "EnemyCommon.h"
 
-class AnimationController;
+
+// 前方宣言
+class Transform;
+class CapsuleCollider;
+class StageCollider;
+class Animation;
 class WeaponBase;
-class WeaponPunch;
 class PlayerController;
-class EnemyManager;
+class StagePathData;
 
-using namespace EnemyCommon;
-
-class EnemyBase
+class EnemyBase : public Component
 {
 public:
 	
 	// コンストラクタ
-	EnemyBase(int modelId = -1);
+	EnemyBase(void);
 	// デストラクタ
-	virtual ~EnemyBase(void);
+	virtual ~EnemyBase(void) override;
 
-	// 読み込み処理
-	virtual void Load(void);
-	// 初期化処理
-	void Init(PlayerController* player = nullptr,int stageId = -1,
-		const std::vector<WAYPOINT>& way = {},
-		const std::vector<std::vector<EDGE>>& edgeList = {});
-	virtual void OnInitialize(void) = 0;
+	void Init(void) override;
+	void Update(void) override = 0;
+	void Draw3D(void) override;
+	void Draw2D(void) override;
 
-	// 更新処理
-	virtual void Update(void) = 0;
-	// 描画処理
-	virtual void Draw(void);
-	// 解放処理
-	void Release(void);
+	// 初期データの読み込みとセット
+	void SetPathData(PlayerController* player, int stageId, std::shared_ptr<StagePathData> pathData);
+	void SetEnemyData(const EnemyData& data);
 
-	// 始点から終点までの最短経路を計算し、エッジのリストとして返す
-	void FindPath(int startNodeId, int goalNodeId);
+	// ゲッター・セッター
+	bool IsAlive(void) const{ return info_.isAlive_; }
 
-	// 武器クラスを取得
-	WeaponBase* GetUseWeapon(void);
+	Transform* GetTransform();	// Transformを返す
 
-	int GetModelId(void);
-	VECTOR GetPos(void);
+	CapsuleCollider* GetCapsule(void);	// CapsuleColliderを返す
+
+	WeaponBase* GetWeapon(void);	// WeaponBaseを返す
+
+	float GetAttackDamagePow(void) const;
+	float GetAttackMoveSpeed(void) const;
+	float GetAttackJumpPow(void) const;
+
+	ENEMY_TAG GetTag(void) const;
+
+	// モデルIDを返す
+	int GetModelId() const { return info_.modelId_; }
+
 	void SetPos(VECTOR pos);
-	VECTOR GetAngle(void);
-	void SetAngle(VECTOR angle);
-	float GetRadius(void);
-	VECTOR GetPrevPos(void);
-	VECTOR GetStart(void);
-	VECTOR GetEnd(void);
-	void SetGround(bool isGround);
-	bool GetGround(void) { return isGround_; }
-	float GetVelocity(void);
-	void SetVelocity(float velocityY);
-	void SetTag(ENEMY_TAG tag);
-	ENEMY_TAG GetTag(void);
-	float GetAttackMoveSpeed(void);
-	float GetAttackJumpPow(void);
-	float GetAttackDamagePow(void);
-	void SetCollisionStage(bool isCollision);
 
 protected:
 
-	PlayerController* player_;
-	int stageId_;
-	const std::vector<WAYPOINT>* way_ = nullptr;
-	const std::vector<std::vector<EDGE>>* edgeList_ = nullptr;
+	// コンポーネント保持用
+	Transform* transform_ = nullptr;
+	CapsuleCollider* capColl_ = nullptr;
+	StageCollider* stageColl_ = nullptr;
+	Animation* anim_ = nullptr;
 
-	// ジャンプ力
-	const float JUMP_POW = 25.0f;
+	// 外部参照
+	PlayerController* player_ = nullptr;
+	WeaponBase* useWeapon_ = nullptr;
+	std::weak_ptr<StagePathData> pathData_ = {};
 
-	// 重力加速度
-	const float GRAVITY = -1.98f;
+	EnemyInfo info_;
+	int stageId_ = -1;
 
-	// 最大落下速度
-	const float MAX_FALL = -40.0f;
+protected:
 
-	AnimationController* animationController_;
-
-	// 武器
-	WeaponBase* useWeapon_;
-	WeaponPunch* weaponPunch_;
-
-	// 敵の情報
-	int modelId_;
-	VECTOR scale_;
-	VECTOR angle_;
-	VECTOR localAngle_;
-	VECTOR pos_;
-	float radius_;
-	VECTOR moveDir_;
-	float moveSpeed_;
-	VECTOR movePow_;
-	VECTOR prevPos_;
-	VECTOR jumpPow_;
-	float stepJump_;
-	bool isJump_;
-	bool isNotice_;
-	bool isGround_;	
-	float velocityY_ = 0.0f;	// 現在の落下速度
-	ENEMY_TAG tag_;
-	float attackMoveSpeed_ = 0.0f;
-	float attackJumpPow_ = 0.0f;
-	float attackDamagePow_ = 0.0f;
-	bool isCollisionStage_ = false;
-
-	// 開始位置
-	VECTOR startOffset_;
-	// 終了位置
-	VECTOR endOffset_;
-
-	std::vector<float> minCosts_;				// ポイントへの最短経路合計
-	std::vector<int> parentNodes_;				// どこから来たかを記録
-	std::vector<EDGE> path_;					// 探索された最短経路を格納
-
-	VECTOR nextWayPoint_;
-	// 更新ステップ
-	float step_;
-	std::vector<int> candidates_;	// 候補のノードを格納する
-	int currentNodeId_;		// 今いるノード
-	int prevNodeId_;		// 前回のノード
-	int prevPrevNodeId_;	// 前々回のノード
-	int nextNodeId_;
-	float viewRadius_;		// 視野用の半径
-	bool isHit_;
-	float patrolRadius_;	// 巡回用の半径
-	float targetLostTimer_;
+	void FindPath(int startNodeId, int goalNodeId);
 
 	// 移動方向に応じた遅延回転
 	void DelayRotate(void);
@@ -168,4 +114,9 @@ protected:
 
 	// 追従用の線分かステージと当たっているかどうか
 	bool CheckChaseLineCollision(VECTOR pPos, VECTOR ePos, float radius);
+
+private:
+	static constexpr float JUMP_POW = 25.0f;	// ジャンプ力
+	static constexpr float GRAVITY = -1.98f;	// 重力加速度
+	static constexpr float MAX_FALL = -40.0f;	// 最大落下速度
 };

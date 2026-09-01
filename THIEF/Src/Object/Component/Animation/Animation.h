@@ -32,6 +32,7 @@ public:
 	bool IsEnd(void) const;
 
 private:
+
 	void AddInternal(int type, float speed, AnimationState& anim);
 
 private:

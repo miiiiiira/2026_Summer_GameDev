@@ -14,13 +14,13 @@ public:
 	};
 
 	// コンストラクタ
-	Giggle(int modelId = -1);
+	Giggle(void);
 
 	// デストラクタ
 	~Giggle(void)override;
 
 	// 初期化
-	void OnInitialize(void) override;
+	void Init(void) override;
 
 	void Update(void)override;
 private:

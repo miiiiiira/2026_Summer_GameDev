@@ -3,13 +3,13 @@
 #include <DxLib.h>
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "../../Object/Tag.h"
 #include "../SceneBase.h"
+#include "../../Object/Actor/Enemy/EnemyCommon.h"
 
 class ObjectManager;
-class EnemyManager;
-class EnemyBase;
 
 enum STAGE_NUM
 {
@@ -23,6 +23,7 @@ enum STAGE_NUM
 class GameScene : public SceneBase
 {
 public:
+
 	GameScene(void);				// コンストラクタ
 	~GameScene(void) override;		// デストラクタ
 
@@ -33,37 +34,44 @@ public:
 	void Draw(void)		override;	// 描画
 	void Release(void)	override;	// 解放
 
-	void CameraCreate(void);		// カメラの作成
-	void StageCreate(std::string path, std::string collPath = "NoData");			// ステージの作成
-	void WispCreate(void);			// ライトの作成
-	void PlayerCreate(void);		// プレイヤーの作成
-	void EnemyCreate(void);			// 敵の作成
-	void CartCreate(void);			// カートの作成
-	void ItemCreateStage1(void);	// ステージ1アイテムの作成
-	void ItemCreateStage2(void);	// ステージ2アイテムの作成
-	void ItemCreateStage3(void);	// ステージ3アイテムの作成
-	void CrosshairCreate(void);		// クロスヘアの作成
-
 private:
 
-	// ステージ数別の初期化処理
-	void Stage1Init(void);
-	void Stage2Init(void);
-	void Stage3Init(void);
+	// ステージ別の初期化処理
+	void Stage1Init(void);	// ステージ1
+	void Stage2Init(void);	// ステージ2
+	void Stage3Init(void);	// ステージ3
 
-	// 敵の当たり判定処理
-	void CheckEnemyAttack(void);	// 敵の攻撃とプレイヤーの当たり判定
-	void CollisionEnemyToStage(void);	// 敵とステージの当たり判定
-	bool CanStepUp(EnemyBase* enemy, const VECTOR& pos, const VECTOR& move, float stepHeight);	// 小さな段差を登れるか判定する
-	void CollisionEnemy2Player(void);	// プレイヤーと敵の当たり判定
-	void CollisionEnemy2PlayerGrab(void);	// プレイヤーのつかみとと敵の当たり判定
+	void CameraCreate(void);	// カメラの作成
+
+	void StageCreate(std::string path, std::string collPath = "NoData");	// ステージの作成
+
+	void WispCreate(void);	// ライトの作成
+
+	void PlayerCreate(void);	// プレイヤーの作成
+
+	void CartCreate(void);	// カートの作成
+
+	// ステージ別アイテムの生成
+	void ItemCreateStage1(void);	// ステージ1
+	void ItemCreateStage2(void);	// ステージ2
+	void ItemCreateStage3(void);	// ステージ3
+
+	void CrosshairCreate(void);	// クロスヘアの作成
+
+	// ステージ別敵の生成
+	void EnemyCreateStage1(void);	// ステージ1
+	void EnemyCreateStage2(void);	// ステージ2
+	void EnemyCreateStage3(void);	// ステージ3
 
 	void ItemCreate(Tag tag, VECTOR pos);	// タグを使用し、アイテムを作る
+	void EnemyCreate(ENEMY_TAG tag, VECTOR pos, const EnemySpawnParam& param = {});	// タグを使用し、敵を作る
+	void InitPathData(void);
 
 private:
 
 	// オブジェクトマネージャー
 	ObjectManager* objectManger_;
 
-	EnemyManager* enemyManager_;
+	// 経路データ
+	std::shared_ptr<StagePathData> stagePathData_;
 };

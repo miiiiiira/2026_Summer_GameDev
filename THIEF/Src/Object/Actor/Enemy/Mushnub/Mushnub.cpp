@@ -5,101 +5,83 @@
 #include "../../../Common/AnimationController.h"
 #include "../../../Component/PlayerController/PlayerController.h"
 #include "../../../Component/Collider/3DCollider/CapsuleCollider.h"
+#include "../../../Component/Collider/StageCollider/StageCollider.h"
+#include "../../../Component/Animation/Animation.h"
 #include "../../../Component/Transform/Transform.h"
+#include "../EnemyCommon.h"
 #include "Mushnub.h"
 
-Mushnub::Mushnub(int modelId)
-	:
-	EnemyBase(-1),
-	minAreaPos_(-1.0f, -1.0f, -1.0f),
-	maxAreaPos_(-1.0f, -1.0f, -1.0f)
+Mushnub::Mushnub(void)
 {
-	baseModelId_ = modelId;
 }
 
 Mushnub::~Mushnub(void)
 {
 }
 
-void Mushnub::OnInitialize(void)
+void Mushnub::Init(void)
 {
-	scale_ = SCALE;
-	MV1SetScale(modelId_, scale_);
+	EnemyBase::Init();
 
-	angle_ = DEFAULT_ANGLE;
-	localAngle_ = { 0.0f, Math::Deg2Rad(180.0f), 0.0f };
-	// 行列の合成(子, 親と指定すると親⇒子の順に適用される)
-	MATRIX mat = Matrix::Multiplication(localAngle_, angle_);
-
-	// 回転行列をモデルに反映
-	MV1SetRotationMatrix(modelId_, mat);
-
-	if (pos_.y <= 0.0f)
-	{
-		pos_ = DEFAULT_POS;
-	}
-	MV1SetPosition(modelId_, pos_);
-	prevPos_ = pos_;
-
-	if (chasePos_.y <= 0.0f)
-	{
-		chasePos_ = CHASE_POS;
-	}
-
-	moveDir_ = { 0.0f, 0.0f, 0.0f };
-
-	startOffset_ = { 0.0f,80.0f,0.0f };
-	endOffset_ = { 0.0f,40.0f,0.0f };
-	radius_ = 50.0f;
-
-	viewRadius_ = 1000.0f;
-
-	isGround_ = false;
-
-	if (minAreaPos_.x == -1.0f && maxAreaPos_.x == -1.0f)
-	{
-		minAreaPos_ = MIN_AREA_POS;
-		maxAreaPos_ = MAX_AREA_POS;
-	}
-
-	attackDamagePow_ = 10.0f;
-
-	// 初期アニメーション再生
-	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
-
-	ChangeState(STATE::IDLE);
-}
-
-void Mushnub::Load(void)
-{
-	modelId_ = MV1DuplicateModel(baseModelId_);
-	// モデルアニメーション制御の初期化
-	animationController_ = new AnimationController(modelId_);
+	anim_->Init();
 	for (int i = 0; i < static_cast<int>(ANIM_TYPE::MAX); i++)
 	{
-		animationController_->AddInFbx(i, 0.5f, i);
+		anim_->AddInFbx(static_cast<int>(i), 0.2f, static_cast<int>(i));
 	}
+
+	const auto& data = EnemyTable::Table.at(ENEMY_TAG::MUSHNUB);
+	SetEnemyData(data);
+
+	// パラメータ初期化
+	info_.moveDir_ = Math::VECTOR_ZERO;
+	info_.viewRadius_ = 1000.0f;
+	info_.attackDamagePow_ = 10.0f;
+	info_.tag_ = ENEMY_TAG::MUSHNUB;
+
+	if (transform_)
+	{
+		info_.scale_ = SCALE;
+		MV1SetScale(info_.modelId_, info_.scale_);
+
+
+		transform_->angle_ = DEFAULT_ANGLE;
+		info_.localAngle_ = { 0.0f, Math::Deg2Rad(180.0f), 0.0f };
+
+		MATRIX mat = Matrix::Multiplication(info_.localAngle_, transform_->angle_);
+
+		transform_->prevPos_ = transform_->pos_;
+	}
+
+	// 初期ステート設定
+	ChangeState(STATE::IDLE);
 }
 
 void Mushnub::Update(void)
 {
-	prevPos_ = pos_;
 	// 遅延回転処理
 	DelayRotate();
 
-	// 行列の合成(子, 親と指定すると親⇒子の順に適用される)
-	MATRIX mat = Matrix::Multiplication(localAngle_, angle_);
-	// 回転行列をモデルに反映
-	MV1SetRotationMatrix(modelId_, mat);
+	if (info_.modelId_ != -1)
+	{
+		// 敵の現在の向き（遅延回転などで計算した角度）＋ ローカル回転補正
+		VECTOR finalAngle;
+		finalAngle.x = transform_->angle_.x + info_.localAngle_.x;
+		finalAngle.y = transform_->angle_.y + info_.localAngle_.y;
+		finalAngle.z = transform_->angle_.z + info_.localAngle_.z;
 
+		// モデルに回転をセット
+		MV1SetRotationXYZ(info_.modelId_, finalAngle);
+	}
+
+	// ステート別更新
 	switch (state_)
 	{
-	case Mushnub::STATE::IDLE: UpdateIdle(); break;
-	case Mushnub::STATE::SURPRISE: UpdateSurprise(); break;
-	case Mushnub::STATE::CHASE: UpdateChase(); break;
-	case Mushnub::STATE::HIT_REACT: UpdateHit(); break;
-	case Mushnub::STATE::DEAD: UpdateDead(); break;
-	case Mushnub::STATE::END: UpdateEnd(); break;
+	case Mushnub::STATE::IDLE:      UpdateIdle();     break;
+	case Mushnub::STATE::SURPRISE:   UpdateSurprise(); break;
+	case Mushnub::STATE::CHASE:     UpdateChase();    break;
+	case Mushnub::STATE::HIT_REACT: UpdateHit();      break;
+	case Mushnub::STATE::DEAD:      UpdateDead();     break;
+	case Mushnub::STATE::END:       UpdateEnd();      break;
 	default:
 		break;
 	}
@@ -107,23 +89,40 @@ void Mushnub::Update(void)
 	// 重力処理
 	ApplyGravity();
 
+	// ステージとの衝突判定・押し出し計算
+	if (stageColl_)
+	{
+		stageColl_->StageColl(info_.velocityY_);
+	}
+
 	// アニメーションの更新
-	animationController_->Update();
+	if (anim_)
+	{
+		anim_->Update();
+	}
+
+	// モデルの更新
+	MV1RefreshCollInfo(info_.modelId_, -1);
 }
 
-void Mushnub::Draw(void)
+void Mushnub::Draw3D(void)
 {
-	EnemyBase::Draw();
+	EnemyBase::Draw3D();
 
 #ifdef _DEBUG
-
-	VECTOR start = VAdd(pos_, startOffset_);
-	VECTOR end = VAdd(pos_, endOffset_);
-	DrawCapsule3D(start, end, radius_, 8, 0xff0000, 0xff0000, false);
-
+	if (transform_)
+	{
+		VECTOR start = VAdd(transform_->pos_, info_.startOffset_);
+		VECTOR end = VAdd(transform_->pos_, info_.endOffset_);
+		DrawCapsule3D(start, end, info_.radius_, 8, 0xff0000, 0xff0000, false);
+	}
 	DrawCube3D(minAreaPos_, maxAreaPos_, 0xff00ff, 0xff00ff, false);
-
 #endif
+}
+
+void Mushnub::Draw2D(void)
+{
+	DrawFormatString(10, 200, 0xffffff, "座標: (%.2f, %.2f, %.2f)", transform_->pos_.x, transform_->pos_.y, transform_->pos_.z);
 }
 
 void Mushnub::ChangeState(STATE state)
@@ -145,22 +144,22 @@ void Mushnub::ChangeState(STATE state)
 
 void Mushnub::ChangeIdle(void)
 {
-	step_ = 5.0f;
-	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
+	info_.step_ = 5.0f;
+	anim_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
 }
 
 void Mushnub::ChangeSurprise(void)
 {
-	step_ = 2.0f;
+	info_.step_ = 2.0f;
 	LookPlayer();
-	AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_MUSHNUB, & pos_);
-	animationController_->Play(static_cast<int>(ANIM_TYPE::HIT_REACT), false);
+	AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_MUSHNUB, &transform_->pos_);
+	anim_->Play(static_cast<int>(ANIM_TYPE::HIT_REACT), false);
 }
 
 void Mushnub::ChangeChase(void)
 {
-	moveSpeed_ = 3.0f;
-	animationController_->Play(static_cast<int>(ANIM_TYPE::WALK), true);
+	info_.moveSpeed_ = 3.0f;
+	anim_->Play(static_cast<int>(ANIM_TYPE::WALK), true);
 }
 
 void Mushnub::ChangeHit(void)
@@ -186,8 +185,8 @@ void Mushnub::UpdateIdle(void)
 
 void Mushnub::UpdateSurprise(void)
 {
-	step_ -= SceneManager::GetInstance()->GetDeltaTime();
-	if (step_ < 0.0f)
+	info_.step_ -= SceneManager::GetInstance()->GetDeltaTime();
+	if (info_.step_ < 0.0f)
 	{
 		// 待機終了
 		ChangeState(STATE::CHASE);
@@ -204,16 +203,16 @@ void Mushnub::UpdateChase(void)
 	else
 	{
 		// 相手へのベクトルを計算
-		VECTOR diff = VSub(chasePos_, pos_);
+		VECTOR diff = VSub(chasePos_, transform_->pos_);
 		diff.y = 0.0f;
 
 		// ベクトルの正規化で単位ベクトル（方向）を取得
-		moveDir_ = VNorm(diff);
+		info_.moveDir_ = VNorm(diff);
 
 		// 回転はY軸のみ
-		angle_.x = angle_.z = 0.0f;
+		transform_->angle_.x = transform_->angle_.z = 0.0f;
 
-		float enemyDist2 = GetDistance(pos_, chasePos_);
+		float enemyDist2 = GetDistance(transform_->pos_, chasePos_);
 
 		if (enemyDist2 <= 100.0f * 100.0f)
 		{
@@ -222,16 +221,16 @@ void Mushnub::UpdateChase(void)
 		}
 	}
 
-	float enemyDist = GetDistance(pos_, player_->GetTransform()->pos_);
+	float enemyDist = GetDistance(transform_->pos_, player_->GetTransform()->pos_);
 
 	if (enemyDist >= 200.0f * 200.0f)
 	{
-		animationController_->Play(static_cast<int>(ANIM_TYPE::WALK), true);
+		anim_->Play(static_cast<int>(ANIM_TYPE::WALK), true);
 		Move();
 	}
 	else
 	{
-		animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
+		anim_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
 	}
 
 }

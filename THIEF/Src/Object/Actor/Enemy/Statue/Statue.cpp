@@ -4,96 +4,89 @@
 #include "../../../../Common/Transform/MatrixUtility.h"
 #include "../../../Component/PlayerController/PlayerController.h"
 #include "../../../Component/Collider/3DCollider/CapsuleCollider.h"
+#include "../../../Component/Collider/StageCollider/StageCollider.h"
 #include "../../../Component/Transform/Transform.h"
 #include "../Weapon/WeaponPunch.h"
+#include "../EnemyCommon.h"
 #include "Statue.h"
 
-Statue::Statue(int modelId)
-	:
-	EnemyBase(modelId),
-	minAreaPos_(-1.0f, -1.0f, -1.0f),
-	maxAreaPos_(-1.0f, -1.0f, -1.0f)
+Statue::Statue(void)
 {
 }
 
 Statue::~Statue(void)
 {
+	if (useWeapon_)
+	{
+		useWeapon_->Release();
+		delete useWeapon_;
+		useWeapon_ = nullptr;
+	}
 }
 
-void Statue::OnInitialize(void)
+void Statue::Init(void)
 {
-	scale_ = SCALE;
-	MV1SetScale(modelId_, scale_);
+	EnemyBase::Init();
 
-	angle_ = DEFAULT_ANGLE;
-	localAngle_ = { 0.0f, Math::Deg2Rad(180.0f), 0.0f };
-	// 行列の合成(子, 親と指定すると親⇒子の順に適用される)
-	MATRIX mat = Matrix::Multiplication(localAngle_, angle_);
+	const auto& data = EnemyTable::Table.at(ENEMY_TAG::STATUE);
+	SetEnemyData(data);
 
-	// 回転行列をモデルに反映
-	MV1SetRotationMatrix(modelId_, mat);
+	// パラメータ初期化
+	info_.moveDir_ = Math::VECTOR_ZERO;
+	info_.attackMoveSpeed_ = 20.0f;
+	info_.attackJumpPow_ = 25.0f;
+	info_.attackDamagePow_ = 20.0f;
+	info_.tag_ = ENEMY_TAG::STATUE;
 
-	if (pos_.y <= 0.0f)
+
+	if (transform_)
 	{
-		pos_ = DEFAULT_POS;
+		info_.scale_ = SCALE;
+		MV1SetScale(info_.modelId_, info_.scale_);
+
+		transform_->angle_ = DEFAULT_ANGLE;
+		info_.localAngle_ = { 0.0f, Math::Deg2Rad(180.0f), 0.0f };
+
+		MATRIX mat = Matrix::Multiplication(info_.localAngle_, transform_->angle_);
+
+		transform_->prevPos_ = transform_->pos_;
 	}
 
-	MV1SetPosition(modelId_, pos_);
-	prevPos_ = pos_;
-
-	moveDir_ = { 0.0f, 0.0f, 0.0f };
-
-	startOffset_ = { 0.0f,400.0f,0.0f };
-	endOffset_ = { 0.0f,80.0f,0.0f };
-	radius_ = 80.0f;
-
-	isGround_ = false;
-
-	if (minAreaPos_.x == -1.0f && maxAreaPos_.x == -1.0f)
-	{
-		minAreaPos_ = MIN_AREA_POS;
-		maxAreaPos_ = MAX_AREA_POS;
-	}
-
-	if (chasePos_.y <= 0.0f)
-	{
-		chasePos_ = DEFAULT_POS;
-	}
-
-	attackMoveSpeed_ = 20.0f;
-	attackJumpPow_ = 25.0f;
-	attackDamagePow_ = 20.0f;
 
 	seTimer_ = 0.0f;
 
-	// 武器の初期化
-	weaponPunch_ = new WeaponPunch();
-	weaponPunch_->Init(WeaponBase::TYPE::PUNCH);
-
-	// Statueの攻撃はパンチ
-	useWeapon_ = weaponPunch_;
-
-	candidates_.reserve(way_->size());
-
-	currentNodeId_ = FindNearestNode(pos_);
+	useWeapon_ = new WeaponPunch();
+	useWeapon_->Init(WeaponBase::TYPE::PUNCH);
 
 	ChangeState(STATE::IDLE);
-}
 
-void Statue::Load(void)
-{
+	auto pathData = pathData_.lock();
+	if (!pathData) return;
+
+	const auto* wayList = pathData->GetWayList();
+	if (wayList && !wayList->empty() && transform_)
+	{
+		info_.candidates_.reserve(wayList->size());
+		info_.currentNodeId_ = FindNearestNode(transform_->pos_);
+	}
 }
 
 void Statue::Update(void)
 {
-	prevPos_ = pos_;
 	// 遅延回転処理
 	DelayRotate();
 
-	// 行列の合成(子, 親と指定すると親⇒子の順に適用される)
-	MATRIX mat = Matrix::Multiplication(localAngle_, angle_);
-	// 回転行列をモデルに反映
-	MV1SetRotationMatrix(modelId_, mat);
+	if (info_.modelId_ != -1)
+	{
+		// 敵の現在の向き（遅延回転などで計算した角度）＋ ローカル回転補正
+		VECTOR finalAngle;
+		finalAngle.x = transform_->angle_.x + info_.localAngle_.x;
+		finalAngle.y = transform_->angle_.y + info_.localAngle_.y;
+		finalAngle.z = transform_->angle_.z + info_.localAngle_.z;
+
+		// モデルに回転をセット
+		MV1SetRotationXYZ(info_.modelId_, finalAngle);
+	}
 
 	switch (state_)
 	{
@@ -105,79 +98,54 @@ void Statue::Update(void)
 	default:
 		break;
 	}
+
+	// ステージとの衝突判定・押し出し計算
+	if (stageColl_)
+	{
+		stageColl_->StageColl(info_.velocityY_);
+	}
+
+	// モデルの更新
+	MV1RefreshCollInfo(info_.modelId_, -1);
 }
 
-void Statue::Draw(void)
+void Statue::Draw3D(void)
 {
-	EnemyBase::Draw();
+	EnemyBase::Draw3D();
 
 #ifdef _DEBUG
-
 	DrawCube3D(minAreaPos_, maxAreaPos_, 0xff00ff, 0xff00ff, false);
+	
+	auto pathData = pathData_.lock();
+	if (!pathData) return;
 
-
-	for (int i = 0; i < (int)edgeList_->size(); i++)
+	// StagePathDataからリストを取得
+	const auto* wayList = pathData->GetWayList();
+	const auto* edgeList = pathData->GetEdgeList();
+	if (wayList && edgeList && transform_)
 	{
-		for (const auto& edge : (*edgeList_)[i])
+		for (int i = 0; i < (int)edgeList->size(); i++)
 		{
-			DrawLine3D((*way_)[i].pos, edge.way.pos, GetColor(255, 255, 0));
+			for (const auto& edge : (*edgeList)[i])
+			{
+				DrawLine3D((*wayList)[i].pos, edge.way.pos, GetColor(255, 255, 0));
+			}
 		}
+
+		if (info_.currentNodeId_ >= 0 && info_.currentNodeId_ < (int)wayList->size())
+		{
+			DrawLine3D(transform_->pos_, (*wayList)[info_.currentNodeId_].pos, GetColor(255, 0, 255));
+		}
+
+		DrawSphere3D(transform_->pos_, info_.patrolRadius_, 8, GetColor(0, 255, 0), GetColor(0, 0, 0), FALSE);
+		DrawSphere3D(info_.nextWayPoint_, 40.0f, 10, GetColor(0, 255, 0), GetColor(0, 255, 0), TRUE);
+		DrawLine3D(transform_->pos_, info_.nextWayPoint_, GetColor(0, 255, 0));
 	}
 
-	// 現在地から、今目指しているノード（currentNodeId_）までの線を引く
-	DrawLine3D(pos_, (*way_)[currentNodeId_].pos, GetColor(255, 0, 255));
-
-	DrawSphere3D(pos_, patrolRadius_, 8, GetColor(0, 255, 0), GetColor(0, 0, 0), FALSE);
-
-	// 1. 今の目的地（行きたい場所）を「緑」で描画
-	DrawSphere3D(nextWayPoint_, 40.0f, 10, GetColor(0, 255, 0), GetColor(0, 255, 0), TRUE);
-
-	// 2. 敵の現在地から、緑の目的地へ向かって「線」を引く
-	DrawLine3D(pos_, nextWayPoint_, GetColor(0, 255, 0));
-
-	// 巡回ルート描画
-	for (const auto& point : (*way_))
+	if (useWeapon_)
 	{
-		float distance = VSize(VSub(point.pos, pos_));
-
-		unsigned int color = 0x0000ff;
-		if (point.id == prevNodeId_)
-		{
-			color = 0xff8c00;
-		}
-		else if (point.id == prevPrevNodeId_)
-		{
-			color = 0xfff5ee;
-		}
-		else if (distance > patrolRadius_)
-		{
-			color = 0xff0000;
-		}
-
-		DrawSphere3D(
-			point.pos, 50.0f, 10,
-			color, color, false);
+		useWeapon_->Draw();
 	}
-
-	VECTOR enemyPos = pos_;
-	VECTOR playerPos = player_->GetTransform()->pos_;
-
-
-	DrawLine3D(enemyPos, playerPos, 0x00ff00);
-
-	DrawSphere3D(enemyPos, 80.0f, 8, 0xff00ff, 0xff00ff, false);
-	enemyPos.y += 100.0f;
-	DrawSphere3D(enemyPos, 80.0f, 8, 0xff0000, 0xff0000, false);
-	enemyPos.y += 100.0f;
-	DrawSphere3D(enemyPos, 80.0f, 8, 0x00ff00, 0x00ff00, false);
-	enemyPos.y += 100.0f;
-	DrawSphere3D(enemyPos, 80.0f, 8, 0x00ffff, 0x00ffff, false);
-	enemyPos.y += 100.0f;
-	DrawSphere3D(enemyPos, 80.0f, 8, 0xffff00, 0xffff00, false);
-
-
-	useWeapon_->Draw();
-
 #endif
 }
 
@@ -203,21 +171,21 @@ void Statue::ChangeIdle(void)
 
 void Statue::ChangeSurprise(void)
 {
-	step_ = 4.0f;
+	info_.step_ = 4.0f;
 }
 
 void Statue::ChangeChase(void)
 {
-	moveSpeed_ = 5.0f;
+	info_.moveSpeed_ = 5.0f;
 }
 
 void Statue::ChangeAttack(void)
 {
-	step_ = 10.0f;
+	info_.step_ = 10.0f;
 	LookPlayer();
-	VECTOR enemyAttackPos = pos_;
+	VECTOR enemyAttackPos = transform_->pos_;
 	enemyAttackPos.y += 80.0f;
-	useWeapon_->Use(enemyAttackPos, moveDir_);
+	useWeapon_->Use(enemyAttackPos, info_.moveDir_);
 }
 
 void Statue::ChangeEnd(void)
@@ -235,8 +203,8 @@ void Statue::UpdateIdle(void)
 
 void Statue::UpdateSurprise(void)
 {
-	step_ -= SceneManager::GetInstance()->GetDeltaTime();
-	if (step_ < 0.0f)
+	info_.step_ -= SceneManager::GetInstance()->GetDeltaTime();
+	if (info_.step_ < 0.0f)
 	{
 		// 待機終了
 		ChangeState(STATE::CHASE);
@@ -246,14 +214,14 @@ void Statue::UpdateSurprise(void)
 
 void Statue::UpdateChase(void)
 {
-	VECTOR enemyPos = pos_;
+	VECTOR enemyPos = transform_->pos_;
 	VECTOR playerPos = player_->GetTransform()->pos_;
 
 	// 視線位置
 	VECTOR start = { 0.0f, 100.0f, 0.0f };
-	VECTOR enemyHead = VAdd(pos_, start);
+	VECTOR enemyHead = VAdd(transform_->pos_, start);
 	VECTOR playerHead = player_->GetCapsule()->GetStart();
-	float distance = VSize(VSub(playerPos, pos_));
+	float distance = VSize(VSub(playerPos, transform_->pos_));
 
 	// 画面内に入っているかをチェックする
 	bool isLookedByPlayer1 = !CheckCameraViewClip(enemyPos);
@@ -285,12 +253,12 @@ void Statue::UpdateChase(void)
 		// プレイヤーに見られているなら
 		if (isLooked)
 		{
-			path_.clear();
+			info_.path_.clear();
 			return;
 		}
 		else if (!isPlayerVisible)
 		{
-			if (path_.empty())
+			if (info_.path_.empty())
 			{
 				// プレイヤーから一番近いノードを探す
 				int playerNearNodeId = FindNearestNode(playerPos);
@@ -299,21 +267,21 @@ void Statue::UpdateChase(void)
 				// 敵の位置とプレイヤーの位置を繋ぐルートを探す
 				FindPath(enemyNearNodeId, playerNearNodeId);
 
-				if (path_.size() > 1)
+				if (info_.path_.size() > 1)
 				{
-					nextNodeId_ = 1;
+					info_.nextNodeId_ = 1;
 				}
 				else
 				{
-					nextNodeId_ = 0;
+					info_.nextNodeId_ = 0;
 				}
 			}
 			else
 			{
-				if (nextNodeId_ >= static_cast<int>(path_.size()))
+				if (info_.nextNodeId_ >= static_cast<int>(info_.path_.size()))
 				{
-					path_.clear();
-					nextNodeId_ = 0;
+					info_.path_.clear();
+					info_.nextNodeId_ = 0;
 				}
 				else
 				{
@@ -323,7 +291,7 @@ void Statue::UpdateChase(void)
 		}
 		else
 		{
-			path_.clear();
+			info_.path_.clear();
 			ChaseDirect();
 
 		}
@@ -339,25 +307,25 @@ void Statue::UpdateChase(void)
 			if (CheckChaseLineCollision(enemyPos, chasePos_, 30.0f))
 			{
 				// 障害物あり
-				if (path_.empty())
+				if (info_.path_.empty())
 				{
 					int enemyNearNode = FindNearestNode(enemyPos);
 					int defaultNearNode = FindNearestNode(chasePos_);
 					FindPath(enemyNearNode, defaultNearNode);
-					if (path_.size() > 1)
+					if (info_.path_.size() > 1)
 					{
-						nextNodeId_ = 1;
+						info_.nextNodeId_ = 1;
 					}
 					else
 					{
-						nextNodeId_ = 0;
+						info_.nextNodeId_ = 0;
 					}
 				}
 
-				if (nextNodeId_ >= static_cast<int>(path_.size())) 
+				if (info_.nextNodeId_ >= static_cast<int>(info_.path_.size())) 
 				{
-					path_.clear();
-					nextNodeId_ = 0;
+					info_.path_.clear();
+					info_.nextNodeId_ = 0;
 				}
 				else
 				{
@@ -371,10 +339,10 @@ void Statue::UpdateChase(void)
 				diff.y = 0.0f;
 
 				// ベクトルの正規化で単位ベクトル（方向）を取得
-				moveDir_ = VNorm(diff);
+				info_.moveDir_ = VNorm(diff);
 
 				// 回転はY軸のみ
-				angle_.x = angle_.z = 0.0f;
+				transform_->angle_.x = transform_->angle_.z = 0.0f;
 
 				float enemyDist2 = GetDistance(enemyPos, chasePos_);
 
@@ -388,35 +356,35 @@ void Statue::UpdateChase(void)
 		else
 		{
 
-			path_.clear();
+			info_.path_.clear();
 
 			if (isPlayerVisible)
 			{
-				moveDir_ = { 0.0f, 0.0f, 0.0f };
+				info_.moveDir_ = { 0.0f, 0.0f, 0.0f };
 			}
 			// 帰還先との間に障害物があるかチェック
 			else if (CheckChaseLineCollision(enemyPos, chasePos_, 40.0f))
 			{
 				// 障害物あり
-				if (path_.empty())
+				if (info_.path_.empty())
 				{
 					int enemyNearNode = FindNearestNode(enemyPos);
 					int defaultNearNode = FindNearestNode(chasePos_);
 					FindPath(enemyNearNode, defaultNearNode);
-					if (path_.size() > 1)
+					if (info_.path_.size() > 1)
 					{
-						nextNodeId_ = 1;
+						info_.nextNodeId_ = 1;
 					}
 					else
 					{
-						nextNodeId_ = 0;
+						info_.nextNodeId_ = 0;
 					}
 				}
 
-				if (nextNodeId_ >= static_cast<int>(path_.size()))
+				if (info_.nextNodeId_ >= static_cast<int>(info_.path_.size()))
 				{
-					path_.clear();
-					nextNodeId_ = 0;
+					info_.path_.clear();
+					info_.nextNodeId_ = 0;
 				}
 				else
 				{
@@ -430,10 +398,10 @@ void Statue::UpdateChase(void)
 				diff.y = 0.0f;
 
 				// ベクトルの正規化で単位ベクトル（方向）を取得
-				moveDir_ = VNorm(diff);
+				info_.moveDir_ = VNorm(diff);
 
 				// 回転はY軸のみ
-				angle_.x = angle_.z = 0.0f;
+				transform_->angle_.x = transform_->angle_.z = 0.0f;
 
 				float enemyDist2 = GetDistance(enemyPos, chasePos_);
 
@@ -452,14 +420,14 @@ void Statue::UpdateChase(void)
 	ApplyGravity();
 
 	// 移動しているか
-	bool isMoving = (VSize(moveDir_) > 0.001f);
+	bool isMoving = (VSize(info_.moveDir_) > 0.001f);
 
 	if (!isLooked && isMoving)
 	{
 		seTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
 		if (seTimer_ <= 0.0f)
 		{
-			AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_STATUE, &pos_,3500.0f);
+			AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_STATUE, &transform_->pos_,3500.0f);
 			seTimer_ = 1.0f;
 		}
 	}
@@ -472,13 +440,13 @@ void Statue::UpdateChase(void)
 
 void Statue::UpdateAttack(void)
 {
-	step_ -= SceneManager::GetInstance()->GetDeltaTime();
+	info_.step_ -= SceneManager::GetInstance()->GetDeltaTime();
 
 	// 攻撃処理の更新
 	useWeapon_->Update();
 
 
-	if (step_ < 0.0f)
+	if (info_.step_ < 0.0f)
 	{
 		useWeapon_->SetAlive(false);
 		ChangeState(STATE::CHASE);

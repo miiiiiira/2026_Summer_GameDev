@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include "../EnemyBase.h"
 
 class Statue : public EnemyBase
@@ -16,17 +17,14 @@ public:
 	};
 
 	// コンストラクタ
-	Statue(int modelId);
+	Statue(void);
 
 	// デストラクタ
 	~Statue(void)override;
 
-	// 初期化
-	void OnInitialize(void) override;
-	// 読み込み処理
-	void Load(void) override;
-	void Update(void)override;
-	void Draw(void) override;
+	void Init(void) override;
+	void Update(void) override;
+	void Draw3D(void) override;
 
 	// 特定のエリアの最大、最小値を設定
 	void SetAreaPos(VECTOR minPos, VECTOR maxPos) { minAreaPos_ = minPos; maxAreaPos_ = maxPos; }
@@ -48,10 +46,9 @@ private:
 	static constexpr VECTOR MAX_AREA_POS = { -5870.0f, 1110, 5920.0f };
 
 	// エリアの最大値、最小値
-	VECTOR minAreaPos_;
-	VECTOR maxAreaPos_;
-
-	VECTOR chasePos_;
+	VECTOR minAreaPos_ = { -1.0f, -1.0f, -1.0f };
+	VECTOR maxAreaPos_ = { -1.0f, -1.0f, -1.0f };
+	VECTOR chasePos_ = { 0.0f, 0.0f, 0.0f };
 
 	STATE state_;
 

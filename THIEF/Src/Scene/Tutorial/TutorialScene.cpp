@@ -1,3 +1,4 @@
+#include <EffekseerForDXLib.h>
 #include <fstream>
 #include <sstream>
 #include <algorithm>
@@ -15,13 +16,8 @@
 #include "../GameOver/GameOver.h"
 #include "../Shop/ShopScene.h"
 #include "../Pause/Pause.h"
-
-#include "../../Object/Actor/Enemy/EnemyManager.h"
-#include "../../Object/Actor/Enemy/EnemyBase.h"
-#include "../../Object/Actor/Enemy/Weapon/WeaponBase.h"
 #include "../../Object/ObjectManager/ObjectManager.h"
 #include "../../Object/Component/Component.h"
-
 #include "../../Object/Component/Collider/3DCollider/CapsuleCollider.h"
 #include "../../Object/Component/Collider/StageCollider/StageCollider.h"
 #include "../../Object/Component/Collider/ItemCollider/ItemCollider.h"
@@ -47,18 +43,15 @@
 #include "../../Object/Component/Transform/Transform.h"
 #include "../../Common/Transform/MatrixUtility.h"
 #include "../../Common/CameraUtility/CameraUtility.h"
-
 #include "../../Common/Collision/Collision.h"
 #include "../../Object/Component/Collider/CartCollider/CartCollider.h"
 #include "../../Common/MouseCursor/MouseCursor.h"
-
 #include "../../Object/Actor/Wall/TutorialWall.h"
-
-#include "TutorialScene.h"
 #include "../MainMenu/MainMenu.h"
 #include "../LightSelectScene/LightSelectScene.h"
 #include "../../Object/Component/Collider/TutorialWallCollider/TutorialWallCollider.h"
-#include <EffekseerForDXLib.h>
+
+#include "TutorialScene.h"
 
 TutorialScene::TutorialScene(void)
 {

@@ -1,132 +1,154 @@
-
-#include <algorithm>
 #include <queue>
-#include "../../Common/AnimationController.h"
+
+#include "../../../Application.h"
+#include "../../Object.h"
+
 #include "../../../Common/Math/Math.h"
-#include "../../../Common/Transform/MatrixUtility.h"
-#include "Weapon/WeaponPunch.h"
 #include "../../Component/PlayerController/PlayerController.h"
 #include "../../Component/Collider/3DCollider/CapsuleCollider.h"
+#include "../../Component/Collider/StageCollider/StageCollider.h"
 #include "../../Component/Transform/Transform.h"
-#include "EnemyManager.h"
+#include "../../Component/Animation/Animation.h"
+#include "../../Component/Render/Render3D.h"
+
+#include "StagePathData.h"
 #include "EnemyBase.h"
 
-EnemyBase::EnemyBase(int modelId)
+EnemyBase::EnemyBase(void)
 	:
-	animationController_(nullptr),
-	modelId_(modelId)
+	transform_(nullptr),
+	capColl_(nullptr),
+	stageColl_(nullptr),
+	anim_(nullptr)
 {
-	currentNodeId_ = 0;
-	nextNodeId_ = 0;
-	prevNodeId_ = -1;
-	prevPrevNodeId_ = -1;
-	targetLostTimer_ = 0.0f;
+	info_.moveSpeed_ = 0.0f;
+	info_.moveDir_ = Math::VECTOR_ZERO;
+	info_.movePow_ = Math::VECTOR_ZERO;
+	info_.isAlive_ = true;
 }
 
 EnemyBase::~EnemyBase(void)
 {
 }
 
-void EnemyBase::Load(void)
+void EnemyBase::Init(void)
+{
+	// オーナーからTransform取得
+	transform_ = owner_->GetComponent<Transform>();
+
+	// オーナーからCapsuleCollider取得
+	capColl_ = owner_->GetComponent<CapsuleCollider>();
+
+	// オーナーからStageCollider取得
+	stageColl_ = owner_->GetComponent<StageCollider>();
+
+	// オーナーから3D描画コンポーネントを取得
+	auto render = owner_->GetComponent<Render3D>();
+
+	anim_ = owner_->GetComponent<Animation>();
+	if (!anim_)
+	{
+		// 存在しない場合のみ追加する安全対策
+		anim_ = owner_->AddComponent<Animation>();
+	}
+	if (render)
+	{
+		// モデルIDが存在する場合のみ取得
+		info_.modelId_ = render->GetHandle();
+	}
+}
+
+void EnemyBase::Draw3D(void)
+{
+#ifdef _DEBUG
+	// デバッグ表示
+		VECTOR start = capColl_->GetStart();
+		VECTOR end = capColl_->GetEnd();
+
+		// 当たり判定用のカプセル大きさ確認
+		DrawCapsule3D(start, end, info_.radius_, 8, 0xff0000, 0xff0000, false);
+
+#endif // _DEBUG
+}
+
+void EnemyBase::Draw2D(void)
 {
 }
 
-void EnemyBase::Init(PlayerController* player, int stageId, const std::vector<EnemyCommon::WAYPOINT>& way, const std::vector<std::vector<EnemyCommon::EDGE>>& edgeList)
+void EnemyBase::SetPathData(PlayerController* player, int stageId, std::shared_ptr<StagePathData> pathData)
 {
 	player_ = player;
 	stageId_ = stageId;
-	way_ = &way;
-	edgeList_ = &edgeList;
-
-	path_.reserve(way_->size());
-	minCosts_.reserve(way_->size());
-	parentNodes_.reserve(way_->size());
-
-	OnInitialize();
+	pathData_ = pathData;
 }
 
-void EnemyBase::Draw(void)
+void EnemyBase::SetEnemyData(const EnemyData& data)
 {
-	MV1DrawModel(modelId_);
-
-#ifdef _DEBUG
-	//MATRIX mat = MGetIdent();
-	//mat = Matrix::GetMatrixRotateXYZ(angle_);
-
-	//const VECTOR dirForwardBase = VGet(0.0f, 0.0f, 1.0f);
-
-	//// 前方方向
-	//VECTOR forward = VTransform(dirForwardBase, mat);
-
-	//// 右
-	//MATRIX rightMat = MMult(mat, MGetRotY(Math::Deg2Rad(30.0f)));
-	//VECTOR right = VTransform(dirForwardBase, rightMat);
-	//// 左
-	//MATRIX leftMat = MMult(mat, MGetRotY(Math::Deg2Rad(-30.0f)));
-	//VECTOR left = VTransform(dirForwardBase, leftMat);
-
-	//VECTOR pos0 = pos_;
-
-	//VECTOR pos1 = VAdd(pos0, VScale(forward, 1000.0f));
-	//VECTOR pos2 = VAdd(pos0, VScale(left, 1000.0f));
-	//VECTOR pos3 = VAdd(pos0, VScale(right, 1000.0f));
-
-	//pos0.y = pos1.y = pos2.y = pos3.y = 10.0f;
-
-	//if (isNotice_)
-	//{
-	//	DrawTriangle3D(pos0, pos2, pos1,
-	//		0xcc44cc, true);
-
-	//	DrawTriangle3D(pos0, pos1, pos3,
-	//		0xcc44cc, true);
-	//}
-	//else
-	//{
-	//	DrawTriangle3D(pos0, pos2, pos1,
-	//		0x00ff00, true);
-
-	//	DrawTriangle3D(pos0, pos1, pos3,
-	//		0x00ff00, true);
-	//}
-
-#endif //_DEBUG
+	info_.startOffset_ = data.capStartOffset;
+	info_.endOffset_ = data.capEndOffset;
+	info_.radius_ = data.capRadius;
 }
 
-void EnemyBase::Release(void)
+Transform* EnemyBase::GetTransform()
 {
-	MV1DeleteModel(modelId_);
+	return transform_;
+}
 
-	if (animationController_ != nullptr)
-	{
-		animationController_->Release();
-		delete animationController_;
-		animationController_ = nullptr;
-	}
+CapsuleCollider* EnemyBase::GetCapsule(void)
+{
+	return capColl_;
+}
 
-	if (weaponPunch_ != nullptr)
-	{
-		weaponPunch_->Release();
-		delete weaponPunch_;
-		weaponPunch_ = nullptr;
-	}
+WeaponBase* EnemyBase::GetWeapon(void)
+{
+	return useWeapon_;
+}
 
-	if (useWeapon_ != nullptr)
-	{
-		useWeapon_ = nullptr;
-	}
+float EnemyBase::GetAttackDamagePow(void) const
+{
+	return info_.attackDamagePow_;
+}
+
+float EnemyBase::GetAttackMoveSpeed(void) const
+{
+	return info_.attackMoveSpeed_;
+}
+
+float EnemyBase::GetAttackJumpPow(void) const
+{
+	return info_.attackJumpPow_;
+}
+
+ENEMY_TAG EnemyBase::GetTag(void) const
+{
+	return info_.tag_;
+}
+
+void EnemyBase::SetPos(VECTOR pos)
+{
+	transform_->pos_ = pos;
 }
 
 void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 {
-	path_.clear();
+	// lock() して shared_ptr を一時的に取得
+	auto pathData = pathData_.lock();
+	if (!pathData) return;
+
+	// StagePathDataからリストを取得
+	const auto* wayList = pathData->GetWayList();
+	const auto* edgeList = pathData->GetEdgeList();
+
+	if (!wayList || !edgeList) return;
+
+	info_.path_.clear();
 
 	// 全て同じ値で埋め尽くす
-	minCosts_.assign(way_->size(), FLT_MAX);
-	parentNodes_.assign(way_->size(), -1);
+	info_.minCosts_.assign(wayList->size(), FLT_MAX);
+	info_.parentNodes_.assign(wayList->size(), -1);
 
 	// スタート地点のコストは0にする
-	minCosts_[startNodeId] = 0.0f;
+	info_.minCosts_[startNodeId] = 0.0f;
 
 	std::priority_queue <std::pair<float, int>, 
 						std::vector<std::pair<float, int>>,
@@ -147,10 +169,10 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 		if (currentNodeId == goalNodeId) break;
 
 		// 取り出したコストが、すでに minCosts_ にある最小コストより大きければスキップ
-		if (currentCost > minCosts_[currentNodeId]) continue;
+		if (currentCost > info_.minCosts_[currentNodeId]) continue;
 
 		// つながっているエッジ
-		for (const auto& edge : (*edgeList_)[currentNodeId])
+		for (const auto& edge : (*edgeList)[currentNodeId])
 		{
 			// 隣接しているノードIDを取得
 			int nextNodeId = edge.way.id;
@@ -159,11 +181,11 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 			float newCost = currentCost + edge.cost;
 
 			//　新しいコストが最小コストよりも小さかったら
-			if (newCost < minCosts_[nextNodeId])
+			if (newCost < info_.minCosts_[nextNodeId])
 			{
 				// minCosts_とparentNodes_を更新
-				minCosts_[nextNodeId] = newCost;
-				parentNodes_[nextNodeId] = currentNodeId;
+				info_.minCosts_[nextNodeId] = newCost;
+				info_.parentNodes_[nextNodeId] = currentNodeId;
 
 				// 新しいコストと隣のノードIDをペアにしてqueにプッシュする
 				que.push({ newCost, nextNodeId });
@@ -174,151 +196,57 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 	int i = goalNodeId;
 	while (i != -1)
 	{
-		EDGE path;
-		path.way.id = (*way_)[i].id;   // 「現在のノードID」を正しく登録する
-		path.way.pos = (*way_)[i].pos; // ★座標の設定漏れもここで修正！
-		path.cost = minCosts_[i];
+		StagePathData::EDGE path;
+		path.way.id = (*wayList)[i].id;
+		path.way.pos = (*wayList)[i].pos;
+		path.cost = info_.minCosts_[i];
 
-		path_.push_back(path);
+		info_.path_.push_back(path);
 
-		i = parentNodes_[i]; // 次の親ノードへ進む
+		i = info_.parentNodes_[i]; // 次の親ノードへ進む
 	}
 
 	// 逆にする
-	std::reverse(path_.begin(), path_.end());
-}
-
-WeaponBase* EnemyBase::GetUseWeapon(void)
-{
-	return useWeapon_;
-}
-
-int EnemyBase::GetModelId(void)
-{
-	return modelId_;
-}
-
-VECTOR EnemyBase::GetPos(void)
-{
-	return pos_;
-}
-
-void EnemyBase::SetPos(VECTOR pos)
-{
-	pos_ = pos;
-	MV1SetPosition(modelId_, pos_);
-	// 当たり判定情報を最新の状態に更新
-	MV1RefreshCollInfo(modelId_, -1);
-}
-
-VECTOR EnemyBase::GetAngle(void)
-{
-	return angle_;
-}
-
-void EnemyBase::SetAngle(VECTOR angle)
-{
-	angle_ = angle;
-}
-
-float EnemyBase::GetRadius(void)
-{
-	return radius_;
-}
-
-VECTOR EnemyBase::GetPrevPos(void)
-{
-	return prevPos_;
-}
-
-VECTOR EnemyBase::GetStart(void)
-{
-	return startOffset_;
-}
-
-VECTOR EnemyBase::GetEnd(void)
-{
-	return endOffset_;
-}
-
-void EnemyBase::SetGround(bool isGround)
-{
-	isGround_ = isGround;
-}
-
-float EnemyBase::GetVelocity(void)
-{
-	return velocityY_;
-}
-
-void EnemyBase::SetVelocity(float velocityY)
-{
-	velocityY_ = velocityY;
-}
-
-void EnemyBase::SetTag(ENEMY_TAG tag)
-{
-	tag_ = tag;
-}
-
-ENEMY_TAG EnemyBase::GetTag(void)
-{
-	return tag_;
-}
-
-float EnemyBase::GetAttackMoveSpeed(void)
-{
-	return attackMoveSpeed_;
-}
-
-float EnemyBase::GetAttackJumpPow(void)
-{
-	return attackJumpPow_;
-}
-
-float EnemyBase::GetAttackDamagePow(void)
-{
-	return attackDamagePow_;
-}
-
-void EnemyBase::SetCollisionStage(bool isCollision)
-{
-	isCollisionStage_ = isCollision;
+	std::reverse(info_.path_.begin(), info_.path_.end());
 }
 
 void EnemyBase::DelayRotate(void)
 {
+	if (!transform_) return;
+
 	// 移動方向から角度に変換する
-	float goal = atan2f(moveDir_.x, moveDir_.z);
+	float goal = atan2f(info_.moveDir_.x, info_.moveDir_.z);
 
 	// 常に最短経路で補間
-	angle_.y = Math::LerpAngle(angle_.y, goal, 0.2f);
+	transform_->angle_.y = Math::LerpAngle(transform_->angle_.y, goal, 0.2f);
 }
 
 void EnemyBase::LookPlayer(void)
 {
+	if (!transform_ || !player_) return;
+
 	// プレイヤー（相手）の座標を取得
 	VECTOR playerPos = player_->GetTransform()->pos_;
 
 	// 相手へのベクトルを計算
-	VECTOR diff = VSub(playerPos, pos_);
+	VECTOR diff = VSub(playerPos, transform_->pos_);
 	diff.y = 0.0f;
 
 	// ベクトルの正規化で単位ベクトル（方向）を取得
-	moveDir_ = VNorm(diff);
+	info_.moveDir_ = VNorm(diff);
 
 	// 回転はY軸のみ
-	angle_.x = angle_.z = 0.0f;
+	transform_->angle_.x = transform_->angle_.z = 0.0f;
 }
 
 void EnemyBase::Move(void)
 {
+	if (!transform_) return;
+
 	// 移動量を計算する
-	movePow_ = VScale(moveDir_, moveSpeed_);
+	info_.movePow_ = VScale(info_.moveDir_, info_.moveSpeed_);
 	// 移動量処理
-	pos_ = VAdd(pos_, movePow_);
-	// モデルに座標を設定
-	MV1SetPosition(modelId_, pos_);
+	transform_->pos_ = VAdd(transform_->pos_, info_.movePow_);
 }
 
 float EnemyBase::GetDistance(VECTOR pos1, VECTOR pos2)
@@ -328,34 +256,36 @@ float EnemyBase::GetDistance(VECTOR pos1, VECTOR pos2)
 
 bool EnemyBase::CheckPlayerDiscovery(float radius)
 {
+	if (!transform_ || !player_) return false;
+
 	// プレイヤーの位置
 	VECTOR playerPos = player_->GetTransform()->pos_;
 
 	// 敵とプレイヤーの直線距離をチェック
-	float distance = GetDistance(playerPos, pos_);
+	float distance = GetDistance(playerPos, transform_->pos_);
 	if (distance > radius * radius) return false;
 
 	// 高低差チェック
-	float pos = fabsf(playerPos.y - pos_.y);
+	float pos = fabsf(playerPos.y - transform_->pos_.y);
 	if (pos > 50.0f) return false;
 
 	// 敵の正面方向ベクトルを計算
 	VECTOR dirEnemy = VECTOR();
-	if (VSize(moveDir_) < 0.001f)
+	if (VSize(info_.moveDir_) < 0.001f)
 	{
 		// 移動していない場合は現在の向きから正面を計算
-		dirEnemy.x = sinf(angle_.y);
+		dirEnemy.x = sinf(transform_->angle_.y);
 		dirEnemy.y = 0.0f;
-		dirEnemy.z = cosf(angle_.y);
+		dirEnemy.z = cosf(transform_->angle_.y);
 	}
 	else
 	{
 		// 移動中の場合は移動方向を正面とする
-		dirEnemy = VNorm(moveDir_);
+		dirEnemy = VNorm(info_.moveDir_);
 	}
 
 	// 敵からプレイヤーへの方向ベクトルを計算
-	VECTOR diff = VSub(playerPos, pos_);
+	VECTOR diff = VSub(playerPos, transform_->pos_);
 	dirEnemy.y = 0.0f;
 	diff.y = 0.0f;
 	dirEnemy = VNorm(dirEnemy);
@@ -375,28 +305,31 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 		VECTOR playerOffsetStart = player_->GetCapsule()->GetStart();
 
 		// 敵の頭上位置
-		VECTOR enemyPos = VAdd(pos_, startOffset_);
+		VECTOR enemyOffsetStart = capColl_->GetStart();
 
 		// 頭上同士を結ぶ直線上にステージがあるか
-		MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, enemyPos, playerOffsetStart, radius_);
+		MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, enemyOffsetStart, playerOffsetStart, info_.radius_);
+
+		bool hit = (res.HitNum > 0);
+		MV1CollResultPolyDimTerminate(res);
 
 		// 障害物に当たらなかったら、目線が通っているとみなす
-		if (res.HitNum <= 0)
+		if (!hit)
 		{
-			MV1CollResultPolyDimTerminate(res);
-			isNotice_ = true;
+			info_.isNotice_ = true;
 			return true;
 		}
-		MV1CollResultPolyDimTerminate(res);
 	}
 
 	// 視野外、または障害物に遮られている場合
-	isNotice_ = false;
+	info_.isNotice_ = false;
 	return false;
 }
 
 bool EnemyBase::IsPlayerInArea(VECTOR minPos, VECTOR maxPos)
 {
+	if (!player_) return false;
+
 	bool ret = false;
 
 	VECTOR playerPos = player_->GetTransform()->pos_;
@@ -416,108 +349,131 @@ bool EnemyBase::IsPlayerInArea(VECTOR minPos, VECTOR maxPos)
 
 void EnemyBase::Jump(void)
 {
-	if (!stageId_) return;
+	if (!stageColl_) return;
+
+	// ジャンプ力を設定
+	info_.velocityY_ = JUMP_POW;
+
+	// 接地フラグを折る
+	stageColl_->IsGroundFold();
 
 	// ジャンプ音
 	//AudioManager::GetInstance()->PlaySE(SoundID::SE_JUMP);
-
-	// ジャンプ力を設定
-	velocityY_ = JUMP_POW;
-
-	// 接地フラグを折る
-	isGround_ = false;
 }
 
 void EnemyBase::ApplyGravity()
 {
-	if (stageId_ == -1) return;
+	// ステージコライダが無ければ処理を行わない
+	if (!stageColl_) return;
 
 	// Y座標へ反映
-	pos_.y += velocityY_;
+	transform_->pos_.y += info_.velocityY_;
 
-	if (!isGround_)
+	if (!stageColl_->IsGround())
 	{
 		// 重力加算
-		velocityY_ += GRAVITY;
+		info_.velocityY_ += GRAVITY;
 
 		// 最大落下速度
-		if (velocityY_ < MAX_FALL)
-			velocityY_ = MAX_FALL;
+		if (info_.velocityY_ < MAX_FALL)
+			info_.velocityY_ = MAX_FALL;
 	}
 	else
 	{
-		velocityY_ = -0.1f;
+		info_.velocityY_ = -0.1f;
 	}
 }
 
 void EnemyBase::SetMoveDirPatrol(void)
 {
-	VECTOR tmpPos = nextWayPoint_;
+	VECTOR tmpPos = info_.nextWayPoint_;
 	tmpPos.y = 0.0f;
 
-	VECTOR pos = pos_;
+	VECTOR pos = transform_->pos_;
 	pos.y = 0.0f;
 
-	moveDir_ = VNorm(VSub(tmpPos, pos));
+	info_.moveDir_ = VNorm(VSub(tmpPos, pos));
 }
 
 void EnemyBase::ArriveNode(void)
 {
+	// lock() して shared_ptr を一時的に取得
+	auto pathData = pathData_.lock();
+	if (!pathData) return;
+
 	// 次のノードを選ぶ
 	int nextId = SelectNextNode();
 
 	// 履歴を更新する
-	prevPrevNodeId_ = prevNodeId_;
-	prevNodeId_ = currentNodeId_;
-	currentNodeId_ = nextId;
+	info_.prevPrevNodeId_ = info_.prevNodeId_;
+	info_.prevNodeId_ = info_.currentNodeId_;
+	info_.currentNodeId_ = nextId;
 
 	// 次の目的地の座標を設定する
-	nextWayPoint_ = (*way_)[currentNodeId_].pos;
+	const auto* wayList = pathData->GetWayList();
+	info_.nextWayPoint_ = (*wayList)[info_.currentNodeId_].pos;
 }
 
 int EnemyBase::SelectNextNode(void)
-{
-	// 有効ノードを探す前に空にする
-	candidates_.clear();
+{	
+	// lock() して shared_ptr を一時的に取得
+	auto pathData = pathData_.lock();
+	if (!pathData) return info_.currentNodeId_;
 
-	for (const auto& edge : (*edgeList_)[currentNodeId_])
+	const auto* edgeList = pathData->GetEdgeList();
+	if (!edgeList || info_.currentNodeId_ < 0 || info_.currentNodeId_ >= static_cast<int>(edgeList->size()))
+	{
+		return info_.currentNodeId_;
+	}
+
+	// 有効ノードを探す前に空にする
+	info_.candidates_.clear();
+
+	for (const auto& edge : (*edgeList)[info_.currentNodeId_])
 	{
 		int nextId = edge.way.id;
 
-		float distance = GetDistance(edge.way.pos, pos_);
+		float distance = GetDistance(edge.way.pos, transform_->pos_);
 
 		// 敵の座標から半径以内に無いポイントは除外
-		if (distance > patrolRadius_ * patrolRadius_) continue;
+		if (distance > info_.patrolRadius_ * info_.patrolRadius_) continue;
 
 		// 前回、前々回のノードは除外する
-		if (nextId == prevNodeId_) continue;
-		if (nextId == prevPrevNodeId_) continue;
+		if (nextId == info_.prevNodeId_) continue;
+		if (nextId == info_.prevPrevNodeId_) continue;
 
-		candidates_.push_back(nextId);
+		info_.candidates_.push_back(nextId);
 	}
 
 	// 候補があった場合ランダムに選ぶ
-	if (!candidates_.empty())
+	if (!info_.candidates_.empty())
 	{
-		int index = GetRand(static_cast<int>(candidates_.size() - 1));
-		return candidates_[index];
+		int index = GetRand(static_cast<int>(info_.candidates_.size() - 1));
+		return info_.candidates_[index];
 	}
 
-	if (prevNodeId_ != -1)
+	if (info_.prevNodeId_ != -1)
 	{
-		return prevNodeId_;
+		return info_.prevNodeId_;
 	}
 
-	return currentNodeId_;
+	return info_.currentNodeId_;
 }
 
 int EnemyBase::FindNearestNode(VECTOR pos)
 {
+	// lock() して shared_ptr を一時的に取得
+	auto pathData = pathData_.lock();
+	if (!pathData) return 0;
+
+	const auto* wayList = pathData->GetWayList();
+	if (!wayList || wayList->empty()) return 0;
+
 	int nearNodeId = -1;
 	float minCost = FLT_MAX;
 
 	// 視線が通っているノードの中で
-	for (const auto& way : (*way_))
+	for (const auto& way : (*wayList))
 	{
 		// 一番近いノードを探す
 		float distance = VSize(VSub(pos, way.pos));
@@ -539,14 +495,14 @@ int EnemyBase::FindNearestNode(VECTOR pos)
 
 void EnemyBase::ChaseNode(void)
 {
-	nextWayPoint_ = path_[nextNodeId_].way.pos;
+	info_.nextWayPoint_ = info_.path_[info_.nextNodeId_].way.pos;
 	// 移動方向を設定
 	SetMoveDirPatrol();
 
-	VECTOR enemyPos = pos_;
+	VECTOR enemyPos = transform_->pos_;
 	enemyPos.y = 0.0f;
 
-	VECTOR targetNode = path_[nextNodeId_].way.pos;
+	VECTOR targetNode = info_.path_[info_.nextNodeId_].way.pos;
 	targetNode.y = 0.0f;
 
 	// 水平方向の純粋な距離を測る
@@ -554,7 +510,7 @@ void EnemyBase::ChaseNode(void)
 
 	if (nodeDistance < 60.0f)
 	{
-		nextNodeId_++;
+		info_.nextNodeId_++;
 	}
 }
 
@@ -568,12 +524,10 @@ bool EnemyBase::CheckChaseLineCollision(VECTOR pPos, VECTOR ePos, float radius)
 	// 線分とモデルの衝突判定
 	MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, pPos, ePos, radius);
 
-	// 当たっていたら、trueを返す
-	if (res.HitNum > 0)
-	{
-		MV1CollResultPolyDimTerminate(res);
-		return true;
-	}
+	bool isHit = (res.HitNum > 0);
+
+	// 必ず最後に Terminate を呼んでから結果を返す
 	MV1CollResultPolyDimTerminate(res);
-	return false;
+
+	return isHit;
 }
