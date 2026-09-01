@@ -42,15 +42,20 @@ void EnemyBase::Init(void)
 	// オーナーからStageCollider取得
 	stageColl_ = owner_->GetComponent<StageCollider>();
 
-	// オーナーからAnimation取得
-	anim_ = owner_->AddComponent<Animation>();
-
 	// オーナーから3D描画コンポーネントを取得
 	auto render = owner_->GetComponent<Render3D>();
-	if (!render) return;
 
-	// モデルIDを取得
-	info_.modelId_ = render->GetHandle();
+	anim_ = owner_->GetComponent<Animation>();
+	if (!anim_)
+	{
+		// 存在しない場合のみ追加する安全対策
+		anim_ = owner_->AddComponent<Animation>();
+	}
+	if (render)
+	{
+		// モデルIDが存在する場合のみ取得
+		info_.modelId_ = render->GetHandle();
+	}
 }
 
 void EnemyBase::Draw3D(void)
@@ -126,11 +131,13 @@ void EnemyBase::SetPos(VECTOR pos)
 
 void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 {
-	if (!pathData_) return;
+	// lock() して shared_ptr を一時的に取得
+	auto pathData = pathData_.lock();
+	if (!pathData) return;
 
 	// StagePathDataからリストを取得
-	const auto* wayList = pathData_->GetWayList();
-	const auto* edgeList = pathData_->GetEdgeList();
+	const auto* wayList = pathData->GetWayList();
+	const auto* edgeList = pathData->GetEdgeList();
 
 	if (!wayList || !edgeList) return;
 
@@ -390,7 +397,9 @@ void EnemyBase::SetMoveDirPatrol(void)
 
 void EnemyBase::ArriveNode(void)
 {
-	if (!pathData_) return;
+	// lock() して shared_ptr を一時的に取得
+	auto pathData = pathData_.lock();
+	if (!pathData) return;
 
 	// 次のノードを選ぶ
 	int nextId = SelectNextNode();
@@ -401,15 +410,17 @@ void EnemyBase::ArriveNode(void)
 	info_.currentNodeId_ = nextId;
 
 	// 次の目的地の座標を設定する
-	const auto* wayList = pathData_->GetWayList();
+	const auto* wayList = pathData->GetWayList();
 	info_.nextWayPoint_ = (*wayList)[info_.currentNodeId_].pos;
 }
 
 int EnemyBase::SelectNextNode(void)
-{
-	if (!pathData_) return info_.currentNodeId_;
+{	
+	// lock() して shared_ptr を一時的に取得
+	auto pathData = pathData_.lock();
+	if (!pathData) return info_.currentNodeId_;
 
-	const auto* edgeList = pathData_->GetEdgeList();
+	const auto* edgeList = pathData->GetEdgeList();
 	if (!edgeList || info_.currentNodeId_ < 0 || info_.currentNodeId_ >= static_cast<int>(edgeList->size()))
 	{
 		return info_.currentNodeId_;
@@ -451,9 +462,11 @@ int EnemyBase::SelectNextNode(void)
 
 int EnemyBase::FindNearestNode(VECTOR pos)
 {
-	if (!pathData_) return 0;
+	// lock() して shared_ptr を一時的に取得
+	auto pathData = pathData_.lock();
+	if (!pathData) return 0;
 
-	const auto* wayList = pathData_->GetWayList();
+	const auto* wayList = pathData->GetWayList();
 	if (!wayList || wayList->empty()) return 0;
 
 	int nearNodeId = -1;

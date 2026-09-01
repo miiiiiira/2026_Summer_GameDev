@@ -65,7 +65,7 @@ protected:
 	// ŠO•”QÆ
 	PlayerController* player_ = nullptr;
 	WeaponBase* useWeapon_ = nullptr;
-	std::shared_ptr<StagePathData> pathData_ = nullptr;
+	std::weak_ptr<StagePathData> pathData_ = {};
 
 	EnemyInfo info_;
 	int stageId_ = -1;

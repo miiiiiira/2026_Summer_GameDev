@@ -11,12 +11,31 @@ StagePathData::StagePathData(int stageId)
 
 StagePathData::~StagePathData(void)
 {
+	for (auto& edges : edgeList_)
+	{
+		edges.clear();
+		edges.shrink_to_fit();
+	}
+	edgeList_.clear();
+	edgeList_.shrink_to_fit();
+
+	way_.clear();
+	way_.shrink_to_fit();
 }
 
 void StagePathData::Load(const std::string& csvPath)
 {
+	// 既存のメモリバッファを完全に破棄してリセットする
 	way_.clear();
+	way_.shrink_to_fit();
+
+	for (auto& edges : edgeList_)
+	{
+		edges.clear();
+		edges.shrink_to_fit();
+	}
 	edgeList_.clear();
+	edgeList_.shrink_to_fit();
 
 	std::ifstream ifs(csvPath);
 	if (!ifs) return;

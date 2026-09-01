@@ -84,14 +84,19 @@ void Yeti::Init(void)
 	// 初期アニメーション再生
 	anim_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
 
-	const auto* wayList = pathData_->GetWayList();
+	ChangeState(STATE::IDLE);
+
+	// lock() して shared_ptr を一時的に取得
+	auto pathData = pathData_.lock();
+	if (!pathData) return;
+
+	const auto* wayList = pathData->GetWayList();
 	if (wayList && !wayList->empty() && transform_)
 	{
 		info_.candidates_.reserve(wayList->size());
 		info_.currentNodeId_ = FindNearestNode(transform_->pos_);
 	}
 
-	ChangeState(STATE::IDLE);
 }
 
 void Yeti::Update(void)
@@ -152,10 +157,15 @@ void Yeti::Draw3D(void)
 	EnemyBase::Draw3D();
 	
 #ifdef _DEBUG
-	if (pathData_ && transform_)
+
+	// lock() して shared_ptr を一時的に取得
+	auto pathData = pathData_.lock();
+	if (!pathData) return;
+
+	if (pathData && transform_)
 	{
-		const auto* wayList = pathData_->GetWayList();
-		const auto* edgeList = pathData_->GetEdgeList();
+		const auto* wayList = pathData->GetWayList();
+		const auto* edgeList = pathData->GetEdgeList();
 
 		if (wayList && edgeList)
 		{
@@ -449,10 +459,15 @@ void Yeti::UpdateChase(void)
 		info_.prevNodeId_ = -1;
 		info_.prevPrevNodeId_ = -1;
 
-		const auto* wayList = pathData_->GetWayList();
+		ChangeState(STATE::IDLE);
+
+		// lock() して shared_ptr を一時的に取得
+		auto pathData = pathData_.lock();
+		if (!pathData) return;
+
+		const auto* wayList = pathData->GetWayList();
 		info_.nextWayPoint_ = (*wayList)[info_.currentNodeId_].pos;
 
-		ChangeState(STATE::IDLE);
 		return;
 	}
 
@@ -503,8 +518,13 @@ void Yeti::UpdateChase(void)
 				// プレイヤーの現在の位置に一番近いノードを取得
 				int playerNearNodeId = FindNearestNode(playerPos);
 
+
+				// lock() して shared_ptr を一時的に取得
+				auto pathData = pathData_.lock();
+				if (!pathData) return;
+
 				// 自分が今いる位置が、そのノードの近くであるか判定
-				const auto* wayList = pathData_->GetWayList();
+				const auto* wayList = pathData->GetWayList();
 				float distance = VSize(VSub(transform_->pos_, (*wayList)[playerNearNodeId].pos));
 
 				// プレイヤーを見失っているかつ、

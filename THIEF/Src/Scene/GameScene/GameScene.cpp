@@ -77,9 +77,6 @@ void GameScene::Init(void)
 	// オブジェクトマネージャー初期化
 	objectManger_->Init();
 
-	// ステージ生成時に1回だけパスデータを生成・ロードする
-	InitPathData();
-
 	// BGM再生
 	AudioManager::GetInstance()->PlayBGM(SoundID::BGM_GAME_1);
 }
@@ -226,10 +223,10 @@ void GameScene::Draw(void)
 
 void GameScene::Release(void)
 {
+	stagePathData_.reset();
+
 	// オブジェクトマネージャー削除
 	delete objectManger_;
-
-	stagePathData_.reset();
 
 	// エフェクト管理解放
 	EffectResManager::GetInstance().Destroy();
@@ -550,6 +547,9 @@ void GameScene::CrosshairCreate(void)
 
 void GameScene::EnemyCreateStage1(void)
 {
+	// ステージ生成時に1回だけパスデータを生成・ロードする
+	InitPathData();
+
 	EnemyCreate(ENEMY_TAG::GIGGLE, {0.0f, 0.0f, 0.0f});
 	EnemyCreate(ENEMY_TAG::YETI, { -5617.04f,10.0f,6573.71f });
 
@@ -562,6 +562,9 @@ void GameScene::EnemyCreateStage1(void)
 
 void GameScene::EnemyCreateStage2(void)
 {
+	// ステージ生成時に1回だけパスデータを生成・ロードする
+	InitPathData();
+
 	EnemyCreate(ENEMY_TAG::GIGGLE, { 0.0f, 0.0f, 0.0f });
 	EnemyCreate(ENEMY_TAG::YETI, { -7887.0f, 10.0f, 1399.0f });
 
@@ -607,6 +610,9 @@ void GameScene::EnemyCreateStage2(void)
 
 void GameScene::EnemyCreateStage3(void)
 {
+	// ステージ生成時に1回だけパスデータを生成・ロードする
+	InitPathData();
+
 	EnemyCreate(ENEMY_TAG::GIGGLE, { 0.0f, 0.0f, 0.0f });
 	EnemyCreate(ENEMY_TAG::YETI, { 5704.0f, 10.0f, 7919.0f });
 
@@ -903,14 +909,16 @@ void GameScene::EnemyCreate(ENEMY_TAG tag, VECTOR pos, const EnemySpawnParam& pa
 		int stageModelId = (stage->GetCollModelId() == -1) ? stage->GetModelId() : stage->GetCollModelId();
 
 		enemyComp->SetPathData(player, stageModelId, stagePathData_);
-
-		// 初期化実行
-		enemyComp->Init();
 	}
 }
 
 void GameScene::InitPathData(void)
 {
+	if (stagePathData_)
+	{
+		stagePathData_.reset();
+	}
+
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 	int stageModelId = (stage->GetCollModelId() == -1) ? stage->GetModelId() : stage->GetCollModelId();
 

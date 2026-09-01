@@ -58,14 +58,17 @@ void Statue::Init(void)
 	useWeapon_ = new WeaponPunch();
 	useWeapon_->Init(WeaponBase::TYPE::PUNCH);
 
-	const auto* wayList = pathData_->GetWayList();
+	ChangeState(STATE::IDLE);
+
+	auto pathData = pathData_.lock();
+	if (!pathData) return;
+
+	const auto* wayList = pathData->GetWayList();
 	if (wayList && !wayList->empty() && transform_)
 	{
 		info_.candidates_.reserve(wayList->size());
 		info_.currentNodeId_ = FindNearestNode(transform_->pos_);
 	}
-
-	ChangeState(STATE::IDLE);
 }
 
 void Statue::Update(void)
@@ -113,9 +116,12 @@ void Statue::Draw3D(void)
 #ifdef _DEBUG
 	DrawCube3D(minAreaPos_, maxAreaPos_, 0xff00ff, 0xff00ff, false);
 	
+	auto pathData = pathData_.lock();
+	if (!pathData) return;
+
 	// StagePathData‚©‚çƒŠƒXƒg‚ðŽæ“¾
-	const auto* wayList = pathData_->GetWayList();
-	const auto* edgeList = pathData_->GetEdgeList();
+	const auto* wayList = pathData->GetWayList();
+	const auto* edgeList = pathData->GetEdgeList();
 	if (wayList && edgeList && transform_)
 	{
 		for (int i = 0; i < (int)edgeList->size(); i++)
