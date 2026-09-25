@@ -41,17 +41,22 @@ VECTOR CameraUtility::CameraRotToPos(VECTOR pos)
 
 MATRIX CameraUtility::AngleToMatrix(VECTOR angle)
 {
-	// アイテムの回転を行列にする
-	MATRIX lanternMat = Matrix::GetMatrixRotateXYZ(angle);
+	// 指定の角度を行列にする
+	MATRIX mat = Matrix::GetMatrixRotateXYZ(angle);
 
-	// プレイヤーの回転をランタンの回転行列に反映する
-	MATRIX mat = Matrix::Multiplication(lanternMat, GetCameraMatrix());
+	// プレイヤーの回転を行列に反映する
+	MATRIX mat = 
+		Matrix::Multiplication(mat, GetCameraMatrix());
+
 	return mat;
 }
 
 VECTOR CameraUtility::AddCameraPosLocalPos(VECTOR localPos)
 {
 	// ローカル座標とカメラ座標を足す
-	VECTOR pos = VAdd(camera_->GetTransform()->pos_, CameraRotToPos(localPos));
+	VECTOR pos = VAdd(
+			camera_->GetTransform()->pos_,
+			CameraRotToPos(localPos));
+
 	return pos;
 }

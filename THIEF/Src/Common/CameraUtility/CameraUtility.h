@@ -27,7 +27,7 @@ namespace CameraUtility
 	// 指定の座標にカメラの回転を適用する
 	VECTOR CameraRotToPos(VECTOR pos);
 
-	// 指定のアングルを行列に変換し、カメラの回転を反映する
+	// 指定の角度を行列に変換し、カメラの回転を反映する
 	MATRIX AngleToMatrix(VECTOR angle);
 
 	// ローカル座標とカメラ座標を足す
