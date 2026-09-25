@@ -10,27 +10,48 @@
 namespace Collision
 {
     bool HitSpheres(
-        const VECTOR& a, const float& ar,
-        const VECTOR& b, const float& br)
+        const VECTOR& a,
+        const float& ar,
+        const VECTOR& b,
+        const float& br)
     {
+        // 2つの球の半径の合計値を計算
         float r = ar + br;
+
+        // 中心点同士の距離が半径の合計値より小さければ衝突している
         return Math::Distance(a, b) < r;
     }
 
     bool HitSphereCapsule(
-        const VECTOR& sphPos, const float& sphRadius,
-        const VECTOR& capA, const VECTOR& capB, const float& capRadius)
+        const VECTOR& sphPos, 
+        const float& sphRadius,
+        const VECTOR& capA, 
+        const VECTOR& capB, 
+        const float& capRadius)
     {
+        // カプセルの軸となるベクトル（始点から終点）を算出
         VECTOR ab = VSub(capB, capA);
+
+        // 軸ベクトルの正規化（単位ベクトル化）
         VECTOR dir = VNorm(ab);
+
+        // 球の中心点をカプセル軸上に射影した長さを求める（ドット積/内積）
         float t = VDot(dir, VSub(sphPos, capA));
+
+        // カプセル線分の範囲内（0～線分の長さ）に値を制限（クランプ）
         t = std::clamp(t, 0.0f, Math::MagnitudeF(ab));
 
+        // 線分上で球の中心に最も近い点（最近接点）の座標を計算
         VECTOR closest = VAdd(capA, VScale(dir, t));
+
+        // 最近接点に置いた球と、元の球との球対球判定に帰着させる
         return HitSpheres(closest, capRadius, sphPos, sphRadius);
     }
 
-    bool HitSpherePoint(const VECTOR& sphPos, const float& sphRad, const VECTOR& pos)
+    bool HitSpherePoint(
+        const VECTOR& sphPos, 
+        const float& sphRad, 
+        const VECTOR& pos)
     {
         // 各軸の差分（距離）を計算
         VECTOR diff = VSub(pos, sphPos);
@@ -43,8 +64,10 @@ namespace Collision
     }
 
     bool HitLineSphere(
-        const VECTOR& lineStart, const VECTOR& lineEnd,
-        const VECTOR& sphPos, const float& sphRadius)
+        const VECTOR& lineStart, 
+        const VECTOR& lineEnd,
+        const VECTOR& sphPos, 
+        const float& sphRadius)
     {
         VECTOR AB = VSub(lineEnd, lineStart);
         VECTOR AC = VSub(sphPos, lineStart);
@@ -77,8 +100,10 @@ namespace Collision
     }
 
     bool HitAABBs(
-        const VECTOR& pos1 , const VECTOR& size1,
-        const VECTOR& pos2, const VECTOR& size2)
+        const VECTOR& pos1 , 
+        const VECTOR& size1,
+        const VECTOR& pos2, 
+        const VECTOR& size2)
     {
         // XYZ軸それぞれで重なり判定
         return (
@@ -88,16 +113,22 @@ namespace Collision
             );
     }
 
-    VECTOR ExtrusionCollision(VECTOR pos1, float collRad1, VECTOR pos2, float collRad2)
+    VECTOR ExtrusionCollision(
+        VECTOR pos1, 
+        float collRad1, 
+        VECTOR pos2, 
+        float collRad2)
     {
         VECTOR pushPow = Math::VECTOR_ZERO;
 
         // 球体と球体の衝突判定
-        // ２つの座標間の距離をピタゴラスの定理で算出
-
+        // ２つの座標間の距離を算出
         VECTOR distance = VSub(pos1, pos2);
 
-        float dis = distance.x * distance.x + distance.y * distance.y + distance.z * distance.z;
+        float dis = 
+            distance.x * distance.x +
+            distance.y * distance.y + 
+            distance.z * distance.z;
 
         // お互いの半径を合計する
         float radius = collRad1 + collRad2;
@@ -124,11 +155,18 @@ namespace Collision
         return pushPow;
     }
 
-    VECTOR ExtrusionCollisionCapsule(VECTOR pos1, VECTOR top1, float radius1, VECTOR pos2, VECTOR top2, float radius2)
+    VECTOR ExtrusionCollisionCapsule(
+        VECTOR pos1, 
+        VECTOR top1, 
+        float radius1, 
+        VECTOR pos2, 
+        VECTOR top2, 
+        float radius2)
     {
         VECTOR pushPow = Math::VECTOR_ZERO;
 
-        // 2つのカプセルの中心軸（線分）の間で、最も近くなる2つの座標を格納する変数    
+        // 2つのカプセルの中心軸（線分）の間で、
+        // 最も近くなる2つの座標を格納する変数    
         VECTOR closePos1, closePos2;
 
         // 各線分の方向ベクトル
@@ -141,7 +179,7 @@ namespace Collision
         float e = VDot(d2, d2); // 線分2の長さの2乗
         float f = VDot(d2, r);
 
-        // 線分上の位置を表す比率（0.0 ～ 1.0）を格納する変数
+        // 線分上の位置を表す比率（0.0～1.0）を格納する変数
         float s = 0.0f;
         float t = 0.0f;
 
@@ -173,7 +211,7 @@ namespace Collision
             }
             else
             {
-                // 両方とも正常な線分の場合（一般的なケース）
+                // 両方とも正常な線分の場合
                 float b = VDot(d1, d2);
                 float denom = a * e - b * b;
 
@@ -191,7 +229,8 @@ namespace Collision
 
                 t = (b * s + f) / e;
 
-                // 線分2の範囲（0.0 ～ 1.0）にクランプし、それに合わせてsも再調整
+                // 線分2の範囲（0.0～1.0）にクランプし、
+                // それに合わせてsも再調整
                 if (t < 0.0f)
                 {
                     t = 0.0f;
@@ -209,24 +248,29 @@ namespace Collision
             }
         }
 
-        // 割り出した比率（s, t）を元に、実際の最接近点座標（closePos）を確定させる
+        // 割り出した比率（s, t）を元に、
+        // 実際の最接近点座標（closePos）を確定させる
         closePos1 = VAdd(pos1, VScale(d1, s));
         closePos2 = VAdd(pos2, VScale(d2, t));
 
         // 最接近点どうしのベクトルと距離（の2乗）を計算    
         VECTOR distance = VSub(closePos1, closePos2);
-        float dis = distance.x * distance.x + distance.y * distance.y + distance.z * distance.z;
+        float dis = 
+            distance.x * distance.x + 
+            distance.y * distance.y + 
+            distance.z * distance.z;
 
         // お互いの半径の合計
         float radius = radius1 + radius2;
 
-        // 半径の合計の2乗よりも、最接近点間の距離が小さければ衝突している
+        // 半径の合計の2乗よりも、
+        // 最接近点間の距離が小さければ衝突している
         if (radius * radius > dis)
         {
             VECTOR vec;
             float length;
 
-            // 完全に重なっていない場合の通常処理（元のコードと同じ流れ）
+            // 完全に重なっていない場合の通常処理
             if (dis > 0.0001f)
             {
                 length = sqrtf(dis);
@@ -234,20 +278,21 @@ namespace Collision
             }
             else
             {
-                // 完全に重なっている場合の安全対策（y=0.0fで消えないようにX軸方向にするのが安全）
+                // 完全に重なっている場合の安全対策
+                // （y=0.0fで消えないようにX軸方向にするのが安全）
                 length = 0.0f;
                 vec = VGet(1.0f, 0.0f, 0.0f);
             }
 
             auto overlap = radius - length;
 
-            // お互いに退き合う場合は半分（元のコードと同じ）
+            // お互いに退き合う場合は半分
             float push_half = overlap / 2.0f;
 
-            // 押し出し量を計算（元のコードと同じ）
+            // 押し出し量を計算
             pushPow = VScale(vec, push_half);
 
-            // 上下の押し出しを無効化（元のコードと同じ）
+            // 上下の押し出しを無効化
             pushPow.y = 0.0f;
         }
 
@@ -257,10 +302,13 @@ namespace Collision
 
     bool HitPoint2Box(
         const Vector2& pointPos,
-        const Vector2& boxPos, const float& sizeX, const float& sizeY)
+        const Vector2& boxPos, 
+        const float& sizeX, 
+        const float& sizeY)
     {
         bool ret = false;
         
+        // 点のX座標およびY座標が矩形の範囲内に完全に収まっているか確認
         if (pointPos.x > boxPos.x &&
             pointPos.x < boxPos.x + sizeX &&
             pointPos.y > boxPos.y &&
@@ -272,10 +320,17 @@ namespace Collision
         return ret;
     }
 
-    bool HitBox2Box(const Vector2& boxPos1, const float& sizeX1, const float& sizeY1, const Vector2& boxPos2, const float& sizeX2, const float& sizeY2)
+    bool HitBox2Box(
+        const Vector2& boxPos1, 
+        const float& sizeX1, 
+        const float& sizeY1, 
+        const Vector2& boxPos2, 
+        const float& sizeX2, 
+        const float& sizeY2)
     {
         bool ret = false;
 
+        // X軸・Y軸の両方で互いの領域がオーバーラップ（重複）しているか確認
         if (boxPos1.x + sizeX1 > boxPos2.x &&
             boxPos1.x  < boxPos2.x + sizeX2 &&
             boxPos1.y + sizeY1 > boxPos2.y &&
@@ -288,14 +343,21 @@ namespace Collision
     }
 
     bool HitMouse2Box(
-        const Vector2& boxPos, const float& sizeX, const float& sizeY)
+        const Vector2& boxPos, 
+        const float& sizeX, 
+        const float& sizeY)
     {
         // マウスの位置を調べる
         Vector2 mousePos = InputManager::GetInstance()->GetMousePos();
+
+        // 箱に当たっていればtrueを返す
         return  HitPoint2Box(mousePos, boxPos, sizeX, sizeY);
     }
 
-    bool HitMouseImg2Box(const Vector2& boxPos, const float& sizeX, const float& sizeY)
+    bool HitMouseImg2Box(
+        const Vector2& boxPos, 
+        const float& sizeX, 
+        const float& sizeY)
     {
         // マウスの位置を調べる
         Vector2 mousePos = InputManager::GetInstance()->GetMousePos();
@@ -303,6 +365,13 @@ namespace Collision
         mousePos.x -= (MouseCursor::MOUSE_IMG_SIZE_WID / 2);
         mousePos.y -= (MouseCursor::MOUSE_IMG_SIZE_HIG / 2);
 
-        return  HitBox2Box(mousePos, MouseCursor::MOUSE_IMG_SIZE_WID, MouseCursor::MOUSE_IMG_SIZE_HIG, boxPos, sizeX, sizeY);
+        // 箱に当たっていればtrueを返す
+        return  HitBox2Box(
+            mousePos, 
+            MouseCursor::MOUSE_IMG_SIZE_WID,
+            MouseCursor::MOUSE_IMG_SIZE_HIG, 
+            boxPos, 
+            sizeX, 
+            sizeY);
     }
 }

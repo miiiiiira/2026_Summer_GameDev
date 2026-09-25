@@ -8,34 +8,54 @@ namespace Collision
 
     // 球体同士の衝突判定
     bool HitSpheres(
-        const VECTOR& a, const float& ar,
-        const VECTOR& b, const float& br);
+        const VECTOR& a, 
+        const float& ar,
+        const VECTOR& b, 
+        const float& br);
     
     // 球体とカプセルの衝突判定
     bool HitSphereCapsule(
-        const VECTOR& sphPos, const float& sphRadius,
-        const VECTOR& capA, const VECTOR& capB, const float& capRadius);
+        const VECTOR& sphPos,
+        const float& sphRadius,
+        const VECTOR& capA,
+        const VECTOR& capB, 
+        const float& capRadius);
 
     // 球体と点(座標)の衝突判定
     bool HitSpherePoint(
-        const VECTOR& sphPos, const float& sphRad,
+        const VECTOR& sphPos, 
+        const float& sphRad,
         const VECTOR& pos);
 
     // 線と球体の衝突判定
     bool HitLineSphere(
-        const VECTOR& lineStart, const VECTOR& lineEnd,
-        const VECTOR& sphPos,const float& sphRadius);
+        const VECTOR& lineStart, 
+        const VECTOR& lineEnd,
+        const VECTOR& sphPos,
+        const float& sphRadius);
 
     // AABB同士の衝突判定(中心座標、中心から端までの半径)
     bool HitAABBs(
-        const VECTOR& pos1,const VECTOR& size1, 
-        const VECTOR& pos2,const VECTOR& size2);
+        const VECTOR& pos1,
+        const VECTOR& size1, 
+        const VECTOR& pos2,
+        const VECTOR& size2);
 
     // 球体同士の押し出し
-    VECTOR ExtrusionCollision(VECTOR pos1, float collRad1, VECTOR pos2, float collRad2);
+    VECTOR ExtrusionCollision(
+        VECTOR pos1, 
+        float collRad1, 
+        VECTOR pos2, 
+        float collRad2);
 
     // カプセル同士の押し出し
-    VECTOR ExtrusionCollisionCapsule(VECTOR pos1, VECTOR top1, float radius1, VECTOR pos2, VECTOR top2, float radius2);
+    VECTOR ExtrusionCollisionCapsule(
+        VECTOR pos1, 
+        VECTOR top1, 
+        float radius1, 
+        VECTOR pos2, 
+        VECTOR top2, 
+        float radius2);
 
 #pragma endregion
 
@@ -44,20 +64,30 @@ namespace Collision
     // 点と箱の衝突判定
     bool HitPoint2Box(
         const Vector2& pointPos,
-        const Vector2& boxPos, const float& sizeX, const float& sizeY);
+        const Vector2& boxPos,
+        const float& sizeX,
+        const float& sizeY);
 
     // 箱と箱の衝突判定(座標は左上同士)
     bool HitBox2Box(
-        const Vector2& boxPos1, const float& sizeX1, const float& sizeY1,
-        const Vector2& boxPos2, const float& sizeX2, const float& sizeY2);
+        const Vector2& boxPos1, 
+        const float& sizeX1, 
+        const float& sizeY1,
+        const Vector2& boxPos2, 
+        const float& sizeX2, 
+        const float& sizeY2);
 
     // マウスと箱の衝突判定
     bool HitMouse2Box(
-        const Vector2& boxPos, const float& sizeX, const float& sizeY);
+        const Vector2& boxPos, 
+        const float& sizeX, 
+        const float& sizeY);
 
     // マウス画像と箱の衝突判定
     bool HitMouseImg2Box(
-        const Vector2& boxPos, const float& sizeX, const float& sizeY);
+        const Vector2& boxPos, 
+        const float& sizeX, 
+        const float& sizeY);
 
 #pragma endregion
 }

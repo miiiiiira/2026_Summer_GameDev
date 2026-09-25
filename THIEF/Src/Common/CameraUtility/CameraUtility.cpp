@@ -25,7 +25,8 @@ VECTOR CameraUtility::GetCameraAngle(void)
 MATRIX CameraUtility::GetCameraMatrix(void)
 {
 	// ƒJƒƒ‰‚Ì‰ñ“]s—ñ
-	VECTOR vec = { camera_->GetTransform()->angle_.x,camera_->GetTransform()->angle_.y,0.0f };
+	const auto& angle = camera_->GetTransform()->angle_;
+	VECTOR vec = { angle.x,angle.y,0.0f };
 	MATRIX matRot = Matrix::GetMatrixRotateXYZ(vec);
 
 	return matRot;
