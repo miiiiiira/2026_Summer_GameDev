@@ -26,11 +26,14 @@ public:
 	static constexpr VECTOR MOVE_CAP_START_OFFSET = { 0.0f,135.0f,0.0f };		// 移動状態スタート位置
 	static constexpr VECTOR CROUCHING_CAP_START_OFFSET = { 0.0f,60.0f,0.0f };	// しゃがみ状態スタート位置
 
-	static constexpr float PLAYER_ITEM_SEARCH_RADIUS = 800.0f;	// アイテム発見につかう用のプレイヤーからの範囲
+	// アイテム発見につかう用のプレイヤーからの範囲
+	static constexpr float PLAYER_ITEM_SEARCH_RADIUS = 800.0f;
 
-	static constexpr float  CART_DISTANCE = 300.0f;	// カートとの距離
+	// カートとの距離
+	static constexpr float CART_DISTANCE = 300.0f;
 
-	static constexpr float MIN_RENGE = 60.0f;	// プレイヤーの掴み距離の最小値
+	// プレイヤーの掴み距離の最小値
+	static constexpr float MIN_RENGE = 60.0f;
 
 public:
 
@@ -42,96 +45,46 @@ public:
 
 public:
 
-	Transform* GetTransform();	// Transformを返す
-	
-	CapsuleCollider* GetCapsule(void);	// CapsuleColliderを返す
-	
-	PLAYER_STATE GetState(void);	// プレイヤー状態を取得
-	
-	GRABBING_STATE GetGrabbingState(void);	// 掴んでいるかの状態を取得
+	// Transformを返す
+	Transform* GetTransform(void) { return transform_; }
 
-	float GetMoveSpeed(void);		// 移動速度を渡す
-	
-	int GetInvincibleTime(void);	// 無敵時間を渡す
-	
-	VECTOR GetLineStartPos(void);	// 掴むときの線分の初め座標を渡す
-	VECTOR GetLineEndPos(void);		// 掴むときの線分の終わり座標を渡す
+	// CapsuleColliderを返す
+	CapsuleCollider* GetCapsule(void) { return capColl_; }
 
-	void SetWisp(Wisp* wisp);	// ライトクラスのポインタ取得
-	
-	void SetGrabObject(Item* item);	// 掴んでいるオブジェクトを設定(アイテム)
-	void SetGrabObject(Cart* cart);	// 掴んでいるオブジェクトを設定(カート)
-	
-	void StartGrabbing(float range);	// 掴み動作を始める
-	
-	void SetDamage(int damage);	// ダメージを与える
-	
-	void SetHitReact(VECTOR moveDir,float moveSpeed,float jumpPow);	// 吹っ飛びリアクションをさせる
+	// プレイヤー状態を返す
+	PLAYER_STATE GetState(void) { return stateCtrl_.state_; }
 
-private:
-	
-	void StateUpdate(void);	// 状態別更新処理
+	// 掴んでいるかの状態を返す
+	GRABBING_STATE GetGrabbingState(void) { return grabStateCtrl_.state_; }
 
-	// 状態別初期化
-	static void IdleInit(PlayerController& player);			// 待機
-	static void MoveInit(PlayerController& player);			// 移動
-	static void DashInit(PlayerController& player);			// ダッシュ
-	static void CrouchingInit(PlayerController& player);	// しゃがみ
-	static void SlidingInit(PlayerController& player);		// スライディング
-	static void HitReactInit(PlayerController& player);		// ダメージ時のリアクション
-	static void DeadInit(PlayerController& player);			// 死亡
+	// 移動速度を返す
+	float GetMoveSpeed(void) { return info_.moveSpeed_; }
 
-	// 状態別更新
-	static void IdleUpdate(PlayerController& player);		// 待機
-	static void MoveUpdate(PlayerController& player);		// 移動
-	static void DashUpdate(PlayerController& player);		// ダッシュ
-	static void CrouchingUpdate(PlayerController& player);	// しゃがみ
-	static void SlidingUpdate(PlayerController& player);	// スライディング
-	static void HitReactUpdate(PlayerController& player);	// ダメージ時のリアクション
-	static void DeadUpdate(PlayerController& player);		// 死亡
+	// 無敵時間を返す
+	int GetInvincibleTime(void) { return info_.invincibleTime_; }
 
-	void ChangeState(PLAYER_STATE state);	// 状態を変更させる
+	// 掴むときの開始座標を返す
+	// カメラの位置をラインの初め座標とする
+	VECTOR GetLineStartPos(void) { return CameraUtility::GetCameraPos(); }
 
-	void GrabStateUpdate(void);	// 掴み状態別更新処理
+	// 掴むときの終了座標返す
+	VECTOR GetLineEndPos(void);
 
-	// 状態別更新
-	static void NotGrabbingUpdate(PlayerController& player);	// 掴もうとしてない
-	static void TryGrabbingUpdate(PlayerController& player);	// 掴もうとしている
-	static void IsGrabbingUpdate(PlayerController& player);		// 掴んでいる
+	// ライトクラスのポインタ取得
+	void SetWisp(Wisp* wisp) { wisp_ = wisp; }
 
-	void ChangeGrabState(GRABBING_STATE state);	// 掴み状態を変更させる
+	// 掴んでいるオブジェクトを設定
+	void SetGrabObject(Item* item) { grabObject_ = item; }	// アイテム
+	void SetGrabObject(Cart* cart) { grabObject_ = cart; }	// カート
 
-	void ApplyGravity();			// 重力
+	// 掴み動作を始める
+	void StartGrabbing(float range);
 
-	void HealStamina(void);			// スタミナ回復
-	
-	void Jump(void);				// ジャンプ
+	// ダメージを与える
+	void SetDamage(int damage);
 
-	bool RangeUpdate(void);			// つかめる範囲の設定
-	
-	void MapDrawUpdate(void);		// マップ表示
-
-	void InvincibleUodate(void);	// 無敵時間を更新
-
-	void HitStopUodate(void);		// ヒットストップ更新
-	
-	void GetShakeOffset(int& offset);	// ヒットストップカウンタが0じゃない場合に揺らし量を計算
-
-	bool IsGrabbing(void);		// 何か物を掴んでいるか
-	Item* GetGrabItem(void);	// アイテムを掴んでいたらそのアイテムのポインタを渡す
-	Cart* GetGrabCart(void);	// カートを掴んでいたらカートのポインタを渡す
-
-	bool InputMove(void);	// 移動しているかを渡す		true / 移動している, false / 移動していない
-
-	void Move(void);	// 方向×移動速度で移動量を作って、座標に足して移動させる
-
-	void wispRangeChange(bool flg); // ライトの範囲を変更
-
-	void IsReachedDeadPos(void);	// 死亡座標へ到達しているか
-
-	void DrawHP(void);		// HP描画
-	void DrawStamina(void);	// スタミナ描画
-	void DebugDraw(void);	// デバッグ用描画
+	// 吹っ飛びリアクションをさせる
+	void SetHitReact(VECTOR moveDir, float moveSpeed, float jumpPow);
 
 private:
 
@@ -190,8 +143,96 @@ private:
 private:
 
 	// プレイヤー情報
-	playerInfo info_;	
+	playerInfo info_;
 
-	playerStateCtrl stateCtrl_;			// プレイヤーの状態情報
-	playerGrabStateCtrl grabStateCtrl_;	// 掴み状態情報
+	// プレイヤーの状態情報
+	playerStateCtrl stateCtrl_;
+
+	// 掴み状態情報
+	playerGrabStateCtrl grabStateCtrl_;
+
+private:
+
+	// 状態別更新処理
+	void StateUpdate(void);
+
+	// 状態別初期化
+	static void IdleInit(PlayerController& player);			// 待機
+	static void MoveInit(PlayerController& player);			// 移動
+	static void DashInit(PlayerController& player);			// ダッシュ
+	static void CrouchingInit(PlayerController& player);	// しゃがみ
+	static void SlidingInit(PlayerController& player);		// スライディング
+	static void HitReactInit(PlayerController& player);		// ダメージ時のリアクション
+	static void DeadInit(PlayerController& player);			// 死亡
+
+	// 状態別更新
+	static void IdleUpdate(PlayerController& player);		// 待機
+	static void MoveUpdate(PlayerController& player);		// 移動
+	static void DashUpdate(PlayerController& player);		// ダッシュ
+	static void CrouchingUpdate(PlayerController& player);	// しゃがみ
+	static void SlidingUpdate(PlayerController& player);	// スライディング
+	static void HitReactUpdate(PlayerController& player);	// ダメージ時のリアクション
+	static void DeadUpdate(PlayerController& player);		// 死亡
+
+	// 状態を変更させる
+	void ChangeState(PLAYER_STATE state);
+
+	// 掴み状態別更新処理
+	void GrabStateUpdate(void);
+
+	// 状態別更新
+	static void NotGrabbingUpdate(PlayerController& player);	// 掴もうとしてない
+	static void TryGrabbingUpdate(PlayerController& player);	// 掴もうとしている
+	static void IsGrabbingUpdate(PlayerController& player);		// 掴んでいる
+
+	// 掴み状態を変更させる
+	void ChangeGrabState(GRABBING_STATE state) { grabStateCtrl_.state_ = state; };
+
+	// 重力
+	void ApplyGravity();
+
+	// スタミナ回復
+	void HealStamina(void);
+
+	// ジャンプ
+	void Jump(void);
+
+	// つかめる範囲の設定
+	bool RangeUpdate(void);
+
+	// マップ表示
+	void MapDrawUpdate(void);
+
+	// 無敵時間を更新
+	void InvincibleUodate(void);
+
+	// ヒットストップ更新
+	void HitStopUodate(void);
+
+	// ヒットストップカウンタが0じゃない場合に揺らし量を計算
+	void GetShakeOffset(int& offset);
+
+	// 何か物を掴んでいるか
+	bool IsGrabbing(void);
+
+	// 掴んでいたらそのオブジェクトのポインタを渡す
+	Item* GetGrabItem(void);	// アイテムのポインタ
+	Cart* GetGrabCart(void);	// カートのポインタ
+
+	// 移動しているかを渡す		true / 移動している, false / 移動していない
+	bool InputMove(void);
+
+	// 方向×移動速度で移動量を作って、座標に足して移動させる
+	void Move(void);
+
+	// ライトの範囲を変更
+	void wispRangeChange(bool flg);
+
+	// 死亡座標へ到達しているか
+	void IsReachedDeadPos(void);
+
+	// 描画関係
+	void DrawHP(void);		// HP
+	void DrawStamina(void);	// スタミナ
+	void DebugDraw(void);	// デバッグ用
 };
