@@ -1,12 +1,14 @@
 // ピクセルシェーダーの入力
 struct PS_INPUT
 {
+    // 座標( プロジェクション空間 )
     float4 Position : SV_POSITION;
-	// 座標( プロジェクション空間 )
+    
+    // ディフューズカラー
     float4 Diffuse : COLOR0;
-	// ディフューズカラー
+	
+    // テクスチャ座標
     float2 TexCoords0 : TEXCOORD0;
-	// テクスチャ座標
 };
 
 // ノイズ生成用
@@ -20,9 +22,9 @@ static const float TIME_RANDOM_SEED_B = 789.012f;
 // グリッチ演出用
 static const float GLITCH_CHECK_HERTZ = 2.0f;       // 1秒間に行うグリッチ判定
 static const float GLITCH_PROBABILITY = 0.8f;       // グリッチが発生しない率
-static const float GLITCH_WAVE_FREQ = 40.0f;       // グリッチ線の細かさ
+static const float GLITCH_WAVE_FREQ = 40.0f;        // グリッチ線の細かさ
 static const float GLITCH_WAVE_SPEED = 0.5f;        // グリッチの波が上下に流れる速度 
-static const float GLITCH_THRESHOLD = 0.95f;         // どの程度の波の強さでグリッチを有効にするか
+static const float GLITCH_THRESHOLD = 0.95f;        // どの程度の波の強さでグリッチを有効にするか
 
 // 走査線の密度
 static const float SCANLINE_DENSITY = 500.0f;
@@ -36,7 +38,7 @@ cbuffer cbParam : register(b1)
     float g_curvatureAmount;        // 曲面の歪み度
     float g_noisePower;             // ノイズの強度
     float g_rgbShift;               // 色のずれ
-    float glitchProbability;
+    float glitchProbability;        // グリッチが発生しない率
 }
 
 // 描画するテクスチャ
@@ -47,6 +49,7 @@ SamplerState g_SrcSampler : register(s0);
 
 float4 main(PS_INPUT input) : SV_TARGET
 {
+    // テクスチャ座標を取得
     float2 uv = input.TexCoords0;
    
     // 中心を0.0にする
@@ -72,38 +75,50 @@ float4 main(PS_INPUT input) : SV_TARGET
     float timeStep = floor(g_timer * GLITCH_CHECK_HERTZ);
     float randomInterval = frac(sin(timeStep * TIME_RANDOM_SEED_A) * TIME_RANDOM_SEED_B);
     
+    // グリッチが発生するかどうかを判定
     if (randomInterval > glitchProbability)
     {
         // グリッチ
         float glitch = sin(uv.y * GLITCH_WAVE_FREQ + g_timer * GLITCH_WAVE_SPEED);
     
+        // グリッチの強さを判定して、強い場合のみグリッチを適用する
         if (abs(glitch) > GLITCH_THRESHOLD)
         {
+            // グリッチの適用
             uv.x += glitch * g_glitchAmount;
         }
     }
     
+    // テクスチャの色を取得
     float4 color = g_SrcTexture.Sample(g_SrcSampler, uv);
 
     // RGBずらし処理
     // --------------------------------------------
     // RGBずらし用の座標
+    // レッドチャンネルを右方向にずらすための座標
     float2 uvRed = uv + float2(g_rgbShift, 0.0f);
+    
+    // ブルーチャンネルを左方向にずらすための座標
     float2 uvBlue = uv - float2(g_rgbShift, 0.0f);
         
     // 左方向にずらす
     float r = g_SrcTexture.Sample(g_SrcSampler, uvRed).r;
+    
     // そのまま
     float g = g_SrcTexture.Sample(g_SrcSampler, uv).g;
+    
     // 右方向にずらす
     float b = g_SrcTexture.Sample(g_SrcSampler, uvBlue).b;
         
+    // RGBずらし後の色を設定
     color = float4(r, g, b, 1.0f);
         
     // ビネット
     // --------------------------------------------
+    // ビネットの計算
     float vignette = (1.0f - x * x * g_vignettePower)
                               * (1.0f - y * y * g_vignettePower);
+    // ビネットを適用
     color.rgb *= vignette;
     
     // ノイズ処理
@@ -118,8 +133,13 @@ float4 main(PS_INPUT input) : SV_TARGET
     
     // スキャンライン処理
     // --------------------------------------------
-    float scanLine = 1.0f - abs(sin(uv.y * SCANLINE_DENSITY)) * g_scanlineIntensity;
+    // スキャンラインの計算
+    float scanLine = 
+        1.0f - abs(sin(uv.y * SCANLINE_DENSITY)) * g_scanlineIntensity;
+    
+    // スキャンラインを適用
     color.rgb *= scanLine;
 
+    // 最終的な色を返す
     return color;
 }
