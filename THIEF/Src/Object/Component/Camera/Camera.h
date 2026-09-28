@@ -1,12 +1,25 @@
 #pragma once
-#include "../Component.h"
+
 #include <DxLib.h>
+
+#include "../Component.h"
+#include "../Transform/Transform.h"
 
 class Transform;
 class PlayerController;
 
 class Camera : public Component
 {
+public:
+
+	enum class MODE
+	{
+		NONE,
+		FIXED,
+		FREE,
+		FOLLOW,
+	};
+
 public:
 
 	// マウス感度
@@ -39,34 +52,68 @@ public:
 	static constexpr float SHAKE_ADJUST = 0.4f;
 
 public:
-	enum class MODE
-	{
-		NONE,
-		FIXED,
-		FREE,
-		FOLLOW,
-	};
 
-	void Init(void) override;
-	void Update(void) override;
-	void PreDraw(void) override;
+	void Init(void) override;		// 初期化
+	void Update(void) override;		// 更新
+	void PreDraw(void) override;	// 描画前
+
+public:
 
 	// 描画前のカメラ設定
 	void SetBeforeDraw(void);
 
 	// モード変更
-	void ChangeMode(MODE mode);
+	void ChangeMode(MODE mode) { mode_ = mode; }
 
 	// 追従対象
-	void SetTarget(Transform* target);
+	void SetTarget(Transform* target) { target_ = target; }
 
 	// プレイヤーの情報をもらう　※プレイヤーの場合
-	void SetPlayerController(PlayerController* playerController);
+	void SetPlayerController(PlayerController* playerController) { playerController_ = playerController; }
 
 	// Transformを返す
-	Transform* GetTransform();
+	Transform* GetTransform(void) { return transform_; }
 
 private:
+
+	// デッドゾーン
+	static constexpr float DEAD_ZONE = 0.2f; 
+
+	// 回転速度
+	static constexpr float START_DEG = 5.0f;	// 最小
+	static constexpr float END_DEG = 100.0f;	// 最大
+
+	// スティック正規化用
+	static constexpr float STICK_AXIS_MAX = 1000.0f;
+
+private:
+
+	// Transform
+	Transform* transform_ = nullptr;
+
+	// 追従対象Transform
+	Transform* target_ = nullptr;
+
+	// プレイヤー
+	PlayerController* playerController_ = nullptr;
+
+private:
+
+	// カメラのモード
+	MODE mode_ = MODE::FOLLOW;
+
+	// 追従対象の座標
+	VECTOR targetPos_{};
+
+	// マウス画像
+	int mousePosX_ = 0;
+	int mousePosY_ = 0;
+
+	// 移動時の上下揺らし用カウント
+	float angleMoveCount = 0.0f;
+
+private:
+
 	// フォローモードの更新処理
 	void UpdateFollow(void);
 
@@ -87,18 +134,6 @@ private:
 	// カメラ回転(マウス)
 	void RotMouse(bool isLimit);
 
-private:
-	Transform* transform_ = nullptr;
-	Transform* target_ = nullptr;
-
-	PlayerController* playerController_ = nullptr;
-
-	MODE mode_ = MODE::FOLLOW;
-
-	VECTOR targetPos_{};
-
-	int mousePosX_ = 0;
-	int mousePosY_ = 0;
-
-	float angleMoveCount;
+	// 注視点の移動
+	void TargetPosUpdate(MATRIX mat);
 };

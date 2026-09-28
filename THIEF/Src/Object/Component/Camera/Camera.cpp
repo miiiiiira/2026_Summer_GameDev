@@ -1,24 +1,23 @@
 #include <EffekseerForDXLib.h>
-#include "Camera.h"
-#include "../Transform/Transform.h"
+
 #include "../../Object.h"
 #include "../../../Common/Math/Math.h"
 #include "../../../Common/Easing/Easing.h"
 #include "../../../Manager/Input/InputManager.h"
 #include "../../../Scene/SceneManager.h"
 #include "../../../Application.h"
-
 #include "../PlayerController/PlayerController.h"
+
+#include "Camera.h"
 
 void Camera::Init(void)
 {
 	transform_ = owner_->GetComponent<Transform>();
 
-	angleMoveCount = 0.0f;
-
 	// マウスカーソルを画面中央に戻す
 	SetMousePoint(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2);
 
+	// カメラの角度を初期化
 	SetCameraPositionAndAngle(
 		transform_->pos_,
 		transform_->angle_.x,
@@ -36,12 +35,17 @@ void Camera::Update(void)
 	{
 	case Camera::MODE::FIXED:
 		break;
+
 	case Camera::MODE::FREE:
 		break;
+
 	case Camera::MODE::FOLLOW:
 		UpdateFollow();
 		break;
+
 	case Camera::MODE::NONE:
+		break;
+
 	default:
 		break;
 	}
@@ -141,20 +145,14 @@ void Camera::UpdateFollow(void)
 
 	// 線形補間で滑らかにする
 	transform_->pos_.y = Math::Lerp(prePosY, transform_->pos_.y, COEFFICIENT);
-
+	
 	// 注視点の移動
-	// 回転させた相対座標
-	VECTOR targetLocalRotPos = VTransform(FOLLOW_TARGET_LOCAL_POS, mat);
-
-	// カメラ座標との高さを一致させるためカメラ座標から回転させた相対座標を足す
-	targetPos_ = VAdd(transform_->pos_, targetLocalRotPos);
-
-	// 3Dサウンドのリスナーの位置とリスナーの前方位置を設定する
-	Set3DSoundListenerPosAndFrontPos_UpVecY(transform_->pos_, targetPos_);
+	TargetPosUpdate(mat);
 }
 
 void Camera::SetBeforeDrawFixedPoint()
 {
+	// カメラの角度を設定
 	SetCameraPositionAndAngle(
 		transform_->pos_,
 		transform_->angle_.x,
@@ -163,8 +161,9 @@ void Camera::SetBeforeDrawFixedPoint()
 	);
 }
 
-void Camera::SetBeforeDrawFree()
+void Camera::SetBeforeDrawFree(void)
 {
+	// カメラの角度を設定
 	SetCameraPositionAndAngle(
 		transform_->pos_,
 		transform_->angle_.x,
@@ -173,7 +172,7 @@ void Camera::SetBeforeDrawFree()
 	);
 }
 
-void Camera::SetBeforeDrawFollow()
+void Camera::SetBeforeDrawFollow(void)
 {
 	if (!target_) return;
 
@@ -191,28 +190,6 @@ void Camera::SetBeforeDrawFollow()
 		targetPos_,
 		up
 	);
-
-}
-
-void Camera::ChangeMode(MODE mode)
-{
-	mode_ = mode;
-}
-
-void Camera::SetTarget(Transform* target)
-{
-	target_ = target;
-}
-
-void Camera::SetPlayerController(PlayerController* playerController)
-{
-	playerController_ = playerController;
-}
-
-
-Transform* Camera::GetTransform()
-{
-	return owner_->GetComponent<Transform>();
 }
 
 void Camera::ProcessRot(bool isLimit)
@@ -285,19 +262,17 @@ void Camera::RotKeyboard(bool isLimit)
 
 void Camera::RotGamePad(bool isLimit)
 {
-	constexpr float DEAD_ZONE = 0.2f; // デッドゾーン
-	constexpr float START_DEG = 5.0f; // 最小回転速度
-	constexpr float END_DEG = 100.0f; // 最大回転速度
-
+	// スティックの状態を取得
 	DINPUT_JOYSTATE inputState;
 	if (GetJoypadDirectInputState(DX_INPUT_PAD1, &inputState) != 0)return;
+
 	// 右スティックのデータ(-1000～1000)
 	int rawX = inputState.Rx;
 	int rawY = inputState.Ry;
 
 	// -1.0f～1.0fの範囲に正規化
-	float rightStickX = rawX / 1000.0f;
-	float rightStickY = rawY / 1000.0f;
+	float rightStickX = rawX / STICK_AXIS_MAX;
+	float rightStickY = rawY / STICK_AXIS_MAX;
 
 	// 入力ベクトルの長さを計算
 	float stickInput = std::sqrt(rightStickX * rightStickX + rightStickY * rightStickY);
@@ -376,4 +351,16 @@ void Camera::RotMouse(bool isLimit)
 
 	//// マウスカーソルを画面中央に戻す
 	SetMousePoint(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2);
+}
+
+void Camera::TargetPosUpdate(MATRIX mat)
+{
+	// 回転させた相対座標
+	VECTOR targetLocalRotPos = VTransform(FOLLOW_TARGET_LOCAL_POS, mat);
+
+	// カメラ座標との高さを一致させるためカメラ座標から回転させた相対座標を足す
+	targetPos_ = VAdd(transform_->pos_, targetLocalRotPos);
+
+	// 3Dサウンドのリスナーの位置とリスナーの前方位置を設定する
+	Set3DSoundListenerPosAndFrontPos_UpVecY(transform_->pos_, targetPos_);
 }
