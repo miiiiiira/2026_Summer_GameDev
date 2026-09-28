@@ -1,6 +1,7 @@
-#include "MouseCursor.h"
 #include "../../Manager/Input/InputManager.h"
 #include "../../Application.h"
+
+#include "MouseCursor.h"
 
 MouseCursor* MouseCursor::instance_ = nullptr;
 
@@ -74,21 +75,17 @@ void MouseCursor::Destroy(void)
 	DeleteInstance();
 }
 
-void MouseCursor::SetMouseDraw(bool flg)
-{
-	// 指定された描画フラグへ変更
-	mouseDrawFlg_ = flg;
-}
-
 void MouseCursor::DebugDraw(void)
 {
 	int posX = static_cast<int>(mousePos_.x);
 	int posy = static_cast<int>(mousePos_.y);
 
 	// 当たり判定描画
-	DrawBox(posX - MOUSE_IMG_SIZE_WID / 2,
+	DrawBox(
+		posX - MOUSE_IMG_SIZE_WID / 2,
 		posy - MOUSE_IMG_SIZE_HIG / 2,
 		posX + MOUSE_IMG_SIZE_WID / 2,
 		posy + MOUSE_IMG_SIZE_HIG / 2,
-		0xff0000, false);
+		0xff0000,
+		false);
 }
