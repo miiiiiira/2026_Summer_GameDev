@@ -2,7 +2,6 @@
 
 class SceneBase
 {
-
 public:
 
 	// コンストラクタ
@@ -28,5 +27,4 @@ public:
 
 	// 解放処理
 	virtual void Release(void) = 0;
-
 };

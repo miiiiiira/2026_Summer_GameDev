@@ -1,8 +1,9 @@
 #pragma once
 
+#include <vector>
+
 #include "../SceneBase.h"
 #include "../../Application.h"
-#include <vector>
 
 class StageClear : public SceneBase
 {
@@ -11,8 +12,8 @@ public:
 	// 現在選択しているボタンの種類
 	enum TYPE
 	{
-		NEXT_STAGE,
-		RETURN_TITLE,
+		NEXT_STAGE,		// 次のステージへ
+		RETURN_TITLE,	// タイトルへ戻る
 		NONE,
 	};
 
@@ -38,14 +39,6 @@ public:
 
 private:
 
-	void SelectUpdate(void);	// 選択処理
-
-	void MouseSelect(void);		// マウス選択
-
-	void PadSelect(void);		// パッド選択
-
-private:
-
 	// NEXT_STAGE画像サイズ
 	static constexpr int NEXT_STAGE_SIZE_X = 295;
 	static constexpr int NEXT_STAGE_SIZE_Y = 33;
@@ -62,16 +55,32 @@ private:
 	static constexpr int RETURN_TITLE_POS_X = Application::SCREEN_SIZE_X / 2 - RETURN_TITLE_SIZE_X / 2;
 	static constexpr int RETURN_TITLE_POS_Y = 550;
 
-	static constexpr int FRAME_OFFSET = 10;	// フレームのオフセット
+	// フレームのオフセット
+	static constexpr int FRAME_OFFSET = 10;	
 
 private:
 
-	int handle_ = -1;	// 画像ハンドル
+	// 画像ハンドル
+	int handle_ = -1;	
 	
-	std::vector<IMG_INFO> buttons_;	// ボタンの情報を格納する配列
+	// ボタンの情報を格納する配列
+	std::vector<IMG_INFO> buttons_;
 	
-	int alpha_ = 0;	// アルファ値(ボタン表示に使用)
+	// アルファ値(ボタン表示に使用)
+	int alpha_ = 0;	
 	
-	TYPE currentType_;	// 現在選択している種類
+	// 現在選択している種類
+	TYPE currentType_ = TYPE::NONE;	
+
+private:
+
+	// 選択処理
+	void SelectUpdate(void);
+
+	// マウス選択
+	void MouseSelect(void);
+
+	// パッド選択
+	void PadSelect(void);
 };
 

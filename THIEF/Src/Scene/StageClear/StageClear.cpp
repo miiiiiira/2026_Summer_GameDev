@@ -34,10 +34,10 @@ void StageClear::Load(void)
 
 	// RETRY画像
 	buttons_.push_back({ TYPE::NEXT_STAGE, LoadGraph("Data/Image/StageClear/NextStage.png"),
-								RETRY_POS_X, RETRY_POS_Y, NEXT_STAGE_SIZE_X, NEXT_STAGE_SIZE_Y });
+						RETRY_POS_X, RETRY_POS_Y, NEXT_STAGE_SIZE_X, NEXT_STAGE_SIZE_Y });
 	// RETURN_TITLE画像
 	buttons_.push_back({ TYPE::RETURN_TITLE, LoadGraph("Data/Image/StageClear/ReturnTitle.png"),
-							RETURN_TITLE_POS_X, RETURN_TITLE_POS_Y, RETURN_TITLE_SIZE_X, RETURN_TITLE_SIZE_Y });
+						RETURN_TITLE_POS_X, RETURN_TITLE_POS_Y, RETURN_TITLE_SIZE_X, RETURN_TITLE_SIZE_Y });
 
 	// ステージクリア用の音を読み込み
 	AudioManager::GetInstance()->LoadSceneSound(LoadScene::STAGE_CLEAR);
@@ -66,19 +66,17 @@ void StageClear::Update(void)
 	switch (currentType_)
 	{
 	case StageClear::NEXT_STAGE:
-
 		// ショップシーンへ
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<ShopScene>(), SHOP);
 		return;
-
 		break;
-	case StageClear::RETURN_TITLE:
 
+	case StageClear::RETURN_TITLE:
 		// タイトルシーンへ
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(), TITLE);
 		return;
-
 		break;
+
 	default:
 		break;
 	}
@@ -89,6 +87,7 @@ void StageClear::Draw(void)
 	// 「Stage Clear」画像の描画
 	DrawGraph(0, 0, handle_, true);
 
+	// ボタンの数分まわす
 	for (const auto& button : buttons_)
 	{
 		// 選択している種類の場所にフレームを描画
@@ -106,11 +105,12 @@ void StageClear::Release(void)
 {
 	// 画像を解放
 	DeleteGraph(handle_);
-
 	for (const auto& button : buttons_)
 	{
 		DeleteGraph(button.graphHandle);
 	}
+
+	// 使い終わったらクリア
 	buttons_.clear();
 
 	// ステージクリア用の音を解放
@@ -163,31 +163,28 @@ void StageClear::PadSelect(void)
 	switch (currentType_)
 	{
 	case StageClear::NEXT_STAGE:
-
 		// 下を押したら
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
 			// タイトルボタンへ
 			currentType_ = RETURN_TITLE;
 		}
-
 		break;
-	case StageClear::RETURN_TITLE:
 
+	case StageClear::RETURN_TITLE:
 		// 上を押したら
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
 		{
 			// ネクストステージボタンへ
 			currentType_ = NEXT_STAGE;
 		}
-
 		break;
-	case StageClear::NONE:
 
+	case StageClear::NONE:
 		// ネクストステージボタンへ
 		currentType_ = NEXT_STAGE;
-
 		break;
+
 	default:
 		break;
 	}
