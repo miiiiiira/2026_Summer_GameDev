@@ -1,5 +1,7 @@
 #pragma once
+
 #include "../../Scene/Tutorial/TutorialInfo.h"
+
 class PlayerActionCounter
 {
 public:
@@ -9,11 +11,24 @@ public:
 	static PlayerActionCounter* GetInstance(void) { return instance_; }
 	static void DeleteInstance(void) { if (instance_ != nullptr) { delete instance_; instance_ = nullptr; } }
 
+private:
+
+	// 静的インスタンス
+	static PlayerActionCounter* instance_;
+
+	// コピー・ムーブ操作を禁止
+	PlayerActionCounter(const PlayerActionCounter&) = delete;
+	PlayerActionCounter& operator=(const PlayerActionCounter&) = delete;
+	PlayerActionCounter(PlayerActionCounter&&) = delete;
+	PlayerActionCounter& operator=(PlayerActionCounter&&) = delete;
+
 public:
 
 	PlayerActionCounter(void);	// コンストラクタ
 
 	void Init(void);			// 初期化
+
+public:
 
 	// 指定されたステートのカウンターを渡す
 	float GetCounter(Tutorial::STATE state) 
@@ -29,16 +44,7 @@ public:
 
 private:
 
-	static PlayerActionCounter* instance_;	// 静的インスタンス
-
-	// コピー・ムーブ操作を禁止
-	PlayerActionCounter(const PlayerActionCounter&) = delete;
-	PlayerActionCounter& operator=(const PlayerActionCounter&) = delete;
-	PlayerActionCounter(PlayerActionCounter&&) = delete;
-	PlayerActionCounter& operator=(PlayerActionCounter&&) = delete;
-
-private:
-
-	float counter_[Tutorial::STATE::MAX];	// 確認項目ごとのカウンター
+	// 確認項目ごとのカウンター
+	float counter_[Tutorial::STATE::MAX];	
 };
 

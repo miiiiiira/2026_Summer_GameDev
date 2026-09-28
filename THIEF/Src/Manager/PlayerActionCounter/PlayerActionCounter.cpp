@@ -4,6 +4,10 @@ PlayerActionCounter* PlayerActionCounter::instance_ = nullptr;
 
  PlayerActionCounter::PlayerActionCounter(void)
 {
+	 for (int i = 0; i < Tutorial::STATE::MAX; i++)
+	 {
+		 counter_[i] = -1;
+	 }
 }
 
 void PlayerActionCounter::Init(void)
