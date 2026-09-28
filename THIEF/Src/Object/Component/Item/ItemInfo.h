@@ -1,8 +1,9 @@
 #pragma once
 
-#include <DxLib.h>
 #include <unordered_map>
 #include <string>
+#include <DxLib.h>
+
 #include "../../Tag.h"
 
 enum ITEM_SIZE
@@ -17,6 +18,8 @@ struct ItemInfo
 	int modelId_ = -1;	// モデルのハンドル
 
 	VECTOR scale_ = {};	// 大きさ
+
+	// 座標系
 	VECTOR defaultPos_ = {};	// 初期位置
 	VECTOR grabbedPos_ = {};	// 離された時の座標
 	VECTOR localPos_ = {};		// プレイヤーとの相対座標
@@ -29,9 +32,9 @@ struct ItemInfo
 	float collisionRadiusY_ = 0.0f;	//Y半径
 
 	// アイテム個々のパラメータ
-	int price_ = 0;		// 金額(HP)
-	int hardness_ = 0;	// アイテムの頑丈さ
-	ITEM_SIZE size_;	// アイテムの大きさ
+	int price_ = 0;				// 金額(HP)
+	int hardness_ = 0;			// アイテムの頑丈さ
+	ITEM_SIZE size_ = SMALL;	// アイテムの大きさ
 
 	int invincibilityFrames_ = 0;	// 無敵時間
 	
@@ -51,21 +54,30 @@ struct ItemInfo
 	// ハイライト表記
 	bool isFound_ = false;	// 一度でも発見したか　true / 見つけた , false / 見つけてない
 	int foundCounter_ = 0;	// 発見した物を一定時間ハイライトさせる用のカウンター
-	
 };
 
 struct DamageInfo
 {
-	VECTOR pos = {};	// 座標
-	int damage = 0;		// ダメージ数
-	int count = 0;		// ダメージ数表記カウント
+	// 座標
+	VECTOR pos = {};	
+
+	// ダメージ数
+	int damage = 0;		
+
+	// ダメージ数表記カウント
+	int count = 0;		
 };
 
 struct ItemData
 {
-	std::string path;	// モデルのパス
-	float posOffsetY;	// Y座標のオフセット
-	ITEM_SIZE size;		// アイテムのサイズ
+	// モデルのパス
+	std::string path;	
+
+	// Y座標のオフセット
+	float posOffsetY;
+
+	// アイテムのサイズ
+	ITEM_SIZE size;		
 };
 
 namespace ItemTable

@@ -6,8 +6,9 @@ class Amphora : public Item
 {
 public:
 
-	static constexpr float COLLISION_RADIUS_X = 55.0f;	// 当たり判定用の半径X軸
-	static constexpr float COLLISION_RADIUS_Y = 50.0f;	// 当たり判定用の半径Y軸
+	// 当たり判定用の半径
+	static constexpr float COLLISION_RADIUS_X = 55.0f;
+	static constexpr float COLLISION_RADIUS_Y = 50.0f;
 
 public:
 	
@@ -22,6 +23,7 @@ private:
 	// 大きさ
 	static constexpr VECTOR SCALE = { 1.0f,1.0f,1.0f };	
 
+	// パラメータ
 	static constexpr int PRICE = 2200;		// 金額
 	static constexpr int HARDNESS = 500;	// 頑丈さ
 	static constexpr float WEIGHT = -25.0f;	// 重さ

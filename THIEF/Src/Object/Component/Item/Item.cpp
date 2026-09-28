@@ -1,12 +1,11 @@
-#include <DxLib.h>
 #include <math.h>
+#include <DxLib.h>
 
 #include "../../../Application.h"
 #include "../../Object.h"
 #include "../Render/Render3D.h"
 #include "../../../Scene/SceneManager.h"
 #include "../../../Manager/Audio/AudioManager.h"
-#include "../../../Common/Transform/MatrixUtility.h"
 #include "../../../Common/Math/Math.h"
 #include "../../../Common/CameraUtility/CameraUtility.h"
 
@@ -51,6 +50,7 @@ void Item::Init(void)
 	// 個々のパラメータを設定
 	SetParam();
 
+	// 使用前にクリアしておく
 	damageDrawList_.clear();
 
 	// 衝突情報構築
@@ -100,8 +100,11 @@ void Item::Update(void)
 
 void Item::Draw2D(void)
 {
-	// お金・ダメージ表記描画
-	PriceDamageDraw();
+	// お金描画
+	PriceDraw();
+
+	// ダメージ描画
+	DamageDraw();
 
 	// ハイライト表示描画
 	HighLightDraw();
@@ -116,16 +119,6 @@ void Item::Draw3D(void)
 	// デバッグ表示
 	DrawDebug();
 #endif // _DEBUG
-}
-
-Transform* Item::GetTransform()
-{
-	return owner_->GetComponent<Transform>();
-}
-
-const ItemInfo& Item::GetInfo(void)
-{
-	return info_;
 }
 
 float Item::GetCameraDistance(void)
@@ -223,18 +216,6 @@ void Item::SetPos(const VECTOR& pos)
 
 	// 当たり判定更新
 	MV1RefreshCollInfo(info_.modelId_, -1);
-}
-
-void Item::SetPrevPos(const VECTOR& prevPos)
-{
-	// 指定座標を前フレーム座標に設定
-	trans_->prevPos_ = prevPos;
-}
-
-void Item::SetLocalPosZ(float localPosZ)
-{
-	// 指定の距離をローカルZ軸に設定
-	info_.localPos_.z = localPosZ;
 }
 
 void Item::StartGrabbing(VECTOR localPos)
@@ -437,9 +418,14 @@ void Item::IsReachedDeadPos(void)
 	}
 }
 
-void Item::PriceDamageDraw(void)
+void Item::PriceDraw(void)
 {
-	int priceWidth = GetDrawFormatStringWidthToHandle(Application::GetInstance()->GetFont(FONT_SIZE_20), "%d", info_.price_);
+	// フォント付きの文字幅を調べる
+	int priceWidth =
+		GetDrawFormatStringWidthToHandle(
+			Application::GetInstance()->GetFont(FONT_SIZE_20),
+			"%d",
+			info_.price_);
 
 	// 生存していなかったら描画しない
 	if (info_.isAlive_)
@@ -472,9 +458,19 @@ void Item::PriceDamageDraw(void)
 				info_.price_);
 		}
 	}
+}
+
+void Item::DamageDraw(void)
+{
+	// フォント付きの文字幅を調べる
+	int priceWidth =
+		GetDrawFormatStringWidthToHandle(
+			Application::GetInstance()->GetFont(FONT_SIZE_20),
+			"%d",
+			info_.price_);
 
 	// ダメージ表記
-	for (const DamageInfo damage : damageDrawList_)
+	for (const DamageInfo& damage : damageDrawList_)
 	{
 		// ダメージの場所が視界内に入っていないのであれば処理をスキップ
 		if (CheckCameraViewClip(damage.pos))continue;

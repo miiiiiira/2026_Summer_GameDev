@@ -37,13 +37,22 @@ void Goblet::SetParam(void)
 void Goblet::Break(void)
 {
 	// ”j‰óƒGƒtƒFƒNƒg‚ðÄ¶
-	EffectResManager::GetInstance().PlayEffect(1.0f, { 0.0f,0.0f, 0.0f }, trans_->pos_, EffectResManager::TYPE::ITEM_BREAK_GOBLET);
+	EffectResManager::GetInstance().PlayEffect(
+		1.0f, 
+		{ 0.0f,0.0f, 0.0f }, 
+		trans_->pos_,
+		EffectResManager::TYPE::ITEM_BREAK_GOBLET);
+
 	// ”t”j‰óSEÄ¶
-	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_1, &trans_->pos_);
+	AudioManager::GetInstance()->PlaySE(
+		SoundID::SE_ITEM_BREAK_1, 
+		&trans_->pos_);
 }
 
 void Goblet::Damage(void)
 {
 	// ”tƒ_ƒ[ƒWSEÄ¶
-	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_DAMAGE_1, &trans_->pos_);
+	AudioManager::GetInstance()->PlaySE(
+		SoundID::SE_ITEM_DAMAGE_1, 
+		&trans_->pos_);
 }

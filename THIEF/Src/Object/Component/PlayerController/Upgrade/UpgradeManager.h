@@ -21,7 +21,6 @@ private:
 	UpgradeManager(UpgradeManager&&) = delete;
 	UpgradeManager& operator=(UpgradeManager&&) = delete;
 
-
 public:
 
 	UpgradeManager(void);	// コンストラクタ

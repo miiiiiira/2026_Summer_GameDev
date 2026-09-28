@@ -37,13 +37,22 @@ void Bottle::SetParam(void)
 void Bottle::Break(void)
 {
 	// 破壊エフェクトを再生
-	EffectResManager::GetInstance().PlayEffect(1.0f, { 0.0f,0.0f, 0.0f }, trans_->pos_, EffectResManager::TYPE::ITEM_BREAK_BOTTLE);
+	EffectResManager::GetInstance().PlayEffect(
+		1.0f,
+		{ 0.0f,0.0f, 0.0f }, 
+		trans_->pos_,
+		EffectResManager::TYPE::ITEM_BREAK_BOTTLE);
+
 	// 取っ手付き瓶破壊SE再生
-	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_BREAK_4, &trans_->pos_);
+	AudioManager::GetInstance()->PlaySE(
+		SoundID::SE_ITEM_BREAK_4,
+		&trans_->pos_);
 }
 
 void Bottle::Damage(void)
 {
 	// 取っ手付き瓶ダメージSE再生
-	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_DAMAGE_2, &trans_->pos_);
+	AudioManager::GetInstance()->PlaySE(
+		SoundID::SE_ITEM_DAMAGE_2,
+		&trans_->pos_);
 }

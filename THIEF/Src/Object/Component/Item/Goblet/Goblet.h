@@ -6,8 +6,9 @@ class Goblet : public Item
 {
 public:
 
-	static constexpr float COLLISION_RADIUS_X = 12.5f;	// 当たり判定用の半径X軸
-	static constexpr float COLLISION_RADIUS_Y = 17.5f;	// 当たり判定用の半径Y軸
+	// 当たり判定用の半径
+	static constexpr float COLLISION_RADIUS_X = 12.5f;	
+	static constexpr float COLLISION_RADIUS_Y = 17.5f;	
 
 public:
 
@@ -22,6 +23,7 @@ private:
 	// 大きさ
 	static constexpr VECTOR SCALE = { 1.0f,1.0f,1.0f };	
 
+	// パラメータ
 	static constexpr int PRICE = 500;		// 金額
 	static constexpr int HARDNESS = 450;	// 頑丈さ
 	static constexpr float WEIGHT = -3.0f;	// 重さ
