@@ -18,6 +18,8 @@ public:
 	virtual void Draw2D(void) {}	// 2D•`‰æ
 	virtual void Draw3D(void) {}	// 3D•`‰æ
 
+public:
+
 	// Õ“ËƒCƒxƒ“ƒg
 	virtual void OnCollision(Collider* other) {}
 
@@ -27,6 +29,7 @@ public:
 	Object* GetOwner(void) { return owner_; }
 
 protected:
+
 	// ‚±‚ÌComponent‚ğ‚Á‚Ä‚¢‚éObject
 	Object* owner_ = nullptr;
 };

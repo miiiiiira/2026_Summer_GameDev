@@ -46,22 +46,25 @@ public:
 	void Init() { for (auto& c : components_)c->Init(); }		// 全コンポ―ネント初期化
 	void Update() { for (auto& c : components_)c->Update(); }	// 全コンポーネント更新
 	void PreDraw() { for (auto& c : components_)c->PreDraw(); }	// 全コンポーネント描画前
-	void Draw2D() { for (auto& c : components_)c->Draw2D(); }		// 全コンポーネント2D描画
-	void Draw3D() { for (auto& c : components_)c->Draw3D(); }		// 全コンポーネント3D描画
+	void Draw2D() { for (auto& c : components_)c->Draw2D(); }	// 全コンポーネント2D描画
+	void Draw3D() { for (auto& c : components_)c->Draw3D(); }	// 全コンポーネント3D描画
 
 	// タグと優先度をセット
 	void SetTagAndPriority(Tag tag) { tag_ = tag, priority_ = static_cast<int>(tag); }
 	// タグを渡す
-	Tag GetTag() const { return tag_; }
+	Tag GetTag(void) const { return tag_; }
 
 	// 描画優先度を渡す
 	int GetPriority(void) { return priority_; }
 
 private:
+
 	// このオブジェクトが持つコンポーネント
 	std::vector<std::unique_ptr<Component>> components_;
 
+	// 優先度
 	int priority_ = 0;
 
+	// オブジェクトタグ
 	Tag tag_ = Tag::None;
 };
