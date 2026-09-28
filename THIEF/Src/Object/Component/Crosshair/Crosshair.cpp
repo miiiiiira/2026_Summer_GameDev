@@ -45,9 +45,3 @@ void Crosshair::Draw2D(void)
 		img[type_] ,
 		true);
 }
-
-void Crosshair::ChangeCrosshair(const CROSSHAIR_TYPE type)
-{
-	// í—Ş‚ğ•ÏX
-	type_ = type;
-}

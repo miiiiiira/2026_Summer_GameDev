@@ -16,9 +16,11 @@ class Crosshair : public Component
 {
 public:
 
-	// パッド時の場合
-	static constexpr int CONTROLLER_GRAB_SCREEN_RANGE = 200;	// スクリーンの中心位置からの掴み可能な範囲の直径
-	static constexpr int CONTROLLER_GRAB_SCREEN_RANGE_RAD = CONTROLLER_GRAB_SCREEN_RANGE / 2;	// スクリーンの中心位置からの掴み可能な範囲の半径
+	// スクリーンの中心位置からの掴み可能な範囲の直径
+	static constexpr int CONTROLLER_GRAB_SCREEN_RANGE = 200;	
+
+	// スクリーンの中心位置からの掴み可能な範囲の半径
+	static constexpr int CONTROLLER_GRAB_SCREEN_RANGE_RAD = CONTROLLER_GRAB_SCREEN_RANGE / 2;	
 
 public:
 
@@ -28,12 +30,17 @@ public:
 	void Init(void)override;	// 初期化
 	void Draw2D(void)override;	// 描画
 
-	void ChangeCrosshair(const CROSSHAIR_TYPE type);	// クロスヘアの種類を変更
+public:
+
+	// クロスヘアの種類を変更
+	void ChangeCrosshair(const CROSSHAIR_TYPE type) { type_ = type; }
 
 private:
 
-	int img[CROSSHAIR_TYPE::CROSSHAIR_MAX];	// 画像ハンドル
+	// 画像ハンドル
+	int img[CROSSHAIR_TYPE::CROSSHAIR_MAX];	
 	
-	CROSSHAIR_TYPE type_;	// 表示中の種類
+	// 表示中の種類
+	CROSSHAIR_TYPE type_ = CROSSHAIR_NOT_GRAB;
 };
 
