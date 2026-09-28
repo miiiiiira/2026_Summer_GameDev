@@ -38,10 +38,10 @@ void Crosshair::Draw2D(void)
 
 	// 画面の中心位置にクロスヘアを描画
 	DrawRotaGraph(
-		Application::SCREEN_SIZE_X / 2, 
+		Application::SCREEN_SIZE_X / 2,
 		Application::SCREEN_SIZE_Y / 2,
 		1.0,
-		0.0, 
-		img[type_] ,
+		0.0,
+		img[type_],
 		true);
 }
