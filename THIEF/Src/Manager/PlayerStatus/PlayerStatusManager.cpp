@@ -26,43 +26,6 @@ void PlayerStatusManager::ResetStatus()
 	status_.rangeMax_ = DEFAULT_RENGE;
 }
 
-void PlayerStatusManager::ResetHP(void)
-{
-	// HPの初期化
-	status_.hp_ = status_.hpMax_;
-}
-
-void PlayerStatusManager::HpUp(int upNum)
-{
-	// HPの最大値を上げる
-	status_.hp_ += upNum;
-	status_.hpMax_ += upNum;
-}
-
-void PlayerStatusManager::StaminaUp(float upNum)
-{
-	// スタミナの最大値を上げる
-	status_.staminaMax_ += upNum;
-}
-
-void PlayerStatusManager::DashSpeedUp(float upNum)
-{
-	// ダッシュ時のスピードを上げる
-	status_.dashMoveSpeed_ += upNum;
-}
-
-void PlayerStatusManager::RangeUp(float upNum)
-{
-	// 掴みの範囲を大きくする
-	status_.rangeMax_ += upNum;
-}
-
-void PlayerStatusManager::JumpNumUp(int upNum)
-{
-	// ジャンプの最大値を上げる
-	status_.jumpNumMax_ += upNum;
-}
-
 void PlayerStatusManager::HealHp(int upNum)
 {
 	// HPを回復する
@@ -73,12 +36,6 @@ void PlayerStatusManager::HealHp(int upNum)
 	{
 		status_.hp_ = status_.hpMax_;
 	}
-}
-
-void PlayerStatusManager::SetHp(int hp)
-{
-	// HPを保持させておく
-	status_.hp_ = hp;
 }
 
 PlayerStatusManager::PlayerStatusManager(void)
