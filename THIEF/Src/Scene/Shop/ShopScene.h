@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../SceneBase.h"
 
 class ShopScene : public SceneBase
