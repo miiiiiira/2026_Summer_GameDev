@@ -1,23 +1,10 @@
 #include <EffekseerForDXLib.h>
 #include "../../Application.h"
+
 #include "EffectResManager.h"
 
 // 中身をnullptrで初期化
 EffectResManager* EffectResManager::instance_ = nullptr;
-
-void EffectResManager::CreateInstance(void)
-{
-	if (instance_ == nullptr)
-	{
-		// 中身がnullptrで何も入っていなかったら行う
-		instance_ = new EffectResManager();
-	}
-}
-
-EffectResManager& EffectResManager::GetInstance(void)
-{
-	return *instance_;
-}
 
 void EffectResManager::Destroy(void)
 {
@@ -35,7 +22,6 @@ void EffectResManager::Destroy(void)
 	// インスタンスのメモリ解放
 	delete instance_;
 	instance_ = nullptr;
-
 }
 
 int EffectResManager::GetResourceId(TYPE type)
@@ -52,14 +38,16 @@ int EffectResManager::GetResourceId(TYPE type)
 
 int EffectResManager::PlayEffect(float scale, VECTOR dir, VECTOR pos, EffectResManager::TYPE effectType)
 {
-
 	// エフェクトの再生
-	int resId = EffectResManager::GetInstance().GetResourceId(effectType);
+	int resId = EffectResManager::GetInstance()->GetResourceId(effectType);
 	int effectPlayId = PlayEffekseer3DEffect(resId);
 
 	// エフェクトの大きさ
 	SetScalePlayingEffekseer3DEffect(
-		effectPlayId, scale, scale, scale);
+		effectPlayId,
+		scale,
+		scale,
+		scale);
 
 	// エフェクトの回転
 	// 方向から角度を出す
@@ -76,16 +64,26 @@ int EffectResManager::PlayEffect(float scale, VECTOR dir, VECTOR pos, EffectResM
 	angle.z = 0.0f;
 
 	SetRotationPlayingEffekseer3DEffect(
-		effectPlayId, -angle.x, angle.y, angle.z);
+		effectPlayId,
+		-angle.x,
+		angle.y,
+		angle.z);
 
 	// エフェクトの位置
 	SetPosPlayingEffekseer3DEffect(
-		effectPlayId, pos.x, pos.y, pos.z);
+		effectPlayId, 
+		pos.x,
+		pos.y,
+		pos.z);
 
 	return effectPlayId;
 }
 
 EffectResManager::EffectResManager(void)
+{
+}
+
+EffectResManager::~EffectResManager(void)
 {
 }
 

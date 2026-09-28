@@ -140,7 +140,7 @@ void TutorialScene::LoadEnd(void)
 	Init();
 
 	// エフェクシアが非同期ロードに対応していないためここでロード
-	EffectResManager::GetInstance().Load();
+	EffectResManager::GetInstance()->Load();
 
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 	// スコアマネージャーに空のベクターを渡す(チュートリアルの場合納品金額が1円になる)
@@ -294,7 +294,7 @@ void TutorialScene::Release(void)
 	}
 
 	// エフェクト管理解放
-	EffectResManager::GetInstance().Destroy();
+	EffectResManager::GetInstance()->Destroy();
 
 	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::GAME);
 }

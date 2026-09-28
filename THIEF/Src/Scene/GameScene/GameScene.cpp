@@ -123,7 +123,7 @@ void GameScene::LoadEnd(void)
 	Init();
 
 	// エフェクシアが非同期ロードに対応していないためここでロード
-	EffectResManager::GetInstance().Load();
+	EffectResManager::GetInstance()->Load();
 
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 	// スコアマネージャーにアイテムたちを渡す
@@ -226,7 +226,7 @@ void GameScene::Release(void)
 	delete objectManger_;
 
 	// エフェクト管理解放
-	EffectResManager::GetInstance().Destroy();
+	EffectResManager::GetInstance()->Destroy();
 
 	// 音の解放
 	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::GAME);

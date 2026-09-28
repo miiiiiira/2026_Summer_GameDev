@@ -37,7 +37,7 @@ void Potion::SetParam(void)
 void Potion::Break(void)
 {
 	// 破壊エフェクトを再生
-	EffectResManager::GetInstance().PlayEffect(
+	EffectResManager::GetInstance()->PlayEffect(
 		1.0f,
 		{ 0.0f,0.0f, 0.0f }, 
 		trans_->pos_,
