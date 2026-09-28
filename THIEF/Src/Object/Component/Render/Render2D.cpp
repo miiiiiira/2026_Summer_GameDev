@@ -1,14 +1,16 @@
-#include "Render2D.h"
-#include "../../Object.h"
 #include <DxLib.h>
 
-void Render2D::Init()
+#include "../../Object.h"
+
+#include "Render2D.h"
+
+void Render2D::Init(void)
 {
 	// オーナーから位置情報を取得
 	transform_ = owner_->GetComponent<Transform2D>();
 }
 
-void Render2D::Draw2D()
+void Render2D::Draw2D(void)
 {
 	// ロードされていないなら
 	if (handle_ == -1) return;
@@ -22,8 +24,7 @@ void Render2D::Draw2D()
 		1.0f,
 		0.0f,
 		handle_,
-		true
-	);
+		true);
 }
 
 void Render2D::Release(void)

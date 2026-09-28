@@ -1,7 +1,8 @@
-#include "Render3D.h"
 #include <DxLib.h>
 
 #include "../../Object.h"
+
+#include "Render3D.h"
 
 void Render3D::Init(void)
 {
@@ -101,11 +102,6 @@ void Render3D::SetModelHandles(std::string path)
 	}
 }
 
-void Render3D::SetIsDraw(bool flg)
-{
-	isDraw_ = flg;
-}
-
 int Render3D::GetHandles(int index) const
 {
 	if (index >= 0 && index < handles_.size()) {
@@ -113,9 +109,4 @@ int Render3D::GetHandles(int index) const
 	}
 
 	return -1;
-}
-
-std::vector<int> Render3D::GetAllHandles(void) const
-{
-	return handles_;
 }
