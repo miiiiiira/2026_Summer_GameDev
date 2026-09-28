@@ -69,12 +69,12 @@ Map::~Map(void)
 	DeleteGraph(mapImg_);
 	DeleteGraph(playerImg_);
 
+	// 使い終わったらクリア
 	items_.clear();
 }
 
 void Map::Init(void)
 {
-	isDraw_ = false;
 }
 
 void Map::Update(void)
@@ -87,7 +87,6 @@ void Map::Update(void)
 	VECTOR plaPos = player->GetTransform()->pos_;
 	mapImgPosX_ = playerSpawnPosX + static_cast<int>((plaPos.x * 0.1f));
 	mapImgPosY_ = playerSpawnPosY - static_cast<int>((plaPos.z * 0.1f));
-
 }
 
 void Map::Draw2D(void)
@@ -144,6 +143,7 @@ void Map::Draw2D(void)
 		// プレイヤーの3D座標を2D座標に変換して移動分マップの位置を動かす
 		auto* player = owner_->GetComponent<PlayerController>();
 		VECTOR plaPos = player->GetTransform()->pos_;
+
 		// 実際のアイテムの座標とプレイヤーの座標でスケーリング(中心からの相対座標)
 		float localX = (item->GetTransform()->pos_.x - plaPos.x) * 0.1f;
 		float localZ = (-item->GetTransform()->pos_.z + plaPos.z) * 0.1f;
@@ -162,12 +162,15 @@ void Map::Draw2D(void)
 		case ITEM_SIZE::BIG:
 			size = BIG_RAD;
 			break;
+
 		case ITEM_SIZE::MEDIUM:
 			size = MEDIUM_RAD;
 			break;
+
 		case ITEM_SIZE::SMALL:
 			size = SMALL_RAD;
 			break;
+
 		default:
 			break;
 		}
@@ -181,13 +184,6 @@ void Map::Draw2D(void)
 
 	// 通常描画に戻す
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-
-}
-
-void Map::SetItems(std::vector<Item*> items)
-{
-	// アイテムたちのポインタを格納
-	items_ = items;
 }
 
 void Map::SetIsDraw(bool flg)
@@ -205,9 +201,4 @@ void Map::SetIsDraw(bool flg)
 		// マップ非表示音
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_MAP_CLOSE);
 	}
-}
-
-bool Map::GetIsDraw(void)
-{
-	return isDraw_;
 }
