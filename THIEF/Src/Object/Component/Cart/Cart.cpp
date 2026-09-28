@@ -25,9 +25,6 @@ void Cart::Init(void)
 	// モデルに座標を反映
 	MV1SetRotationXYZ(modelId_, trans_->angle_);
 
-	// 掴まれていない状態とする
-	isGrabbed_ = false;
-
 	// 衝突情報構築
 	// カート全体
 	MV1SetupCollInfo(modelId_, -1);
@@ -70,29 +67,6 @@ void Cart::Draw3D(void)
 #ifdef _DEBUG
 	DrawDebug();
 #endif // _DEBUG
-}
-
-Transform* Cart::GetTransform(void)
-{
-	return trans_;
-}
-
-void Cart::StartGrabbing(VECTOR localPos)
-{
-	// 掴まれた状態にする
-	isGrabbed_ = true;
-	localPos_ = localPos;
-}
-
-void Cart::EndGrabbed(void)
-{
-	// 掴まれていない状態にする
-	isGrabbed_ = false;
-}
-
-void Cart::SetLocalPos(VECTOR localPos)
-{
-	localPos_ = localPos;
 }
 
 void Cart::TrackingPlayer(void)

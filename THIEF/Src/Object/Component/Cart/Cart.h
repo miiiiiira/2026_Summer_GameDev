@@ -1,12 +1,11 @@
 #pragma once
 
-#include "../Component.h"
-
 #include <string>
 #include <vector>
 #include <DxLib.h>
 
-// 前方宣言
+#include "../Component.h"
+
 class Transform;
 
 class Cart : public Component
@@ -24,22 +23,22 @@ public:
 	void Update(void)override;	// 更新
 	void Draw3D(void) override;	// 描画
 
-	int GetModelId() const { return modelId_; }	// モデルIDを返す
+public:
 
-	Transform* GetTransform();	// Transformを返す
-	
-	void StartGrabbing(VECTOR localPos);	// 掴まれた状態にする
-	void EndGrabbed(void);					// 掴まれた状態を終了する
+	// モデルIDを返す
+	int GetModelId() const { return modelId_; }	
 
-	void SetLocalPos(VECTOR localPos);	// 相対座標を変更
+	// Transformを返す
+	Transform* GetTransform(void) { return trans_; }
 
-private:
+	// 掴まれた状態にする
+	void StartGrabbing(VECTOR localPos) { isGrabbed_ = true, localPos_ = localPos; }
 
-	void TrackingPlayer(void);	// プレイヤーの位置をみて移動処理を行う
+	// 掴まれた状態を終了する
+	void EndGrabbed(void) { isGrabbed_ = false; }
 
-	void ApplyGravity(void);	// 重力処理
-	
-	void DrawDebug(void);		// デバック用描画
+	// 相対座標を変更
+	void SetLocalPos(VECTOR localPos) { localPos_ = localPos; }
 
 private:
 	
@@ -47,21 +46,37 @@ private:
 	const float GRAVITY = -0.25f;	// 重力加速度
 	const float MAX_FALL = -10.0f;	// 最大落下速度
 
-	static constexpr float COEFFICIENT = 0.15f;	// 線形補間の係数
+	// 線形補間の係数
+	static constexpr float COEFFICIENT = 0.15f;	
 
 private:
 
-	Transform* trans_;	// Transform
+	// Transform
+	Transform* trans_ = nullptr;	
 
 private:
 
-	int modelId_ = -1;	// モデルID
+	// モデルID
+	int modelId_ = -1;
 
-	float velocityY_ = 0.0f;	// 実際にかかる重力
+	// 実際にかかる重力
+	float velocityY_ = 0.0f;	
 
-	VECTOR localPos_;	// プレイヤーとのローカル座標
+	// プレイヤーとのローカル座標
+	VECTOR localPos_ = { 0.0f,0.0f,0.0f };
 
 	// 掴まれているか　true / 掴まれている, false / 掴まれていない
-	bool isGrabbed_;
+	bool isGrabbed_ = false;
+
+private:
+
+	// プレイヤーの位置をみて移動処理を行う
+	void TrackingPlayer(void);
+
+	// 重力処理
+	void ApplyGravity(void);
+
+	// デバック用描画
+	void DrawDebug(void);
 };
 
