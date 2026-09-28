@@ -16,8 +16,6 @@ GameOver::GameOver(void)
 {
 	// マウスの表示する
 	MouseCursor::GetInstance()->SetMouseDraw(true);
-
-
 }
 
 GameOver::~GameOver(void)
@@ -75,15 +73,19 @@ void GameOver::Update(void)
 	case GameOver::STATE::NONE:
 		UpdateNone();
 		break;
+
 	case GameOver::STATE::SHAKE:
 		UpdateShake();
 		break;
+
 	case GameOver::STATE::CRACK:
 		UpdateCrack();
 		break;
+
 	case GameOver::STATE::SELECT:
 		UpdateSelect();
 		break;
+
 	default:
 		break;
 	}
@@ -97,16 +99,14 @@ void GameOver::Draw(void)
 	{
 	case GameOver::STATE::NONE:
 	case GameOver::STATE::SHAKE:
-
 		// ヒットストップカウンタが0じゃない場合に揺らし量を計算
 		GetShakeOffset(shake);
 		// 画像の描画
 		DrawGraph(shake, shake, handle_, true);
-
 		break;
+
 	case GameOver::STATE::CRACK:
 	case GameOver::STATE::SELECT:
-
 		// ひび割れ画像の描画
 		DrawGraph(0, 0, crackHandle_, true);
 
@@ -125,8 +125,8 @@ void GameOver::Draw(void)
 
 		// アルファ値を元に戻す
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-
 		break;
+
 	default:
 		break;
 	}
@@ -138,11 +138,12 @@ void GameOver::Release(void)
 	// 画像の解放
 	DeleteGraph(handle_);
 	DeleteGraph(crackHandle_);
-
 	for (const auto& button : buttons_)
 	{
 		DeleteGraph(button.graphHandle);
 	}
+
+	// 使い終わったらクリア
 	buttons_.clear();
 
 	// サウンドの解放
@@ -176,6 +177,7 @@ void GameOver::SelectUpdate(void)
 
 void GameOver::MouseSelect(void)
 {
+	// いったんNONで初期化
 	TYPE nextType = TYPE::NONE;
 
 	// 衝突判定
@@ -200,31 +202,28 @@ void GameOver::PadSelect(void)
 	switch (currentType_)
 	{
 	case GameOver::RETRY:
-
 		// 下ボタンを押されたら
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
 			// タイトルを選択
 			currentType_ = RETURN_TITLE;
 		}
-
 		break;
-	case GameOver::RETURN_TITLE:
 
+	case GameOver::RETURN_TITLE:
 		// 上ボタンを押されたら
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
 		{
 			// リトライを選択
 			currentType_ = RETRY;
 		}
-
 		break;
-	case GameOver::NONE:
 
+	case GameOver::NONE:
 		// リトライを選択
 		currentType_ = RETRY;
-
 		break;
+
 	default:
 		break;
 	}
@@ -249,6 +248,7 @@ void GameOver::GetShakeOffset(int& offset)
 
 void GameOver::ChangeState(STATE state)
 {
+	// 指定のステートをセット
 	state_ = state;
 
 	switch (state_)
@@ -256,15 +256,19 @@ void GameOver::ChangeState(STATE state)
 	case GameOver::STATE::NONE:
 		ChangeNone();
 		break;
+
 	case GameOver::STATE::SHAKE:
 		ChangeShake();
 		break;
+
 	case GameOver::STATE::CRACK:
 		ChangeCrack();
 		break;
+
 	case GameOver::STATE::SELECT:
 		ChangeSelect();
 		break;
+
 	default:
 		break;
 	}
@@ -370,7 +374,6 @@ void GameOver::UpdateSelect(void)
 		switch (currentType_)
 		{
 		case GameOver::RETRY:
-
 			// ノイズ
 			SceneManager::GetInstance()->GetShader()->
 							SetNoisePower(Shader::DEFAULT_NOISE_POWER);
@@ -384,15 +387,14 @@ void GameOver::UpdateSelect(void)
 			// ゲームシーンへ
 			SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameScene>(), GAME);
 			return;
-
 			break;
-		case GameOver::RETURN_TITLE:
 
+		case GameOver::RETURN_TITLE:
 			// タイトルシーンへ
 			SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(), TITLE);
 			return;
-
 			break;
+
 		default:
 			break;
 		}

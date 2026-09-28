@@ -11,6 +11,12 @@
 
 LightSelectScene::LightSelectScene(void)
 {
+	for (auto selectTypeTable : LightSelectTypeTable::Table)
+	{
+		selectTypeImg_[selectTypeTable.first] = -1;
+		selectTypeFrameImg_[selectTypeTable.first] = -1;
+	}
+
 	// マウスの表示
 	MouseCursor::GetInstance()->SetMouseDraw(true);
 }
