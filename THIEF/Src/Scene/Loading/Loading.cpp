@@ -1,8 +1,10 @@
 #include <DxLib.h>
+
 #include "../../Application.h"
+
 #include "Loading.h"
 
-Loading::Loading()
+Loading::Loading(void)
 {
 	// 画像ハンドルの初期化
 	for (int i = 0; i < static_cast<int>(NOW_TYPE::MAX); i++)
@@ -14,7 +16,7 @@ Loading::Loading()
 void Loading::Init(void)
 {
 	// 描画種類の初期化
-	nowType_ = Loading0;
+	nowType_ = LOADING_0;
 
 	// 最低描画時間の初期化
 	loadTimer_ = 0;
@@ -60,30 +62,26 @@ void Loading::Update(void)
 		{
 			switch (nowType_)
 			{
-			case Loading::Loading0:
-
+			case Loading::LOADING_0:
 				// 現在の種類を1へ
-				nowType_ = Loading1;
-
+				nowType_ = LOADING_1;
 				break;
-			case Loading::Loading1:
 
+			case Loading::LOADING_1:
 				// 現在の種類を2へ
-				nowType_ = Loading2;
-
+				nowType_ = LOADING_2;
 				break;
-			case Loading::Loading2:
 
+			case Loading::LOADING_2:
 				// 現在の種類を3へ
-				nowType_ = Loading3;
-
+				nowType_ = LOADING_3;
 				break;
-			case Loading::Loading3:
 
+			case Loading::LOADING_3:
 				// 現在の種類を0へ
-				nowType_ = Loading0;
-
+				nowType_ = LOADING_0;
 				break;
+
 			default:
 				break;
 			}
@@ -112,6 +110,7 @@ void Loading::Release(void)
 
 void Loading::StartAsyncLoad(void)
 {
+	// ロード中にする
 	isLoading_ = true;
 	// 非同期読み込み開始
 	SetUseASyncLoadFlag(true);
