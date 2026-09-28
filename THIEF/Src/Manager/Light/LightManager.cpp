@@ -12,16 +12,6 @@ void LightManager::ResetLight(void)
 	nowLightType_ = LIGHT_TYPE::COLOR_0;
 }
 
-LIGHT_TYPE LightManager::GetLightType(void)
-{
-	return nowLightType_;
-}
-
-void LightManager::SetLightType(LIGHT_TYPE lightType)
-{
-	nowLightType_ = lightType;
-}
-
 LightManager::LightManager(void)
 {
 	ResetLight();

@@ -59,7 +59,7 @@ void PlayerController::Init(void)
 	stageColl_ = owner_->GetComponent<StageCollider>();
 
 	// プレイヤーステータスマネージャー
-	auto status = PlayerStatusManager::GetInstance()->GetPlayerStatus();
+	auto& status = PlayerStatusManager::GetInstance()->GetPlayerStatus();
 
 	// 移動速度
 	info_.moveSpeed_ = DEFAULT_SPEED;

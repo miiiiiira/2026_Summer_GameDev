@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Component.h"
-#include <DxLib.h>
 #include <map>
+#include <DxLib.h>
+#include "../Component.h"
 #include "LightInfo.h"
 
 // 前方宣言
@@ -24,42 +24,33 @@ public:
 
 	Wisp(void);					// コンストラクタ
 	~Wisp(void) override;		// デストラクタ
-	
+
 	void Init(void)override;	// 初期化
 	void Update(void)override;	// 更新
 	void Draw3D(void)override;	// 描画
 
-	int GetWispModelId() const { return wispModelId_; }	// モデルIDを返す
+public:
 
-	void SetIsRangeMax(bool flg);	// 指定されたライト状態にする　true / ライトを付ける , false / ライトを消す
-	
-	bool GetIsRangeMax(void);	// ライトの状態を見る　true = 最大値にする処理が行われている / false = 最小値にする処理が行われている
+	// モデルIDを返す
+	int GetWispModelId() const { return wispModelId_; }
 
-	void ChangeLightTexture(LIGHT_TYPE lightType);	// 指定されたテクスチャ番号に変更(0を設定するとモデルについていた元の色へ戻す)
+	// 指定されたライト状態にする　true / ライトを付ける , false / ライトを消す
+	void SetIsRangeMax(bool flg) { isRangeMax_ = flg; }
 
-	void SetAnimation(ANIM anim);	// 指定されたアニメーションを再生する
+	// ライトの状態を見る　true / 最大値にする処理が行われている , false / 最小値にする処理が行われている
+	bool GetIsRangeMax(void) { return isRangeMax_; }
 
-private:
+	// 指定されたテクスチャ番号に変更(0を設定するとモデルについていた元の色へ戻す)
+	void ChangeLightTexture(LIGHT_TYPE lightType);
 
-	void UpdatePos(void);	// 座標更新処理
-	
-	void UpdateRange(void);	// 範囲更新処理
-
-	void LookPlayer(void);	// プレイヤー側を向く
-
-	void DebugDraw(void);	// デバッグ用の描画処理
+	// 指定されたアニメーションを再生する
+	void SetAnimation(ANIM anim);
 
 private:
-
-	// 初期座標
-	static constexpr VECTOR DEFAULT_POS = { 0.0f,0.0f,0.0f };
-
-	// 大きさ
-	static constexpr VECTOR SCALE = { 1.0f,1.0f,1.0f };
 
 	// ライトの範囲
-	static constexpr float POINTLIGHT_RANGE_MAX = 1850.0f;
-	static constexpr float POINTLIGHT_RANGE_MIN = 500.0f;
+	static constexpr float POINTLIGHT_RANGE_MAX = 1850.0f;	// 最大範囲
+	static constexpr float POINTLIGHT_RANGE_MIN = 500.0f;	// 最小範囲
 
 	// プレイヤーとライトの相対座標
 	static constexpr VECTOR REACH_DEFAULT_LIGHT = { -110.0f,-70.0f,220.0f };
@@ -81,26 +72,46 @@ private:
 	static constexpr VECTOR DEFAULT_LIGHT_COLOR = { 0xe0,0xe0,0xe0 };
 
 private:
-	
-	Transform* trans_;	// Transform
 
-	Animation* anim_;	// アニメーション
+	// Transform
+	Transform* trans_ = nullptr;
+
+	// アニメーション
+	Animation* anim_ = nullptr;
 
 private:
 
 	// ポイントライト
-	int pointLightHandle_ = -1;	// ハンドル
-	VECTOR pointPos_;			// 座標
-	float lightPow_;			// ライトの光量(小さいほど光量が増す)
-	float range_;				// ライトの範囲
-	bool isRangeMax_;			// 範囲設定を最大値にしているか　true / 最大値にする処理が行われる , false / 最小値にする処理が行われる
-	
+	int pointLightHandle_ = -1;				// ハンドル
+	VECTOR pointPos_ = { 0.0f,0.0f,0.0f };	// 座標
+	float lightPow_ = LIGHT_POW_MAX;;		// ライトの光量(小さいほど光量が増す)
+	float range_ = POINTLIGHT_RANGE_MAX;	// ライトの範囲
+	bool isRangeMax_ = true;				// 範囲設定を最大値にしているか　true / 最大値にする処理が行われる , false / 最小値にする処理が行われる
+
 	// wisp
-	int wispModelId_ = -1;					// モデルのハンドル
-	std::map<LIGHT_TYPE, int> textures_;	// テクスチャId
-	VECTOR scale_;							// モデルの大きさ
-	LIGHT_TYPE lightType_;					// 使用中のライトの種類
-	
-	bool isPushLight_;	// ライトを奥にしているか　true / 奥 , false / 手前
+	int wispModelId_ = -1;							// モデルのハンドル
+	std::map<LIGHT_TYPE, int> textures_;			// テクスチャId
+	VECTOR scale_ = { 1.0f,1.0f,1.0f };				// モデルの大きさ
+	LIGHT_TYPE lightType_ = LIGHT_TYPE::COLOR_0;	// 使用中のライトの種類
+
+	// ライトを奥にしているか　true / 奥 , false / 手前
+	bool isPushLight_ = false;
+
+private:
+
+	// 座標更新処理
+	void UpdatePos(void);
+
+	// 範囲更新処理
+	void UpdateRange(void);
+
+	// プレイヤー側を向く
+	void LookPlayer(void);
+
+	// ライトの色を変更できる(デバック時のみ)
+	void DebugLightColorChange(void);
+
+	// デバッグ用の描画処理
+	void DebugDraw(void);
 };
 

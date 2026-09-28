@@ -12,17 +12,10 @@
 
 Wisp::Wisp(void)
 {
-	// ライトの範囲初期化
-	range_ = POINTLIGHT_RANGE_MAX;
-	// 最大値とする
-	isRangeMax_ = true;
-
-	// ライトの光量初期化
-	lightPow_ = LIGHT_POW_MAX;
-
 	// 追加ポイントライト
 	pointLightHandle_ = CreatePointLightHandle(
-		{ 0.0f, 0.0f, 0.0f }, range_,
+		{ 0.0f, 0.0f, 0.0f },
+		range_,
 		ATTEN_0,
 		lightPow_,
 		ATTEN_2
@@ -41,9 +34,6 @@ Wisp::Wisp(void)
 	{
 		textures_.emplace(table.first, LoadGraph(table.second.path.c_str()));
 	}
-
-	// ライトセレクトシーンで選択されたライトのタイプを取得
-	lightType_ = LightManager::GetInstance()->GetLightType();
 }
 
 Wisp::~Wisp(void)
@@ -62,12 +52,6 @@ Wisp::~Wisp(void)
 
 void Wisp::Init(void)
 {
-	// 座標を初期化
-	pointPos_ = DEFAULT_POS;
-
-	// 大きさの初期化
-	scale_ = SCALE;
-
 	// オーナーから3D描画コンポーネントを取得
 	auto render = owner_->GetComponent<Render3D>();
 	if (!render) return;
@@ -97,8 +81,8 @@ void Wisp::Init(void)
 	// 衝突情報構築
 	MV1SetupCollInfo(wispModelId_, -1);
 
-	// ライトを手前に初期化
-	isPushLight_ = false;
+	// ライトセレクトシーンで選択されたライトのタイプを取得
+	lightType_ = LightManager::GetInstance()->GetLightType();
 
 	// 設定されているライトの種類を適用
 	ChangeLightTexture(lightType_);
@@ -112,64 +96,8 @@ void Wisp::Update(void)
 	// ライトの範囲を更新
 	UpdateRange();
 
-#ifdef _DEBUG
-
-	// カラーチェンジ　Hキー
-	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::COLOR_CHANGE))
-	{
-		switch (lightType_)
-		{
-		case COLOR_0:
-			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_1);
-			break;
-		case COLOR_1:
-			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_2);
-			break;
-		case COLOR_2:
-			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_3);
-			break;
-		case COLOR_3:
-			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_4);
-			break;
-		case COLOR_4:
-			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_5);
-			break;
-		case COLOR_5:
-			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_6);
-			break;
-		case COLOR_6:
-			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_7);
-			break;
-		case COLOR_7:
-			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_8);
-			break;
-		case COLOR_8:
-			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_9);
-			break;
-		case COLOR_9:
-			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_10);
-			break;
-		case COLOR_10:
-			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_11);
-			break;
-		case COLOR_11:
-			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_12);
-			break;
-		case COLOR_12:
-			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_0);
-			break;
-		default:
-			break;
-		}
-
-	}
-#endif // _DEBUG
-
-	// ライトの設定に変更があったら設定し直し
-	if (LightManager::GetInstance()->GetLightType() != lightType_)
-	{
-		ChangeLightTexture(LightManager::GetInstance()->GetLightType());
-	}
+	// ライトの色を変更できる(デバック時のみ)
+	DebugLightColorChange();
 }
 
 void Wisp::Draw3D(void)
@@ -180,16 +108,6 @@ void Wisp::Draw3D(void)
 	DebugDraw();
 
 #endif // _DEBUG
-}
-
-void Wisp::SetIsRangeMax(bool flg)
-{
-	isRangeMax_ = flg;
-}
-
-bool Wisp::GetIsRangeMax(void)
-{
-	return isRangeMax_;
 }
 
 void Wisp::ChangeLightTexture(LIGHT_TYPE lightType)
@@ -204,7 +122,8 @@ void Wisp::ChangeLightTexture(LIGHT_TYPE lightType)
 		MV1SetTextureGraphHandle(wispModelId_, 0, -1, false);
 
 		// ライトの色をデフォルトに戻す
-		SetLightDifColorHandle(pointLightHandle_, 
+		SetLightDifColorHandle(
+			pointLightHandle_, 
 			GetColorF(
 				DEFAULT_LIGHT_COLOR.x / 255.0f,
 				DEFAULT_LIGHT_COLOR.y / 255.0f, 
@@ -218,9 +137,15 @@ void Wisp::ChangeLightTexture(LIGHT_TYPE lightType)
 	auto lightData = LightTable::Table.find(lightType_);
 
 	// テクスチャを変更
-	MV1SetTextureGraphHandle(wispModelId_, 0, textures_.find(lightType)->second, false);
+	MV1SetTextureGraphHandle(
+		wispModelId_,
+		0, 
+		textures_.find(lightType)->second, 
+		false);
+
 	// ライトの色を変更
-	SetLightDifColorHandle(pointLightHandle_,
+	SetLightDifColorHandle(
+		pointLightHandle_,
 		GetColorF(
 			lightData->second.color.x / 255.0f,
 			lightData->second.color.y / 255.0f,
@@ -239,6 +164,7 @@ void Wisp::SetAnimation(ANIM anim)
 		MV1SetShapeRate(wispModelId_, 2, 0.0f);
 		MV1SetShapeRate(wispModelId_, 3, 0.0f);
 		break;
+
 	case Wisp::ANIM::SMALL:
 		anim_->Play((int)ANIM::SMALL);
 		
@@ -246,6 +172,7 @@ void Wisp::SetAnimation(ANIM anim)
 		MV1SetShapeRate(wispModelId_, 2, 1.0f);
 		MV1SetShapeRate(wispModelId_, 3, 1.0f);
 		break;
+
 	default:
 		break;
 	}
@@ -398,6 +325,68 @@ void Wisp::LookPlayer(void)
 
 	// モデルに向きを設定
 	MV1SetRotationXYZ(wispModelId_, trans_->angle_);
+}
+
+void Wisp::DebugLightColorChange(void)
+{
+#ifdef _DEBUG
+
+	// カラーチェンジ　Hキー
+	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::COLOR_CHANGE))
+	{
+		switch (lightType_)
+		{
+		case COLOR_0:
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_1);
+			break;
+		case COLOR_1:
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_2);
+			break;
+		case COLOR_2:
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_3);
+			break;
+		case COLOR_3:
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_4);
+			break;
+		case COLOR_4:
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_5);
+			break;
+		case COLOR_5:
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_6);
+			break;
+		case COLOR_6:
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_7);
+			break;
+		case COLOR_7:
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_8);
+			break;
+		case COLOR_8:
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_9);
+			break;
+		case COLOR_9:
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_10);
+			break;
+		case COLOR_10:
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_11);
+			break;
+		case COLOR_11:
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_12);
+			break;
+		case COLOR_12:
+			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_0);
+			break;
+		default:
+			break;
+		}
+
+	}
+
+	// ライトの設定に変更があったら設定し直し
+	if (LightManager::GetInstance()->GetLightType() != lightType_)
+	{
+		ChangeLightTexture(LightManager::GetInstance()->GetLightType());
+	}
+#endif // _DEBUG
 }
 
 void Wisp::DebugDraw(void)
