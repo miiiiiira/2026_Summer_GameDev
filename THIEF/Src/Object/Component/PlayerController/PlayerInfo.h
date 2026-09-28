@@ -1,7 +1,7 @@
 #pragma once
 #include <DxLib.h>
 
-class PlayerController; // 前方宣言
+class PlayerController;
 
 // 状態関数型
 typedef void(*playerStateFunction)(PlayerController&);
@@ -20,6 +20,7 @@ enum PLAYER_STATE
 	PLAYER_STATE_MAX
 };
 
+// 掴み状態
 enum GRABBING_STATE
 {
 	NOT_GRABBING,	// 掴もうとしてない
@@ -52,25 +53,31 @@ struct playerGrabStateCtrl
 
 struct playerInfo
 {
-	float velocityY_ = 0.0f;	// 現在の落下速度
+	// 現在の落下速度
+	float velocityY_ = 0.0f;		
 
-	VECTOR moveDir_ = {};	// 移動方向
-	float moveSpeed_ = 0;	// 移動速度
+	// 移動方向
+	VECTOR moveDir_ = {};			
+	
+	// パラメータ設定変数
+	int hp_ = 0;				// 今現在のHP
+	int jumpNum_ = 0;			// ジャンプ数
+	float stamina_ = 0.0f;		// 今現在のスタミナ
+	float moveSpeed_ = 0.0f;	// 移動速度
+	float range_ = 0.0f;		// 実際に持っている掴み距離
 
-	int hp_;	// 今現在のHP
+	// 無敵時間
+	int invincibleTime_ = 0;		
+	
+	// スタミナを回復させるまでの時間カウンタ
+	int staminaCounter_ = 0;
 
-	int invincibleTime_ = 0;	// 無敵時間
+	// スライディング可能時間
+	int slidingInputBufferTime = 0;
 
-	float stamina_;				// 今現在のスタミナ
-	int staminaCounter_ = 0;	// スタミナを回復させるまでの時間カウンタ
+	// 足音を連続再生するインターバル
+	int moveSoundInterval_ = 0;
 
-	int slidingInputBufferTime = 0;	// スライディング可能時間
-
-	int jumpNum_ = 0;	// ジャンプ数
-
-	float range_;		// 実際に持っている掴み距離
-
-	int moveSoundInterval_ = 0;	// 足音を連続再生するインターバル
-
-	int hitStopCounter_ = 0;			// ヒットストップ用のカウンター
+	// ヒットストップ用のカウンター
+	int hitStopCounter_ = 0;
 };

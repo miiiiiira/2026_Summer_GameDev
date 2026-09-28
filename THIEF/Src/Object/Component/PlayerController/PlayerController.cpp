@@ -1,8 +1,5 @@
-#include "PlayerController.h"
-
 #include "../../../Application.h"
 #include "../../Object.h"
-
 #include "../../../Manager/Input/InputManager.h"
 #include "../../../Manager/PlayerStatus/PlayerStatusManager.h"
 #include "../../../Manager/PlayerActionCounter/PlayerActionCounter.h"
@@ -11,7 +8,6 @@
 #include "../../../Common/Transform/MatrixUtility.h"
 #include "../../../Common/CameraUtility/CameraUtility.h"
 #include "../../../Common/Shader/Shader.h"
-
 #include "../Transform/Transform.h"
 #include "../Collider/StageCollider/StageCollider.h"
 #include "../Animation/Animation.h"
@@ -20,9 +16,10 @@
 #include "../Cart/Cart.h"
 #include "../Effect/FlashEffect.h"
 #include "Map/Map.h"
-
 #include "../../../Scene/SceneManager.h"
 #include "../../../Scene/Tutorial/TutorialScene.h"
+
+#include "PlayerController.h"
 
 PlayerController::PlayerController(void)
 {
@@ -150,70 +147,18 @@ void PlayerController::Draw2D()
 
 }
 
-Transform* PlayerController::GetTransform()
-{
-	return transform_;
-}
-
-CapsuleCollider* PlayerController::GetCapsule(void)
-{
-	return capColl_;
-}
-
-PLAYER_STATE PlayerController::GetState(void)
-{
-	return stateCtrl_.state_;
-}
-
-GRABBING_STATE PlayerController::GetGrabbingState(void)
-{
-	return grabStateCtrl_.state_;
-}
-
-float PlayerController::GetMoveSpeed(void)
-{
-	return info_.moveSpeed_;
-}
-
-int PlayerController::GetInvincibleTime(void)
-{
-	return info_.invincibleTime_;
-}
-
-VECTOR PlayerController::GetLineStartPos(void)
-{
-	// カメラの位置をラインの初め座標とする
-	return CameraUtility::GetCameraPos();
-}
-
 VECTOR PlayerController::GetLineEndPos(void)
 {
+	// 掴みの最長距離を取得
+	float rangeMax = PlayerStatusManager::GetInstance()->GetPlayerStatus().rangeMax_;
+
 	// 相対座標
-	VECTOR LOCAL_POS =
-	{ 0.0f,0.0f, PlayerStatusManager::GetInstance()->GetPlayerStatus().rangeMax_ };
+	VECTOR LOCAL_POS = { 0.0f,0.0f, rangeMax };
 
 	// 座標に反映
 	VECTOR downPos = CameraUtility::AddCameraPosLocalPos(LOCAL_POS);
 
 	return downPos;
-}
-
-void PlayerController::SetWisp(Wisp* wisp)
-{
-	// ランタンクラスのポインタを設定
-	wisp_ = wisp;
-}
-
-void PlayerController::SetGrabObject(Item* item)
-{
-	// アイテムクラスのポインタを設定
-	grabObject_ = item;
-}
-
-void PlayerController::SetGrabObject(Cart* cart)
-{
-	// カートクラスのポインタを設定
-	grabObject_ = cart;
 }
 
 void PlayerController::StartGrabbing(float range)
@@ -279,6 +224,7 @@ void PlayerController::SetHitReact(VECTOR moveDir, float moveSpeed, float jumpPo
 	// 指定されたジャンプ力を設定
 	info_.velocityY_ = jumpPow;
 
+	// 当たった状態へ
 	ChangeState(PLAYER_STATE_HIT_REACT);
 }
 
@@ -354,7 +300,6 @@ void PlayerController::IsGrabbingUpdate(PlayerController& player)
 		}
 	}
 
-
 	// 中身が空では無かったら(アイテム)
 	if (player.GetGrabItem())
 	{
@@ -389,22 +334,7 @@ void PlayerController::IsGrabbingUpdate(PlayerController& player)
 			player.grabObject_ = std::monostate{};
 			return;
 		}
-
-		// カートとの距離を計算
-		/*auto capdistance =
-			VSize(VSub(player.owner_->GetComponent<CapsuleCollider>()->GetStart(),
-				player.owner_->GetComponent<CapsuleCollider>()->GetEnd()));
-
-		capdistance += (player.owner_->GetComponent<CapsuleCollider>()->GetRadius() + 5.0f);
-
-		player.GetGrabCart()->SetLocalPos({ 0.0f,capdistance ,CART_DISTANCE });*/
 	}
-}
-
-void PlayerController::ChangeGrabState(GRABBING_STATE state)
-{
-	// 指定されたステートへ変更
-	grabStateCtrl_.state_ = state;
 }
 
 void PlayerController::StateUpdate(void)
@@ -448,7 +378,8 @@ void PlayerController::MoveInit(PlayerController& player)
 void PlayerController::DashInit(PlayerController& player)
 {
 	// プレイヤーの移動速度をダッシュの移動速度にする
-	player.info_.moveSpeed_ = PlayerStatusManager::GetInstance()->GetPlayerStatus().dashMoveSpeed_;
+	player.info_.moveSpeed_ =
+		PlayerStatusManager::GetInstance()->GetPlayerStatus().dashMoveSpeed_;
 }
 
 void PlayerController::CrouchingInit(PlayerController& player)
@@ -520,6 +451,7 @@ void PlayerController::HitReactInit(PlayerController& player)
 
 void PlayerController::DeadInit(PlayerController& player)
 {
+	// ゲームオーバーへ
 	SceneManager::GetInstance()->TrueGameOver();
 }
 
@@ -785,7 +717,8 @@ void PlayerController::ApplyGravity()
 void PlayerController::HealStamina(void)
 {
 	// スタミナの最大値を取得
-	float staminaMax = PlayerStatusManager::GetInstance()->GetPlayerStatus().staminaMax_;
+	float staminaMax = 
+		PlayerStatusManager::GetInstance()->GetPlayerStatus().staminaMax_;
 
 	// スタミナがMaxだったら処理を飛ばす
 	if (info_.stamina_ >= staminaMax)return;
@@ -839,7 +772,8 @@ void PlayerController::Jump(void)
 bool PlayerController::RangeUpdate(void)
 {
 	// 掴む距離の最大値を取得
-	float rangeMax = PlayerStatusManager::GetInstance()->GetPlayerStatus().rangeMax_;
+	float rangeMax = 
+		PlayerStatusManager::GetInstance()->GetPlayerStatus().rangeMax_;
 
 	// 物との距離を大きくする操作が行われていたら
 	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::ITEM_PUSH))
@@ -1047,13 +981,26 @@ void PlayerController::IsReachedDeadPos(void)
 
 void PlayerController::DrawHP(void)
 {
-	int HPWidth = GetDrawStringWidthToHandle("HP: ", 4, Application::GetInstance()->GetFont(FONT_SIZE_20));
-	int playerHpWidth = GetDrawFormatStringWidthToHandle(Application::GetInstance()->GetFont(FONT_SIZE_30), "%d", info_.hp_);
+	// 指定フォントでの文字の横幅を取得
+	int HPWidth = 
+		GetDrawStringWidthToHandle(
+			"HP: ", 
+			4, 
+			Application::GetInstance()->GetFont(FONT_SIZE_20));
+	int playerHpWidth = 
+		GetDrawFormatStringWidthToHandle(
+			Application::GetInstance()->GetFont(FONT_SIZE_30),
+			"%d",
+			info_.hp_);
 
 	// HPの表示
-	DrawStringToHandle(STATUS_DRAW_POS_X, HP_DRAW_POS_Y, "HP:", 0x00fa9a, Application::GetInstance()->GetFont(FONT_SIZE_20));
+	DrawStringToHandle(
+		STATUS_DRAW_POS_X,
+		HP_DRAW_POS_Y, 
+		"HP:", 0x00fa9a,
+		Application::GetInstance()->GetFont(FONT_SIZE_20));
 
-	// ヒットストップカウンタが0じゃない場合
+	// ヒットストップカウンタが0じゃない場合(ダメージを受けている状態)
 	if (info_.hitStopCounter_ > 0)
 	{
 		int shake = 0;
@@ -1093,8 +1040,17 @@ void PlayerController::DrawHP(void)
 
 void PlayerController::DrawStamina(void)
 {
-	int STAMINAWidth = GetDrawStringWidthToHandle("STAMINA: ", 9, Application::GetInstance()->GetFont(FONT_SIZE_20));
-	int playerStaminaWidth = GetDrawFormatStringWidthToHandle(Application::GetInstance()->GetFont(FONT_SIZE_30), "%.f", info_.stamina_);
+	// 指定フォントでの文字の横幅を取得
+	int STAMINAWidth = 
+		GetDrawStringWidthToHandle(
+			"STAMINA: ",
+			9, 
+			Application::GetInstance()->GetFont(FONT_SIZE_20));
+	int playerStaminaWidth = 
+		GetDrawFormatStringWidthToHandle(
+			Application::GetInstance()->GetFont(FONT_SIZE_30),
+			"%.f",
+			info_.stamina_);
 
 	// STAMINAの表示
 	DrawStringToHandle(
@@ -1125,9 +1081,13 @@ void PlayerController::DrawStamina(void)
 
 void PlayerController::DebugDraw(void)
 {
-	DrawFormatString(20,
+	// プレイヤー座標表示
+	DrawFormatString(
+		20,
 		300,
 		0xff0000,
 		"プレイヤー座標 : %.f,%.f,%.f",
-		transform_->pos_.x, transform_->pos_.y, transform_->pos_.z);
+		transform_->pos_.x,
+		transform_->pos_.y,
+		transform_->pos_.z);
 }
