@@ -43,11 +43,21 @@ public:
 	// ダメージ時のビネットの鋭さ
 	static constexpr float DAMAGE_VIGNETTE_POWER = 0.7f;
 
+	// メニュー・UI画面共通のシェーダ設定値
+	static constexpr float MENU_SCANLINE_INTENSITY = 0.5f;
+	static constexpr float MENU_GLITCH_AMOUNT = 0.005f;
+	static constexpr float MENU_CURVATURE_AMOUNT = 0.4f;
+	static constexpr float MENU_NOISE_POWER = 0.5f;
+	static constexpr float MENU_RGB_SHIFT = 0.004f;
 
+	// ゲームオーバー用の歪みの強さ
+	static constexpr float GAMEOVER_CURVATURE_AMOUNT = 0.1f;
+
+
+	Shader(void);				// コンストラクタ
+	~Shader(void);				// デストラクタ
 	void Init(void);			// 初期化
-
 	void Draw(int texture);		// 描画
-	
 	void Release(void);			// 解放
 
 	// パラメータ変更のセッター

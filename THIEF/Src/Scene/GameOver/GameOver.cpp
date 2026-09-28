@@ -33,11 +33,14 @@ void GameOver::Init(void)
 	ChangeState(STATE::NONE);
 
 	// ƒmƒCƒY
-	SceneManager::GetInstance()->GetShader()->SetNoisePower(0.5f);
+	SceneManager::GetInstance()->GetShader()->
+					SetNoisePower(Shader::MENU_NOISE_POWER);
 	// F‚¸‚ê
-	SceneManager::GetInstance()->GetShader()->SetRgbShift(0.004f);
+	SceneManager::GetInstance()->GetShader()->
+					SetRgbShift(Shader::MENU_RGB_SHIFT);
 	// ˜c‚Ý
-	SceneManager::GetInstance()->GetShader()->SetCurvatureAmount(0.1f);
+	SceneManager::GetInstance()->GetShader()->
+					SetCurvatureAmount(Shader::GAMEOVER_CURVATURE_AMOUNT);
 }
 
 void GameOver::Load(void)
@@ -369,11 +372,14 @@ void GameOver::UpdateSelect(void)
 		case GameOver::RETRY:
 
 			// ƒmƒCƒY
-			SceneManager::GetInstance()->GetShader()->SetNoisePower(0.1f);
+			SceneManager::GetInstance()->GetShader()->
+							SetNoisePower(Shader::DEFAULT_NOISE_POWER);
 			// F‚¸‚ê
-			SceneManager::GetInstance()->GetShader()->SetRgbShift(0.002f);
+			SceneManager::GetInstance()->GetShader()->
+							SetRgbShift(Shader::DEFAULT_RGB_SHIFT);
 			// ˜c‚Ý
-			SceneManager::GetInstance()->GetShader()->SetCurvatureAmount(0.01f);
+			SceneManager::GetInstance()->GetShader()->
+							SetCurvatureAmount(Shader::DEFAULT_CURVATURE_AMOUNT);
 
 			// ƒQ[ƒ€ƒV[ƒ“‚Ö
 			SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameScene>(), GAME);

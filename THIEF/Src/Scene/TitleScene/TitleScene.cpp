@@ -130,15 +130,19 @@ void TitleScene::Release(void)
 
 void TitleScene::ShaderInit(void)
 {
-
 	// 走査線
-	SceneManager::GetInstance()->GetShader()->SetScanlineIntensity(0.5f);
+	SceneManager::GetInstance()->GetShader()->
+					SetScanlineIntensity(Shader::MENU_SCANLINE_INTENSITY);
 	// グリッチ
-	SceneManager::GetInstance()->GetShader()->SetGlitchAmount(0.005f);
+	SceneManager::GetInstance()->GetShader()->
+					SetGlitchAmount(Shader::MENU_GLITCH_AMOUNT);
 	// 歪み
-	SceneManager::GetInstance()->GetShader()->SetCurvatureAmount(0.4f, false);
+	SceneManager::GetInstance()->GetShader()->
+					SetCurvatureAmount(Shader::MENU_CURVATURE_AMOUNT, false);
 	// ノイズ
-	SceneManager::GetInstance()->GetShader()->SetNoisePower(0.5f);
+	SceneManager::GetInstance()->GetShader()->
+					SetNoisePower(Shader::MENU_NOISE_POWER);
 	// 色ずれ
-	SceneManager::GetInstance()->GetShader()->SetRgbShift(0.004f);
+	SceneManager::GetInstance()->GetShader()->
+					SetRgbShift(Shader::MENU_RGB_SHIFT);
 }

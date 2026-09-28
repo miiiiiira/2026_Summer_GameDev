@@ -3,6 +3,14 @@
 
 #include "Shader.h"
 
+Shader::Shader(void)
+{
+}
+
+Shader::~Shader(void)
+{
+}
+
 void Shader::Init(void)
 {
 	// ピクセルシェーダーの読み込み
