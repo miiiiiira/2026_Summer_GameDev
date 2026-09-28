@@ -2,9 +2,10 @@
 
 namespace EnemyTable
 {
+	// 敵のデータテーブル
 	const std::unordered_map<ENEMY_TAG, EnemyData> Table =
 	{
-{
+		{
 			ENEMY_TAG::SKELETON,
 			{
 				"Data/Model/Enemy/Skeleton.mv1",

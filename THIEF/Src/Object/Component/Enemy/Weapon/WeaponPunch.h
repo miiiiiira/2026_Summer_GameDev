@@ -12,13 +12,15 @@ public:
 	// デストラクタ
 	~WeaponPunch(void);
 
-	void Update(void) override;
-	void Draw(void) override;
-	void Release(void) override;
+	void Update(void) override;		// 更新
+	void Draw(void) override;		// 描画
+	void Release(void) override;	// 解放
 
 	// 武器を使用する
 	void Use(VECTOR pos, VECTOR dir) override;
+
 protected:
+
 	// 画像やモデルなどのロード
 	void Load(void) override;
 
@@ -27,5 +29,6 @@ protected:
 
 private:
 
+	// 最大生存時間
 	static constexpr float MAX_ALIVE_COUNT = 0.5f;
 };

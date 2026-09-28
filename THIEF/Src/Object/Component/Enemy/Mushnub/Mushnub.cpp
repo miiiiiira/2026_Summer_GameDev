@@ -24,10 +24,10 @@ void Mushnub::Init(void)
 {
 	EnemyBase::Init();
 
-	anim_->Init();
+	animation_->Init();
 	for (int i = 0; i < static_cast<int>(ANIM_TYPE::MAX); i++)
 	{
-		anim_->AddInFbx(static_cast<int>(i), 0.2f, static_cast<int>(i));
+		animation_->AddInFbx(static_cast<int>(i), 0.2f, static_cast<int>(i));
 	}
 
 	const auto& data = EnemyTable::Table.at(ENEMY_TAG::MUSHNUB);
@@ -97,9 +97,9 @@ void Mushnub::Update(void)
 	}
 
 	// アニメーションの更新
-	if (anim_)
+	if (animation_)
 	{
-		anim_->Update();
+		animation_->Update();
 	}
 
 	// モデルの更新
@@ -145,7 +145,7 @@ void Mushnub::ChangeState(STATE state)
 void Mushnub::ChangeIdle(void)
 {
 	info_.step_ = 5.0f;
-	anim_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
+	animation_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
 }
 
 void Mushnub::ChangeSurprise(void)
@@ -153,13 +153,13 @@ void Mushnub::ChangeSurprise(void)
 	info_.step_ = 2.0f;
 	LookPlayer();
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_MUSHNUB, &transform_->pos_);
-	anim_->Play(static_cast<int>(ANIM_TYPE::HIT_REACT), false);
+	animation_->Play(static_cast<int>(ANIM_TYPE::HIT_REACT), false);
 }
 
 void Mushnub::ChangeChase(void)
 {
 	info_.moveSpeed_ = 3.0f;
-	anim_->Play(static_cast<int>(ANIM_TYPE::WALK), true);
+	animation_->Play(static_cast<int>(ANIM_TYPE::WALK), true);
 }
 
 void Mushnub::ChangeHit(void)
@@ -225,12 +225,12 @@ void Mushnub::UpdateChase(void)
 
 	if (enemyDist >= 200.0f * 200.0f)
 	{
-		anim_->Play(static_cast<int>(ANIM_TYPE::WALK), true);
+		animation_->Play(static_cast<int>(ANIM_TYPE::WALK), true);
 		Move();
 	}
 	else
 	{
-		anim_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
+		animation_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
 	}
 
 }

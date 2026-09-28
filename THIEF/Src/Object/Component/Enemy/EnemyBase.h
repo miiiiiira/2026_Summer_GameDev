@@ -3,9 +3,9 @@
 #include <string>
 #include <memory>
 #include <DxLib.h>
+
 #include "../Component.h"
 #include "EnemyCommon.h"
-
 
 // 前方宣言
 class Transform;
@@ -22,56 +22,71 @@ public:
 	
 	// コンストラクタ
 	EnemyBase(void);
+
 	// デストラクタ
 	virtual ~EnemyBase(void) override;
 
-	void Init(void) override;
-	void Update(void) override = 0;
-	void Draw3D(void) override;
-	void Draw2D(void) override;
+	void Init(void) override;			// 初期化
+	void Update(void) override = 0;		// 更新
+	void Draw3D(void) override;			// 3D描画
+	void Draw2D(void) override;			// 2D描画
 
-	// 初期データの読み込みとセット
-	void SetPathData(PlayerController* player, int stageId, std::shared_ptr<StagePathData> pathData);
+	// パスデータをセット
+	void SetPathData(PlayerController* player, int stageId, 
+							std::shared_ptr<StagePathData> pathData);
+
+	// 敵のデータをセット
 	void SetEnemyData(const EnemyData& data);
 
-	// ゲッター・セッター
+	// 生存しているかどうか
 	bool IsAlive(void) const{ return info_.isAlive_; }
 
-	Transform* GetTransform();	// Transformを返す
+	// Transformを返す
+	Transform* GetTransform(void) { return transform_; }
 
-	CapsuleCollider* GetCapsule(void);	// CapsuleColliderを返す
+	// CapsuleColliderを返す
+	CapsuleCollider* GetCapsule(void) { return capColl_; }
 
-	WeaponBase* GetWeapon(void);	// WeaponBaseを返す
+	// WeaponBaseを返す
+	WeaponBase* GetWeapon(void) { return useWeapon_; }
 
-	float GetAttackDamagePow(void) const;
-	float GetAttackMoveSpeed(void) const;
-	float GetAttackJumpPow(void) const;
+	// 攻撃力を返す
+	float GetAttackDamagePow(void) const { return info_.attackDamagePow_; }
 
-	ENEMY_TAG GetTag(void) const;
+	// 攻撃時の吹っ飛び移動速度を返す
+	float GetAttackMoveSpeed(void) const { return info_.attackMoveSpeed_; }
+
+	// 攻撃時の吹っ飛びジャンプ力を返す
+	float GetAttackJumpPow(void) const { return info_.attackJumpPow_; }
+
+	// タグを返す
+	ENEMY_TAG GetTag(void) const { return info_.tag_; }
 
 	// モデルIDを返す
 	int GetModelId() const { return info_.modelId_; }
 
+	// 座標をセットする
 	void SetPos(VECTOR pos);
 
 protected:
 
 	// コンポーネント保持用
-	Transform* transform_ = nullptr;
-	CapsuleCollider* capColl_ = nullptr;
-	StageCollider* stageColl_ = nullptr;
-	Animation* anim_ = nullptr;
+	Transform* transform_ = nullptr;		// Transformコンポーネント
+	CapsuleCollider* capColl_ = nullptr;	// CapsuleColliderコンポーネント
+	StageCollider* stageColl_ = nullptr;	// StageColliderコンポーネント
+	Animation* animation_ = nullptr;		// Animationコンポーネント
 
 	// 外部参照
-	PlayerController* player_ = nullptr;
-	WeaponBase* useWeapon_ = nullptr;
-	std::weak_ptr<StagePathData> pathData_ = {};
+	PlayerController* player_ = nullptr;			// プレイヤーのポインタ
+	WeaponBase* useWeapon_ = nullptr;				// 武器のポインタ
+	std::weak_ptr<StagePathData> pathData_ = {};	// パスデータの弱参照
 
-	EnemyInfo info_;
-	int stageId_ = -1;
+	EnemyInfo info_;		// 敵の情報
+	int stageId_ = -1;		// ステージのモデルID
 
 protected:
 
+	// 経路探索
 	void FindPath(int startNodeId, int goalNodeId);
 
 	// 移動方向に応じた遅延回転
@@ -83,7 +98,8 @@ protected:
 	// 移動処理
 	void Move(void);
 
-	float GetDistance(VECTOR pos1, VECTOR pos2);
+	// 2点間の距離を返す
+	float GetDistance(VECTOR pos1, VECTOR pos2) { return VSquareSize(VSub(pos1, pos2)); }
 
 	// プレイヤーを見つけたかどうか
 	bool CheckPlayerDiscovery(float radius);
@@ -97,10 +113,12 @@ protected:
 	// 重力処理
 	void ApplyGravity();
 
+	// 移動方向を設定する
 	void SetMoveDirPatrol(void);
 
 	// 次のノードを選ぶ
 	int SelectNextNode(void);
+
 	// ノード到着時
 	void ArriveNode(void);
 
@@ -109,6 +127,7 @@ protected:
 
 	// ノードを経由して追従
 	void ChaseNode(void);
+
 	// 直接追従
 	void ChaseDirect(void);
 
@@ -116,7 +135,22 @@ protected:
 	bool CheckChaseLineCollision(VECTOR pPos, VECTOR ePos, float radius);
 
 private:
-	static constexpr float JUMP_POW = 25.0f;	// ジャンプ力
-	static constexpr float GRAVITY = -1.98f;	// 重力加速度
-	static constexpr float MAX_FALL = -40.0f;	// 最大落下速度
+
+	// ジャンプ力
+	static constexpr float JUMP_POW = 25.0f;	
+
+	// 重力加速度
+	static constexpr float GRAVITY = -1.98f;	
+
+	// 最大落下速度
+	static constexpr float MAX_FALL = -40.0f;	
+
+	// ノードに到達したと判定する距離
+	static constexpr float NODE_ARRIVE_DISTANCE = 60.0f;
+
+	// 高低差による発見判定の閾値
+	static constexpr float MAX_DETECTION_HEIGHT_DIFFERENCE = 50.0f;
+
+	// 最小移動速度の閾値
+	static constexpr float MIN_MOVE_SPEED_THRESHOLD = 0.001f;
 };

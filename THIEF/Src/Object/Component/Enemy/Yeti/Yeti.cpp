@@ -3,16 +3,14 @@
 #include "../../../../Manager/Audio/AudioManager.h"
 #include "../../../../Common/Math/Math.h"
 #include "../../../../Common/Transform/MatrixUtility.h"
-
 #include "../../PlayerController/PlayerController.h"
 #include "../../Collider/3DCollider/CapsuleCollider.h"
 #include "../../Collider/StageCollider/StageCollider.h"
 #include "../../Transform/Transform.h"
 #include "../../Animation/Animation.h"
 #include "../Weapon/WeaponPunch.h"
-
-#include "../../../../Common/Shader/Shader.h"
 #include "../EnemyCommon.h"
+
 #include "Yeti.h"
 
 
@@ -34,10 +32,10 @@ void Yeti::Init(void)
 {
 	EnemyBase::Init();
 
-	anim_->Init();
+	animation_->Init();
 	for(int i = 0; i < static_cast<int>(ANIM_TYPE::MAX); i++)
 	{
-		anim_->AddInFbx(static_cast<int>(i), 0.2f, static_cast<int>(i));
+		animation_->AddInFbx(static_cast<int>(i), 0.2f, static_cast<int>(i));
 	}
 
 	const auto& data = EnemyTable::Table.at(ENEMY_TAG::YETI);
@@ -51,8 +49,6 @@ void Yeti::Init(void)
 
 		transform_->angle_ = DEFAULT_ANGLE;
 		info_.localAngle_ = { 0.0f, Math::Deg2Rad(180.0f), 0.0f };
-
-		MATRIX mat = Matrix::Multiplication(info_.localAngle_, transform_->angle_);
 
 		transform_->prevPos_ = transform_->pos_;
 	}
@@ -84,7 +80,7 @@ void Yeti::Init(void)
 	useWeapon_->Init(WeaponBase::TYPE::PUNCH);
 
 	// 初期アニメーション再生
-	anim_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
+	animation_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
 
 	ChangeState(STATE::IDLE);
 
@@ -145,9 +141,9 @@ void Yeti::Update(void)
 	}
 
 	// アニメーションの更新
-	if (anim_)
+	if (animation_)
 	{
-		anim_->Update();
+		animation_->Update();
 	}
 
 	// モデルの更新
@@ -164,7 +160,7 @@ void Yeti::Draw3D(void)
 	auto pathData = pathData_.lock();
 	if (!pathData) return;
 
-	if (pathData && transform_)
+	if (transform_)
 	{
 		const auto* wayList = pathData->GetWayList();
 		const auto* edgeList = pathData->GetEdgeList();
@@ -252,7 +248,7 @@ void Yeti::ChangeThink(void)
 void Yeti::ChangeIdle(void)
 {
 	info_.step_ = 5.0f;
-	anim_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
+	animation_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
 }
 
 void Yeti::ChangePatrol(void)
@@ -276,7 +272,7 @@ void Yeti::ChangePatrol(void)
 	// 移動スピード
 	info_.moveSpeed_ = 5.0f;
 
-	anim_->Play(static_cast<int>(ANIM_TYPE::WALK), true);
+	animation_->Play(static_cast<int>(ANIM_TYPE::WALK), true);
 }
 
 void Yeti::ChangeSurprise(void)
@@ -284,7 +280,7 @@ void Yeti::ChangeSurprise(void)
 	info_.step_ = 2.0f;
 	LookPlayer();
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_YETI, & transform_->pos_,2000.0f);
-	anim_->Play(static_cast<int>(ANIM_TYPE::HIT_REACT), false);
+	animation_->Play(static_cast<int>(ANIM_TYPE::HIT_REACT), false);
 }
 
 void Yeti::ChangeChase(void)
@@ -293,14 +289,14 @@ void Yeti::ChangeChase(void)
 	chaseTimer_ = 0.0f;
 	info_.targetLostTimer_ = 0.0f;
 	info_.isNotice_ = false;
-	anim_->Play(static_cast<int>(ANIM_TYPE::RUN), true);
+	animation_->Play(static_cast<int>(ANIM_TYPE::RUN), true);
 }
 
 void Yeti::ChangeAttack(void)
 {
 	LookPlayer();
 	useWeapon_->Use(transform_->pos_, info_.moveDir_);
-	anim_->Play(static_cast<int>(ANIM_TYPE::PUNCH), false);
+	animation_->Play(static_cast<int>(ANIM_TYPE::PUNCH), false);
 }
 
 void Yeti::ChangeHit(void)
@@ -320,8 +316,8 @@ void Yeti::UpdateThink(void)
 	// 思考
 	// ランダムに次の行動を決定	
 	// 10%で待機、90%で徘徊
-	int rand = GetRand(100);
-	if (rand < 10)
+	int randomVal = GetRand(100);
+	if (randomVal < 10)
 	{
 		ChangeState(STATE::IDLE);
 	}
@@ -575,7 +571,7 @@ void Yeti::UpdateAttack(void)
 	// 攻撃処理の更新
 	useWeapon_->Update();
 
-	if (anim_->IsEnd())
+	if (animation_->IsEnd())
 	{
 		useWeapon_->SetAlive(false);
 		ChangeState(STATE::CHASE);

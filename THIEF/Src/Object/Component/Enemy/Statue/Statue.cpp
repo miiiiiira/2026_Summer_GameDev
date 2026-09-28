@@ -40,7 +40,6 @@ void Statue::Init(void)
 	info_.attackDamagePow_ = 20.0f;
 	info_.tag_ = ENEMY_TAG::STATUE;
 
-
 	if (transform_)
 	{
 		info_.scale_ = SCALE;
@@ -53,7 +52,6 @@ void Statue::Init(void)
 
 		transform_->prevPos_ = transform_->pos_;
 	}
-
 
 	seTimer_ = 0.0f;
 
