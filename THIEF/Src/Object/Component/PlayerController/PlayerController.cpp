@@ -195,8 +195,9 @@ void PlayerController::SetDamage(int damage)
 		info_.hitStopCounter_ = SHAKE_TIME;
 	}
 	
-	// ビネット
-	SceneManager::GetInstance()->GetShader()->SetVignettePower(Shader::DAMAGE_VIGNETTE_POWER);
+	// ダメージ用の値にして画面周辺を暗くする
+	SceneManager::GetInstance()->GetShader()->
+				SetVignettePower(Shader::DAMAGE_VIGNETTE_POWER);
 
 	// プレイヤーのダメージ音
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_DAMAGE);
@@ -847,7 +848,9 @@ void PlayerController::InvincibleUodate(void)
 	}
 	else
 	{
-		SceneManager::GetInstance()->GetShader()->SetVignettePower(Shader::DEFAULT_VIGNETTE_POWER);
+		// 無敵時間が終わったら、画面周辺の暗さを元に戻す
+		SceneManager::GetInstance()->GetShader()->
+				SetVignettePower(Shader::DEFAULT_VIGNETTE_POWER);
 	}
 }
 
