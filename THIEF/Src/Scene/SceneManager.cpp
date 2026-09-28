@@ -21,7 +21,6 @@ SceneManager::SceneManager(void)
 {
 	scenes_.clear();
 	load_ = nullptr;
-	isGameEnd_ = false;
 }
 
 SceneManager::~SceneManager(void)
@@ -73,18 +72,6 @@ void SceneManager::Init(void)
 
 	shader_ = new Shader();
 	shader_->Init();
-
-	isShader_ = true;
-
-	// ステージクリア判定用初期化
-	isStageClear_ = false;
-	// ゲームクリア判定用初期化
-	isClear_ = false;
-	// ゲームオーバー判定用初期化
-	isOver_ = false;
-
-	// 現在のステージを初期化
-	prevStage_ = currentStage_ = STAGE_NUM::STAGE_1;
 
 	// 最初はタイトル画面から
 	ChangeScene(std::make_shared<TitleScene>());
@@ -417,18 +404,6 @@ void SceneManager::TrueStageClear(void)
 	}
 }
 
-void SceneManager::TrueGameClear(void)
-{
-	// フラグを立てる
-	isClear_ = true;
-}
-
-void SceneManager::TrueGameOver(void)
-{
-	// フラグを立てる
-	isOver_ = true;
-}
-
 void SceneManager::ResetGame(void)
 {
 	// 現在のステージを初期化
@@ -440,18 +415,6 @@ void SceneManager::ResetGame(void)
 	// トータルスコアを初期化
 	ScoreManager::GetInstance()->ResetTotalPrice();
 }
-
-void SceneManager::SetTutorialStateAndValue(Tutorial::STATE state, float value)
-{
-	nowTutorialState_ = state;
-	tutorialValue_ = value;
-}
-
-Tutorial::STATE SceneManager::GetTutorialState(void)
-{
-	return nowTutorialState_;
-}
-
 
 void SceneManager::TutorialCounter(Tutorial::STATE state)
 {

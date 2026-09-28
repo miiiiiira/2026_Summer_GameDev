@@ -17,6 +17,7 @@ class Fader;
 class SceneManager
 {
 public:
+
 	// シングルトン（生成・取得・削除）
 	static void CreateInstance(void) { if (instance_ == nullptr) { instance_ = new SceneManager(); } };
 	static SceneManager* GetInstance(void) { return instance_; };
@@ -49,14 +50,22 @@ public:
 	// 環境光のカラー値、アルファ値
 	static constexpr COLOR_F DIF_COLOR = { 1.0f, 1.0f, 1.0f, 1.0f };
 
+public:
+
 	void Init(void);	// 初期化
 	void Init3D(void);	// 3Dの初期化
 	void Update(void);	// 更新
 	void Draw(void);	// 描画
 	void Delete(void);	// リソースの破棄
 
+public:
+
 	// 状態遷移(フェードを挟む)
-	void NextChangeScene(std::shared_ptr<SceneBase> scene,SCENE_TAG sceneTag, bool isJumpScne = false, Fader::TYPE type = Fader::TYPE::NORMAL);
+	void NextChangeScene(
+		std::shared_ptr<SceneBase> scene,
+		SCENE_TAG sceneTag,
+		bool isJumpScne = false,
+		Fader::TYPE type = Fader::TYPE::NORMAL);
 
 	// 状態遷移		遷移させたいシーン,全てのシーンを解放させるか
 	void ChangeScene(std::shared_ptr<SceneBase> scene);
@@ -88,10 +97,13 @@ public:
 
 	// ステージクリアのフラグをたてる
 	void TrueStageClear(void);
+
 	// ゲームクリアのフラグをたてる
-	void TrueGameClear(void);
+	void TrueGameClear(void) { isClear_ = true; }
+
 	// ゲームオーバーのフラグをたてる
-	void TrueGameOver(void);
+	void TrueGameOver(void) { isOver_ = true; };
+
 	//	ゲームリセット処理
 	void ResetGame(void);
 
@@ -110,12 +122,11 @@ public:
 	// 現在のシーンタグを渡す
 	SCENE_TAG GetNowSceneTag(void) { return nowSceneTag_; }
 
-
 	// チュートリアルシーン用特別関数
-	void SetTutorialStateAndValue(Tutorial::STATE state,float value);
+	void SetTutorialStateAndValue(Tutorial::STATE state, float value) { nowTutorialState_ = state, tutorialValue_ = value; }
 
 	// チュートリアルの現在の確認項目を渡す
-	Tutorial::STATE GetTutorialState(void);
+	Tutorial::STATE GetTutorialState(void) { return nowTutorialState_; }
 
 	// チュートリアル時に行動すると加算されるカウンタ
 	void TutorialCounter(Tutorial::STATE state);
@@ -131,15 +142,13 @@ private:
 		FADE_IN
 	};
 
+private:
+
 	// フォグのスタート位置終了位置
 	static constexpr float FOG_START = 0.0f;
 	static constexpr float FOG_END = 3150.0f;
 
-	// シーンマネージャーの状態
-	CHANGE_STATE changeState_;
-
-	// ジャンプシーンか否か
-	bool isJumpScene_;
+private:
 
 	// 各種シーン
 	std::list<std::shared_ptr<SceneBase>> scenes_;
@@ -148,36 +157,44 @@ private:
 	std::shared_ptr<SceneBase> nextScene_;
 
 	// ロード画面
-	Loading* load_;
+	Loading* load_ = nullptr;
 
 	// シェーダー
-	Shader* shader_;
+	Shader* shader_ = nullptr;
+
+private:
+
+	// シーンマネージャーの状態
+	CHANGE_STATE changeState_ = CHANGE_STATE::NONE;
+
+	// ジャンプシーンか否か
+	bool isJumpScene_;
 
 	// ゲーム終了
-	bool isGameEnd_;
+	bool isGameEnd_ = false;
 
 	// デルタタイム
 	std::chrono::system_clock::time_point mPreTime;
 	float mDeltaTime;
 	float mTotalTime;
 
-	int mainScreen_;
-	bool isShader_;
+	int mainScreen_ = -1;
+	bool isShader_ = true;
 
 	// ステージクリア判定用
-	bool isStageClear_;
+	bool isStageClear_ = false;
 	// ゲームクリア判定用
-	bool isClear_;
+	bool isClear_ = false;
 	// ゲームオーバー判定用
-	bool isOver_;
+	bool isOver_ = false;
 
 	// 前のステージを表す
-	STAGE_NUM prevStage_;
+	STAGE_NUM prevStage_ = STAGE_NUM::STAGE_1;
 	// 現在のステージを表す
-	STAGE_NUM currentStage_;
+	STAGE_NUM currentStage_ = STAGE_NUM::STAGE_1;
 
 	// 現在のシーンのタグを保持
-	SCENE_TAG nowSceneTag_;
+	SCENE_TAG nowSceneTag_ = SCENE_TAG::TITLE;
 
 	// チュートリアル専用変数
 	// チュートリアルの現在の確認項目を保持
