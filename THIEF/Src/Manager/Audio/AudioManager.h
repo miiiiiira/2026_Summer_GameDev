@@ -6,17 +6,19 @@
 class AudioManager
 {
 public:
+
 	// シングルトン（生成・取得・削除）
 	static void CreateInstance(void) { if (instance_ == nullptr) { instance_ = new AudioManager(); } }
 	static AudioManager* GetInstance(void) { return instance_; }
 	static void DeleteInstance(void) { if (instance_ != nullptr) { delete instance_; instance_ = nullptr; } }
 
 private:
+
 	// 静的インスタンス
 	static AudioManager* instance_;
 
-	AudioManager();		// コンストラクタ
-	~AudioManager();	// デストラクタ
+	AudioManager(void);		// コンストラクタ
+	~AudioManager(void);	// デストラクタ
 
 	// コピー・ムーブ操作を禁止
 	AudioManager(const AudioManager&) = delete;
@@ -45,8 +47,11 @@ public:
 	void SetSeVolume(int volume);		// 0～255
 	void SetMasterVolume(int volume);	// 0～255
 
+	// BGMの音量を返す
 	int GetBgmVolume(int volume) const { return bgmVolume_; }
+	// SEの音量を返す
 	int GetSeVolume(int volume) const { return seVolume_; }
+	// マスター音量を返す
 	int GetMasterVolume(int volume) const { return masterVolume_; }
 
 private:
@@ -55,7 +60,8 @@ private:
 	// 現在再生されているBGM
 	SoundID currentBgm_;
 
-	int bgmVolume_;		// bgm音量
-	int seVolume_;		// se音量
-	int masterVolume_;	// master音量
+	// 音量
+	int bgmVolume_;		// bgm
+	int seVolume_;		// se
+	int masterVolume_;	// master
 };

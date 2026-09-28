@@ -13,7 +13,8 @@ public:
 
 private:
 
-	static LightManager* instance_;	// 静的インスタンス
+	// 静的インスタンス
+	static LightManager* instance_;	
 
 	// コピー・ムーブ操作を禁止
 	LightManager(const LightManager&) = delete;

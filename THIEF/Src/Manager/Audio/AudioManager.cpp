@@ -1,8 +1,9 @@
-#include "AudioManager.h"
-
-#include <DxLib.h>
 #include <algorithm>
+#include <DxLib.h>
+
 #include "SoundTable.h"
+
+#include "AudioManager.h"
 
 AudioManager* AudioManager::instance_ = nullptr;
 
@@ -14,7 +15,7 @@ AudioManager::AudioManager(void)
 	masterVolume_ = 255;
 }
 
-AudioManager::~AudioManager()
+AudioManager::~AudioManager(void)
 {
 	// ”O‚Ì‚½‚ßíœŠÖ”
 	DeleteAll();
