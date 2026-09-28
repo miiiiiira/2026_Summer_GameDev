@@ -22,6 +22,11 @@ public:
 
 public:
 
+	// カメラ初期角度
+	static constexpr VECTOR CAMERA_ANGLE_STAGE_1 = { 0.0f, 90.0f * DX_PI_F / 180.0f, 0.0f };	// ステージ1
+	static constexpr VECTOR CAMERA_ANGLE_STAGE_2 = { 0.0f,0.0f,0.0f };							// ステージ2
+	static constexpr VECTOR CAMERA_ANGLE_STAGE_3 = { 0.0f, 90.0f * DX_PI_F / 180.0f, 0.0f };	// ステージ3
+
 	// マウス感度
 	static constexpr float MOUSE_SENSITIVITY = 0.003f;
 

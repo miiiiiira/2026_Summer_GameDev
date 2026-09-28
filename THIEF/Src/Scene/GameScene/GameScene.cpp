@@ -158,43 +158,17 @@ void GameScene::Update(void)
 	// スコアマネージャーの更新
 	ScoreManager::GetInstance()->Update();
 
-	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::PAUSE))
-	{
-		// ポーズ画面を開いたサウンド
-		AudioManager::GetInstance()->PlaySE(SoundID::SYS_PAUSE_ON);
-		// ポーズモードへ
-		SceneManager::GetInstance()->PushScene(std::make_shared<Pause>());
-		return;
-	}
+	// ポーズシーン遷移
+	ChangePauseScene();
 
-	if (SceneManager::GetInstance()->GetIsClear())
-	{
-		// ステージ情報などを初期化する
-		SceneManager::GetInstance()->ResetGame();
-		// ゲームクリアシーンへ
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameClear>(),CLEAR);
-		return;
-	}
+	// ゲームクリア遷移
+	ChangeGameClearScene();
 
-	if (SceneManager::GetInstance()->GetIsOver())
-	{
-		// トータルスコアを初期化
-		ScoreManager::GetInstance()->ResetTotalPrice();
-		// HP情報のみ初期化(リトライ時に自己強化した項目は残しておきたいため)
-		PlayerStatusManager::GetInstance()->ResetHP();
-		// ゲームオーバーシーンへ
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameOver>(),OVER);
-		return;
-	}
+	// ゲームオーバー遷移
+	ChangeGameOverScene();
 
-	if (SceneManager::GetInstance()->GetIsStageClear())
-	{
-		// 納品した文の金額をショップで使える金額に加算
-		ScoreManager::GetInstance()->AddTotalPrice(ScoreManager::GetInstance()->GetDeliveryPrice());
-		// ステージクリアシーンへ
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<StageClear>(),STAGE_CLEAR);
-		return;
-	}
+	// ステージクリア遷移
+	ChangeStageClearScene();
 }
 
 void GameScene::Draw(void)
@@ -327,13 +301,13 @@ void GameScene::CameraCreate(void)
 	switch (stageNum)
 	{
 	case STAGE_1:
-		cameraTrans->angle_ = { 0.0f, 90.0f * DX_PI_F / 180.0f, 0.0f };
+		cameraTrans->angle_ = Camera::CAMERA_ANGLE_STAGE_1;
 		break;
 	case STAGE_2:
-		cameraTrans->angle_ = { 0.0f,0.0f,0.0f };
+		cameraTrans->angle_ = Camera::CAMERA_ANGLE_STAGE_2;
 		break;
 	case STAGE_3:
-		cameraTrans->angle_ = { 0.0f, 90.0f * DX_PI_F / 180.0f, 0.0f };
+		cameraTrans->angle_ = Camera::CAMERA_ANGLE_STAGE_3;
 		break;
 	default:
 		break;
@@ -408,7 +382,7 @@ void GameScene::PlayerCreate(void)
 
 	// 座標の設定
 	auto trans = player->AddComponent<Transform>();
-	trans->pos_ = { 0.0f,100.0f,0.0f };
+	trans->pos_ = PlayerController::DEFAULT_PLAYER_POS;
 
 	// 移動の設定
 	auto cont = player->AddComponent<PlayerController>();
@@ -426,7 +400,7 @@ void GameScene::PlayerCreate(void)
 	col->AddCapsule(
 		PlayerController::STANDING_CAP_START_OFFSET,
 		PlayerController::STANDING_CAP_END_OFFSET,
-		40.0f
+		PlayerController::PLAYER_CAPUSULE_RAD
 	);
 
 	// ステージの取得
@@ -435,11 +409,11 @@ void GameScene::PlayerCreate(void)
 	// ステージの当たり判定
 	auto stageCol = player->AddComponent<StageCollider>();
 	stageCol->SetStage(stage);
-	stageCol->SetFloorNormalY(0.85f);
-	stageCol->SetWallNormalY(0.20f);
-	stageCol->SetSlopeNormalY(0.65f);
+	stageCol->SetFloorNormalY(PlayerController::FLOOR_NORMAL_Y);
+	stageCol->SetWallNormalY(PlayerController::WALL_NORMAL_Y);
+	stageCol->SetSlopeNormalY(PlayerController::SLOPE_NORMAL_Y);
 
-	stageCol->SetStepHeight(25.0f);
+	stageCol->SetStepHeight(PlayerController::STEP_HEIGHT);
 
 	// プレイヤー取得
 	auto playerController = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
@@ -479,19 +453,20 @@ void GameScene::CartCreate(void)
 	switch (stageNum)
 	{
 	case STAGE_1:
-		trans->pos_ = { 500.0f,30.0f,0.0f };
-		trans->angle_ = { 0.0f,90.0f * (DX_PI_F / 180.0f),0.0f };
+		trans->pos_ = Cart::CART_POS_STAGE_1;
+		trans->angle_ = Cart::CART_ANGLE_STAGE_1;
 		break;
+
 	case STAGE_2:
-		trans->pos_ = { 0.0f,30.0f,500.0f };
-		trans->angle_ = { 0.0f,0.0f,0.0f };
+		trans->pos_ = Cart::CART_POS_STAGE_2;
+		trans->angle_ = Cart::CART_ANGLE_STAGE_2;
 		break;
+
 	case STAGE_3:
-
-		trans->pos_ = { 500.0f,30.0f,0.0f };
-		trans->angle_ = { 0.0f,90.0f * (DX_PI_F / 180.0f),0.0f };
-
+		trans->pos_ = Cart::CART_POS_STAGE_3;
+		trans->angle_ = Cart::CART_ANGLE_STAGE_3;
 		break;
+
 	default:
 		break;
 	}
@@ -503,12 +478,12 @@ void GameScene::CartCreate(void)
 	// カプセルコライダー
 	auto capsule = cart->AddComponent<CapsuleCollider>();
 
-	const float HEIGHT = 70.0f;
-	const float BOTTOM = 30.0f;
+	float HEIGHT = Cart::HEIGHT;
+	float BOTTOM = Cart::BOTTOM;
 
-	const float WIDTH = 35.0f;
-	const float DEPTH = 50.0f;
-	const float RADIUS = 60.0f;
+	float WIDTH = Cart::WIDTH;
+	float DEPTH = Cart::DEPTH;
+	float RADIUS = Cart::RADIUS;
 
 	// 左列
 	capsule->AddCapsule(VGet(-WIDTH, HEIGHT, -DEPTH), VGet(-WIDTH, BOTTOM, -DEPTH), RADIUS);
@@ -625,7 +600,7 @@ void GameScene::EnemyCreateStage1(void)
 	// ステージ生成時に1回だけパスデータを生成・ロードする
 	InitPathData();
 
-	EnemyCreate(ENEMY_TAG::GIGGLE, {0.0f, 0.0f, 0.0f});
+	EnemyCreate(ENEMY_TAG::GIGGLE, { 0.0f, 0.0f, 0.0f });
 	EnemyCreate(ENEMY_TAG::YETI, { -5617.04f,10.0f,6573.71f });
 
 	EnemySpawnParam mushParam;
@@ -739,30 +714,39 @@ void GameScene::ItemCreate(Tag tag, VECTOR pos)
 	case Tag::Item_Goblet:
 		itemBase = item->AddComponent<Goblet>();
 		break;
+
 	case Tag::Item_Potion_Red:
 		itemBase = item->AddComponent<Potion>();
 		break;
+
 	case Tag::Item_Potion_Green:
 		itemBase = item->AddComponent<Potion>();
 		break;
+
 	case Tag::Item_Potion_Blue:
 		itemBase = item->AddComponent<Potion>();
 		break;
+
 	case Tag::Item_Amphora:
 		itemBase = item->AddComponent<Amphora>();
 		break;
+
 	case Tag::Item_Bottle:
 		itemBase = item->AddComponent<Bottle>();
 		break;
+
 	case Tag::Item_Jar:
 		itemBase = item->AddComponent<Jar>();
 		break;
+
 	case Tag::Item_Mug:
 		itemBase = item->AddComponent<Mug>();
 		break;
+
 	case Tag::Item_Skull:
 		itemBase = item->AddComponent<Skull>();
 		break;
+
 	default:
 		break;
 	}
@@ -887,7 +871,7 @@ void GameScene::EnemyCreate(ENEMY_TAG tag, VECTOR pos, const EnemySpawnParam& pa
 		enemyComp = statue;
 		break;
 	}
-	
+
 	default:
 		break;
 	}
@@ -923,5 +907,55 @@ void GameScene::InitPathData(void)
 	case STAGE_2: stagePathData_->Load("Data/PointSave2.csv"); break;
 	case STAGE_3: stagePathData_->Load("Data/PointSave3.csv"); break;
 	default: break;
+	}
+}
+
+void GameScene::ChangePauseScene(void)
+{
+	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::PAUSE))
+	{
+		// ポーズ画面を開いたサウンド
+		AudioManager::GetInstance()->PlaySE(SoundID::SYS_PAUSE_ON);
+		// ポーズモードへ
+		SceneManager::GetInstance()->PushScene(std::make_shared<Pause>());
+		return;
+	}
+}
+
+void GameScene::ChangeGameClearScene(void)
+{
+	if (SceneManager::GetInstance()->GetIsClear())
+	{
+		// ステージ情報などを初期化する
+		SceneManager::GetInstance()->ResetGame();
+		// ゲームクリアシーンへ
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameClear>(), CLEAR);
+		return;
+	}
+}
+
+void GameScene::ChangeGameOverScene(void)
+{
+	if (SceneManager::GetInstance()->GetIsOver())
+	{
+		// トータルスコアを初期化
+		ScoreManager::GetInstance()->ResetTotalPrice();
+		// HP情報のみ初期化(リトライ時に自己強化した項目は残しておきたいため)
+		PlayerStatusManager::GetInstance()->ResetHP();
+		// ゲームオーバーシーンへ
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameOver>(), OVER);
+		return;
+	}
+}
+
+void GameScene::ChangeStageClearScene(void)
+{
+	if (SceneManager::GetInstance()->GetIsStageClear())
+	{
+		// 納品した文の金額をショップで使える金額に加算
+		ScoreManager::GetInstance()->AddTotalPrice(ScoreManager::GetInstance()->GetDeliveryPrice());
+		// ステージクリアシーンへ
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<StageClear>(), STAGE_CLEAR);
+		return;
 	}
 }

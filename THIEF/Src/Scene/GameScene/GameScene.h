@@ -37,6 +37,12 @@ public:
 
 private:
 
+
+
+
+
+private:
+
 	// オブジェクトマネージャー
 	ObjectManager* objectManger_;
 
@@ -85,4 +91,10 @@ private:
 	// タグを使用し、敵を作る
 	void EnemyCreate(ENEMY_TAG tag, VECTOR pos, const EnemySpawnParam& param = {});	
 	void InitPathData(void);
+
+	// シーン遷移
+	void ChangePauseScene(void);		// ポーズシーン
+	void ChangeGameClearScene(void);	// ゲームクリア
+	void ChangeGameOverScene(void);		// ゲームオーバー
+	void ChangeStageClearScene(void);	// ステージクリア
 };

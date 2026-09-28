@@ -12,10 +12,28 @@ class Cart : public Component
 {
 public:
 
+	// カート初期位置
+	static constexpr VECTOR CART_POS_STAGE_1 = { 500.0f,30.0f,0.0f };	// ステージ1
+	static constexpr VECTOR CART_POS_STAGE_2 = { 0.0f,30.0f,500.0f };	// ステージ2
+	static constexpr VECTOR CART_POS_STAGE_3 = { 500.0f,30.0f,0.0f };	// ステージ3
+
+	// カート初期角度
+	static constexpr VECTOR CART_ANGLE_STAGE_1 = { 0.0f,90.0f * (DX_PI_F / 180.0f),0.0f };	// ステージ1
+	static constexpr VECTOR CART_ANGLE_STAGE_2 = { 0.0f,0.0f,0.0f };						// ステージ2
+	static constexpr VECTOR CART_ANGLE_STAGE_3 = { 0.0f,90.0f * (DX_PI_F / 180.0f),0.0f };	// ステージ3
+
 	// カートのサイズ
 	static constexpr float CART_SIZE_WID_RAD = 75.0f;	// 横幅
 	static constexpr float CART_SIZE_HIG_RAD = 50.0f;	// 縦幅
 	static constexpr float CART_SIZE_DEPTH_RAD = 95.0f;	// 奥行
+
+	// カプセルコライダー用大きさ
+	static constexpr float HEIGHT = 70.0f;
+	static constexpr float BOTTOM = 30.0f;
+
+	static constexpr float WIDTH = 35.0f;
+	static constexpr float DEPTH = 50.0f;
+	static constexpr float RADIUS = 60.0f;
 
 public:
 

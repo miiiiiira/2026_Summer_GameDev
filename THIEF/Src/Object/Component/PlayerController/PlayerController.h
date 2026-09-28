@@ -21,6 +21,10 @@ class PlayerController : public Component
 {
 public:
 
+	// プレイヤー初期位置
+	static constexpr VECTOR DEFAULT_PLAYER_POS = { 0.0f,100.0f,0.0f };
+	static constexpr float PLAYER_CAPUSULE_RAD = 40.0f;
+
 	// プレイヤーのカプセルオフセット
 	static constexpr VECTOR STANDING_CAP_END_OFFSET = { 0.0f,30.0f,0.0f };		// エンド位置
 	static constexpr VECTOR STANDING_CAP_START_OFFSET = { 0.0f,150.0f,0.0f };	// 立ち状態スタート位置
@@ -35,6 +39,14 @@ public:
 
 	// プレイヤーの掴み距離の最小値
 	static constexpr float MIN_RENGE = 60.0f;
+
+	// ステージの当たり判定用の法線
+	static constexpr float FLOOR_NORMAL_Y = 0.85f;	// 床
+	static constexpr float WALL_NORMAL_Y = 0.20f;	// 壁
+	static constexpr float SLOPE_NORMAL_Y = 0.65f;	// 坂
+
+	// 段差の登れる量
+	static constexpr float STEP_HEIGHT = 25.0f;
 
 public:
 
