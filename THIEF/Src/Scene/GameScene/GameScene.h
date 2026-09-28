@@ -1,9 +1,9 @@
 #pragma once
 
-#include <DxLib.h>
 #include <vector>
 #include <string>
 #include <memory>
+#include <DxLib.h>
 
 #include "../../Object/Tag.h"
 #include "../SceneBase.h"
@@ -11,11 +11,12 @@
 
 class ObjectManager;
 
+// ステージ数
 enum STAGE_NUM
 {
-	STAGE_1,
-	STAGE_2,
-	STAGE_3,
+	STAGE_1,	// ステージ1
+	STAGE_2,	// ステージ2
+	STAGE_3,	// ステージ3
 
 	STAGE_MAX,
 };
@@ -36,20 +37,35 @@ public:
 
 private:
 
+	// オブジェクトマネージャー
+	ObjectManager* objectManger_;
+
+private:
+
+	// 経路データ
+	std::shared_ptr<StagePathData> stagePathData_;
+
+private:
+
 	// ステージ別の初期化処理
 	void Stage1Init(void);	// ステージ1
 	void Stage2Init(void);	// ステージ2
 	void Stage3Init(void);	// ステージ3
 
-	void CameraCreate(void);	// カメラの作成
+	// カメラの作成
+	void CameraCreate(void);	
 
-	void StageCreate(std::string path, std::string collPath = "NoData");	// ステージの作成
+	// ステージの作成
+	void StageCreate(std::string path, std::string collPath = "NoData");	
 
-	void WispCreate(void);	// ライトの作成
+	// ライトの作成
+	void WispCreate(void);	
 
-	void PlayerCreate(void);	// プレイヤーの作成
+	// プレイヤーの作成
+	void PlayerCreate(void);	
 
-	void CartCreate(void);	// カートの作成
+	// カートの作成
+	void CartCreate(void);	
 
 	// ステージ別アイテムの生成
 	void ItemCreateStage1(void);	// ステージ1
@@ -63,15 +79,10 @@ private:
 	void EnemyCreateStage2(void);	// ステージ2
 	void EnemyCreateStage3(void);	// ステージ3
 
-	void ItemCreate(Tag tag, VECTOR pos);	// タグを使用し、アイテムを作る
-	void EnemyCreate(ENEMY_TAG tag, VECTOR pos, const EnemySpawnParam& param = {});	// タグを使用し、敵を作る
+	// タグを使用し、アイテムを作る
+	void ItemCreate(Tag tag, VECTOR pos);	
+
+	// タグを使用し、敵を作る
+	void EnemyCreate(ENEMY_TAG tag, VECTOR pos, const EnemySpawnParam& param = {});	
 	void InitPathData(void);
-
-private:
-
-	// オブジェクトマネージャー
-	ObjectManager* objectManger_;
-
-	// 経路データ
-	std::shared_ptr<StagePathData> stagePathData_;
 };

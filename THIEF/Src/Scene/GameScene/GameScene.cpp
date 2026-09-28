@@ -19,7 +19,6 @@
 #include "../../Object/Component/Enemy/Mushnub/Mushnub.h"
 #include "../../Object/Component/Enemy/Statue/Statue.h"
 #include "../../Object/Component/Enemy/Weapon/WeaponBase.h"
-
 #include "../../Object/ObjectManager/ObjectManager.h"
 #include "../../Object/Component/Collider/3DCollider/CapsuleCollider.h"
 #include "../../Object/Component/Collider/StageCollider/StageCollider.h"
@@ -96,23 +95,20 @@ void GameScene::Load(void)
 	switch (SceneManager::GetInstance()->GetCurrentStage())
 	{
 	case STAGE_NUM::STAGE_1:
-
 		// ステージ1の初期化処理
 		Stage1Init();
-
 		break;
-	case STAGE_NUM::STAGE_2:
 
+	case STAGE_NUM::STAGE_2:
 		// ステージ2の初期化処理
 		Stage2Init();
-
 		break;
+
 	case STAGE_NUM::STAGE_3:
-		
 		// ステージ3の初期化処理
 		Stage3Init();
-
 		break;
+
 	default:
 		break;
 	}
@@ -120,6 +116,7 @@ void GameScene::Load(void)
 
 void GameScene::LoadEnd(void)
 {
+	// 初期化処理
 	Init();
 
 	// エフェクシアが非同期ロードに対応していないためここでロード
@@ -137,6 +134,7 @@ void GameScene::LoadEnd(void)
 void GameScene::Update(void)
 {
 #ifdef _DEBUG
+
 	if (InputManager::GetInstance()->IsDebugActionUp(INPUT_INFO::DEBUG_ACTION::CLEAR))
 	{
 		// ステージクリアにする
@@ -197,7 +195,6 @@ void GameScene::Update(void)
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<StageClear>(),STAGE_CLEAR);
 		return;
 	}
-
 }
 
 void GameScene::Draw(void)
