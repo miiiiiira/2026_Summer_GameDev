@@ -22,8 +22,11 @@ enum LIGHT_TYPE
 
 struct LightData
 {
-	std::string path;	// モデルのパス
-	VECTOR color;		// ライト用のカラーコード
+	// モデルのパス
+	std::string path;	
+
+	// ライト用のカラーコード
+	VECTOR color;		
 };
 
 namespace LightTable

@@ -16,6 +16,12 @@
 
 Upgrade::Upgrade(void)
 {
+	// 画像ハンドルの初期化
+	for (int i = 0; i < static_cast<int>(PLAYER_UPGRADE_TYPE::MAX); i++)
+	{
+		imgHandle_[i] = -1;
+	}
+
 	// 最終的に選ばれた強化種類の初期化
 	finalizeUpgrade_.type = PLAYER_UPGRADE_TYPE::MAX;
 	finalizeUpgrade_.price = 0;

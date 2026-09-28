@@ -5,21 +5,11 @@
 class LightManager
 {
 public:
+
 	// シングルトン（生成・取得・削除）
 	static void CreateInstance(void) { if (instance_ == nullptr) { instance_ = new LightManager(); } }
 	static LightManager* GetInstance(void) { return instance_; }
 	static void DeleteInstance(void) { if (instance_ != nullptr) { delete instance_; instance_ = nullptr; } }
-
-public:
-
-	LightManager(void);	// コンストラクタ
-
-	void Destroy(void);	// 解放
-	
-	void ResetLight(void);	// デフォルトカラーにする
-
-	LIGHT_TYPE GetLightType(void);	// ライトのタイプを渡す
-	void SetLightType(LIGHT_TYPE lightType);	// ライトのタイプを保持させる
 
 private:
 
@@ -30,6 +20,22 @@ private:
 	LightManager& operator=(const LightManager&) = delete;
 	LightManager(LightManager&&) = delete;
 	LightManager& operator=(LightManager&&) = delete;
+
+public:
+
+	LightManager(void);	// コンストラクタ
+
+	void Destroy(void);	// 解放
+	
+public:
+
+	// デフォルトカラーにする
+	void ResetLight(void);	
+
+	// ライトの種類を返す
+	LIGHT_TYPE GetLightType(void) { return nowLightType_; }	
+	// ライトの種類を保存する
+	void SetLightType(LIGHT_TYPE lightType){ nowLightType_ = lightType; }
 
 private:
 
