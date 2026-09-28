@@ -47,7 +47,7 @@ PlayerController::PlayerController(void)
 }
 
 // 初期化
-void PlayerController::Init()
+void PlayerController::Init(void)
 {
 	// オーナーからTransform取得
 	transform_ = owner_->GetComponent<Transform>();
@@ -84,7 +84,7 @@ void PlayerController::Init()
 }
 
 // 更新
-void PlayerController::Update()
+void PlayerController::Update(void)
 {
 	// 体力が0以下になっていたら
 	if (info_.hp_ <= 0)
@@ -129,7 +129,7 @@ void PlayerController::Update()
 	IsReachedDeadPos();
 }
 
-void PlayerController::Draw2D()
+void PlayerController::Draw2D(void)
 {
 	// HP描画
 	DrawHP();
@@ -682,7 +682,7 @@ void PlayerController::DeadUpdate(PlayerController& player)
 {
 }
 
-void PlayerController::ApplyGravity()
+void PlayerController::ApplyGravity(void)
 {
 	// ステージコライダが無ければ処理を行わない
 	if (!stageColl_) return;

@@ -2,7 +2,7 @@
 
 UpgradeManager* UpgradeManager::instance_ = nullptr;
 
-void UpgradeManager::Load()
+void UpgradeManager::Load(void)
 {
 	// アップグレードクラスの生成
 	upgrade_ = new Upgrade();

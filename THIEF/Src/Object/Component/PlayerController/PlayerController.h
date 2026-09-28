@@ -40,9 +40,9 @@ public:
 
 	PlayerController(void);		// コンストラクタ
 
-	void Init() override;		// 初期化
-	void Update() override;		// 更新
-	void Draw2D() override;		// 2D描画
+	void Init(void) override;	// 初期化
+	void Update(void) override;	// 更新
+	void Draw2D(void) override;	// 2D描画
 
 public:
 
@@ -190,7 +190,7 @@ private:
 	void ChangeGrabState(GRABBING_STATE state) { grabStateCtrl_.state_ = state; };
 
 	// 重力
-	void ApplyGravity();
+	void ApplyGravity(void);
 
 	// スタミナ回復
 	void HealStamina(void);

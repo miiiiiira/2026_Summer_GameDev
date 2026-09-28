@@ -11,6 +11,17 @@ public:
 	static UpgradeManager* GetInstance(void) { return instance_; }
 	static void DeleteInstance(void) { if (instance_ != nullptr) { delete instance_; instance_ = nullptr; } }
 
+private:
+
+	static UpgradeManager* instance_;	// 静的インスタンス
+
+	// コピー・ムーブ操作を禁止
+	UpgradeManager(const UpgradeManager&) = delete;
+	UpgradeManager& operator=(const UpgradeManager&) = delete;
+	UpgradeManager(UpgradeManager&&) = delete;
+	UpgradeManager& operator=(UpgradeManager&&) = delete;
+
+
 public:
 
 	UpgradeManager(void);	// コンストラクタ
@@ -28,21 +39,11 @@ public:
 	bool GetIsUpgradeEnd(void)const { return isUpgradeEnd_; }	// アップグレードが終了したかどうかを渡す
 
 private:
-
-	static UpgradeManager* instance_;	// 静的インスタンス
-
-	// コピー・ムーブ操作を禁止
-	UpgradeManager(const UpgradeManager&) = delete;
-	UpgradeManager& operator=(const UpgradeManager&) = delete;
-	UpgradeManager(UpgradeManager&&) = delete;
-	UpgradeManager& operator=(UpgradeManager&&) = delete;
-
-private:
 	
-	Upgrade* upgrade_;	// アップグレード
+	Upgrade* upgrade_ = nullptr;	// アップグレード
 
 private:
 
-	bool isUpgradeEnd_;	// アップグレードが終了したか
+	bool isUpgradeEnd_ = false;	// アップグレードが終了したか
 };
 
