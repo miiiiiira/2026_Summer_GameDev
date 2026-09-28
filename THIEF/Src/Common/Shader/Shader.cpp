@@ -108,7 +108,8 @@ bool Shader::IsDefault(void) const
 		fabsf(currentCtrParam_.glitchAmount - DEFAULT_CTR.glitchAmount) < 0.0001f &&
 		fabsf(currentCtrParam_.curvatureAmount - DEFAULT_CTR.curvatureAmount) < 0.0001f &&
 		fabsf(currentCtrParam_.noisePower - DEFAULT_CTR.noisePower) < 0.0001f &&
-		fabsf(currentCtrParam_.rgbShift - DEFAULT_CTR.rgbShift) < 0.0001f;
+		fabsf(currentCtrParam_.rgbShift - DEFAULT_CTR.rgbShift) < 0.0001f &&
+		fabsf(currentCtrParam_.glitchProbability - DEFAULT_CTR.glitchProbability) < 0.0001f;
 }
 
 void Shader::MakeSquereVertex(void)
@@ -123,7 +124,7 @@ void Shader::MakeSquereVertex(void)
 		vertex_[i].sv = 0.0f;
 	}
 
-	// シェーダー追加時の作業を減らすため、毎フレーム作成
+	// シェーダー追加時の作業を減らすため、あらかじめ四角形の頂点を作成
 	int cnt = 0;
 	float sX = 0;
 	float sY = 0;

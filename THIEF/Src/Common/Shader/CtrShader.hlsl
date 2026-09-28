@@ -21,7 +21,7 @@ static const float TIME_RANDOM_SEED_B = 789.012f;
 
 // グリッチ演出用
 static const float GLITCH_CHECK_HERTZ = 2.0f;       // 1秒間に行うグリッチ判定
-static const float GLITCH_PROBABILITY = 0.8f;       // グリッチが発生しない率
+static const float GLITCH_PROBABILITY = 0.8f;       // この値を超えたらグリッチ発生（大きいほど発生しにくい）
 static const float GLITCH_WAVE_FREQ = 40.0f;        // グリッチ線の細かさ
 static const float GLITCH_WAVE_SPEED = 0.5f;        // グリッチの波が上下に流れる速度 
 static const float GLITCH_THRESHOLD = 0.95f;        // どの程度の波の強さでグリッチを有効にするか
@@ -38,7 +38,7 @@ cbuffer cbParam : register(b1)
     float g_curvatureAmount;        // 曲面の歪み度
     float g_noisePower;             // ノイズの強度
     float g_rgbShift;               // 色のずれ
-    float glitchProbability;        // グリッチが発生しない率
+    float g_glitchProbability;      // この値を超えたらグリッチ発生（大きいほど発生しにくい）
 }
 
 // 描画するテクスチャ
@@ -76,7 +76,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     float randomInterval = frac(sin(timeStep * TIME_RANDOM_SEED_A) * TIME_RANDOM_SEED_B);
     
     // グリッチが発生するかどうかを判定
-    if (randomInterval > glitchProbability)
+    if (randomInterval > g_glitchProbability)
     {
         // グリッチ
         float glitch = sin(uv.y * GLITCH_WAVE_FREQ + g_timer * GLITCH_WAVE_SPEED);

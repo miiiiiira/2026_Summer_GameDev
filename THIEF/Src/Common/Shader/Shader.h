@@ -16,7 +16,7 @@ public:
 		float curvatureAmount;		// 歪み度
 		float noisePower;			// ノイズの強度
 		float rgbShift;				// 色のずれ
-		float glitchProbability;	// グリッチの発生率
+		float glitchProbability;	// この値を超えたらグリッチ発生（大きいほど発生しにくい）
 	};
 
 	// デフォルト値の初期化
@@ -39,7 +39,7 @@ public:
 	// グリッチの強度の変更
 	void SetGlitchAmount(float val) { targetCtrParam_.glitchAmount = val; }
 
-	// 歪み度の変更
+	// 歪み度の変更（補間なしで即座に切り替えたい場面があるため isLerpActive を用意）
 	void SetCurvatureAmount(float val, bool isLerpActive = true);
 
 	// ノイズの強度の変更
@@ -48,7 +48,7 @@ public:
 	// 色のずれの変更
 	void SetRgbShift(float val) { targetCtrParam_.rgbShift = val; }
 
-	// グリッチの発生率の変更
+	// グリッチの発生率の変更（補間なしで即座に切り替えたい場面があるため isLerpActive を用意）
 	void SetGlitchProbability(float val, bool isLerpActive = true);
 
 	// 全ての目標値をデフォルトに戻す
