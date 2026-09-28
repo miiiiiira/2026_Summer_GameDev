@@ -20,8 +20,29 @@ public:
 	};
 
 	// デフォルト値の初期化
-	static constexpr Ctr DEFAULT_CTR = 
-				{ 0.1f, 0.5f, 0.0f, 0.0f, 0.01f, 0.1f, 0.002f, 0.8f };
+	static constexpr float DEFAULT_SCANLINE_INTENSITY = 0.1f;	// 走査線の濃さ
+	static constexpr float DEFAULT_VIGNETTE_POWER = 0.5f;		// ビネットの鋭さ
+	static constexpr float DEFAULT_GLITCH_AMOUNT = 0.0f;		// グリッチの強度　0.0で通常、1.0で崩壊
+	static constexpr float DEFAULT_TIMER = 0.0f;				// ノイズやグリッチを動かす時間
+	static constexpr float DEFAULT_CURVATURE_AMOUNT = 0.01f;	// 歪み度
+	static constexpr float DEFAULT_NOISE_POWER = 0.1f;			// ノイズの強度
+	static constexpr float DEFAULT_RGB_SHIFT = 0.002f;			// 色のずれ
+	static constexpr float DEFAULT_GLITCH_PROBABILITY = 0.8f;	// この値を超えたらグリッチ発生（大きいほど発生しにくい）
+
+	static constexpr Ctr DEFAULT_CTR = { 
+					DEFAULT_SCANLINE_INTENSITY, 
+					DEFAULT_VIGNETTE_POWER, 
+					DEFAULT_GLITCH_AMOUNT, 
+					DEFAULT_TIMER, 
+					DEFAULT_CURVATURE_AMOUNT, 
+					DEFAULT_NOISE_POWER, 
+					DEFAULT_RGB_SHIFT, 
+					DEFAULT_GLITCH_PROBABILITY 
+	};
+
+	// ダメージ時のビネットの鋭さ
+	static constexpr float DAMAGE_VIGNETTE_POWER = 0.7f;
+
 
 	void Init(void);			// 初期化
 
