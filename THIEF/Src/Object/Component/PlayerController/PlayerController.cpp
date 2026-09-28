@@ -196,7 +196,7 @@ void PlayerController::SetDamage(int damage)
 	}
 	
 	// ビネット
-	SceneManager::GetInstance()->GetShader()->SetVignettePower(0.7f);
+	SceneManager::GetInstance()->GetShader()->SetVignettePower(Shader::DAMAGE_VIGNETTE_POWER);
 
 	// プレイヤーのダメージ音
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_DAMAGE);
@@ -847,7 +847,7 @@ void PlayerController::InvincibleUodate(void)
 	}
 	else
 	{
-		SceneManager::GetInstance()->GetShader()->SetVignettePower(0.5f);
+		SceneManager::GetInstance()->GetShader()->SetVignettePower(Shader::DEFAULT_VIGNETTE_POWER);
 	}
 }
 
