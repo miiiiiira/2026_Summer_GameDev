@@ -15,9 +15,11 @@ struct selectTypeData
 	std::string path;
 	std::string framePath;
 	
-	Vector2 pos;	// 画像座標
+	// 画像座標
+	Vector2 pos;	
 	
-	Vector2 size;	// 画像サイズ
+	// 画像サイズ
+	Vector2 size;	
 };
 
 namespace LightSelectTypeTable

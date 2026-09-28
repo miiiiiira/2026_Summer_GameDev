@@ -24,8 +24,8 @@ namespace LightSelectSceneWispTable
 namespace LightSelectTypeTable
 {
 	const std::unordered_map<SELECT_TYPE, selectTypeData> Table =
-	{ 
-		{SELECT_TYPE::RIGHT_ARROW,{"Data/Image/LightSelectScene/RightArrow.png","Data/Image/LightSelectScene/RightArrowFrame.png",{Application::SCREEN_SIZE_X / 2-124,Application::SCREEN_SIZE_Y / 2},{44,73} } },
+	{
+		{SELECT_TYPE::RIGHT_ARROW,{"Data/Image/LightSelectScene/RightArrow.png","Data/Image/LightSelectScene/RightArrowFrame.png",{Application::SCREEN_SIZE_X / 2 - 124,Application::SCREEN_SIZE_Y / 2},{44,73} } },
 		{SELECT_TYPE::LEFT_ARROW, {"Data/Image/LightSelectScene/LeftArrow.png", "Data/Image/LightSelectScene/LeftArrowFrame.png",{54, Application::SCREEN_SIZE_Y / 2},{44,73} } },
 		{SELECT_TYPE::GAME_START, {"Data/Image/LightSelectScene/GameStart.png", "Data/Image/LightSelectScene/GameStartFrame.png",{Application::SCREEN_SIZE_X / 2,Application::SCREEN_SIZE_Y - 88},{332,58} } },
 	};

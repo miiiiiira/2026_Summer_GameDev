@@ -116,18 +116,19 @@ void LightSelectScene::Release(void)
 	// 画像を解放する
 	DeleteGraph(selectLightColorTextImg_);
 	DeleteGraph(BestTextImg_);
-
 	for (auto wisp : wispImgs_)
 	{
 		DeleteGraph(wisp.second);
 	}
-	wispImgs_.clear();
 
 	for (auto selectTypeTable : LightSelectTypeTable::Table)
 	{
 		DeleteGraph(selectTypeImg_[selectTypeTable.first]);
 		DeleteGraph(selectTypeFrameImg_[selectTypeTable.first]);
 	}
+
+	// 使い終わったらクリア
+	wispImgs_.clear();
 
 	// ライトセレクトシーンで使用するサウンドを削除
 	AudioManager::GetInstance()->DeleteSceneSound(LoadScene::LIGHT_SELECT);
@@ -161,6 +162,7 @@ void LightSelectScene::SelectUpgrade(void)
 
 void LightSelectScene::MouseSelect(void)
 {
+	// いったんNON初期化しておく
 	selectType_ = LightSelectTypeTable::SELECT_TYPE::NON;
 
 	// 当たり判定取る
@@ -184,7 +186,6 @@ void LightSelectScene::PadSelect(void)
 	switch (selectType_)
 	{
 	case LightSelectTypeTable::RIGHT_ARROW:
-
 		// 左を押されたら
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_LEFT))
 		{
@@ -198,10 +199,9 @@ void LightSelectScene::PadSelect(void)
 			// ゲームスタートボタンを選択
 			ChangeSelectType(LightSelectTypeTable::GAME_START);
 		}
-
 		break;
-	case LightSelectTypeTable::LEFT_ARROW:
 
+	case LightSelectTypeTable::LEFT_ARROW:
 		// 右を押されたら
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_RIGHT))
 		{
@@ -215,25 +215,27 @@ void LightSelectScene::PadSelect(void)
 			// ゲームスタートボタンを選択
 			ChangeSelectType(LightSelectTypeTable::GAME_START);
 		}
-
 		break;
-	case LightSelectTypeTable::GAME_START:
 
+	case LightSelectTypeTable::GAME_START:
 		// 上を押されたら
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
 		{
 			// 左矢印を選択
 			ChangeSelectType(LightSelectTypeTable::LEFT_ARROW);
 		}
-
 		break;
-	case LightSelectTypeTable::MAX:
-	case LightSelectTypeTable::NON:
 
+	case LightSelectTypeTable::MAX:
 		// 左矢印を選択
 		ChangeSelectType(LightSelectTypeTable::LEFT_ARROW);
-
 		break;
+
+	case LightSelectTypeTable::NON:
+		// 左矢印を選択
+		ChangeSelectType(LightSelectTypeTable::LEFT_ARROW);
+		break;
+
 	default:
 		break;
 	}
@@ -250,7 +252,6 @@ void LightSelectScene::ConfirmUpgrade(void)
 	switch (selectType_)
 	{
 	case LightSelectTypeTable::RIGHT_ARROW:
-
 		// ボタンクリック音を再生
 		AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_3);
 
@@ -263,10 +264,9 @@ void LightSelectScene::ConfirmUpgrade(void)
 			// 最初のライトの種類に戻す
 			nowlightType = static_cast<int>(LIGHT_TYPE::COLOR_0);
 		}
-
 		break;
-	case LightSelectTypeTable::LEFT_ARROW:
 
+	case LightSelectTypeTable::LEFT_ARROW:
 		// ボタンクリック音を再生
 		AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_3);
 
@@ -279,10 +279,9 @@ void LightSelectScene::ConfirmUpgrade(void)
 			// 最後のライトの種類に戻す
 			nowlightType = static_cast<int>(LIGHT_TYPE::COLOR_12);
 		}
-
 		break;
-	case LightSelectTypeTable::GAME_START:
 
+	case LightSelectTypeTable::GAME_START:
 		// ボタンクリック音を再生
 		AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_2);
 
@@ -292,21 +291,18 @@ void LightSelectScene::ConfirmUpgrade(void)
 		// ゲームシーンへ移行
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<GameScene>(),GAME);
 		return;
-
 		break;
+
 	case LightSelectTypeTable::MAX:
 		break;
+
 	case LightSelectTypeTable::NON:
 		break;
+
 	default:
 		break;
 	}
 
 	// 設定されたライトの種類を適用
 	lightType_ = static_cast<LIGHT_TYPE>(nowlightType);
-}
-
-void LightSelectScene::ChangeSelectType(LightSelectTypeTable::SELECT_TYPE type)
-{
-	selectType_ = type;
 }
