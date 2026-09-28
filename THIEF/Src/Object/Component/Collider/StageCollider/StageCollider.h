@@ -1,25 +1,20 @@
 #pragma once
+
 #include "../../Component.h"
 #include "../../Transform/Transform.h"
 #include "../3DCollider/CapsuleCollider.h"
 
-// 前方宣言
 class Stage;
 
 // ステージ衝突コンポーネント
 class StageCollider : public Component
 {
-	// 定数
-private:
+public:
 
-	// 1フレーム中に複数回衝突する場合に対応するための最大反復回数
-	static constexpr int MAX_BOUNCE = 5;
-
-	static constexpr float RADIUS_OFFSET = 10.0f;
+	// 初期化
+	void Init(void) override;
 
 public:
-	// 初期化
-	void Init() override;
 
 	// ステージ設定
 	void SetStage(Stage* stage) { stage_ = stage; }
@@ -61,8 +56,22 @@ public:
 	bool CeilingColl(void);
 
 private:
-	// 小さな段差を登れるか判定する
-	bool CanStepUp(const VECTOR& pos, const VECTOR& move, float stepHeight);
+
+	// 1フレーム中に複数回衝突する場合に対応するための最大反復回数
+	static constexpr int MAX_BOUNCE = 5;
+
+	static constexpr float RADIUS_OFFSET = 10.0f;
+
+private:
+
+	// Transform
+	Transform* transform_ = nullptr;
+
+	// Capsule
+	CapsuleCollider* capsule_ = nullptr;
+
+	// ステージ
+	Stage* stage_ = nullptr;
 
 private:
 
@@ -84,12 +93,8 @@ private:
 	// めり込み防止用の押し出し量
 	float skin_ = 0.01f;
 
-	// Transform
-	Transform* transform_ = nullptr;
+private:
 
-	// Capsule
-	CapsuleCollider* capsule_ = nullptr;
-
-	// ステージ
-	Stage* stage_ = nullptr;
+	// 小さな段差を登れるか判定する
+	bool CanStepUp(const VECTOR& pos, const VECTOR& move, float stepHeight);
 };

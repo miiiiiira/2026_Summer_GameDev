@@ -2,7 +2,6 @@
 
 #include "../../Component.h"
 
-// 前方宣言
 class Stage;
 class PlayerController;
 class Crosshair;
@@ -15,22 +14,13 @@ public:
 	void Update(void) override;		// 更新
 	void Draw2D(void) override;		// 更新
 
+public:
+
 	// プレイヤー設定
 	void SetPlayer(PlayerController* player) { player_ = player; }
 
 	// クロスヘア設定
 	void SetCrosshair(Crosshair* crosshair) { crosshair_ = crosshair; }
-
-private:
-
-	// アイテムと納品場所の当たり判定
-	void ItemToDeliveryLocationCollision(void);
-
-	// 納品完了スイッチとプレイヤー掴み機能との当たり判定
-	void DoneSwitchToPlayerGrabbingCollision(void);
-
-	// 納品完了スイッチとプレイヤー ステージと当たっていたら処理をしない
-	void DoneSwitchToPlayerCollision(void);
 
 private:
 
@@ -43,6 +33,18 @@ private:
 	// クロスヘア
 	Crosshair* crosshair_ = nullptr;
 
+private:
+
+	// アイテムと納品場所の当たり判定
+	void ItemToDeliveryLocationCollision(void);
+
+	// 納品完了スイッチとプレイヤー掴み機能との当たり判定
+	void DoneSwitchToPlayerGrabbingCollision(void);
+
+	// 納品完了スイッチとプレイヤー ステージと当たっていたら処理をしない
+	void DoneSwitchToPlayerCollision(void);
+
+	// デバック用描画
 	void DebugDraw(void);
 };
 

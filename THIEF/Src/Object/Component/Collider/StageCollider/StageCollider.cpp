@@ -6,7 +6,7 @@
 #include "../../Stage/Stage.h"
 
 // ‰Šú‰»
-void StageCollider::Init()
+void StageCollider::Init(void)
 {
 	// TransfromŽæ“¾
 	transform_ = owner_->GetComponent<Transform>();

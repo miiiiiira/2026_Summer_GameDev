@@ -1,4 +1,5 @@
 #include <algorithm>
+
 #include "../../../../Manager/Audio/AudioManager.h"
 #include "../../../../Manager/PlayerStatus/PlayerStatusManager.h"
 #include "../../../../Manager/Score/ScoreManager.h"
@@ -15,6 +16,7 @@
 #include "../../Crosshair/Crosshair.h"
 #include "../../../../Scene/SceneManager.h"
 #include "../../../../Application.h"
+
 #include "ItemCollider.h"
 
 void ItemCollider::Init(void)
@@ -25,7 +27,6 @@ void ItemCollider::Init(void)
 
 void ItemCollider::Update(void)
 {
-
 	if (!item_) return;
 
 	// アイテムが生存中でなければ処理を行わない
@@ -73,7 +74,6 @@ void ItemCollider::Draw2D(void)
 	}
 
 #endif // _DEBUG
-
 }
 
 void ItemCollider::CameraRayCollision(void)
@@ -103,7 +103,6 @@ void ItemCollider::CameraRayCollision(void)
 
 	// 当たっていたら見つけた判定にする
 	item_->TrueIsFound();
-
 }
 
 void ItemCollider::PlayerGrabCollision(void)

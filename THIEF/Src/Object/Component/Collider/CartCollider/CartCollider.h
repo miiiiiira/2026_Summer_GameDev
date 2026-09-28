@@ -14,7 +14,8 @@ public:
 
 	void Init(void) override;		// 初期化
 	void Update(void) override;		// 更新
-	void Draw2D(void) override;		// 更新
+
+public:
 
 	// ステージ設定
 	void SetStage(Stage* stage) { stage_ = stage; }
@@ -24,11 +25,6 @@ public:
 
 	// クロスヘア設定
 	void SetCrosshair(Crosshair* crosshair) { crosshair_ = crosshair; }
-
-private:
-
-	// カートとプレイヤー掴み機能との当たり判定
-	void CartToPlayerGrabbingCollision(void);
 
 private:
 
@@ -44,5 +40,9 @@ private:
 	// クロスヘア
 	Crosshair* crosshair_ = nullptr;
 
-	void DebugDraw(void);
+private:
+
+	// カートとプレイヤー掴み機能との当たり判定
+	void CartToPlayerGrabbingCollision(void);
+
 };

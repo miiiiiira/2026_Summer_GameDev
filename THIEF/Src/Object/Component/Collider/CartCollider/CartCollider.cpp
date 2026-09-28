@@ -1,4 +1,3 @@
-#include "CartCollider.h"
 #include "../../../Object.h"
 #include "../../Cart/Cart.h"
 #include "../../Stage/Stage.h"
@@ -10,6 +9,8 @@
 #include "../../../../Manager/PlayerStatus/PlayerStatusManager.h"
 #include "../../../../Application.h"
 #include "../../../../Manager/Input/InputManager.h"
+
+#include "CartCollider.h"
 
 void CartCollider::Init(void)
 {
@@ -30,17 +31,14 @@ void CartCollider::Update(void)
 	CartToPlayerGrabbingCollision();
 }
 
-void CartCollider::Draw2D(void)
-{
-}
-
 void CartCollider::CartToPlayerGrabbingCollision(void)
 {
 	// プレイヤーが何かを掴んでいる状態だったら処理を行わない
 	if (player_->GetGrabbingState() == GRABBING_STATE::IS_GRABBING) return;
 
 	// カートの取っ手座標
-	VECTOR cartHandlePos = MV1GetFramePosition(cart_->GetModelId(), 1);
+	VECTOR cartHandlePos = 
+		MV1GetFramePosition(cart_->GetModelId(), 1);
 
 	// 線分の上座標
 	VECTOR lineStartPos = player_->GetLineStartPos();
@@ -55,7 +53,12 @@ void CartCollider::CartToPlayerGrabbingCollision(void)
 	bool isGrab = true;
 
 	// 線分とカートの衝突判定
-	MV1_COLL_RESULT_POLY cartHitResult = MV1CollCheck_Line(cart_->GetModelId(), 1, lineStartPos, lineEndPos);
+	MV1_COLL_RESULT_POLY cartHitResult = 
+		MV1CollCheck_Line(
+			cart_->GetModelId(),
+			1,
+			lineStartPos, 
+			lineEndPos);
 
 	// 線分と当たっていない
 	if (!cartHitResult.HitFlag)
@@ -85,6 +88,7 @@ void CartCollider::CartToPlayerGrabbingCollision(void)
 		// ワールド座標をスクリーン座標にする
 		VECTOR pos = ConvWorldPosToScreenPos(cartHandlePos);
 		Vector2 screenPos = { pos.x,pos.y };
+
 		// スクリーン上で掴み可能な範囲
 		Vector2 checkBoxPos = { Application::SCREEN_SIZE_X / 2 - Crosshair::CONTROLLER_GRAB_SCREEN_RANGE_RAD ,
 			Application::SCREEN_SIZE_Y / 2 - Crosshair::CONTROLLER_GRAB_SCREEN_RANGE_RAD };

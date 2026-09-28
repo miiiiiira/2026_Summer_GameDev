@@ -1,4 +1,3 @@
-#include "DeliveryLocationCollider.h"
 #include "../../../Object.h"
 #include "../../Transform/Transform.h"
 #include "../../Stage/Stage.h"
@@ -12,6 +11,8 @@
 #include "../../Crosshair/Crosshair.h"
 #include "../../../../Application.h"
 #include "../../../../Scene/SceneManager.h"
+
+#include "DeliveryLocationCollider.h"
 
 void DeliveryLocationCollider::Init(void)
 {
@@ -43,7 +44,6 @@ void DeliveryLocationCollider::Draw2D(void)
 #ifdef _DEBUG
 	DebugDraw();
 #endif // _DEBUG
-
 }
 
 void DeliveryLocationCollider::ItemToDeliveryLocationCollision(void)
@@ -65,9 +65,10 @@ void DeliveryLocationCollider::ItemToDeliveryLocationCollision(void)
 		VECTOR itemPos = item->GetTransform()->pos_;
 
 		// アイテムのサイズ(中心から端までの半径)
-		VECTOR itemSize = { item->GetInfo().collisionRadiusX_
-			, item->GetInfo().collisionRadiusY_
-			,item->GetInfo().collisionRadiusX_ };
+		VECTOR itemSize = { 
+			item->GetInfo().collisionRadiusX_,
+			item->GetInfo().collisionRadiusY_,
+			item->GetInfo().collisionRadiusX_ };
 
 		// 当たっているかつ、納品場所に入っていないフラグが立っていたら
 		if (Collision::HitAABBs(deliveryPos, deliverySize, itemPos, itemSize)
@@ -142,8 +143,10 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 		// ワールド座標をスクリーン座標にする
 		VECTOR pos = ConvWorldPosToScreenPos(doneSwitchPos);
 		Vector2 screenPos = { pos.x,pos.y };
+
 		// スクリーン上で掴み可能な範囲
-		Vector2 checkBoxPos = { Application::SCREEN_SIZE_X / 2 - Crosshair::CONTROLLER_GRAB_SCREEN_RANGE_RAD ,
+		Vector2 checkBoxPos = { 
+			Application::SCREEN_SIZE_X / 2 - Crosshair::CONTROLLER_GRAB_SCREEN_RANGE_RAD ,
 			Application::SCREEN_SIZE_Y / 2 - Crosshair::CONTROLLER_GRAB_SCREEN_RANGE_RAD };
 
 		// 掴み可能な範囲に入っている
@@ -272,7 +275,6 @@ void DeliveryLocationCollider::DoneSwitchToPlayerCollision(void)
 
 void DeliveryLocationCollider::DebugDraw(void)
 {
-
 	// 判定をするアイテムのポインタ
 	std::vector<Item*> items = stage_->GetItems();
 
