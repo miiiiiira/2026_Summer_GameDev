@@ -1,7 +1,8 @@
 #pragma once
-#include "../Component.h"
 #include <map>
 #include <string>
+
+#include "../Component.h"
 
 class Render3D;
 
@@ -19,24 +20,34 @@ public:
 		float step = 0.0f;
 	};
 
-	void Init(void) override;
-	void Update(void) override;
-	void Release(void);
+public:
 
+	void Init(void) override;	// 初期化
+	void Update(void) override;	// 更新
+	void Release(void);			// 解放
+
+public:
+
+	// アニメーション登録
+	// モデル自体にアニメーションがついていない時に使用
 	void Add(int type, float speed, const std::string& path);
+	// モデル自体にアニメーションがついている時に使用
 	void AddInFbx(int type, float speed, int animIndex);
 
+	// アニメーションを再生する
 	void Play(int type, bool loop = true);
 
+	// 現在のアニメーションの種類を返す
 	int GetPlayType(void) const { return playType_; }
+
+	// アニメーションが終了していたらtrueを返す
 	bool IsEnd(void) const;
 
 private:
 
-	void AddInternal(int type, float speed, AnimationState& anim);
+	Render3D* render_ = nullptr;
 
 private:
-	Render3D* render_ = nullptr;
 
 	std::map<int, AnimationState> animations_;
 
@@ -44,4 +55,9 @@ private:
 	AnimationState playAnim_;
 
 	bool isLoop_ = true;
+
+private:
+
+	// アニメーション再生速度設定
+	void AddInternal(int type, float speed, AnimationState& anim);
 };

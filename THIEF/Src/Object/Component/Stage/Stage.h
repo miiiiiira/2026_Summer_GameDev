@@ -121,10 +121,10 @@ private:
 	int callCount_ = 0;
 
 	// プッシュ画像
-	int pushImg_ = -1;				// ハンドル
-	bool isPushDrawFlg_ = false;	// 表示するか　true / 表示 , false / 非表示
-	float pushUpDownOffsetPos_;		// 位置を上下させる座標
-	bool isPushUp_ = true;			// 座標の上下を変更する　true / 上へ , false / 下へ
+	int pushImg_ = -1;					// ハンドル
+	bool isPushDrawFlg_ = false;		// 表示するか　true / 表示 , false / 非表示
+	float pushUpDownOffsetPos_ = 0.0f;	// 位置を上下させる座標
+	bool isPushUp_ = true;				// 座標の上下を変更する　true / 上へ , false / 下へ
 
 private:
 
