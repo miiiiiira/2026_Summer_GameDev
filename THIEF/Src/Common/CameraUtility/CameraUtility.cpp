@@ -46,8 +46,7 @@ MATRIX CameraUtility::AngleToMatrix(VECTOR angle)
 	MATRIX mat = Matrix::GetMatrixRotateXYZ(angle);
 
 	// プレイヤーの回転を行列に反映する
-	MATRIX mat = 
-		Matrix::Multiplication(mat, GetCameraMatrix());
+	mat = Matrix::Multiplication(mat, GetCameraMatrix());
 
 	return mat;
 }

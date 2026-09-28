@@ -2,6 +2,7 @@
 #include "../Component.h"
 #include "Upgrade/UpgradeType.h"
 #include "../../../Scene/Tutorial/TutorialInfo.h"
+#include "../../../Common/CameraUtility/CameraUtility.h"
 #include "PlayerInfo.h"
 #include <variant>
 #include <DxLib.h>
