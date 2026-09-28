@@ -1,7 +1,6 @@
 #include "../Render/Render3D.h"
 #include "../Collider/DeliveryLocationCollider/DeliveryLocationCollider.h"
 #include "../../../Scene/SceneManager.h"
-#include "../../Object.h"
 #include "DeliveryInfo.h"
 #include "../../../Manager/Score/ScoreManager.h"
 #include "../../../Manager/Audio/AudioManager.h"
@@ -20,13 +19,15 @@ Stage::~Stage(void)
 {
 	// モデルの削除
 	MV1DeleteModel(collModelId_);
+
 	// プッシュ画像の削除
 	DeleteGraph(pushImg_);
+
 	// アイテムたちのポインタをクリア
 	items_.clear();
 }
 
-void Stage::Init()
+void Stage::Init(void)
 {
 	// オーナーから3D描画コンポーネントを取得
 	auto render = owner_->GetComponent<Render3D>();
@@ -61,7 +62,6 @@ void Stage::Init()
 	}
 	else
 	{
-
 		// ステージ情報を取ってきて初期化処理を行う
 		auto stageNum = SceneManager::GetInstance()->GetCurrentStage();
 		// ステージ情報を使用しテーブルから納品場所のデータを取得
@@ -88,15 +88,6 @@ void Stage::Init()
 			deliverySize_ = deliveryPos_ = doneSwitchPos_ ={};
 		}
 	}
-
-	// プッシュ画像フラグ
-	isPushDrawFlg_ = false;
-
-	// 上へ設定
-	isPushUp_ = true;
-
-	// 納品完了スイッチフラグ
-	isDoneSwitch_ = false;
 }
 
 void Stage::Update(void)
@@ -166,21 +157,6 @@ void Stage::Draw3D(void)
 #endif // _DEBUG
 }
 
-Transform* Stage::GetTransform(void)
-{
-	return owner_->GetComponent<Transform>();
-}
-
-VECTOR Stage::GetDeliverySize(void)
-{
-	return deliverySize_;
-}
-
-void Stage::SetItem(Item* items)
-{
-	items_.push_back(items);
-}
-
 void Stage::SetCollModel(std::string path)
 {
 	// 既に読み込み済みだったら削除して読み込み
@@ -204,21 +180,6 @@ void Stage::SetCollModel(std::string path)
 	}
 }
 
-VECTOR Stage::GetDeliveryPos(void)
-{
-	return deliveryPos_;
-}
-
-VECTOR Stage::GetDoneSwitchPos(void)
-{
-	return doneSwitchPos_;
-}
-
-std::vector<Item*> Stage::GetItems(void)
-{
-	return items_;
-}
-
 VECTOR Stage::ToWorldPos(VECTOR local)
 {
 	auto trans = owner_->GetComponent<Transform>();
@@ -229,33 +190,6 @@ VECTOR Stage::ToLocalPos(VECTOR world)
 {
 	auto trans = owner_->GetComponent<Transform>();
 	return VSub(world, trans->pos_);
-}
-
-bool Stage::GetStartClearCount(void)
-{
-	return clearCount_ > 0;
-}
-
-void Stage::StartClearCount(void)
-{
-	// クリアカウントを開始させる
-	clearCount_++;
-}
-
-void Stage::TrueIsDoneSwitch(void)
-{
-	// 押されたことを知らせる
-	isDoneSwitch_ = true;
-}
-
-bool Stage::GetIsPushDrawFlg(void)
-{
-	return isPushDrawFlg_;
-}
-
-void Stage::SetIsPushDrawFlg(bool flg)
-{
-	isPushDrawFlg_ = flg;
 }
 
 void Stage::DrawDebug(void)
