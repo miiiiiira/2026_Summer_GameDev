@@ -12,13 +12,10 @@ public:
 		NONE,		// なし
 		THINK,		// 考える
 		IDLE,		// 待機
-		PATROL,		// 徘徊
-		SURPRISE,	// 見つける
-		CHASE,		// 追いかける
+		PATROL,		// 巡回
+		SURPRISE,	// 発見
+		CHASE,		// 追跡
 		ATTACK,		// 攻撃
-		HIT_REACT,	// ダメージ
-		DEAD,		// 死
-		END,		// 終了
 	};
 
 	// 敵のアニメーション
@@ -79,9 +76,6 @@ private:
 	void ChangeSurprise(void);
 	void ChangeChase(void);
 	void ChangeAttack(void);
-	void ChangeHit(void);
-	void ChangeDead(void);
-	void ChangeEnd(void);
 
 	// 状態別更新
 	void UpdateThink(void);
@@ -90,7 +84,4 @@ private:
 	void UpdateSurprise(void);
 	void UpdateChase(void);
 	void UpdateAttack(void);
-	void UpdateHit(void);
-	void UpdateDead(void);
-	void UpdateEnd(void);
 };

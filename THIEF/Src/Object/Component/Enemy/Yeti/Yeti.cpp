@@ -33,6 +33,7 @@ void Yeti::Init(void)
 	EnemyBase::Init();
 
 	animation_->Init();
+
 	for(int i = 0; i < static_cast<int>(ANIM_TYPE::MAX); i++)
 	{
 		animation_->AddInFbx(static_cast<int>(i), 0.2f, static_cast<int>(i));
@@ -45,7 +46,6 @@ void Yeti::Init(void)
 	{
 		info_.scale_ = SCALE;
 		MV1SetScale(info_.modelId_, info_.scale_);
-
 
 		transform_->angle_ = DEFAULT_ANGLE;
 		info_.localAngle_ = { 0.0f, Math::Deg2Rad(180.0f), 0.0f };
@@ -65,9 +65,7 @@ void Yeti::Init(void)
 
 	info_.tag_ = ENEMY_TAG::YETI;
 
-
 	seTimer_ = 0.0f;
-
 
 	if (useWeapon_)
 	{
@@ -123,10 +121,7 @@ void Yeti::Update(void)
 	case Yeti::STATE::PATROL: UpdatePatrol(); break;
 	case Yeti::STATE::SURPRISE: UpdateSurprise(); break;
 	case Yeti::STATE::CHASE: UpdateChase(); break;
-	case Yeti::STATE::ATTACK: UpdateAttack(); break;
-	case Yeti::STATE::HIT_REACT: UpdateHit(); break;
-	case Yeti::STATE::DEAD: UpdateDead(); break;
-	case Yeti::STATE::END: UpdateEnd(); break;
+	case Yeti::STATE::ATTACK: UpdateAttack(); break;;
 	default:
 		break;
 	}
@@ -227,15 +222,36 @@ void Yeti::ChangeState(STATE state)
 
 	switch (state_)
 	{
-	case Yeti::STATE::THINK: ChangeThink(); break;
-	case Yeti::STATE::IDLE: ChangeIdle(); break;
-	case Yeti::STATE::PATROL: ChangePatrol(); break;
-	case Yeti::STATE::SURPRISE: ChangeSurprise(); break;
-	case Yeti::STATE::CHASE: ChangeChase(); break;
-	case Yeti::STATE::ATTACK: ChangeAttack(); break;
-	case Yeti::STATE::HIT_REACT: ChangeHit(); break;
-	case Yeti::STATE::DEAD: ChangeDead(); break;
-	case Yeti::STATE::END: ChangeEnd(); break;
+	case Yeti::STATE::THINK: 
+		// l‚¦‚éó‘Ô‚É‘JˆÚ
+		ChangeThink(); 
+		break;
+
+	case Yeti::STATE::IDLE:
+		// ‘Ò‹@ó‘Ô‚É‘JˆÚ
+		ChangeIdle(); 
+		break;
+
+	case Yeti::STATE::PATROL: 
+		// „‰ñó‘Ô‚É‘JˆÚ
+		ChangePatrol(); 
+		break;
+
+	case Yeti::STATE::SURPRISE:
+		// ”­Œ©ó‘Ô‚É‘JˆÚ
+		ChangeSurprise(); 
+		break;
+
+	case Yeti::STATE::CHASE: 
+		// ’ÇÕó‘Ô‚É‘JˆÚ
+		ChangeChase(); 
+		break;
+
+	case Yeti::STATE::ATTACK:
+		// UŒ‚ó‘Ô‚É‘JˆÚ
+		ChangeAttack(); 
+		break;
+
 	default:
 		break;
 	}
@@ -299,18 +315,6 @@ void Yeti::ChangeAttack(void)
 	animation_->Play(static_cast<int>(ANIM_TYPE::PUNCH), false);
 }
 
-void Yeti::ChangeHit(void)
-{
-}
-
-void Yeti::ChangeDead(void)
-{
-}
-
-void Yeti::ChangeEnd(void)
-{
-}
-
 void Yeti::UpdateThink(void)
 {
 	// Žvl
@@ -347,8 +351,10 @@ void Yeti::UpdateIdle(void)
 
 void Yeti::UpdatePatrol(void)
 {
+	// ƒvƒŒƒCƒ„[‚ðŒ©‚Â‚¯‚½‚ç
 	if (CheckPlayerDiscovery(info_.viewRadius_))
 	{
+		// ”­Œ©ó‘Ô‚É‘JˆÚ
 		ChangeState(STATE::SURPRISE);
 		return;
 	}
@@ -390,9 +396,10 @@ void Yeti::UpdatePatrol(void)
 void Yeti::UpdateSurprise(void)
 {
 	info_.step_ -= SceneManager::GetInstance()->GetDeltaTime();
+
 	if (info_.step_ < 0.0f)
 	{
-		// ‘Ò‹@I—¹
+		// —P—\ŽžŠÔ‚ªI‚í‚Á‚½‚ç’ÇÕó‘Ô‚Ö
 		ChangeState(STATE::CHASE);
 		return;
 	}
@@ -577,16 +584,4 @@ void Yeti::UpdateAttack(void)
 		ChangeState(STATE::CHASE);
 		return;
 	}
-}
-
-void Yeti::UpdateHit(void)
-{
-}
-
-void Yeti::UpdateDead(void)
-{
-}
-
-void Yeti::UpdateEnd(void)
-{
 }
