@@ -37,12 +37,6 @@ public:
 
 private:
 
-
-
-
-
-private:
-
 	// オブジェクトマネージャー
 	ObjectManager* objectManger_;
 
