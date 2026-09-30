@@ -11,75 +11,102 @@ StagePathData::StagePathData(int stageId)
 
 StagePathData::~StagePathData(void)
 {
+	// メモリ解放
 	for (auto& edges : edgeList_)
 	{
+		// vectorをクリア
 		edges.clear();
+
+		// 容量を縮小してメモリを解放
 		edges.shrink_to_fit();
 	}
+
+	// vectorをクリア
 	edgeList_.clear();
+
+	// 容量を縮小してメモリを解放
 	edgeList_.shrink_to_fit();
 
-	way_.clear();
-	way_.shrink_to_fit();
+	// vectorをクリア
+	waypoints_.clear();
+
+	// 容量を縮小してメモリを解放
+	waypoints_.shrink_to_fit();
 }
 
 void StagePathData::Load(const std::string& csvPath)
 {
 	// 既存のメモリバッファを完全に破棄してリセットする
-	way_.clear();
-	way_.shrink_to_fit();
+	waypoints_.clear();
+	waypoints_.shrink_to_fit();
 
+	// エッジリストの各要素をクリアしてメモリを解放
 	for (auto& edges : edgeList_)
 	{
 		edges.clear();
 		edges.shrink_to_fit();
 	}
+
+	// エッジリスト自体をクリアしてメモリを解放
 	edgeList_.clear();
 	edgeList_.shrink_to_fit();
 
+	// CSVファイルを開く
 	std::ifstream ifs(csvPath);
+
+	// ファイルが開けなかった場合は処理を終了
 	if (!ifs) return;
 
+	// CSVの各行を読み込むための変数
 	std::string line;
 	std::string c;
 
 	// CSVからノードを読み込む
 	while (std::getline(ifs, line))
 	{
+		// 1行をカンマ区切りで分割してノード情報を取得
 		std::istringstream stream(line);
 		int index = 0;
 		int pointId = 0;
 		float posX = 0.0f, posY = 0.0f, posZ = 0.0f;
 
+		// カンマ区切りで各要素を取得
 		while (std::getline(stream, c, ','))
 		{
-			if (index == 0)      pointId = std::stoi(c);
-			else if (index == 1) posX = std::stof(c);
-			else if (index == 2) posY = std::stof(c);
-			else if (index == 3) posZ = std::stof(c);
+			if (index == 0)      pointId = std::stoi(c);	// ノードID
+			else if (index == 1) posX = std::stof(c);		// X座標
+			else if (index == 2) posY = std::stof(c);		// Y座標
+			else if (index == 3) posZ = std::stof(c);		// Z座標
+
 			index++;
 		}
 
+		// ノード情報をwaypoints_に追加
 		WAYPOINT way = {};
 		way.id = pointId;
 		way.pos = VGet(posX, posY, posZ);
 
-		way_.push_back(way);
+		waypoints_.push_back(way);
 	}
 
 	// エッジリストの要素数をノード数に合わせる
-	edgeList_.resize(way_.size());
+	edgeList_.resize(waypoints_.size());
 
 	// 一定距離内のノード同士を自動接続する
-	for (int i = 0; i < static_cast<int>(way_.size()); i++)
+	for (int i = 0; i < static_cast<int>(waypoints_.size()); i++)
 	{
-		for (int j = 0; j < static_cast<int>(way_.size()); j++)
+		for (int j = 0; j < static_cast<int>(waypoints_.size()); j++)
 		{
+			// 自分自身のノードはスキップ
 			if (i == j) continue;
+			
+			// ノード間の距離を計算（2乗距離で比較）
+			float nodeDistance = VSquareSize(VSub(waypoints_[j].pos, waypoints_[i].pos));
 
-			float nodeDistance = VSquareSize(VSub(way_[j].pos, way_[i].pos));
+			// 一定距離以上のノードは接続しない
 			if (nodeDistance > NODE_CONNECT_MAX_DISTANCE_SQ) continue;
 
+			// エッジを追加
 			AddEdge(i, j);
 		}
 	}
@@ -87,8 +114,9 @@ void StagePathData::Load(const std::string& csvPath)
 
 void StagePathData::AddEdge(int fromId, int toId)
 {
-	VECTOR posA = way_[fromId].pos;
-	VECTOR posB = way_[toId].pos;
+	// ノードの座標を取得
+	VECTOR posA = waypoints_[fromId].pos;
+	VECTOR posB = waypoints_[toId].pos;
 
 	float checkRadius = 50.0f; // 敵の大きさに応じて調整
 
@@ -107,8 +135,8 @@ void StagePathData::AddEdge(int fromId, int toId)
 
 	// 障害物がない場合のみエッジを追加
 	EDGE edge = {};
-	edge.way.id = way_[toId].id;
-	edge.way.pos = way_[toId].pos;
+	edge.way.id = waypoints_[toId].id;
+	edge.way.pos = waypoints_[toId].pos;
 	edge.cost = VSize(VSub(posB, posA));
 
 	edgeList_[fromId].push_back(edge);

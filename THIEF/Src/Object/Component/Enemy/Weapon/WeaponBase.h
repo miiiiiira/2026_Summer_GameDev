@@ -4,6 +4,7 @@
 class WeaponBase
 {
 public:
+
 	// 武器種別
 	enum class TYPE
 	{
@@ -17,37 +18,50 @@ public:
 	// デストラクタ
 	~WeaponBase(void);
 
-	void Init(TYPE type);
-	virtual void Update(void);
-	virtual void Draw(void) = 0;
-	virtual void Release(void) = 0;
+	void Init(TYPE type);			// 初期化
+	virtual void Update(void);		// 更新
+	virtual void Draw(void) = 0;	// 描画
+	virtual void Release(void) = 0;	// 解放
 
 	// 座標の取得
-	VECTOR GetPos(void);
+	VECTOR GetPos(void) const { return pos_; }
+
+	// 座標の設定
 	void SetPos(VECTOR pos);
 
 	// 衝突判定用半径
-	float GetCollisionRadius(void);
+	float GetCollisionRadius(void) { return collisionRadius_; }
 
-	float GetSpeed(void);
+	// 移動スピードの取得
+	float GetSpeed(void) { return speed_; }
 
 	// 武器を使用する
 	virtual void Use(VECTOR pos, VECTOR dir) = 0;
 
 	// 生存判定
-	bool IsAlive(void);
+	bool IsAlive(void) { return isAlive_; }
+
+	// 生存判定の設定
 	void SetAlive(bool isAlive);
 
 	// 武器種別の取得
-	TYPE GetType(void);
+	TYPE GetType(void) { return type_; }
 
 protected:
+
 	// 武器種別
 	TYPE type_;
 
+	// モデルID
 	int modelId_;
+
+	// 座標
 	VECTOR pos_;
+
+	// 角度
 	VECTOR angles_;
+
+	// スケール
 	VECTOR scales_;
 
 	// 衝突判定用半径
@@ -67,8 +81,6 @@ protected:
 
 	// 使用時の位置調整(Y)
 	VECTOR localPos_;
-
-	int attackImgs_;
 
 	// 画像やモデルなどのロード(純粋仮想関数)
 	virtual void Load(void) = 0;

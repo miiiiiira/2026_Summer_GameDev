@@ -17,6 +17,7 @@ enum class ENEMY_TAG
     MAX,
 };
 
+// 敵の左右の位置を表わすタグ
 enum class ENEMY_SIDE
 {
 	RIGHT,
@@ -74,17 +75,17 @@ struct EnemyInfo
 	float radius_ = 0.0f;            // 敵キャラクターのカプセル判定用半径
 
 	// 経路探索
-	std::vector<float> minCosts_;
-	std::vector<int> parentNodes_;
-	std::vector<StagePathData::EDGE> path_;
-	VECTOR nextWayPoint_ = {};
-	std::vector<int> candidates_;    // ノード候補
-	int currentNodeId_ = -1;
-	int prevNodeId_ = -1;
-	int prevPrevNodeId_ = -1;
-	int nextNodeId_ = -1;
+	std::vector<float> minCosts_;			// 最小コスト
+	std::vector<int> parentNodes_;			// 親ノード
+	std::vector<StagePathData::EDGE> path_;	// 経路探索結果
+	VECTOR nextWayPoint_ = {};				// 次のノードの座標
+	std::vector<int> candidates_;			// ノード候補
+	int currentNodeId_ = -1;				// 現在のノードID
+	int prevNodeId_ = -1;					// 前回のノードID
+	int prevPrevNodeId_ = -1;				// 前々回のノードID
+	int nextNodeId_ = -1;					// 次のノードID
 
-	float velocityY_ = 0.0f;        // Y軸方向の速度
+	float velocityY_ = 0.0f;				 // Y軸方向の速度
 };
 
 // 敵生成用データ

@@ -10,6 +10,7 @@ WeaponBase::~WeaponBase(void)
 
 void WeaponBase::Init(TYPE type)
 {
+	// •Šíí•Ê‚ğİ’è
 	type_ = type;
 
 	// ‰Šú‚Í¶‘¶‚µ‚Ä‚¢‚È‚¢
@@ -27,48 +28,16 @@ void WeaponBase::Init(TYPE type)
 
 void WeaponBase::Update(void)
 {
-	if (!isAlive_)
-	{
-		return;
-	}
+	// ¶‘¶‚µ‚Ä‚¢‚È‚¢ê‡‚Íˆ—‚ğs‚í‚È‚¢
+	if (!isAlive_) return;
 
 	// ˆÚ“®ˆ—
 	Move();
 }
 
-VECTOR WeaponBase::GetPos(void)
-{
-	return pos_;
-}
-
-void WeaponBase::SetPos(VECTOR pos)
-{
-	pos_ = pos;
-}
-
-float WeaponBase::GetCollisionRadius(void)
-{
-	return collisionRadius_;
-}
-
-float WeaponBase::GetSpeed(void)
-{
-	return speed_;
-}
-
-bool WeaponBase::IsAlive(void)
-{
-	return isAlive_;
-}
-
 void WeaponBase::SetAlive(bool isAlive)
 {
 	isAlive_ = isAlive;
-}
-
-WeaponBase::TYPE WeaponBase::GetType(void)
-{
-	return type_;
 }
 
 void WeaponBase::Move(void)

@@ -6,10 +6,11 @@
 class StagePathData
 {
 public:
+
 	// ノード構造体
 	struct WAYPOINT
 	{
-		int id;
+		int id;	
 		VECTOR pos;
 	};
 
@@ -20,22 +21,33 @@ public:
 		float cost;
 	};
 
+	// コンストラクタ
 	StagePathData(int stageId);
+
+	// デストラクタ
 	~StagePathData(void);
 
 	// CSVの読み込みとエッジ構築を一括で行う
 	void Load(const std::string& csvPath);
 
 	// 敵（EnemyBase）から参照するためのゲッター
-	const std::vector<WAYPOINT>* GetWayList(void) const { return &way_; }
+	const std::vector<WAYPOINT>* GetWayList(void) const { return &waypoints_; }
 	const std::vector<std::vector<EDGE>>* GetEdgeList(void) const { return &edgeList_; }
 
 private:
+
+	// エッジの追加
 	void AddEdge(int fromId, int toId);
 
 private:
-	std::vector<WAYPOINT> way_;
+
+	// ノードのリスト
+	std::vector<WAYPOINT> waypoints_;
+
+	// エッジのリスト
 	std::vector<std::vector<EDGE>> edgeList_;
+
+	// ステージID
 	int stageId_;
 
 	// ノードを自動接続する最大距離（2乗）
