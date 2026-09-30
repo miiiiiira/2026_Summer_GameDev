@@ -48,11 +48,10 @@ private:
 	// 向き
 	static constexpr VECTOR DEFAULT_ANGLE = { 0.0f, 0.0f,0.0f };
 
-	// プレイヤー通過時に発動するイベント用座標
-	// プレイヤーがこの座標に近づくと、敵が反応する
+	// 敵が反応する座標
 	static constexpr VECTOR LOOK_POS = { -3700.0f, 10.0f, 1393.0f };
 
-	// プレイヤーがこの座標に近づくと、敵がプレイヤーを驚かす
+	// 敵がプレイヤーを驚かす座標
 	static constexpr VECTOR SCARE_POS = { -4000.0f, 10.0f, 1393.0f };
 
 	// 特定のポイントからの反応距離

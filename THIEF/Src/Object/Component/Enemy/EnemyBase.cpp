@@ -259,7 +259,7 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 	VECTOR playerPos = player_->GetTransform()->pos_;
 
 	// 敵とプレイヤーの直線距離をチェック
-	float distance = GetDistance(playerPos, transform_->pos_);
+	float distance = GetDistanceSQ(playerPos, transform_->pos_);
 
 	// 半径の二乗と比較して、範囲外ならfalseを返す
 	if (distance > radius * radius) return false;
@@ -460,7 +460,7 @@ int EnemyBase::SelectNextNode(void)
 		int nextId = edge.way.id;
 
 		// 接続されているノードの座標を取得
-		float distance = GetDistance(edge.way.pos, transform_->pos_);
+		float distance = GetDistanceSQ(edge.way.pos, transform_->pos_);
 
 		// 敵の座標から半径以内に無いポイントは除外
 		if (distance > info_.patrolRadius_ * info_.patrolRadius_) continue;

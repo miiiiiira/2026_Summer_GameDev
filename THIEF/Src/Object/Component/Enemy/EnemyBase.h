@@ -99,7 +99,7 @@ protected:
 	void Move(void);
 
 	// 2点間の距離を返す
-	float GetDistance(VECTOR pos1, VECTOR pos2) { return VSquareSize(VSub(pos1, pos2)); }
+	float GetDistanceSQ(VECTOR pos1, VECTOR pos2) { return VSquareSize(VSub(pos1, pos2)); }
 
 	// プレイヤーを見つけたかどうか
 	bool CheckPlayerDiscovery(float radius);

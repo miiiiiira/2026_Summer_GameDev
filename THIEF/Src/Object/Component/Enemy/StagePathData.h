@@ -21,8 +21,10 @@ public:
 		float cost;
 	};
 
-	// コンストラクタ・デストラクタ
+	// コンストラクタ
 	StagePathData(int stageId);
+
+	// デストラクタ
 	~StagePathData(void);
 
 	// CSVの読み込みとエッジ構築を一括で行う

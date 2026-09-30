@@ -30,20 +30,18 @@ void Giggle::Init(void)
 
 void Giggle::Update(void)
 {
+	// 現在のステートに応じた更新処理を呼び分ける
 	switch (state_)
 	{
 	case STATE::IDLE: 
-		// 待機状態の更新
 		UpdateIdle(); 
 		break;
 
 	case STATE::THINK: 
-		// 考える状態の更新
 		UpdateThink(); 
 		break;
 
 	case STATE::GIGGLING: 
-		// 笑う状態の更新
 		UpdateGiggling(); 
 		break;
 
@@ -56,20 +54,18 @@ void Giggle::ChangeState(STATE state)
 {
 	state_ = state;
 
+	// 遷移時に一度だけ行う初期化処理を呼び出す
 	switch (state_)
 	{
 	case STATE::IDLE: 
-		// 待機状態に遷移
 		ChangeIdle(); 
 		break;
 
 	case STATE::THINK: 
-		// 考える状態に遷移
 		ChangeThink(); 
 		break;
 
 	case STATE::GIGGLING: 
-		// 笑う状態に遷移
 		ChangeGiggling(); 
 		break;
 

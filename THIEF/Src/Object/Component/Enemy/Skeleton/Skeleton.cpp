@@ -85,25 +85,22 @@ void Skeleton::Update(void)
 		MV1SetRotationXYZ(info_.modelId_, finalAngle);
 	}
 
+	// 現在のステートに応じた更新処理を呼び分ける
 	switch (state_)
 	{
 	case Skeleton::STATE::IDLE: 
-		// 待機状態の更新
 		UpdateIdle(); 
 		break;
 
 	case Skeleton::STATE::LOOK: 
-		// 見つめる状態の更新
 		UpdateLook(); 
 		break;
 
 	case Skeleton::STATE::SCARE: 
-		// 怖がらせる状態の更新
 		UpdateScare(); 
 		break;
 
 	case Skeleton::STATE::END: 
-		// 終了状態の更新
 		UpdateEnd(); 
 		break;
 
@@ -206,7 +203,7 @@ void Skeleton::UpdateIdle(void)
 	VECTOR playerPos = player_->GetTransform()->pos_;
 
 	// プレイヤーとの距離を計算
-	float distance = GetDistance(LOOK_POS, playerPos);
+	float distance = GetDistanceSQ(LOOK_POS, playerPos);
 
 	// プレイヤーが一定距離以内にいる場合
 	if (distance <= TRIGGER_RANGE)
@@ -223,7 +220,7 @@ void Skeleton::UpdateLook(void)
 	VECTOR playerPos = player_->GetTransform()->pos_;
 
 	// プレイヤーとの距離を計算
-	float distance = GetDistance(SCARE_POS, playerPos);
+	float distance = GetDistanceSQ(SCARE_POS, playerPos);
 
 	// プレイヤーが一定距離以内にいる場合
 	if (distance <= TRIGGER_RANGE)
