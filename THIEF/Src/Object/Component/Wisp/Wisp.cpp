@@ -100,16 +100,6 @@ void Wisp::Update(void)
 	DebugLightColorChange();
 }
 
-void Wisp::Draw3D(void)
-{
-#ifdef _DEBUG
-
-	// デバッグ用の描画処理
-	DebugDraw();
-
-#endif // _DEBUG
-}
-
 void Wisp::ChangeLightTexture(LIGHT_TYPE lightType)
 {
 	// 指定のライトタイプを設定
@@ -387,12 +377,4 @@ void Wisp::DebugLightColorChange(void)
 		ChangeLightTexture(LightManager::GetInstance()->GetLightType());
 	}
 #endif // _DEBUG
-}
-
-void Wisp::DebugDraw(void)
-{
-	// オーナーからTransformを取得
-	auto trans = owner_->GetComponent<Transform>();
-
-	DrawSphere3D(trans->pos_, 30.0f, 10, 0xff0000, 0xff0000, false);
 }

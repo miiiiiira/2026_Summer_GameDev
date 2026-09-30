@@ -27,7 +27,6 @@ public:
 
 	void Init(void)override;	// 初期化
 	void Update(void)override;	// 更新
-	void Draw3D(void)override;	// 描画
 
 public:
 
@@ -110,8 +109,5 @@ private:
 
 	// ライトの色を変更できる(デバック時のみ)
 	void DebugLightColorChange(void);
-
-	// デバッグ用の描画処理
-	void DebugDraw(void);
 };
 

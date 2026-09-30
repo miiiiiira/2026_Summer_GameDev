@@ -38,7 +38,7 @@ public:
 private:
 
 	// オブジェクトマネージャー
-	ObjectManager* objectManger_;
+	ObjectManager* objectManger_ = nullptr;
 
 private:
 
