@@ -404,7 +404,7 @@ void Yeti::ChangeAttack(void)
 	LookPlayer();
 
 	// パンチ攻撃を発動
-	useWeapon_->Use(transform_->pos_, info_.moveDir_);
+	useWeapon_->UseWeapon(transform_->pos_, info_.moveDir_);
 
 	// パンチアニメーションを1回だけ再生
 	animation_->Play(static_cast<int>(ANIM_TYPE::PUNCH), false);

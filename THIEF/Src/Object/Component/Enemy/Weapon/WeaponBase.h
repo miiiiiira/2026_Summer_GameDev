@@ -36,7 +36,7 @@ public:
 	float GetSpeed(void) { return speed_; }
 
 	// •Ší‚ğg—p‚·‚é
-	virtual void Use(VECTOR pos, VECTOR dir) = 0;
+	virtual void UseWeapon(VECTOR pos, VECTOR dir) = 0;
 
 	// ¶‘¶”»’è
 	bool IsAlive(void) { return isAlive_; }

@@ -49,7 +49,7 @@ void WeaponPunch::Release(void)
 {
 }
 
-void WeaponPunch::Use(VECTOR pos, VECTOR dir)
+void WeaponPunch::UseWeapon(VECTOR pos, VECTOR dir)
 {
 	// ïêäÌÇÃçÇÇ≥í≤êÆ
 	pos_ = VAdd(pos, localPos_);

@@ -191,7 +191,7 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 	while (i != -1)
 	{
 		// ‹t‡‚É‚½‚Ç‚Á‚½Œo˜H‚ğinfo_.path_‚É’Ç‰Á‚·‚é
-		StagePathData::EDGE path;
+		StagePathData::Edge path;
 		path.way.id = (*wayList)[i].id;
 		path.way.pos = (*wayList)[i].pos;
 		path.cost = info_.minCosts_[i];

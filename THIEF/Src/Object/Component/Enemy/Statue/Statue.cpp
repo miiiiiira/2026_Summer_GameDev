@@ -277,7 +277,7 @@ void Statue::ChangeAttack(void)
 	enemyAttackPos.y += ATTACK_POS_OFFSET_Y;
 
 	// ƒpƒ“ƒ`UŒ‚‚ð”­“®
-	useWeapon_->Use(enemyAttackPos, info_.moveDir_);
+	useWeapon_->UseWeapon(enemyAttackPos, info_.moveDir_);
 }
 
 void Statue::UpdateIdle(void)
