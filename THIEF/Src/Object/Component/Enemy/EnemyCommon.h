@@ -77,7 +77,7 @@ struct EnemyInfo
 	// 経路探索
 	std::vector<float> minCosts_;			// 最小コスト
 	std::vector<int> parentNodes_;			// 親ノード
-	std::vector<StagePathData::EDGE> path_;	// 経路探索結果
+	std::vector<StagePathData::Edge> path_;	// 経路探索結果
 	VECTOR nextWayPoint_ = {};				// 次のノードの座標
 	std::vector<int> candidates_;			// ノード候補
 	int currentNodeId_ = -1;				// 現在のノードID

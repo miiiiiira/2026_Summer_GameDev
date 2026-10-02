@@ -17,7 +17,7 @@ public:
 	void Release(void) override;	// ‰ğ•ú
 
 	// •Ší‚ğg—p‚·‚é
-	void Use(VECTOR pos, VECTOR dir) override;
+	void UseWeapon(VECTOR pos, VECTOR dir) override;
 
 protected:
 

@@ -82,7 +82,7 @@ void StagePathData::Load(const std::string& csvPath)
 		}
 
 		// ノード情報をwaypoints_に追加
-		WAYPOINT way = {};
+		Waypoint way = {};
 		way.id = pointId;
 		way.pos = VGet(posX, posY, posZ);
 
@@ -134,7 +134,7 @@ void StagePathData::AddEdge(int fromId, int toId)
 	MV1CollResultPolyDimTerminate(res);
 
 	// 障害物がない場合のみエッジを追加
-	EDGE edge = {};
+	Edge edge = {};
 	edge.way.id = waypoints_[toId].id;
 	edge.way.pos = waypoints_[toId].pos;
 	edge.cost = VSize(VSub(posB, posA));

@@ -25,6 +25,19 @@ public:
 
 private:
 
+	// 状態別ステップタイマー
+	enum STEP_TIMER
+	{
+		STEP_IDLE = 10,		// 待機状態のステップタイマー
+		STEP_GIGGLING = 20,	// 笑う状態のステップタイマー
+	};
+
+	// 確率計算の全体値
+	static constexpr int MAX_PERCENTAGE = 100;
+
+	// 待機状態に遷移する確率
+	static constexpr int IDLE_PROBABILITY = 90;
+
 	// 状態
 	STATE state_;
 
@@ -40,20 +53,5 @@ private:
 	void UpdateIdle(void);		// 待機状態の更新
 	void UpdateThink(void);		// 考える状態の更新
 	void UpdateGiggling(void);	// 笑う状態の更新
-
-private:
-
-	// 状態別ステップタイマー
-	enum Step
-	{
-		STEP_IDLE = 10,		// 待機状態のステップタイマー
-		STEP_GIGGLING = 20,	// 笑う状態のステップタイマー
-	};
-
-	// 確率計算の全体値
-	static constexpr int MAX_PERCENTAGE = 100;
-
-	// 待機状態に遷移する確率
-	static constexpr int IDLE_PROBABILITY = 90;
 };
 
