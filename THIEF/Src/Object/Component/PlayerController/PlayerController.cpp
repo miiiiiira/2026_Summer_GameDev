@@ -999,7 +999,8 @@ void PlayerController::DrawHP(void)
 	DrawStringToHandle(
 		STATUS_DRAW_POS_X,
 		HP_DRAW_POS_Y, 
-		"HP:", 0x00fa9a,
+		"HP:", 
+		HP_COLOR,
 		Application::GetInstance()->GetFont(FONT_SIZE_20));
 
 	// ヒットストップカウンタが0じゃない場合(ダメージを受けている状態)
@@ -1013,7 +1014,7 @@ void PlayerController::DrawHP(void)
 		DrawFormatStringToHandle(
 			STATUS_DRAW_POS_X + HPWidth + shake,
 			(HP_DRAW_POS_Y - STATUS_DRAW_POS_OFFSET) + shake,
-			0xff0000,
+			DAMAGE_HP_COLOR,
 			Application::GetInstance()->GetFont(FONT_SIZE_30),
 			"%d",
 			info_.hp_);
@@ -1024,7 +1025,7 @@ void PlayerController::DrawHP(void)
 		DrawFormatStringToHandle(
 			STATUS_DRAW_POS_X + HPWidth,
 			HP_DRAW_POS_Y - STATUS_DRAW_POS_OFFSET,
-			0x00fa9a,
+			HP_COLOR,
 			Application::GetInstance()->GetFont(FONT_SIZE_30),
 			"%d",
 			info_.hp_);
@@ -1034,7 +1035,7 @@ void PlayerController::DrawHP(void)
 	DrawFormatStringToHandle(
 		STATUS_DRAW_POS_X + HPWidth + playerHpWidth,
 		HP_DRAW_POS_Y,
-		0x00fa9a,
+		HP_COLOR,
 		Application::GetInstance()->GetFont(FONT_SIZE_20),
 		" / %d",
 		PlayerStatusManager::GetInstance()->GetPlayerStatus().hpMax_);
@@ -1059,14 +1060,14 @@ void PlayerController::DrawStamina(void)
 		STATUS_DRAW_POS_X,
 		STAMINA_DRAW_POS_Y,
 		"STAMINA:",
-		0xffc800,
+		STAMINA_COLOR,
 		Application::GetInstance()->GetFont(FONT_SIZE_20));
 
 	// プレイヤースタミナの表示
 	DrawFormatStringToHandle(
 		STATUS_DRAW_POS_X + STAMINAWidth,
 		STAMINA_DRAW_POS_Y - STATUS_DRAW_POS_OFFSET,
-		0xffc800,
+		STAMINA_COLOR,
 		Application::GetInstance()->GetFont(FONT_SIZE_30),
 		"%.f",
 		info_.stamina_);
@@ -1075,7 +1076,7 @@ void PlayerController::DrawStamina(void)
 	DrawFormatStringToHandle(
 		STATUS_DRAW_POS_X + STAMINAWidth + playerStaminaWidth,
 		STAMINA_DRAW_POS_Y,
-		0xffc800,
+		STAMINA_COLOR,
 		Application::GetInstance()->GetFont(FONT_SIZE_20),
 		" / %.f",
 		PlayerStatusManager::GetInstance()->GetPlayerStatus().staminaMax_);

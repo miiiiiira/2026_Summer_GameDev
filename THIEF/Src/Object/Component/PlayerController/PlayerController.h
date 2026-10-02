@@ -136,11 +136,18 @@ private:
 	static constexpr float MOVE_SPEED_UP_MULTI = 1.2f;	// 足音のインターバル倍率
 
 	// 描画設定
-	static constexpr int STATUS_DRAW_POS_X = 10;		// ステータス描画を始める座標
-	static constexpr int HP_DRAW_POS_Y = 50;			// HPの描画Y軸
-	static constexpr int STAMINA_DRAW_POS_Y = 90;		// STAMINAの描画Y軸
-	static constexpr int STATUS_DRAW_POS_OFFSET = 10;	// オフセット
-	static constexpr float COEFFICIENT = 0.2f;			// 線形補間の係数
+	static constexpr int STATUS_DRAW_POS_X = 10;					// ステータス描画を始める座標
+	static constexpr int HP_DRAW_POS_Y = 50;						// HPの描画Y軸
+	static constexpr int STAMINA_DRAW_POS_Y = 90;					// STAMINAの描画Y軸
+	static constexpr int STATUS_DRAW_POS_OFFSET = 10;				// オフセット
+	static constexpr float COEFFICIENT = 0.2f;						// 線形補間の係数
+
+	// HP描画設定
+	static constexpr unsigned int HP_COLOR = 0x00fa9a;		// HPのカラー値
+	static constexpr unsigned int DAMAGE_HP_COLOR = 0xff0000;		// HPのカラー値
+
+	// スタミナ描画設定
+	static constexpr unsigned int STAMINA_COLOR = 0xffc800;	// スタミナのカラー値
 
 private:
 

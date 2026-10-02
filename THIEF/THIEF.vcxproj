@@ -109,6 +109,7 @@
     <ClCompile Include="Src\Scene\StageClear\StageClear.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Src\Object\Component\Collider\EnemyCollider\EnemyCollider.h" />
     <ClInclude Include="Src\Common\Easing\Easing.h" />
     <ClInclude Include="Src\Manager\EffectResManager\EffectResManager.h" />
@@ -221,6 +222,12 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)Data/%(Filename).pso</ObjectFileOutput>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="THIEF.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

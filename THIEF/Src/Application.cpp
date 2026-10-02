@@ -3,6 +3,7 @@
 #include <DxLib.h>
 #include <EffekseerForDXLib.h>
 
+#include "../resource.h"
 #include "Common/System/FpsControl.h"
 #include "Manager/Input/InputManager.h"
 #include "Manager/Input/InputIO.h"
@@ -30,6 +31,9 @@ void Application::Init(void)
 
 	// アプリケーションの初期設定
 	SetWindowText("THIEF");
+
+	// ウィンドウアイコン
+	SetWindowIconID(IDI_ICON1);
 
 	// ウィンドウ関連
 	SetGraphMode(SCREEN_SIZE_X, SCREEN_SIZE_Y, 32);
