@@ -1,11 +1,13 @@
 #pragma once
+
+#include <variant>
+#include <DxLib.h>
+
 #include "../Component.h"
 #include "Upgrade/UpgradeType.h"
 #include "../../../Scene/Tutorial/TutorialInfo.h"
 #include "../../../Common/CameraUtility/CameraUtility.h"
 #include "PlayerInfo.h"
-#include <variant>
-#include <DxLib.h>
 
 // 前方宣言
 class Transform;
@@ -103,14 +105,14 @@ private:
 
 	// リミット設定
 	static constexpr float DEAD_POS_Y = -1500.0f;	// プレイヤーが死亡する座標
-	static constexpr int  INVINCIBLE_TIME = 120;	// 無敵時間
+	static constexpr int INVINCIBLE_TIME = 120;	// 無敵時間
 
 	// 移動設定
-	static constexpr float DEFAULT_SPEED = 7.0f;			// 通常時移動速度
-	static constexpr float END_SLIDING_SPEED = 5.0f;		// この移動速度になったらスライディングを終了する
-	static constexpr float SLIDING_SPEED = 3.0f;			// スライディング時移動速度
-	static constexpr int SLIDING_INPUT_BUFFER_TIME = 20;	// スライディング可能時間(0.5秒数)
-	static constexpr float SLIDING_FRICTION = 0.2f;			// スライディング時の摩擦
+	static constexpr float DEFAULT_SPEED = 7.0f;				// 通常時移動速度
+	static constexpr float END_SLIDING_SPEED = 5.0f;			// この移動速度になったらスライディングを終了する
+	static constexpr float SLIDING_SPEED = 3.0f;				// スライディング時移動速度
+	static constexpr int SLIDING_INPUT_BUFFER_TIME = 20;		// スライディング可能時間(0.5秒数)
+	static constexpr float SLIDING_FRICTION = 0.2f;				// スライディング時の摩擦
 	static constexpr float RECOVERY_STAMINA = 0.05f;			// スタミナ回復量
 	static constexpr int RECOVERY_STAMINA_WAIT_TIME = 3 * 60;	// スタミナ回復を行うまでの時間(秒数)
 
@@ -120,9 +122,9 @@ private:
 	static constexpr float MAX_FALL = -40.0f;	// 最大落下速度
 
 	// ダメージ設定
-	static constexpr float HIT_REACT_FRICTION = 0.5f;	// ダメージ時のリアクション時の摩擦
-	static constexpr int SHAKE_TIME = 20;				// 揺らす時間
-	static constexpr int DAMAGE_EFFECT_ALPHA = 64;		 // ダメージエフェクトのアルファ値
+	static constexpr float HIT_REACT_FRICTION = 0.5f;				// ダメージ時のリアクション時の摩擦
+	static constexpr int SHAKE_TIME = 20;							// 揺らす時間
+	static constexpr int DAMAGE_EFFECT_ALPHA = 64;					// ダメージエフェクトのアルファ値
 	static constexpr unsigned int DAMAGE_EFFECT_COLOR = 0xff0000;	// ダメージエフェクトのカラー値
 
 	// 掴み
@@ -134,9 +136,9 @@ private:
 	static constexpr float MOVE_SPEED_UP_MULTI = 1.2f;	// 足音のインターバル倍率
 
 	// 描画設定
-	static constexpr int  STATUS_DRAW_POS_X = 10;		// ステータス描画を始める座標
-	static constexpr int  HP_DRAW_POS_Y = 50;			// HPの描画Y軸
-	static constexpr int  STAMINA_DRAW_POS_Y = 90;		// STAMINAの描画Y軸
+	static constexpr int STATUS_DRAW_POS_X = 10;		// ステータス描画を始める座標
+	static constexpr int HP_DRAW_POS_Y = 50;			// HPの描画Y軸
+	static constexpr int STAMINA_DRAW_POS_Y = 90;		// STAMINAの描画Y軸
 	static constexpr int STATUS_DRAW_POS_OFFSET = 10;	// オフセット
 	static constexpr float COEFFICIENT = 0.2f;			// 線形補間の係数
 
@@ -170,33 +172,33 @@ private:
 	void StateUpdate(void);
 
 	// 状態別初期化
-	static void IdleInit(PlayerController& player);			// 待機
-	static void MoveInit(PlayerController& player);			// 移動
-	static void DashInit(PlayerController& player);			// ダッシュ
-	static void CrouchingInit(PlayerController& player);	// しゃがみ
-	static void SlidingInit(PlayerController& player);		// スライディング
-	static void HitReactInit(PlayerController& player);		// ダメージ時のリアクション
-	static void DeadInit(PlayerController& player);			// 死亡
+	static void InitIdle(PlayerController& player);			// 待機
+	static void InitMove(PlayerController& player);			// 移動
+	static void InitDash(PlayerController& player);			// ダッシュ
+	static void InitCrouching(PlayerController& player);	// しゃがみ
+	static void InitSliding(PlayerController& player);		// スライディング
+	static void InitHitReact(PlayerController& player);		// ダメージ時のリアクション
+	static void InitDead(PlayerController& player);			// 死亡
 
 	// 状態別更新
-	static void IdleUpdate(PlayerController& player);		// 待機
-	static void MoveUpdate(PlayerController& player);		// 移動
-	static void DashUpdate(PlayerController& player);		// ダッシュ
-	static void CrouchingUpdate(PlayerController& player);	// しゃがみ
-	static void SlidingUpdate(PlayerController& player);	// スライディング
-	static void HitReactUpdate(PlayerController& player);	// ダメージ時のリアクション
-	static void DeadUpdate(PlayerController& player);		// 死亡
+	static void UpdateIdle(PlayerController& player);		// 待機
+	static void UpdateMove(PlayerController& player);		// 移動
+	static void UpdateDash(PlayerController& player);		// ダッシュ
+	static void UpdateCrouching(PlayerController& player);	// しゃがみ
+	static void UpdateSliding(PlayerController& player);	// スライディング
+	static void UpdateHitReact(PlayerController& player);	// ダメージ時のリアクション
+	static void UpdateDead(PlayerController& player);		// 死亡
 
 	// 状態を変更させる
 	void ChangeState(PLAYER_STATE state);
 
 	// 掴み状態別更新処理
-	void GrabStateUpdate(void);
+	void UpdateGrabState(void);
 
 	// 状態別更新
-	static void NotGrabbingUpdate(PlayerController& player);	// 掴もうとしてない
-	static void TryGrabbingUpdate(PlayerController& player);	// 掴もうとしている
-	static void IsGrabbingUpdate(PlayerController& player);		// 掴んでいる
+	static void UpdateNotGrabbing(PlayerController& player);	// 掴もうとしてない
+	static void UpdateTryGrabbing(PlayerController& player);	// 掴もうとしている
+	static void UpdateIsGrabbing(PlayerController& player);		// 掴んでいる
 
 	// 掴み状態を変更させる
 	void ChangeGrabState(GRABBING_STATE state) { grabStateCtrl_.state_ = state; };
@@ -211,16 +213,16 @@ private:
 	void Jump(void);
 
 	// つかめる範囲の設定
-	bool RangeUpdate(void);
+	bool UpdateRange(void);
 
 	// マップ表示
-	void MapDrawUpdate(void);
+	void UpdateMapDraw(void);
 
 	// 無敵時間を更新
-	void InvincibleUodate(void);
+	void UpdateInvincible(void);
 
 	// ヒットストップ更新
-	void HitStopUodate(void);
+	void UpdateHitStop(void);
 
 	// ヒットストップカウンタが0じゃない場合に揺らし量を計算
 	void GetShakeOffset(int& offset);
@@ -239,7 +241,7 @@ private:
 	void Move(void);
 
 	// ライトの範囲を変更
-	void wispRangeChange(bool flg);
+	void WispRangeChange(bool flg);
 
 	// 死亡座標へ到達しているか
 	void IsReachedDeadPos(void);

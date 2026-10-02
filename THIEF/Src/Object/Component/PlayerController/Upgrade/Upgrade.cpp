@@ -75,7 +75,7 @@ void Upgrade::Init(void)
 	};
 
 	// ランダムでアップグレードの種類と金額を決める
-	UpgradesInit();
+	InitUpgrades();
 
 	// ショップスロットの初期化
 	ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_0);
@@ -158,7 +158,7 @@ void Upgrade::LoadImg(void)
 	endButtonImg_ = LoadGraph("Data/Image/Shop/endButton.png");
 }
 
-void Upgrade::UpgradesInit(void)
+void Upgrade::InitUpgrades(void)
 {
 	// 中身があるかもしれないため、クリア
 	selectUpgrades_.clear();
@@ -239,12 +239,12 @@ void Upgrade::SelectUpgrade(void)
 	if (InputManager::GetInstance()->GetActiveDevice() == InputManager::ActiveDevice::KEY_MOUSE)
 	{
 		// マウス選択
-		MouseSelect();
+		SelectMouse();
 	}
 	else
 	{
 		// パッド選択
-		PadSelect();
+		SelectPad();
 	}
 
 	// 中身がNONじゃないかつ、選択物が変わっていたら
@@ -256,7 +256,7 @@ void Upgrade::SelectUpgrade(void)
 	}
 }
 
-void Upgrade::MouseSelect(void)
+void Upgrade::SelectMouse(void)
 {
 	// NONに初期化しておく
 	slot_ = SHOP_SLOT::NON;
@@ -281,7 +281,7 @@ void Upgrade::MouseSelect(void)
 	}
 }
 
-void Upgrade::PadSelect(void)
+void Upgrade::SelectPad(void)
 {
 	switch (slot_)
 	{
