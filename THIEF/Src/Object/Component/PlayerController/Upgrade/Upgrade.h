@@ -168,14 +168,14 @@ private:
 	void LoadImg(void);
 
 	// ショップに並べるアップグレードとその金額をランダムで設定する
-	void UpgradesInit(void);	
+	void InitUpgrades(void);	
 
 	// どの能力をアップグレードするか選択を行う
 	void SelectUpgrade(void);	
 
 	// 選択処理
-	void MouseSelect(void);	// マウス
-	void PadSelect(void);	// パッド
+	void SelectMouse(void);	// マウス
+	void SelectPad(void);	// パッド
 
 	// 決定処理
 	void ConfirmUpgrade(void);	

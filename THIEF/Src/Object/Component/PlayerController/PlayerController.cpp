@@ -24,26 +24,26 @@ PlayerController::PlayerController(void)
 {
 	// テーブルに関数のポインタを格納
 	// 初期化関数
-	stateCtrl_.initTable_[PLAYER_STATE_IDLE] = IdleInit;
-	stateCtrl_.initTable_[PLAYER_STATE_MOVE] = MoveInit;
-	stateCtrl_.initTable_[PLAYER_STATE_DASH] = DashInit;
-	stateCtrl_.initTable_[PLAYER_STATE_CROUCHING] = CrouchingInit;
-	stateCtrl_.initTable_[PLAYER_STATE_SLIDING] = SlidingInit;
-	stateCtrl_.initTable_[PLAYER_STATE_HIT_REACT] = HitReactInit;
-	stateCtrl_.initTable_[PLAYER_STATE_DEAD] = DeadInit;
+	stateCtrl_.initTable_[PLAYER_STATE_IDLE] = InitIdle;
+	stateCtrl_.initTable_[PLAYER_STATE_MOVE] = InitMove;
+	stateCtrl_.initTable_[PLAYER_STATE_DASH] = InitDash;
+	stateCtrl_.initTable_[PLAYER_STATE_CROUCHING] = InitCrouching;
+	stateCtrl_.initTable_[PLAYER_STATE_SLIDING] = InitSliding;
+	stateCtrl_.initTable_[PLAYER_STATE_HIT_REACT] = InitHitReact;
+	stateCtrl_.initTable_[PLAYER_STATE_DEAD] = InitDead;
 	// 更新関数
-	stateCtrl_.updateTable_[PLAYER_STATE_IDLE] = IdleUpdate;
-	stateCtrl_.updateTable_[PLAYER_STATE_MOVE] = MoveUpdate;
-	stateCtrl_.updateTable_[PLAYER_STATE_DASH] = DashUpdate;
-	stateCtrl_.updateTable_[PLAYER_STATE_CROUCHING] = CrouchingUpdate;
-	stateCtrl_.updateTable_[PLAYER_STATE_SLIDING] = SlidingUpdate;
-	stateCtrl_.updateTable_[PLAYER_STATE_HIT_REACT] = HitReactUpdate;
-	stateCtrl_.updateTable_[PLAYER_STATE_DEAD] = DeadUpdate;
+	stateCtrl_.updateTable_[PLAYER_STATE_IDLE] = UpdateIdle;
+	stateCtrl_.updateTable_[PLAYER_STATE_MOVE] = UpdateMove;
+	stateCtrl_.updateTable_[PLAYER_STATE_DASH] = UpdateDash;
+	stateCtrl_.updateTable_[PLAYER_STATE_CROUCHING] = UpdateCrouching;
+	stateCtrl_.updateTable_[PLAYER_STATE_SLIDING] = UpdateSliding;
+	stateCtrl_.updateTable_[PLAYER_STATE_HIT_REACT] = UpdateHitReact;
+	stateCtrl_.updateTable_[PLAYER_STATE_DEAD] = UpdateDead;
 
 	// 掴み状態更新関数
-	grabStateCtrl_.updateTable_[NOT_GRABBING] = NotGrabbingUpdate;
-	grabStateCtrl_.updateTable_[TRY_GRABBING] = TryGrabbingUpdate;
-	grabStateCtrl_.updateTable_[IS_GRABBING] = IsGrabbingUpdate;
+	grabStateCtrl_.updateTable_[NOT_GRABBING] = UpdateNotGrabbing;
+	grabStateCtrl_.updateTable_[TRY_GRABBING] = UpdateTryGrabbing;
+	grabStateCtrl_.updateTable_[IS_GRABBING] = UpdateIsGrabbing;
 }
 
 // 初期化
@@ -114,16 +114,16 @@ void PlayerController::Update(void)
 	}
 
 	// 掴み状態更新
-	GrabStateUpdate();
+	UpdateGrabState();
 
 	// マップの表示処理
-	MapDrawUpdate();
+	UpdateMapDraw();
 
 	// 無敵時間を更新
-	InvincibleUodate();
+	UpdateInvincible();
 
 	// ヒットストップ更新
-	HitStopUodate();
+	UpdateHitStop();
 
 	// 死亡座標へ到達しているか
 	IsReachedDeadPos();
@@ -241,7 +241,7 @@ void PlayerController::ChangeState(PLAYER_STATE state)
 	}
 }
 
-void PlayerController::GrabStateUpdate(void)
+void PlayerController::UpdateGrabState(void)
 {
 	// nullチェック
 	if (grabStateCtrl_.updateTable_[grabStateCtrl_.state_])
@@ -251,7 +251,7 @@ void PlayerController::GrabStateUpdate(void)
 	}
 }
 
-void PlayerController::NotGrabbingUpdate(PlayerController& player)
+void PlayerController::UpdateNotGrabbing(PlayerController& player)
 {
 	// 掴もうとしていたら
 	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::GRAB))
@@ -261,7 +261,7 @@ void PlayerController::NotGrabbingUpdate(PlayerController& player)
 	}
 }
 
-void PlayerController::TryGrabbingUpdate(PlayerController& player)
+void PlayerController::UpdateTryGrabbing(PlayerController& player)
 {
 	// 掴もうとしていなくなったら
 	if (!InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::GRAB))
@@ -271,7 +271,7 @@ void PlayerController::TryGrabbingUpdate(PlayerController& player)
 	}
 }
 
-void PlayerController::IsGrabbingUpdate(PlayerController& player)
+void PlayerController::UpdateIsGrabbing(PlayerController& player)
 {
 	// マウスの左クリックを押されていなかったら
 	if (!InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::GRAB))
@@ -304,7 +304,7 @@ void PlayerController::IsGrabbingUpdate(PlayerController& player)
 	if (player.GetGrabItem())
 	{
 		// つかめる範囲に変更があったら
-		if (player.RangeUpdate())
+		if (player.UpdateRange())
 		{
 			// アイテムに反映させる
 			player.GetGrabItem()->SetLocalPosZ(player.info_.range_);
@@ -350,7 +350,7 @@ void PlayerController::StateUpdate(void)
 	}
 }
 
-void PlayerController::IdleInit(PlayerController& player)
+void PlayerController::InitIdle(PlayerController& player)
 {
 	// 移動速度を初期化
 	player.info_.moveSpeed_ = 0.0f;
@@ -365,24 +365,24 @@ void PlayerController::IdleInit(PlayerController& player)
 	if (!player.wisp_->GetIsRangeMax())
 	{
 		// 最大値設定にする
-		player.wispRangeChange(true);
+		player.WispRangeChange(true);
 	}
 }
 
-void PlayerController::MoveInit(PlayerController& player)
+void PlayerController::InitMove(PlayerController& player)
 {
 	// プレイヤーの移動速度を普通の移動速度にする
 	player.info_.moveSpeed_ = DEFAULT_SPEED;
 }
 
-void PlayerController::DashInit(PlayerController& player)
+void PlayerController::InitDash(PlayerController& player)
 {
 	// プレイヤーの移動速度をダッシュの移動速度にする
 	player.info_.moveSpeed_ =
 		PlayerStatusManager::GetInstance()->GetPlayerStatus().dashMoveSpeed_;
 }
 
-void PlayerController::CrouchingInit(PlayerController& player)
+void PlayerController::InitCrouching(PlayerController& player)
 {
 	// プレイヤーの移動速度を普通の移動速度にする
 	player.info_.moveSpeed_ = DEFAULT_SPEED;
@@ -397,14 +397,14 @@ void PlayerController::CrouchingInit(PlayerController& player)
 	if (player.wisp_->GetIsRangeMax())
 	{
 		// 最小値設定にする
-		player.wispRangeChange(false);
+		player.WispRangeChange(false);
 	}
 
 	// しゃがみサウンド
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_CROUCH);
 }
 
-void PlayerController::SlidingInit(PlayerController& player)
+void PlayerController::InitSliding(PlayerController& player)
 {
 	// プレイヤーのスライディングの移動速度とダッシュ移動速度を加算
 	player.info_.moveSpeed_ = SLIDING_SPEED + PlayerStatusManager::GetInstance()->GetPlayerStatus().dashMoveSpeed_;
@@ -419,7 +419,7 @@ void PlayerController::SlidingInit(PlayerController& player)
 	if (player.wisp_->GetIsRangeMax())
 	{
 		// 最小値設定にする
-		player.wispRangeChange(false);
+		player.WispRangeChange(false);
 	}
 
 	// スライディング可能時間を初期化
@@ -433,7 +433,7 @@ void PlayerController::SlidingInit(PlayerController& player)
 
 }
 
-void PlayerController::HitReactInit(PlayerController& player)
+void PlayerController::InitHitReact(PlayerController& player)
 {
 	if (player.stageColl_)
 	{
@@ -445,17 +445,17 @@ void PlayerController::HitReactInit(PlayerController& player)
 	if (player.wisp_->GetIsRangeMax())
 	{
 		// 最小値設定にする
-		player.wispRangeChange(false);
+		player.WispRangeChange(false);
 	}
 }
 
-void PlayerController::DeadInit(PlayerController& player)
+void PlayerController::InitDead(PlayerController& player)
 {
 	// ゲームオーバーへ
 	SceneManager::GetInstance()->TrueGameOver();
 }
 
-void PlayerController::IdleUpdate(PlayerController& player)
+void PlayerController::UpdateIdle(PlayerController& player)
 {
 	// 移動していたら
 	if (player.InputMove())
@@ -471,7 +471,7 @@ void PlayerController::IdleUpdate(PlayerController& player)
 	}
 }
 
-void PlayerController::MoveUpdate(PlayerController& player)
+void PlayerController::UpdateMove(PlayerController& player)
 {
 	// スライディングの可能時間があれば
 	if (player.info_.slidingInputBufferTime > 0)
@@ -545,7 +545,7 @@ void PlayerController::MoveUpdate(PlayerController& player)
 	SceneManager::GetInstance()->TutorialCounter(Tutorial::MOVE);
 }
 
-void PlayerController::DashUpdate(PlayerController& player)
+void PlayerController::UpdateDash(PlayerController& player)
 {
 	// スタミナを減らす
 	player.info_.stamina_ -= 0.1f;
@@ -612,7 +612,7 @@ void PlayerController::DashUpdate(PlayerController& player)
 	SceneManager::GetInstance()->TutorialCounter(Tutorial::DASH);
 }
 
-void PlayerController::CrouchingUpdate(PlayerController& player)
+void PlayerController::UpdateCrouching(PlayerController& player)
 {
 	// しゃがみボタンを押されてないかつ、頭に障害物がなかった場合にしゃがみを解除
 	if (!InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CROUCH)
@@ -635,7 +635,7 @@ void PlayerController::CrouchingUpdate(PlayerController& player)
 	SceneManager::GetInstance()->TutorialCounter(Tutorial::CROUCH);
 }
 
-void PlayerController::SlidingUpdate(PlayerController& player)
+void PlayerController::UpdateSliding(PlayerController& player)
 {
 	// スライディング状態かつ移動速度が0より大きく移動している場合
 	if (player.info_.moveSpeed_ > 0.0f)
@@ -656,7 +656,7 @@ void PlayerController::SlidingUpdate(PlayerController& player)
 	}
 }
 
-void PlayerController::HitReactUpdate(PlayerController& player)
+void PlayerController::UpdateHitReact(PlayerController& player)
 {
 	// 移動速度が0より大きく移動している場合
 	if (player.info_.moveSpeed_ > 0.0f)
@@ -679,7 +679,7 @@ void PlayerController::HitReactUpdate(PlayerController& player)
 	}
 }
 
-void PlayerController::DeadUpdate(PlayerController& player)
+void PlayerController::UpdateDead(PlayerController& player)
 {
 }
 
@@ -769,7 +769,7 @@ void PlayerController::Jump(void)
 	}
 }
 
-bool PlayerController::RangeUpdate(void)
+bool PlayerController::UpdateRange(void)
 {
 	// 掴む距離の最大値を取得
 	float rangeMax = 
@@ -810,7 +810,7 @@ bool PlayerController::RangeUpdate(void)
 	return false;
 }
 
-void PlayerController::MapDrawUpdate(void)
+void PlayerController::UpdateMapDraw(void)
 {
 	// マップボタンを押されたら
 	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::MAP))
@@ -839,7 +839,7 @@ void PlayerController::MapDrawUpdate(void)
 	}
 }
 
-void PlayerController::InvincibleUodate(void)
+void PlayerController::UpdateInvincible(void)
 {
 	// 無敵時間を減らす
 	if (info_.invincibleTime_ > 0)
@@ -854,7 +854,7 @@ void PlayerController::InvincibleUodate(void)
 	}
 }
 
-void PlayerController::HitStopUodate(void)
+void PlayerController::UpdateHitStop(void)
 {
 	// ヒットストップ更新処理
 	if (info_.hitStopCounter_ > 0) {
@@ -950,7 +950,7 @@ void PlayerController::Move(void)
 			VScale(info_.moveDir_, info_.moveSpeed_));
 }
 
-void PlayerController::wispRangeChange(bool flg)
+void PlayerController::WispRangeChange(bool flg)
 {
 	// 範囲を設定する
 	wisp_->SetIsRangeMax(flg);
