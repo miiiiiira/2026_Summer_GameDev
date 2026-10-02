@@ -25,7 +25,7 @@ public:
 
 	// プレイヤー初期位置
 	static constexpr VECTOR DEFAULT_PLAYER_POS = { 0.0f,100.0f,0.0f };
-	static constexpr float PLAYER_CAPUSULE_RAD = 40.0f;
+	static constexpr float PLAYER_CAPSULE_RAD = 40.0f;
 
 	// プレイヤーのカプセルオフセット
 	static constexpr VECTOR STANDING_CAP_END_OFFSET = { 0.0f,30.0f,0.0f };		// エンド位置
@@ -40,7 +40,7 @@ public:
 	static constexpr float CART_DISTANCE = 300.0f;
 
 	// プレイヤーの掴み距離の最小値
-	static constexpr float MIN_RENGE = 60.0f;
+	static constexpr float MIN_RANGE = 60.0f;
 
 	// ステージの当たり判定用の法線
 	static constexpr float FLOOR_NORMAL_Y = 0.85f;	// 床
@@ -100,54 +100,6 @@ public:
 
 	// 吹っ飛びリアクションをさせる
 	void SetHitReact(VECTOR moveDir, float moveSpeed, float jumpPow);
-
-private:
-
-	// リミット設定
-	static constexpr float DEAD_POS_Y = -1500.0f;	// プレイヤーが死亡する座標
-	static constexpr int INVINCIBLE_TIME = 120;	// 無敵時間
-
-	// 移動設定
-	static constexpr float DEFAULT_SPEED = 7.0f;				// 通常時移動速度
-	static constexpr float END_SLIDING_SPEED = 5.0f;			// この移動速度になったらスライディングを終了する
-	static constexpr float SLIDING_SPEED = 3.0f;				// スライディング時移動速度
-	static constexpr int SLIDING_INPUT_BUFFER_TIME = 20;		// スライディング可能時間(0.5秒数)
-	static constexpr float SLIDING_FRICTION = 0.2f;				// スライディング時の摩擦
-	static constexpr float RECOVERY_STAMINA = 0.05f;			// スタミナ回復量
-	static constexpr int RECOVERY_STAMINA_WAIT_TIME = 3 * 60;	// スタミナ回復を行うまでの時間(秒数)
-
-	// 重力
-	static constexpr float JUMP_POW = 25.0f;	// ジャンプ力
-	static constexpr float GRAVITY = -1.98f;	// 重力加速度
-	static constexpr float MAX_FALL = -40.0f;	// 最大落下速度
-
-	// ダメージ設定
-	static constexpr float HIT_REACT_FRICTION = 0.5f;				// ダメージ時のリアクション時の摩擦
-	static constexpr int SHAKE_TIME = 20;							// 揺らす時間
-	static constexpr int DAMAGE_EFFECT_ALPHA = 64;					// ダメージエフェクトのアルファ値
-	static constexpr unsigned int DAMAGE_EFFECT_COLOR = 0xff0000;	// ダメージエフェクトのカラー値
-
-	// 掴み
-	static constexpr float EXTEND_RENGE_MOVE = 10.0f;			// 掴み距離を伸ばす時の速度
-	static constexpr float  END_GRAB_CART_DISTANCE = 800.0f;	// カートを離す距離
-
-	// 足音
-	static constexpr int MOVE_SOUND_INTERVAL = 40;		// プレイヤーの足音のインターバル
-	static constexpr float MOVE_SPEED_UP_MULTI = 1.2f;	// 足音のインターバル倍率
-
-	// 描画設定
-	static constexpr int STATUS_DRAW_POS_X = 10;					// ステータス描画を始める座標
-	static constexpr int HP_DRAW_POS_Y = 50;						// HPの描画Y軸
-	static constexpr int STAMINA_DRAW_POS_Y = 90;					// STAMINAの描画Y軸
-	static constexpr int STATUS_DRAW_POS_OFFSET = 10;				// オフセット
-	static constexpr float COEFFICIENT = 0.2f;						// 線形補間の係数
-
-	// HP描画設定
-	static constexpr unsigned int HP_COLOR = 0x00fa9a;		// HPのカラー値
-	static constexpr unsigned int DAMAGE_HP_COLOR = 0xff0000;		// HPのカラー値
-
-	// スタミナ描画設定
-	static constexpr unsigned int STAMINA_COLOR = 0xffc800;	// スタミナのカラー値
 
 private:
 
@@ -252,6 +204,9 @@ private:
 
 	// 死亡座標へ到達しているか
 	void IsReachedDeadPos(void);
+
+	// 移動時の足音を鳴らす
+	void PlayFootstep(void);
 
 	// 描画関係
 	void DrawHP(void);		// HP

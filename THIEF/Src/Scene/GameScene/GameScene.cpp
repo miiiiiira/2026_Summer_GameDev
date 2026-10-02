@@ -400,7 +400,7 @@ void GameScene::PlayerCreate(void)
 	col->AddCapsule(
 		PlayerController::STANDING_CAP_START_OFFSET,
 		PlayerController::STANDING_CAP_END_OFFSET,
-		PlayerController::PLAYER_CAPUSULE_RAD
+		PlayerController::PLAYER_CAPSULE_RAD
 	);
 
 	// ステージの取得

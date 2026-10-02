@@ -20,6 +20,57 @@
 
 #include "PlayerController.h"
 
+namespace
+{
+	// リミット設定
+	constexpr float DEAD_POS_Y = -1500.0f;	// プレイヤーが死亡する座標
+	constexpr int INVINCIBLE_TIME = 120;	// 無敵時間
+
+	// 移動設定
+	constexpr float DEFAULT_SPEED = 7.0f;				// 通常時移動速度
+	constexpr float END_SLIDING_SPEED = 5.0f;			// この移動速度になったらスライディングを終了する
+	constexpr float SLIDING_SPEED = 3.0f;				// スライディング時移動速度
+	constexpr int SLIDING_INPUT_BUFFER_TIME = 20;		// スライディング可能時間(0.5秒数)
+	constexpr float SLIDING_FRICTION = 0.2f;			// スライディング時の摩擦
+	constexpr float RECOVERY_STAMINA = 0.05f;			// スタミナ回復量
+	constexpr int RECOVERY_STAMINA_WAIT_TIME = 3 * 60;	// スタミナ回復を行うまでの時間(秒数)
+
+	// 重力
+	constexpr float JUMP_POW = 25.0f;	// ジャンプ力
+	constexpr float GRAVITY = -1.98f;	// 重力加速度
+	constexpr float MAX_FALL = -40.0f;	// 最大落下速度
+
+	// ダメージ設定
+	constexpr float HIT_REACT_FRICTION = 0.5f;				// ダメージ時のリアクション時の摩擦
+	constexpr int SHAKE_TIME = 20;							// 揺らす時間
+	constexpr int DAMAGE_EFFECT_ALPHA = 64;					// ダメージエフェクトのアルファ値
+	constexpr unsigned int DAMAGE_EFFECT_COLOR = 0xff0000;	// ダメージエフェクトのカラー値
+
+	// 掴み
+	constexpr float EXTEND_RANGE_MOVE = 10.0f;			// 掴み距離を伸ばす時の速度
+	constexpr float  END_GRAB_CART_DISTANCE = 800.0f;	// カートを離す距離
+
+	// 足音
+	constexpr int MOVE_SOUND_INTERVAL = 40;		// プレイヤーの足音のインターバル
+	constexpr float MOVE_SPEED_UP_MULTI = 1.2f;	// 足音のインターバル倍率
+
+	// 描画設定
+	constexpr int STATUS_DRAW_POS_X = 10;		// ステータス描画を始める座標
+	constexpr int HP_DRAW_POS_Y = 50;			// HPの描画Y軸
+	constexpr int STAMINA_DRAW_POS_Y = 90;		// STAMINAの描画Y軸
+	constexpr int STATUS_DRAW_POS_OFFSET = 10;	// オフセット
+	constexpr float COEFFICIENT = 0.2f;			// 線形補間の係数
+
+	// HP描画設定
+	constexpr unsigned int HP_COLOR = 0x00fa9a;			// HPのカラー値
+	constexpr unsigned int DAMAGE_HP_COLOR = 0xff0000;	// ダメージ時のHPのカラー値
+	constexpr int HP_LABEL_LEN = 4;
+
+	// スタミナ描画設定
+	constexpr unsigned int STAMINA_COLOR = 0xffc800;	// スタミナのカラー値
+	constexpr int STAMNA_LABEL_LEN = 9;
+}
+
 PlayerController::PlayerController(void)
 {
 	// テーブルに関数のポインタを格納
@@ -519,21 +570,8 @@ void PlayerController::UpdateMove(PlayerController& player)
 
 		if (!player.stageColl_) return;
 
-		// 足音がなる間隔
-		if (player.info_.moveSoundInterval_ > MOVE_SOUND_INTERVAL - (player.info_.moveSpeed_ * MOVE_SPEED_UP_MULTI))
-		{
-			// 接地している場合
-			if (player.info_.velocityY_ <= 0)
-			{
-				// 移動サウンドの再生
-				AudioManager::GetInstance()->PlaySE(SoundID::SE_MOVE);
-				player.info_.moveSoundInterval_ = 0;
-			}
-		}
-		else
-		{
-			player.info_.moveSoundInterval_++;
-		}
+		// 足音を鳴らす
+		player.PlayFootstep();
 	}
 	else
 	{
@@ -586,21 +624,8 @@ void PlayerController::UpdateDash(PlayerController& player)
 
 		if (!player.stageColl_) return;
 
-		// 足音がなる間隔
-		if (player.info_.moveSoundInterval_ > MOVE_SOUND_INTERVAL - (player.info_.moveSpeed_ * MOVE_SPEED_UP_MULTI))
-		{
-			// 接地している場合
-			if (player.info_.velocityY_ <= 0)
-			{
-				// 移動サウンドの再生
-				AudioManager::GetInstance()->PlaySE(SoundID::SE_MOVE);
-				player.info_.moveSoundInterval_ = 0;
-			}
-		}
-		else
-		{
-			player.info_.moveSoundInterval_++;
-		}
+		// 足音を鳴らす
+		player.PlayFootstep();
 	}
 	else
 	{
@@ -779,7 +804,7 @@ bool PlayerController::UpdateRange(void)
 	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::ITEM_PUSH))
 	{
 		// 物との距離を大きくする
-		info_.range_ += EXTEND_RENGE_MOVE;
+		info_.range_ += EXTEND_RANGE_MOVE;
 
 		// 最大値を超えないようにする
 		if (info_.range_ > rangeMax)
@@ -794,12 +819,12 @@ bool PlayerController::UpdateRange(void)
 	else if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::ITEM_PULL))
 	{
 		// 物との距離を小さくする
-		info_.range_ -= EXTEND_RENGE_MOVE;
+		info_.range_ -= EXTEND_RANGE_MOVE;
 
 		// 最小値を超えないようにする
-		if (info_.range_ < MIN_RENGE + GetGrabItem()->GetInfo().collisionRadiusX_)
+		if (info_.range_ < MIN_RANGE + GetGrabItem()->GetInfo().collisionRadiusX_)
 		{
-			info_.range_ = MIN_RENGE + GetGrabItem()->GetInfo().collisionRadiusX_;
+			info_.range_ = MIN_RANGE + GetGrabItem()->GetInfo().collisionRadiusX_;
 		}
 
 		// 変更があったらtrueを返す
@@ -981,13 +1006,32 @@ void PlayerController::IsReachedDeadPos(void)
 	}
 }
 
+void PlayerController::PlayFootstep(void)
+{
+	// 足音がなる間隔
+	if (info_.moveSoundInterval_ > MOVE_SOUND_INTERVAL - (info_.moveSpeed_ * MOVE_SPEED_UP_MULTI))
+	{
+		// 接地している場合
+		if (info_.velocityY_ <= 0)
+		{
+			// 移動サウンドの再生
+			AudioManager::GetInstance()->PlaySE(SoundID::SE_MOVE);
+			info_.moveSoundInterval_ = 0;
+		}
+	}
+	else
+	{
+		info_.moveSoundInterval_++;
+	}
+}
+
 void PlayerController::DrawHP(void)
 {
 	// 指定フォントでの文字の横幅を取得
 	int HPWidth = 
 		GetDrawStringWidthToHandle(
 			"HP: ", 
-			4, 
+			HP_LABEL_LEN,
 			Application::GetInstance()->GetFont(FONT_SIZE_20));
 	int playerHpWidth = 
 		GetDrawFormatStringWidthToHandle(
@@ -1044,10 +1088,10 @@ void PlayerController::DrawHP(void)
 void PlayerController::DrawStamina(void)
 {
 	// 指定フォントでの文字の横幅を取得
-	int STAMINAWidth = 
+	int staminaWidth = 
 		GetDrawStringWidthToHandle(
 			"STAMINA: ",
-			9, 
+			STAMNA_LABEL_LEN,
 			Application::GetInstance()->GetFont(FONT_SIZE_20));
 	int playerStaminaWidth = 
 		GetDrawFormatStringWidthToHandle(
@@ -1059,13 +1103,13 @@ void PlayerController::DrawStamina(void)
 	DrawStringToHandle(
 		STATUS_DRAW_POS_X,
 		STAMINA_DRAW_POS_Y,
-		"STAMINA:",
+		"STAMINA: ",
 		STAMINA_COLOR,
 		Application::GetInstance()->GetFont(FONT_SIZE_20));
 
 	// プレイヤースタミナの表示
 	DrawFormatStringToHandle(
-		STATUS_DRAW_POS_X + STAMINAWidth,
+		STATUS_DRAW_POS_X + staminaWidth,
 		STAMINA_DRAW_POS_Y - STATUS_DRAW_POS_OFFSET,
 		STAMINA_COLOR,
 		Application::GetInstance()->GetFont(FONT_SIZE_30),
@@ -1074,7 +1118,7 @@ void PlayerController::DrawStamina(void)
 
 	// スタミナMaxの表示
 	DrawFormatStringToHandle(
-		STATUS_DRAW_POS_X + STAMINAWidth + playerStaminaWidth,
+		STATUS_DRAW_POS_X + staminaWidth + playerStaminaWidth,
 		STAMINA_DRAW_POS_Y,
 		STAMINA_COLOR,
 		Application::GetInstance()->GetFont(FONT_SIZE_20),

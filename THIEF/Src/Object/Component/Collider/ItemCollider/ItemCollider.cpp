@@ -195,7 +195,7 @@ void ItemCollider::PlayerGrabCollision(void)
 		float distance = item_->GetCameraDistance();
 
 		// 距離が最低距離値よりも小さかったら最低距離値にする
-		if (distance < PlayerController::MIN_RENGE)distance = PlayerController::MIN_RENGE;
+		if (distance < PlayerController::MIN_RANGE)distance = PlayerController::MIN_RANGE;
 
 		// アイテムの追従モードをオンにする
 		item_->StartGrabbing({ 0,0,distance });
