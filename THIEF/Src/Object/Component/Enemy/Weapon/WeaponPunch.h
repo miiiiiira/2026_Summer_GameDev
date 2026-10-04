@@ -17,7 +17,7 @@ public:
 	void Release(void) override;	// 解放
 
 	// 武器を使用する
-	void UseWeapon(VECTOR pos, VECTOR dir) override;
+	void UseWeapon(const VECTOR& pos, const VECTOR& dir) override;
 
 protected:
 
@@ -26,9 +26,4 @@ protected:
 
 	// パラメータ設定
 	void SetParam(void) override;
-
-private:
-
-	// 最大生存時間
-	static constexpr float MAX_ALIVE_COUNT = 0.5f;
 };

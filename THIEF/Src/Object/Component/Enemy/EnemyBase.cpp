@@ -90,7 +90,6 @@ void EnemyBase::Draw2D(void)
 
 void EnemyBase::SetPathData(PlayerController* player, int stageId, std::shared_ptr<StagePathData> pathData)
 {
-	// 弱参照に変換して保持
 	player_ = player;		// プレイヤーのポインタを保持
 
 	stageId_ = stageId;		// ステージIDを保持
