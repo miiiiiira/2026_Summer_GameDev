@@ -67,16 +67,13 @@ public:
 	CapsuleCollider* GetCapsule(void) { return capColl_; }
 
 	// プレイヤー状態を返す
-	PLAYER_STATE GetState(void) { return stateCtrl_.state_; }
+	PLAYER_STATE GetState(void)const { return stateCtrl_.state_; }
 
 	// 掴んでいるかの状態を返す
-	GRABBING_STATE GetGrabbingState(void) { return grabStateCtrl_.state_; }
-
-	// 移動速度を返す
-	float GetMoveSpeed(void) { return info_.moveSpeed_; }
+	GRABBING_STATE GetGrabbingState(void)const { return grabStateCtrl_.state_; }
 
 	// 無敵時間を返す
-	int GetInvincibleTime(void) { return info_.invincibleTime_; }
+	int GetInvincibleTime(void)const { return info_.invincibleTime_; }
 
 	// 掴むときの開始座標を返す
 	// カメラの位置をラインの初め座標とする
@@ -184,10 +181,10 @@ private:
 	void UpdateHitStop(void);
 
 	// ヒットストップカウンタが0じゃない場合に揺らし量を計算
-	void GetShakeOffset(int& offset);
+	void GetShakeOffset(int& offset)const;
 
 	// 何か物を掴んでいるか
-	bool IsGrabbing(void);
+	bool IsGrabbing(void)const;
 
 	// 掴んでいたらそのオブジェクトのポインタを渡す
 	Item* GetGrabItem(void);	// アイテムのポインタ
@@ -210,6 +207,6 @@ private:
 
 	// 描画関係
 	void DrawHP(void);		// HP
-	void DrawStamina(void);	// スタミナ
+	void DrawStamina(void)const;	// スタミナ
 	void DebugDraw(void);	// デバッグ用
 };

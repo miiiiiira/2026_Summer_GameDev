@@ -245,10 +245,10 @@ void PlayerController::SetDamage(int damage)
 		// HP描画を揺らす
 		info_.hitStopCounter_ = SHAKE_TIME;
 	}
-	
+
 	// ダメージ用の値にして画面周辺を暗くする
 	SceneManager::GetInstance()->GetShader()->
-				SetVignettePower(Shader::DAMAGE_VIGNETTE_POWER);
+		SetVignettePower(Shader::DAMAGE_VIGNETTE_POWER);
 
 	// プレイヤーのダメージ音
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_DAMAGE);
@@ -368,7 +368,7 @@ void PlayerController::UpdateIsGrabbing(PlayerController& player)
 	else if (player.GetGrabCart())
 	{
 		// カートとプレイヤーの距離を取る
-		float distance = 
+		float distance =
 			VSize(VSub(player.transform_->pos_,
 				player.GetGrabCart()->GetTransform()->pos_));
 
@@ -717,13 +717,13 @@ void PlayerController::ApplyGravity(void)
 	transform_->pos_.y += info_.velocityY_;
 
 	// 接地判定
-	
+
 	// 空中
 	if (!stageColl_->IsGround())
 	{
 		// 重力加算
 		info_.velocityY_ += GRAVITY;
-		
+
 		// 最大落下速度
 		if (info_.velocityY_ < MAX_FALL)
 			info_.velocityY_ = MAX_FALL;
@@ -742,7 +742,7 @@ void PlayerController::ApplyGravity(void)
 void PlayerController::HealStamina(void)
 {
 	// スタミナの最大値を取得
-	float staminaMax = 
+	float staminaMax =
 		PlayerStatusManager::GetInstance()->GetPlayerStatus().staminaMax_;
 
 	// スタミナがMaxだったら処理を飛ばす
@@ -797,7 +797,7 @@ void PlayerController::Jump(void)
 bool PlayerController::UpdateRange(void)
 {
 	// 掴む距離の最大値を取得
-	float rangeMax = 
+	float rangeMax =
 		PlayerStatusManager::GetInstance()->GetPlayerStatus().rangeMax_;
 
 	// 物との距離を大きくする操作が行われていたら
@@ -875,7 +875,7 @@ void PlayerController::UpdateInvincible(void)
 	{
 		// 無敵時間が終わったら、画面周辺の暗さを元に戻す
 		SceneManager::GetInstance()->GetShader()->
-				SetVignettePower(Shader::DEFAULT_VIGNETTE_POWER);
+			SetVignettePower(Shader::DEFAULT_VIGNETTE_POWER);
 	}
 }
 
@@ -887,7 +887,7 @@ void PlayerController::UpdateHitStop(void)
 	}
 }
 
-void PlayerController::GetShakeOffset(int& offset)
+void PlayerController::GetShakeOffset(int& offset)const
 {
 	if (info_.hitStopCounter_ > 0) {
 		// 振動先をカウンターから計算する----------
@@ -903,7 +903,7 @@ void PlayerController::GetShakeOffset(int& offset)
 	}
 }
 
-bool PlayerController::IsGrabbing(void)
+bool PlayerController::IsGrabbing(void)const
 {
 	if (std::holds_alternative<std::monostate>(grabObject_))
 	{
@@ -1028,12 +1028,12 @@ void PlayerController::PlayFootstep(void)
 void PlayerController::DrawHP(void)
 {
 	// 指定フォントでの文字の横幅を取得
-	int HPWidth = 
+	int HPWidth =
 		GetDrawStringWidthToHandle(
-			"HP: ", 
+			"HP: ",
 			HP_LABEL_LEN,
 			Application::GetInstance()->GetFont(FONT_SIZE_20));
-	int playerHpWidth = 
+	int playerHpWidth =
 		GetDrawFormatStringWidthToHandle(
 			Application::GetInstance()->GetFont(FONT_SIZE_30),
 			"%d",
@@ -1042,8 +1042,8 @@ void PlayerController::DrawHP(void)
 	// HPの表示
 	DrawStringToHandle(
 		STATUS_DRAW_POS_X,
-		HP_DRAW_POS_Y, 
-		"HP:", 
+		HP_DRAW_POS_Y,
+		"HP:",
 		HP_COLOR,
 		Application::GetInstance()->GetFont(FONT_SIZE_20));
 
@@ -1085,15 +1085,15 @@ void PlayerController::DrawHP(void)
 		PlayerStatusManager::GetInstance()->GetPlayerStatus().hpMax_);
 }
 
-void PlayerController::DrawStamina(void)
+void PlayerController::DrawStamina(void)const
 {
 	// 指定フォントでの文字の横幅を取得
-	int staminaWidth = 
+	int staminaWidth =
 		GetDrawStringWidthToHandle(
 			"STAMINA: ",
 			STAMNA_LABEL_LEN,
 			Application::GetInstance()->GetFont(FONT_SIZE_20));
-	int playerStaminaWidth = 
+	int playerStaminaWidth =
 		GetDrawFormatStringWidthToHandle(
 			Application::GetInstance()->GetFont(FONT_SIZE_30),
 			"%.f",
