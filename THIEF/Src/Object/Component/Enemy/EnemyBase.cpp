@@ -14,6 +14,27 @@
 
 #include "EnemyBase.h"
 
+namespace
+{
+	// ジャンプ力
+	constexpr float JUMP_POW = 25.0f;
+
+	// 重力加速度
+	constexpr float GRAVITY = -1.98f;
+
+	// 最大落下速度
+	constexpr float MAX_FALL = -40.0f;
+
+	// ノードに到達したと判定する距離
+	constexpr float NODE_ARRIVE_DISTANCE = 60.0f;
+
+	// 高低差による発見判定の閾値
+	constexpr float MAX_DETECTION_HEIGHT_DIFFERENCE = 50.0f;
+
+	// 最小移動速度の閾値
+	constexpr float MIN_MOVE_SPEED_THRESHOLD = 0.001f;
+}
+
 EnemyBase::EnemyBase(void)
 	:
 	transform_(nullptr),

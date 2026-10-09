@@ -13,6 +13,87 @@
 
 #include "Yeti.h"
 
+namespace
+{
+	// 大きさ
+	constexpr VECTOR SCALE = { 1.0f,1.0f,1.0f };
+
+	// 向き
+	constexpr VECTOR DEFAULT_ANGLE = { 0.0f,0.0f,0.0f };
+
+	// 追跡処理を実行する間隔
+	constexpr float CHASE_INTERVAL = 0.5f;
+
+	// ターゲットを見失うまでの猶予時間
+	constexpr float LOST_LIMIT_TIME = 6.0f;
+
+	// アニメーションの再生速度
+	constexpr float ANIM_SPEED = 0.2f;
+
+	// 巡回エリアの半径
+	constexpr float PATROL_RADIUS_DEFAULT = 1500.0f;
+
+	// 視界（発見・追跡）の半径
+	constexpr float VIEW_RADIUS_DEFAULT = 1000.0f;
+
+	// ウェイポイント到達判定距離
+	constexpr float WAYPOINT_ARRIVE_DIST = 50.0f;
+
+	// 巡回移動速度
+	constexpr float SPEED_PATROL = 5.0f;
+
+	// 追跡移動速度
+	constexpr float SPEED_CHASE = 10.0f;
+
+	// 攻撃時移動速度
+	constexpr float ATTACK_SPEED_MOVE = 30.0f;
+
+	// 攻撃時吹っ飛び力
+	constexpr float ATTACK_JUMP_POWER = 25.0f;
+
+	// 攻撃時ダメージ力
+	constexpr float ATTACK_DAMAGE_POWER = 20.0f;
+
+	// 待機時間
+	constexpr float STEP_TIME_IDLE = 5.0f;
+
+	// 発見時の驚き演出時間
+	constexpr float STEP_TIME_SURPRISE = 2.0f;
+
+	// 巡回時の足音再生間隔（秒）
+	constexpr float SE_INTERVAL_PATROL = 0.5f;
+
+	// 追跡時の足音再生間隔（秒）
+	constexpr float SE_INTERVAL_CHASE = 0.3f;
+
+	// 視線チェックを行う上限の高低差
+	constexpr float HEIGHT_DIFF_LIMIT = 700.0f;
+
+	// 視線レイキャストのカプセル半径
+	constexpr float RAY_RADIUS_CHASE = 40.0f;
+
+	// 攻撃判定に入る距離
+	constexpr float ATTACK_RANGE = 300.0f;
+
+	// プレイヤー最新ノードへの到達判定距離
+	constexpr float PLAYER_NODE_ARRIVE_DIST = 100.0f;
+
+	// 咆哮SEの聴こえる範囲
+	constexpr float SE_RADIUS_YETI = 2000.0f;
+
+	// 足音SEの聴こえる範囲
+	constexpr float SE_RADIUS_MOVE = 3500.0f;
+
+	// 確率計算の全体値
+	constexpr int MAX_PERCENTAGE = 100;
+
+	// 待機状態に遷移する確率
+	constexpr int IDLE_PROBABILITY = 10;
+
+	// 移動判定の閾値
+	constexpr float MOVE_EPSILON = 0.001f;
+}
+
 Yeti::Yeti(void)
 {
 }

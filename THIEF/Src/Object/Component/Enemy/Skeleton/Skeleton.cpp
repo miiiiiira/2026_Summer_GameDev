@@ -11,6 +11,33 @@
 
 #include "Skeleton.h"
 
+namespace
+{
+	// 大きさ
+	constexpr VECTOR SCALE = { 0.8f,0.8f,0.8f };
+
+	// 向き
+	constexpr VECTOR DEFAULT_ANGLE = { 0.0f, 0.0f,0.0f };
+
+	// 敵が反応する座標
+	constexpr VECTOR LOOK_POS = { -3700.0f, 10.0f, 1393.0f };
+
+	// 敵がプレイヤーを驚かす座標
+	constexpr VECTOR SCARE_POS = { -4000.0f, 10.0f, 1393.0f };
+
+	// 特定のポイントからの反応距離
+	constexpr float TRIGGER_RANGE = 100.0f * 100.0f;
+
+	// アニメーションの再生速度
+	constexpr float ANIM_SPEED = 0.3f;
+
+	// 移動スピード
+	constexpr float MOVE_SPEED = 20.0f;
+
+	// 予測判定距離
+	constexpr float FORWARD_COLLISION_CHECK_DISTANCE = 30.0f;
+}
+
 Skeleton::Skeleton(void)
 {
 }

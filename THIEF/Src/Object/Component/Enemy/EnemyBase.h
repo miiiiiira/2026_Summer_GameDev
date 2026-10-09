@@ -26,10 +26,10 @@ public:
 	// デストラクタ
 	virtual ~EnemyBase(void) override;
 
-	void Init(void) override;			// 初期化
-	void Update(void) override = 0;		// 更新
-	void Draw3D(void) override;			// 3D描画
-	void Draw2D(void) override;			// 2D描画
+	virtual void Init(void) override;			// 初期化
+	virtual void Update(void) override = 0;		// 更新
+	virtual void Draw3D(void) override;			// 3D描画
+	virtual void Draw2D(void) override;			// 2D描画
 
 	// パスデータをセット
 	void SetPathData(PlayerController* player, int stageId, 
@@ -42,13 +42,13 @@ public:
 	bool IsAlive(void) const{ return info_.isAlive_; }
 
 	// Transformを返す
-	Transform* GetTransform(void) { return transform_; }
+	Transform* GetTransform(void) const { return transform_; }
 
 	// CapsuleColliderを返す
-	CapsuleCollider* GetCapsule(void) { return capColl_; }
+	CapsuleCollider* GetCapsule(void) const { return capColl_; }
 
 	// WeaponBaseを返す
-	WeaponBase* GetWeapon(void) { return useWeapon_; }
+	WeaponBase* GetWeapon(void) const { return useWeapon_; }
 
 	// 攻撃力を返す
 	float GetAttackDamagePow(void) const { return info_.attackDamagePow_; }
@@ -81,7 +81,7 @@ protected:
 	WeaponBase* useWeapon_ = nullptr;				// 武器のポインタ
 	std::weak_ptr<StagePathData> pathData_ = {};	// パスデータの弱参照
 
-	EnemyInfo info_;		// 敵の情報
+	EnemyInfo info_ = {};	// 敵の情報
 	int stageId_ = -1;		// ステージのモデルID
 
 protected:
@@ -133,24 +133,4 @@ protected:
 
 	// 追従用の線分かステージと当たっているかどうか
 	bool CheckChaseLineCollision(VECTOR pPos, VECTOR ePos, float radius);
-
-private:
-
-	// ジャンプ力
-	static constexpr float JUMP_POW = 25.0f;	
-
-	// 重力加速度
-	static constexpr float GRAVITY = -1.98f;	
-
-	// 最大落下速度
-	static constexpr float MAX_FALL = -40.0f;	
-
-	// ノードに到達したと判定する距離
-	static constexpr float NODE_ARRIVE_DISTANCE = 60.0f;
-
-	// 高低差による発見判定の閾値
-	static constexpr float MAX_DETECTION_HEIGHT_DIFFERENCE = 50.0f;
-
-	// 最小移動速度の閾値
-	static constexpr float MIN_MOVE_SPEED_THRESHOLD = 0.001f;
 };

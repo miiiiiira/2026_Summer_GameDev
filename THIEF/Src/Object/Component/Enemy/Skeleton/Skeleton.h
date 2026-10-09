@@ -42,30 +42,6 @@ public:
 
 private:
 
-	// 大きさ
-	static constexpr VECTOR SCALE = { 0.8f,0.8f,0.8f };
-
-	// 向き
-	static constexpr VECTOR DEFAULT_ANGLE = { 0.0f, 0.0f,0.0f };
-
-	// 敵が反応する座標
-	static constexpr VECTOR LOOK_POS = { -3700.0f, 10.0f, 1393.0f };
-
-	// 敵がプレイヤーを驚かす座標
-	static constexpr VECTOR SCARE_POS = { -4000.0f, 10.0f, 1393.0f };
-
-	// 特定のポイントからの反応距離
-	static constexpr float TRIGGER_RANGE = 100.0f * 100.0f;
-
-	// アニメーションの再生速度
-	static constexpr float ANIM_SPEED = 0.3f;
-
-	// 移動スピード
-	static constexpr float MOVE_SPEED = 20.0f;
-
-	// 予測判定距離
-	static constexpr float FORWARD_COLLISION_CHECK_DISTANCE = 30.0f;
-
 	// 敵の状態
 	STATE state_ = STATE::NONE;
 
