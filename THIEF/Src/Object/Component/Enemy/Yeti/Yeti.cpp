@@ -565,15 +565,15 @@ void Yeti::UpdatePatrol(void)
 		// ˆê’èŠÔŠu‚Å‘«‰¹SE‚ð–Â‚ç‚·
 		seTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
 
-		if (seTimer_ <= 0.0f)
-		{
-			AudioManager::GetInstance()->PlaySE(
-							SoundID::SE_ENEMY_YETI_MOVE, 
-							&transform_->pos_, 
-							SE_RADIUS_MOVE);
+		if (seTimer_ > 0.0f) return;
 
-			seTimer_ = SE_INTERVAL_PATROL;
-		}
+		AudioManager::GetInstance()->PlaySE(
+			SoundID::SE_ENEMY_YETI_MOVE,
+			&transform_->pos_,
+			SE_RADIUS_MOVE);
+
+		seTimer_ = SE_INTERVAL_PATROL;
+
 	}
 	else
 	{

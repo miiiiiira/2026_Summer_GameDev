@@ -24,12 +24,12 @@ public:
 	EnemyBase(void);
 
 	// デストラクタ
-	virtual ~EnemyBase(void) override;
+	~EnemyBase(void) override;
 
-	virtual void Init(void) override;			// 初期化
-	virtual void Update(void) override = 0;		// 更新
-	virtual void Draw3D(void) override;			// 3D描画
-	virtual void Draw2D(void) override;			// 2D描画
+	void Init(void) override;			// 初期化
+	void Update(void) override = 0;		// 更新
+	void Draw3D(void) override;			// 3D描画
+	void Draw2D(void) override;			// 2D描画
 
 	// パスデータをセット
 	void SetPathData(PlayerController* player, int stageId, 
@@ -42,13 +42,13 @@ public:
 	bool IsAlive(void) const{ return info_.isAlive_; }
 
 	// Transformを返す
-	Transform* GetTransform(void) const { return transform_; }
+	Transform* GetTransform(void) { return transform_; }
 
 	// CapsuleColliderを返す
-	CapsuleCollider* GetCapsule(void) const { return capColl_; }
+	CapsuleCollider* GetCapsule(void) { return capColl_; }
 
 	// WeaponBaseを返す
-	WeaponBase* GetWeapon(void) const { return useWeapon_; }
+	WeaponBase* GetWeapon(void) { return useWeapon_; }
 
 	// 攻撃力を返す
 	float GetAttackDamagePow(void) const { return info_.attackDamagePow_; }
@@ -63,7 +63,7 @@ public:
 	ENEMY_TAG GetTag(void) const { return info_.tag_; }
 
 	// モデルIDを返す
-	int GetModelId() const { return info_.modelId_; }
+	int GetModelId(void) const { return info_.modelId_; }
 
 	// 座標をセットする
 	void SetPos(VECTOR pos);
