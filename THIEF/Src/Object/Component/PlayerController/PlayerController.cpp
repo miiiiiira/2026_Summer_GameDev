@@ -48,7 +48,7 @@ namespace
 
 	// 掴み
 	constexpr float EXTEND_RANGE_MOVE = 10.0f;			// 掴み距離を伸ばす時の速度
-	constexpr float  END_GRAB_CART_DISTANCE = 800.0f;	// カートを離す距離
+	constexpr float END_GRAB_CART_DISTANCE = 800.0f;	// カートを離す距離
 
 	// 足音
 	constexpr int MOVE_SOUND_INTERVAL = 40;		// プレイヤーの足音のインターバル
@@ -59,7 +59,6 @@ namespace
 	constexpr int HP_DRAW_POS_Y = 50;			// HPの描画Y軸
 	constexpr int STAMINA_DRAW_POS_Y = 90;		// STAMINAの描画Y軸
 	constexpr int STATUS_DRAW_POS_OFFSET = 10;	// オフセット
-	constexpr float COEFFICIENT = 0.2f;			// 線形補間の係数
 
 	// HP描画設定
 	constexpr unsigned int HP_COLOR = 0x00fa9a;			// HPのカラー値
@@ -68,7 +67,7 @@ namespace
 
 	// スタミナ描画設定
 	constexpr unsigned int STAMINA_COLOR = 0xffc800;	// スタミナのカラー値
-	constexpr int STAMNA_LABEL_LEN = 9;
+	constexpr int STAMINA_LABEL_LEN = 9;
 }
 
 PlayerController::PlayerController(void)
@@ -137,6 +136,9 @@ void PlayerController::Init(void)
 // 更新
 void PlayerController::Update(void)
 {
+	// プレイヤーが死亡状態だったら更新処理を行わない
+	if (stateCtrl_.state_ == PLAYER_STATE_DEAD)return;
+
 	// 体力が0以下になっていたら
 	if (info_.hp_ <= 0)
 	{
@@ -177,7 +179,7 @@ void PlayerController::Update(void)
 	UpdateHitStop();
 
 	// 死亡座標へ到達しているか
-	IsReachedDeadPos();
+	CheckDeadPos();
 }
 
 void PlayerController::Draw2D(void)
@@ -189,12 +191,9 @@ void PlayerController::Draw2D(void)
 	DrawStamina();
 
 #ifdef _DEBUG
-
 	// デバッグ表示
 	DebugDraw();
-
 #endif // _DEBUG
-
 }
 
 VECTOR PlayerController::GetLineEndPos(void)
@@ -203,10 +202,10 @@ VECTOR PlayerController::GetLineEndPos(void)
 	float rangeMax = PlayerStatusManager::GetInstance()->GetPlayerStatus().rangeMax_;
 
 	// 相対座標
-	VECTOR LOCAL_POS = { 0.0f,0.0f, rangeMax };
+	VECTOR localPos = { 0.0f,0.0f, rangeMax };
 
 	// 座標に反映
-	VECTOR downPos = CameraUtility::AddCameraPosLocalPos(LOCAL_POS);
+	VECTOR downPos = CameraUtility::AddCameraPosLocalPos(localPos);
 
 	return downPos;
 }
@@ -412,12 +411,17 @@ void PlayerController::InitIdle(PlayerController& player)
 		player.capColl_->SetStartOffset(STANDING_CAP_START_OFFSET);
 	}
 
-	// ライトの範囲設定が最大値でなければ
-	if (!player.wisp_->GetIsRangeMax())
+	// wispの中身がなかったら処理を行わない
+	if (player.wisp_ != nullptr)
 	{
-		// 最大値設定にする
-		player.WispRangeChange(true);
+		// ライトの範囲設定が最大値でなければ
+		if (player.wisp_->GetIsRangeMax())
+		{
+			// 最大値設定にする
+			player.WispRangeChange(true);
+		}
 	}
+
 }
 
 void PlayerController::InitMove(PlayerController& player)
@@ -444,11 +448,15 @@ void PlayerController::InitCrouching(PlayerController& player)
 		player.capColl_->SetStartOffset(CROUCHING_CAP_START_OFFSET);
 	}
 
-	// ライトの範囲設定が最大値だったら
-	if (player.wisp_->GetIsRangeMax())
+	// wispの中身がなかったら処理を行わない
+	if (player.wisp_ != nullptr)
 	{
-		// 最小値設定にする
-		player.WispRangeChange(false);
+		// ライトの範囲設定が最大値だったら
+		if (player.wisp_->GetIsRangeMax())
+		{
+			// 最小値設定にする
+			player.WispRangeChange(false);
+		}
 	}
 
 	// しゃがみサウンド
@@ -474,7 +482,7 @@ void PlayerController::InitSliding(PlayerController& player)
 	}
 
 	// スライディング可能時間を初期化
-	player.info_.slidingInputBufferTime = 0;
+	player.info_.slidingInputBufferTime_ = 0;
 
 	// チュートリアル時にカウンタに加算される
 	SceneManager::GetInstance()->TutorialCounter(Tutorial::SLIDING);
@@ -525,22 +533,16 @@ void PlayerController::UpdateIdle(PlayerController& player)
 void PlayerController::UpdateMove(PlayerController& player)
 {
 	// スライディングの可能時間があれば
-	if (player.info_.slidingInputBufferTime > 0)
+	if (player.info_.slidingInputBufferTime_ > 0)
 	{
 		// スライディング可能時間を減らす
-		player.info_.slidingInputBufferTime--;
-
-		if (player.info_.slidingInputBufferTime < 0)
-		{
-			// 0以下にならないようにする
-			player.info_.slidingInputBufferTime = 0;
-		}
+		player.info_.slidingInputBufferTime_--;
 	}
 
 	// しゃがみボタンを押された
 	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CROUCH))
 	{
-		if (player.info_.slidingInputBufferTime > 0)
+		if (player.info_.slidingInputBufferTime_ > 0)
 		{
 			// スライディング状態へ
 			player.ChangeState(PLAYER_STATE_SLIDING);
@@ -597,12 +599,12 @@ void PlayerController::UpdateDash(PlayerController& player)
 	player.info_.staminaCounter_ = 0;
 
 	// スライディング可能時間(秒数)を設定
-	player.info_.slidingInputBufferTime = SLIDING_INPUT_BUFFER_TIME;
+	player.info_.slidingInputBufferTime_ = SLIDING_INPUT_BUFFER_TIME;
 
 	// しゃがみボタンを押された
 	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::CROUCH))
 	{
-		// しゃがみ状態へ
+		// スライディング状態へ
 		player.ChangeState(PLAYER_STATE_SLIDING);
 		return;
 	}
@@ -773,7 +775,7 @@ void PlayerController::Jump(void)
 
 	if (!stageColl_) return;
 
-	// ジャンプボタンを押されたかつ、ジャンプ中では無いかつ、ジャンプ回数がMaxまで到達していなかったら
+	// ジャンプボタンを押されたかつ、ジャンプ回数がMaxまで到達していなかったら
 	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::JUMP)
 		&& info_.jumpNum_ < PlayerStatusManager::GetInstance()->GetPlayerStatus().jumpNumMax_)
 	{
@@ -897,7 +899,7 @@ void PlayerController::GetShakeOffset(int& offset)const
 		offset *= 2;
 		// -1 or 1　0を中心にする
 		offset -= 1;
-		// -3 or 3　振れ幅を付ける
+		// -5 or 5 振れ幅を付ける
 		offset *= 5;
 		// ----------------------------------------
 	}
@@ -996,7 +998,7 @@ void PlayerController::WispRangeChange(bool flg)
 	}
 }
 
-void PlayerController::IsReachedDeadPos(void)
+void PlayerController::CheckDeadPos(void)
 {
 	// 一定の座標いったら
 	if (transform_->pos_.y < DEAD_POS_Y)
@@ -1028,7 +1030,7 @@ void PlayerController::PlayFootstep(void)
 void PlayerController::DrawHP(void)
 {
 	// 指定フォントでの文字の横幅を取得
-	int HPWidth =
+	int hpWidth =
 		GetDrawStringWidthToHandle(
 			"HP: ",
 			HP_LABEL_LEN,
@@ -1056,7 +1058,7 @@ void PlayerController::DrawHP(void)
 
 		// プレイヤーのhpの表示 赤
 		DrawFormatStringToHandle(
-			STATUS_DRAW_POS_X + HPWidth + shake,
+			STATUS_DRAW_POS_X + hpWidth + shake,
 			(HP_DRAW_POS_Y - STATUS_DRAW_POS_OFFSET) + shake,
 			DAMAGE_HP_COLOR,
 			Application::GetInstance()->GetFont(FONT_SIZE_30),
@@ -1067,7 +1069,7 @@ void PlayerController::DrawHP(void)
 	{
 		// プレイヤーのhpの表示 緑
 		DrawFormatStringToHandle(
-			STATUS_DRAW_POS_X + HPWidth,
+			STATUS_DRAW_POS_X + hpWidth,
 			HP_DRAW_POS_Y - STATUS_DRAW_POS_OFFSET,
 			HP_COLOR,
 			Application::GetInstance()->GetFont(FONT_SIZE_30),
@@ -1077,7 +1079,7 @@ void PlayerController::DrawHP(void)
 
 	// プレイヤーのhpMaxの表示
 	DrawFormatStringToHandle(
-		STATUS_DRAW_POS_X + HPWidth + playerHpWidth,
+		STATUS_DRAW_POS_X + hpWidth + playerHpWidth,
 		HP_DRAW_POS_Y,
 		HP_COLOR,
 		Application::GetInstance()->GetFont(FONT_SIZE_20),
@@ -1085,13 +1087,13 @@ void PlayerController::DrawHP(void)
 		PlayerStatusManager::GetInstance()->GetPlayerStatus().hpMax_);
 }
 
-void PlayerController::DrawStamina(void)const
+void PlayerController::DrawStamina(void)
 {
 	// 指定フォントでの文字の横幅を取得
 	int staminaWidth =
 		GetDrawStringWidthToHandle(
 			"STAMINA: ",
-			STAMNA_LABEL_LEN,
+			STAMINA_LABEL_LEN,
 			Application::GetInstance()->GetFont(FONT_SIZE_20));
 	int playerStaminaWidth =
 		GetDrawFormatStringWidthToHandle(

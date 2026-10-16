@@ -41,9 +41,3 @@ void UpgradeManager::Release(void)
 	delete upgrade_;
 	upgrade_ = nullptr;
 }
-
-UpgradeManager::UpgradeManager(void)
-{
-}
-
-

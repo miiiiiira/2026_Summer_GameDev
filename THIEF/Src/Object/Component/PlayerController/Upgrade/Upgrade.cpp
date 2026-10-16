@@ -14,6 +14,68 @@
 
 #include "Upgrade.h"
 
+namespace
+{
+	// 商品売り切れ時のアルファ値
+	constexpr int ALPHA = 128;
+
+	// 基準座標
+	constexpr float POS_X = 120.0f;
+	constexpr float POS_Y = 100.0f;
+
+	// 当たり判定を行うサイズ
+	constexpr float COL_SIZE_X = 150.0f;
+	constexpr float COL_SIZE_Y = 200.0f;
+
+	// 画像間(余白)の大きさ
+	constexpr float SPACE_X = COL_SIZE_X + 60.0f;
+	constexpr float SPACE_Y = COL_SIZE_Y + 55.0f;
+
+	// 描画画像の縦横数
+	constexpr int DRAW_NUM_X = 4;
+	constexpr int DRAW_NUM_Y = 2;
+
+	// soldOutのオフセット
+	constexpr float SOLDOUT_OFFSET_X = -9.0f;
+	constexpr float SOLDOUT_OFFSET_Y = 45.0f;
+
+	// フレーム用オフセット
+	constexpr float OFFSET = 10.0f;
+
+	// 終了ボタンの位置
+	constexpr float END_BUTTON_POS_X = Application::SCREEN_SIZE_X - 220.0f;
+	constexpr float END_BUTTON_POS_Y = Application::SCREEN_SIZE_Y - 60.0f;
+
+	// 終了ボタンのサイズ
+	constexpr float END_BUTOON_COL_SIZE_X = 200.0f;
+	constexpr float END_BUTOON_COL_SIZE_Y = 45.0f;
+
+	// 強化値
+	constexpr int HP_UP_NUM = 20;			// 最大HP
+	constexpr float STAMINA_UP_NUM = 20.0f;	// スタミナ
+	constexpr float DASH_SPPED_UP_NUM = PlayerStatusManager::DASH_SPEED * 0.2f;	// ダッシュスピード
+	constexpr float RANGE_UP_NUM = PlayerStatusManager::DEFAULT_RENGE * 0.2f;	// 掴み距離
+	constexpr int JUMP_UP_NUM = 1;			// ジャンプ数強化値
+
+	// HP回復値
+	constexpr int HEAL_HP_25 = 25;
+	constexpr int HEAL_HP_50 = 50;
+
+	// ショップに並ぶHPの数
+	constexpr int HEAL_NUM = 2;
+
+	// 値段の振れ幅
+	// ステージ1
+	constexpr int STAGE1_MIN_PRICE = 3000;	// 最低値
+	constexpr int STAGE1_MAX_PRICE = 3500;	// 最大値
+	// ステージ2
+	constexpr int STAGE2_MIN_PRICE = 2000;	// 最低値
+	constexpr int STAGE2_MAX_PRICE = 3000;	// 最大値
+
+	// 持っている金額
+	constexpr int HAVE_MONEY_POS_Y = 50;
+}
+
 Upgrade::Upgrade(void)
 {
 	// 画像ハンドルの初期化
@@ -42,6 +104,7 @@ Upgrade::~Upgrade(void)
 	// 使い終わったらクリア
 	allUpgrades_.clear();
 	selectUpgrades_.clear();
+	pos_.clear();
 }
 
 void Upgrade::Init(void)
@@ -119,25 +182,6 @@ void Upgrade::Draw2D(void)
 
 	// 持っている金額
 	DrawPrice();
-
-#ifdef _DEBUG
-	/*auto status = PlayerStatusManager::GetInstance().GetPlayerStatus();
-
-		DrawFormatStringF(10, 30,
-			0xffffff, "HpMax : %.0f", status.hpMax_, true);
-
-		DrawFormatStringF(10, 50,
-			0xffffff, "StaminaMax : %f", status.staminaMax_, true);
-
-		DrawFormatStringF(10, 70,
-			0xffffff, "dashMoveSpeed : %f", status.dashMoveSpeed_, true);
-
-		DrawFormatString(10, 90,
-			0xffffff, "jumpNumMax : %d", status.jumpNumMax_, true);
-
-		DrawFormatStringF(10, 110,
-			0xffffff, "rangeMax : %f", status.rangeMax_, true);*/
-#endif // _DEBUG
 }
 
 void Upgrade::LoadImg(void)
@@ -200,10 +244,10 @@ void Upgrade::InitUpgrades(void)
 	priceDist.param(std::uniform_int_distribution<size_t>::param_type(minPrice, maxPrice));
 
 	// HP回復の出現数の最高値を決めておく(最大2つ)
-	int healNum = 2;
+	int healNum = HEAL_NUM;
 
 	// 選択されたアップグレード数がスロットの数分になるまで回す
-	while (selectUpgrades_.size() < static_cast<int>(SHOP_SLOT::NON))
+	while (selectUpgrades_.size() < static_cast<int>(SHOP_SLOT::NONE))
 	{
 		// ランダムなインデックスを生成
 		int randomIndex = static_cast<int>(dist(gen)); 
@@ -215,7 +259,7 @@ void Upgrade::InitUpgrades(void)
 			|| allUpgrades_[randomIndex] == PLAYER_UPGRADE_TYPE::HEAL_HP_50)
 		{
 			// 回復の出現可能数が0でなかったら
-			if (healNum > 0)
+			if (HEAL_NUM > 0)
 			{
 				// 選択されたアップグレードに追加
 				selectUpgrades_.push_back({ {allUpgrades_[randomIndex], price}, true });
@@ -248,7 +292,7 @@ void Upgrade::SelectUpgrade(void)
 	}
 
 	// 中身がNONじゃないかつ、選択物が変わっていたら
-	if (slot_ != SHOP_SLOT::NON
+	if (slot_ != SHOP_SLOT::NONE
 		&& slot_ != prevSlot)
 	{
 		// ボタンに乗ったサウンドを出す
@@ -259,7 +303,7 @@ void Upgrade::SelectUpgrade(void)
 void Upgrade::SelectMouse(void)
 {
 	// NONに初期化しておく
-	slot_ = SHOP_SLOT::NON;
+	slot_ = SHOP_SLOT::NONE;
 
 	// 当たり判定取る
 	for (int i = 0; i < selectUpgrades_.size(); i++)
@@ -275,7 +319,7 @@ void Upgrade::SelectMouse(void)
 	}
 
 	// 終了ボタンに当たっていたら
-	if (Collision::HitMouseImg2Box({ END_BUTTON_POS_X ,END_BUTTON_POS_Y }, COL_SIZE_X, COL_SIZE_Y))
+	if (Collision::HitMouseImg2Box({ END_BUTTON_POS_X ,END_BUTTON_POS_Y }, END_BUTOON_COL_SIZE_X, END_BUTOON_COL_SIZE_Y))
 	{
 		ChangeShopSlot(SHOP_SLOT::END);
 	}
@@ -448,7 +492,7 @@ void Upgrade::SelectPad(void)
 		}
 		break;
 
-	case Upgrade::SHOP_SLOT::NON:
+	case Upgrade::SHOP_SLOT::NONE:
 		// スロット0へ
 		ChangeShopSlot(SHOP_SLOT::SHOP_SLOT_0);
 		break;
@@ -476,7 +520,7 @@ void Upgrade::ConfirmUpgrade(void)
 	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE) && !InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DECIDE))return;
 
 	// 何も選択されていないなら処理を行わない
-	if (slot_ == SHOP_SLOT::NON)return;
+	if (slot_ == SHOP_SLOT::NONE)return;
 
 	// 終了ボタンが選択されていたら
 	if (slot_ == SHOP_SLOT::END)
@@ -537,7 +581,7 @@ void Upgrade::ApplyUpgrade(void)
 		// SEを再生
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_SHOP_BUY_DASH_UP);
 		// プレイヤーのステータスに反映
-		PlayerStatusManager::GetInstance()->DashSpeedUp(DASHSPPED_UP_NUM);
+		PlayerStatusManager::GetInstance()->DashSpeedUp(DASH_SPPED_UP_NUM);
 		break;
 
 	case PLAYER_UPGRADE_TYPE::RANGE_UP:
@@ -590,7 +634,7 @@ void Upgrade::ChangeState(UPGRADE_STATE state)
 	case Upgrade::UPGRADE_STATE::APPLY:
 		break;
 
-	case Upgrade::UPGRADE_STATE::NON:
+	case Upgrade::UPGRADE_STATE::NONE:
 		break;
 
 	default:
@@ -639,7 +683,7 @@ void Upgrade::DrawUpgrade(void)
 		// 売り切れていたら
 		if (!selectUpgrades_[i].second)
 		{
-			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, ALPHA);
 
 			// 画像に薄いボックスを重ねる
 			DrawBox(
@@ -660,21 +704,8 @@ void Upgrade::DrawUpgrade(void)
 				true);
 		}
 
-		// フレームの表示
-		// 終了ボタンの場合
-		if (slot_ == SHOP_SLOT::END)
-		{
-			FrameRenderer::DrawF(
-				END_BUTTON_POS_X,
-				END_BUTTON_POS_Y,
-				ENDBUTOON_COL_SIZE_X,
-				ENDBUTOON_COL_SIZE_Y,
-				OFFSET);
-			continue;
-		}
-
 		// 終了ボタン以外のアップグレードの場合
-		if (slot_ != SHOP_SLOT::NON && static_cast<int>(slot_) == i)
+		if (slot_ != SHOP_SLOT::NONE && static_cast<int>(slot_) == i)
 		{
 			FrameRenderer::DrawF(
 				pos_[i].x,
@@ -690,6 +721,18 @@ void Upgrade::DrawEndButton(void)
 {
 	// 終了ボタンの描画
 	DrawGraphF(END_BUTTON_POS_X, END_BUTTON_POS_Y, endButtonImg_, true);
+
+	// フレームの表示
+	// 終了ボタンの場合
+	if (slot_ == SHOP_SLOT::END)
+	{
+		FrameRenderer::DrawF(
+			END_BUTTON_POS_X,
+			END_BUTTON_POS_Y,
+			END_BUTOON_COL_SIZE_X,
+			END_BUTOON_COL_SIZE_Y,
+			OFFSET);
+	}
 }
 
 void Upgrade::DrawPrice(void)
@@ -706,7 +749,7 @@ void Upgrade::DrawPrice(void)
 	// 金額を表示
 	DrawFormatStringToHandle(
 		(Application::SCREEN_SIZE_X - strWidth) / 2, 
-		50,
+		HAVE_MONEY_POS_Y,
 		0xffffff,
 		font,
 		"%d", 
