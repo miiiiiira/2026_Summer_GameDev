@@ -15,6 +15,9 @@ private:
 
 	static UpgradeManager* instance_;	// 静的インスタンス
 
+	UpgradeManager(void) {};	// コンストラクタ
+	~UpgradeManager(void) {};	// コンストラクタ
+
 	// コピー・ムーブ操作を禁止
 	UpgradeManager(const UpgradeManager&) = delete;
 	UpgradeManager& operator=(const UpgradeManager&) = delete;
@@ -22,8 +25,6 @@ private:
 	UpgradeManager& operator=(UpgradeManager&&) = delete;
 
 public:
-
-	UpgradeManager(void);	// コンストラクタ
 
 	void Load(void);		// 読み込み
 	void Init(void);		// 初期化

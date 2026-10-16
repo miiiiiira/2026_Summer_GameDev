@@ -73,7 +73,7 @@ struct playerInfo
 	int staminaCounter_ = 0;
 
 	// スライディング可能時間
-	int slidingInputBufferTime = 0;
+	int slidingInputBufferTime_ = 0;
 
 	// 足音を連続再生するインターバル
 	int moveSoundInterval_ = 0;

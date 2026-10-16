@@ -95,7 +95,7 @@ void Application::Init(void)
 	fps_->Init();
 
 	// フォントの追加
-	for (auto table : FontTable::Table)
+	for (const auto& table : FontTable::Table)
 	{
 		font_[table.first] = CreateFontToHandle("Shikakufuto_Free", table.second, 1, DX_FONTTYPE_ANTIALIASING);
 	}

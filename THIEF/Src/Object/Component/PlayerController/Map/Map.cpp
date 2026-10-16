@@ -12,6 +12,35 @@
 
 #include "Map.h"
 
+namespace
+{
+	// アルファ値
+	constexpr int ALPHA = 200;
+
+	// マップの描画範囲
+	constexpr int MAP_DRAW_AREA_START_X = Application::SCREEN_SIZE_X / 5;
+	constexpr int MAP_DRAW_AREA_START_Y = Application::SCREEN_SIZE_Y / 7;
+	constexpr int MAP_DRAW_AREA_END_X = Application::SCREEN_SIZE_X - Application::SCREEN_SIZE_X / 5;
+	constexpr int MAP_DRAW_AREA_END_Y = Application::SCREEN_SIZE_Y - Application::SCREEN_SIZE_Y / 7;
+
+	// マップの中心位置
+	constexpr int MAP_CENTER_POS_X = Application::SCREEN_SIZE_X / 2;
+	constexpr int MAP_CENTER_POS_Y = Application::SCREEN_SIZE_Y / 2;
+
+	// アイテムのサイズによって表示する大きさを変更
+	constexpr int BIG_RAD = 15;		// 大
+	constexpr int MEDIUM_RAD = 10;	// 中
+	constexpr int SMALL_RAD = 5;	// 小
+
+	// チュートリアル時
+	// 地図画像のサイズ
+	constexpr int TUTORIAL_MAP_IMAGE_SIZE_X = 161;
+	constexpr int TUTORIAL_MAP_IMAGE_SIZE_Y = 1620;
+	// 地図画像上でのプレイヤー座標
+	constexpr int PLAYER_SPAWN_POS_X = 80;
+	constexpr int PLAYER_SPAWN_POS_Y = 1536;
+}
+
 Map::Map(void)
 {
 	// ステージ情報を取ってきて初期化処理を行う
@@ -24,12 +53,12 @@ Map::Map(void)
 		mapImg_ = LoadGraph("Data/Image/GameScene/TutorialMap.png");
 
 		// 地図画像のサイズを設定
-		mapImgSizeX = TUTORIAL_MAP_IMAGE_SIZE_X;
-		mapImgSizeY = TUTORIAL_MAP_IMAGE_SIZE_Y;
+		mapImgSizeX_ = TUTORIAL_MAP_IMAGE_SIZE_X;
+		mapImgSizeY_ = TUTORIAL_MAP_IMAGE_SIZE_Y;
 
 		// 地図画像上でのプレイヤー座標を設定
-		playerSpawnPosX = PLAYER_SPAWN_POS_X;
-		playerSpawnPosY = PLAYER_SPAWN_POS_Y;
+		playerSpawnPosX_ = PLAYER_SPAWN_POS_X;
+		playerSpawnPosY_ = PLAYER_SPAWN_POS_Y;
 	}
 	else
 	{
@@ -40,24 +69,24 @@ Map::Map(void)
 			mapImg_ = LoadGraph(mapData->second.path.c_str());
 
 			// 地図画像のサイズを取得
-			mapImgSizeX = mapData->second.mapImgSizeX;
-			mapImgSizeY = mapData->second.mapImgSizeY;
+			mapImgSizeX_ = mapData->second.mapImgSizeX;
+			mapImgSizeY_ = mapData->second.mapImgSizeY;
 
 			// 地図画像上でのプレイヤー座標を取得
-			playerSpawnPosX = mapData->second.playerSpawnPosX;
-			playerSpawnPosY = mapData->second.playerSpawnPosY;
+			playerSpawnPosX_ = mapData->second.playerSpawnPosX;
+			playerSpawnPosY_ = mapData->second.playerSpawnPosY;
 		}
 		else
 		{
 			// データがなかった場合は0初期化
-			mapImgSizeX = mapImgSizeY = 0;
-			playerSpawnPosX = playerSpawnPosY = 0;
+			mapImgSizeX_ = mapImgSizeY_ = 0;
+			playerSpawnPosX_ = playerSpawnPosY_ = 0;
 		}
 	}
 
 	// マップ画像の位置初期化
-	mapImgPosX_ = MAP_CENTER_POS_X + (mapImgSizeX / 2 - playerSpawnPosX);
-	mapImgPosY_ = MAP_CENTER_POS_Y + (mapImgSizeY / 2 - playerSpawnPosY);
+	mapImgPosX_ = MAP_CENTER_POS_X + (mapImgSizeX_ / 2 - playerSpawnPosX_);
+	mapImgPosY_ = MAP_CENTER_POS_Y + (mapImgSizeY_ / 2 - playerSpawnPosY_);
 
 	// プレイヤー画像の読み込み
 	playerImg_ = LoadGraph("Data/Image/GameScene/MapPlayer.png");
@@ -85,8 +114,8 @@ void Map::Update(void)
 	// プレイヤーの3D座標を2D座標に変換して移動分マップの位置を動かす
 	auto* player = owner_->GetComponent<PlayerController>();
 	VECTOR plaPos = player->GetTransform()->pos_;
-	mapImgPosX_ = playerSpawnPosX + static_cast<int>((plaPos.x * 0.1f));
-	mapImgPosY_ = playerSpawnPosY - static_cast<int>((plaPos.z * 0.1f));
+	mapImgPosX_ = playerSpawnPosX_ + static_cast<int>((plaPos.x * 0.1f));
+	mapImgPosY_ = playerSpawnPosY_ - static_cast<int>((plaPos.z * 0.1f));
 }
 
 void Map::Draw2D(void)
@@ -95,7 +124,7 @@ void Map::Draw2D(void)
 	if (!isDraw_)return;
 
 	// アルファ値をかける
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, ALPHA);
 
 	// 描画の範囲制限をかける
 	SetDrawArea(
@@ -131,6 +160,11 @@ void Map::Draw2D(void)
 	DrawRotaGraphF(MAP_CENTER_POS_X, MAP_CENTER_POS_Y, 1.0, 0.0, playerImg_, true);
 
 	int size = 0;
+
+	// プレイヤーの3D座標を2D座標に変換して移動分マップの位置を動かす
+	auto* player = owner_->GetComponent<PlayerController>();
+	VECTOR plaPos = player->GetTransform()->pos_;
+
 	// 見つけたアイテムの数分回す
 	for (Item* item : items_)
 	{
@@ -139,10 +173,6 @@ void Map::Draw2D(void)
 
 		// アイテムがまだ見つけられていなかったら次の処理へ
 		if (!item->GetInfo().isFound_)continue;
-
-		// プレイヤーの3D座標を2D座標に変換して移動分マップの位置を動かす
-		auto* player = owner_->GetComponent<PlayerController>();
-		VECTOR plaPos = player->GetTransform()->pos_;
 
 		// 実際のアイテムの座標とプレイヤーの座標でスケーリング(中心からの相対座標)
 		float localX = (item->GetTransform()->pos_.x - plaPos.x) * 0.1f;

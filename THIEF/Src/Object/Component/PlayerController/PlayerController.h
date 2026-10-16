@@ -200,13 +200,13 @@ private:
 	void WispRangeChange(bool flg);
 
 	// 死亡座標へ到達しているか
-	void IsReachedDeadPos(void);
+	void CheckDeadPos(void);
 
 	// 移動時の足音を鳴らす
 	void PlayFootstep(void);
 
 	// 描画関係
 	void DrawHP(void);		// HP
-	void DrawStamina(void)const;	// スタミナ
+	void DrawStamina(void);	// スタミナ
 	void DebugDraw(void);	// デバッグ用
 };
