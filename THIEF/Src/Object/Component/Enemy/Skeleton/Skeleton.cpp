@@ -79,7 +79,6 @@ void Skeleton::Init(void)
 		MV1SetScale(info_.modelId_, info_.scale_);
 
 		// “G‚ÌŒü‚«‚ğİ’è
-		transform_->angle_ = DEFAULT_ANGLE;
 		info_.localAngle_ = { 0.0f, Math::Deg2Rad(180.0f), 0.0f };
 
 		// ‘O‰ñ‚ÌÀ•W‚ğŒ»İ‚ÌÀ•W‚Éİ’è
