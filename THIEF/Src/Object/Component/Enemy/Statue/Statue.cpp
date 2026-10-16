@@ -11,6 +11,72 @@
 
 #include "Statue.h"
 
+namespace
+{
+	// 大きさ
+	constexpr VECTOR SCALE = { 2.5f,2.5f,2.5f };
+
+	// 向き
+	constexpr VECTOR DEFAULT_ANGLE = { 0.0f, 50.0f,0.0f };
+
+	// 座標
+	constexpr VECTOR DEFAULT_POS = { -7444.0f,10.0f,3570.0f };
+
+	// 特定エリアの最小値
+	constexpr VECTOR MIN_AREA_POS = { -7690.0f, 1.0f, 3450.0f };
+
+	// 特定エリアの最大値
+	constexpr VECTOR MAX_AREA_POS = { -5870.0f, 1110, 5920.0f };
+
+	// 攻撃時移動速度
+	constexpr float ATTACK_SPEED_MOVE = 20.0f;
+
+	// 攻撃時吹っ飛び力
+	constexpr float ATTACK_JUMP_POWER = 25.0f;
+
+	// 攻撃時ダメージ力
+	constexpr float ATTACK_DAMAGE_POWER = 20.0f;
+
+	// 発見時の驚き演出時間
+	constexpr float STEP_TIME_SURPRISE = 4.0f;
+
+	// 攻撃時の待機時間
+	constexpr float STEP_TIME_ATTACK = 10.0f;
+
+	// 追跡移動速度
+	constexpr float SPEED_CHASE = 5.0f;
+
+	// アタックのY座標のオフセット
+	constexpr float ATTACK_POS_OFFSET_Y = 80.0f;
+
+	// 視線位置のオフセット
+	constexpr float EYE_OFFSET_Y = 100.0f;
+
+	// 画面内判定の高さ間隔
+	constexpr float VIEW_CHECK_STEP_Y = 100.0f;
+
+	// 画面内判定後に高さを戻す量
+	constexpr float VIEW_CHECK_RETURN_Y = 350.0f;
+
+	// レイの半径
+	constexpr float RAY_RADIUS = 30.0f;
+
+	// 攻撃範囲
+	constexpr float ATTACK_RANGE = 200.0f;
+
+	// 帰還先に到達したとみなす距離
+	constexpr float RETURN_ARRIVE_DISTANCE = 100.0f * 100.0f;
+
+	// 移動しているかの判定閾値
+	constexpr float MOVE_EPSILON = 0.001f;
+
+	// 足音SEの届く半径
+	constexpr float SE_RADIUS_STATUE = 3500.0f;
+
+	// 足音SEの再生間隔
+	constexpr float SE_INTERVAL_CHASE = 1.0f;
+}
+
 Statue::Statue(void)
 {
 }

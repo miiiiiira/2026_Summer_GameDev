@@ -2,6 +2,21 @@
 
 #include "WeaponPunch.h"
 
+namespace
+{
+	// 最大生存時間
+	constexpr float MAX_ALIVE_COUNT = 0.5f;
+	
+	// 移動スピード
+	constexpr float PUNCH_SPEED = 8.0f;
+
+	// 衝突判定用半径
+	constexpr float PUNCH_COLLISION_RADIUS = 100.0f;
+
+	// 使用時の位置調整オフセット
+	constexpr VECTOR PUNCH_LOCAL_POS = { 0.0f, 90.0f, 0.0f };
+}
+
 WeaponPunch::WeaponPunch(void)
 {
 }
@@ -49,7 +64,7 @@ void WeaponPunch::Release(void)
 {
 }
 
-void WeaponPunch::UseWeapon(VECTOR pos, VECTOR dir)
+void WeaponPunch::UseWeapon(const VECTOR& pos, const VECTOR& dir)
 {
 	// 武器の高さ調整
 	pos_ = VAdd(pos, localPos_);
@@ -71,13 +86,13 @@ void WeaponPunch::SetParam(void)
 	scales_ = { 1.0f, 1.0f, 1.0f };
 
 	// 移動スピード
-	speed_ = 8.0f;
+	speed_ = PUNCH_SPEED;
 
 	// 衝突判定用半径
-	collisionRadius_ = 100.0f;
+	collisionRadius_ = PUNCH_COLLISION_RADIUS;
 
 	// 使用時の位置調整
-	localPos_ = { 0.0f, 90.0f, 0.0f };
+	localPos_ = PUNCH_LOCAL_POS;
 
 	// 生存時間のカウントを初期化
 	cntAlive_ = 0;

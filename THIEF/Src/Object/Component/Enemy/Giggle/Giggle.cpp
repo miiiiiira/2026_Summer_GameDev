@@ -4,6 +4,21 @@
 
 #include "Giggle.h"
 
+namespace
+{
+	// 待機状態のステップタイマー
+	constexpr float STEP_IDLE = 10.0f;
+
+	// 笑う状態のステップタイマー
+	constexpr float STEP_GIGGLING = 20.0f;
+
+	// 確率計算の全体値
+	constexpr int MAX_PERCENTAGE = 100;
+
+	// 待機状態に遷移する確率
+	constexpr int IDLE_PROBABILITY = 90;
+}
+
 Giggle::Giggle(void)
 {
 }
@@ -77,7 +92,7 @@ void Giggle::ChangeState(STATE state)
 void Giggle::ChangeIdle(void)
 {
 	// 待機状態に遷移
-	info_.step_ = static_cast<float>(STEP_IDLE);
+	info_.step_ = STEP_IDLE;
 }
 
 void Giggle::ChangeThink(void)
@@ -87,7 +102,7 @@ void Giggle::ChangeThink(void)
 void Giggle::ChangeGiggling(void)
 {
 	// 笑う状態に遷移
-	info_.step_ = static_cast<float>(STEP_GIGGLING);
+	info_.step_ = STEP_GIGGLING;
 
 	// SE再生
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_GIGGLE);

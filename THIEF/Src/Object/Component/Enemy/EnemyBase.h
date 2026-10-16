@@ -24,7 +24,7 @@ public:
 	EnemyBase(void);
 
 	// デストラクタ
-	virtual ~EnemyBase(void) override;
+	~EnemyBase(void) override;
 
 	void Init(void) override;			// 初期化
 	void Update(void) override = 0;		// 更新
@@ -63,7 +63,7 @@ public:
 	ENEMY_TAG GetTag(void) const { return info_.tag_; }
 
 	// モデルIDを返す
-	int GetModelId() const { return info_.modelId_; }
+	int GetModelId(void) const { return info_.modelId_; }
 
 	// 座標をセットする
 	void SetPos(VECTOR pos);
@@ -81,7 +81,7 @@ protected:
 	WeaponBase* useWeapon_ = nullptr;				// 武器のポインタ
 	std::weak_ptr<StagePathData> pathData_ = {};	// パスデータの弱参照
 
-	EnemyInfo info_;		// 敵の情報
+	EnemyInfo info_ = {};	// 敵の情報
 	int stageId_ = -1;		// ステージのモデルID
 
 protected:
@@ -133,24 +133,4 @@ protected:
 
 	// 追従用の線分かステージと当たっているかどうか
 	bool CheckChaseLineCollision(VECTOR pPos, VECTOR ePos, float radius);
-
-private:
-
-	// ジャンプ力
-	static constexpr float JUMP_POW = 25.0f;	
-
-	// 重力加速度
-	static constexpr float GRAVITY = -1.98f;	
-
-	// 最大落下速度
-	static constexpr float MAX_FALL = -40.0f;	
-
-	// ノードに到達したと判定する距離
-	static constexpr float NODE_ARRIVE_DISTANCE = 60.0f;
-
-	// 高低差による発見判定の閾値
-	static constexpr float MAX_DETECTION_HEIGHT_DIFFERENCE = 50.0f;
-
-	// 最小移動速度の閾値
-	static constexpr float MIN_MOVE_SPEED_THRESHOLD = 0.001f;
 };
