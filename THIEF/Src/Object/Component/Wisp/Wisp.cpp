@@ -10,8 +10,40 @@
 
 #include "Wisp.h"
 
+namespace
+{
+	// ライトの範囲
+	constexpr float POINTLIGHT_RANGE_MAX = 1850.0f;	// 最大範囲
+	constexpr float POINTLIGHT_RANGE_MIN = 500.0f;	// 最小範囲
+
+	// プレイヤーとライトの相対座標
+	constexpr VECTOR REACH_DEFAULT_LIGHT = { -110.0f,-70.0f,220.0f };
+	constexpr VECTOR REACH_MAX_LIGHT = { -110.0f,0.0f,800.0f };
+
+	// オフセット
+	constexpr VECTOR POINTLIGHT_OFFSET = { 0.0f,70.0f,0.0f };
+
+	// 線形補間の係数
+	constexpr float COEFFICIENT = 0.15f;
+
+	// 距離減衰
+	constexpr float ATTEN_0 = 0.0f;
+	constexpr float LIGHT_POW_MAX = 0.001f;
+	constexpr float LIGHT_POW_MIN = 0.002f;
+	constexpr float ATTEN_2 = 0.0f;
+
+	// デフォルトのライトカラー
+	constexpr VECTOR DEFAULT_LIGHT_COLOR = { 0xe0,0xe0,0xe0 };
+}
+
 Wisp::Wisp(void)
 {
+	// ライトの光量を設定(小さいほど光量が増す)
+	lightPow_ = LIGHT_POW_MAX;
+
+	// ライトの範囲を設定
+	range_ = POINTLIGHT_RANGE_MAX;
+
 	// 追加ポイントライト
 	pointLightHandle_ = CreatePointLightHandle(
 		{ 0.0f, 0.0f, 0.0f },
@@ -305,7 +337,7 @@ void Wisp::LookPlayer(void)
 	trans_->angle_.y = atan2f(vec.x, vec.z);
 
 	// 今回のモデルのY軸向きが逆なので向きを反転させる
-	trans_->angle_.y += 180.0f * (DX_PI_F / 180.0f);
+	trans_->angle_.y += DX_PI_F;
 
 	// X軸の回転
 	trans_->angle_.x = atan2f(vec.y, length);
@@ -320,7 +352,6 @@ void Wisp::LookPlayer(void)
 void Wisp::DebugLightColorChange(void)
 {
 #ifdef _DEBUG
-
 	// カラーチェンジ　Hキー
 	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::COLOR_CHANGE))
 	{
@@ -329,42 +360,55 @@ void Wisp::DebugLightColorChange(void)
 		case COLOR_0:
 			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_1);
 			break;
+
 		case COLOR_1:
 			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_2);
 			break;
+
 		case COLOR_2:
 			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_3);
 			break;
+
 		case COLOR_3:
 			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_4);
 			break;
+
 		case COLOR_4:
 			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_5);
 			break;
+
 		case COLOR_5:
 			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_6);
 			break;
+
 		case COLOR_6:
 			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_7);
 			break;
+
 		case COLOR_7:
 			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_8);
 			break;
+
 		case COLOR_8:
 			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_9);
 			break;
+
 		case COLOR_9:
 			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_10);
 			break;
+
 		case COLOR_10:
 			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_11);
 			break;
+
 		case COLOR_11:
 			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_12);
 			break;
+
 		case COLOR_12:
 			LightManager::GetInstance()->SetLightType(LIGHT_TYPE::COLOR_0);
 			break;
+
 		default:
 			break;
 		}

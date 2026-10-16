@@ -47,31 +47,6 @@ public:
 
 private:
 
-	// ライトの範囲
-	static constexpr float POINTLIGHT_RANGE_MAX = 1850.0f;	// 最大範囲
-	static constexpr float POINTLIGHT_RANGE_MIN = 500.0f;	// 最小範囲
-
-	// プレイヤーとライトの相対座標
-	static constexpr VECTOR REACH_DEFAULT_LIGHT = { -110.0f,-70.0f,220.0f };
-	static constexpr VECTOR REACH_MAX_LIGHT = { -110.0f,0.0f,800.0f };
-
-	// オフセット
-	static constexpr VECTOR POINTLIGHT_OFFSET = { 0.0f,70.0f,0.0f };
-
-	// 線形補間の係数
-	static constexpr float COEFFICIENT = 0.15f;
-
-	// 距離減衰
-	static constexpr float ATTEN_0 = 0.0f;
-	static constexpr float LIGHT_POW_MAX = 0.001f;
-	static constexpr float LIGHT_POW_MIN = 0.002f;
-	static constexpr float ATTEN_2 = 0.0f;
-
-	// デフォルトのライトカラー
-	static constexpr VECTOR DEFAULT_LIGHT_COLOR = { 0xe0,0xe0,0xe0 };
-
-private:
-
 	// Transform
 	Transform* trans_ = nullptr;
 
@@ -83,8 +58,8 @@ private:
 	// ポイントライト
 	int pointLightHandle_ = -1;				// ハンドル
 	VECTOR pointPos_ = { 0.0f,0.0f,0.0f };	// 座標
-	float lightPow_ = LIGHT_POW_MAX;;		// ライトの光量(小さいほど光量が増す)
-	float range_ = POINTLIGHT_RANGE_MAX;	// ライトの範囲
+	float lightPow_ = 0.0f;					// ライトの光量(小さいほど光量が増す)
+	float range_ = 0.0f;					// ライトの範囲
 	bool isRangeMax_ = true;				// 範囲設定を最大値にしているか　true / 最大値にする処理が行われる , false / 最小値にする処理が行われる
 
 	// wisp
