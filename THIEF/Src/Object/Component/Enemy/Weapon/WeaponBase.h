@@ -52,17 +52,8 @@ protected:
 	// 武器種別
 	TYPE type_ = TYPE::MAX;
 
-	// モデルID
-	int modelId_ = -1;
-
 	// 座標
 	VECTOR pos_ = {};
-
-	// 角度
-	VECTOR angles_ = {};
-
-	// スケール
-	VECTOR scales_ = { 1.0f, 1.0f, 1.0f };
 
 	// 衝突判定用半径
 	float collisionRadius_ = 0.0f;
@@ -81,9 +72,6 @@ protected:
 
 	// 使用時の位置調整オフセット
 	VECTOR localPos_ = {};
-
-	// 画像やモデルなどのロード(純粋仮想関数)
-	virtual void Load(void) = 0;
 
 	// パラメータ設定(純粋仮想関数)
 	virtual void SetParam(void) = 0;

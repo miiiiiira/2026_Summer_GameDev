@@ -21,9 +21,6 @@ public:
 
 protected:
 
-	// 画像やモデルなどのロード
-	void Load(void) override;
-
 	// パラメータ設定
 	void SetParam(void) override;
 };

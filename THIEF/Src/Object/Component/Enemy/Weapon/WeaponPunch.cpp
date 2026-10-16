@@ -76,15 +76,8 @@ void WeaponPunch::UseWeapon(const VECTOR& pos, const VECTOR& dir)
 	isAlive_ = true;
 }
 
-void WeaponPunch::Load(void)
-{
-}
-
 void WeaponPunch::SetParam(void)
 {
-	// モデルの大きさ
-	scales_ = { 1.0f, 1.0f, 1.0f };
-
 	// 移動スピード
 	speed_ = PUNCH_SPEED;
 

@@ -16,14 +16,8 @@ void WeaponBase::Init(TYPE type)
 	// 初期は生存していない
 	isAlive_ = false;
 
-	// 画像やモデルなどのロード
-	Load();
-
 	// パラメータ設定
 	SetParam();
-
-	// モデルの大きさ設定
-	MV1SetScale(modelId_, scales_);
 }
 
 void WeaponBase::Update(void)
