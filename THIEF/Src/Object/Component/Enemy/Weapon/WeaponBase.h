@@ -26,9 +26,6 @@ public:
 	// À•W‚Ìæ“¾
 	const VECTOR& GetPos(void) const { return pos_; }
 
-	// À•W‚Ìİ’è
-	void SetPos(const VECTOR& pos);
-
 	// Õ“Ë”»’è—p”¼Œa
 	float GetCollisionRadius(void) const { return collisionRadius_; }
 
