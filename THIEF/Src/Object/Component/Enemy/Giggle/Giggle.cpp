@@ -127,7 +127,7 @@ void Giggle::UpdateThink(void)
 	// 思考
 	// ランダムに次の行動を決定	
 	// 90%で待機、10%で笑う
-	int randomVal = GetRand(MAX_PERCENTAGE);
+	int randomVal = GetRand(MAX_PERCENTAGE - 1);
 
 	if (randomVal < IDLE_PROBABILITY)
 	{

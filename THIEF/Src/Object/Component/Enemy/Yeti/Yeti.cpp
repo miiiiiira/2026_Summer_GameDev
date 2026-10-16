@@ -495,7 +495,7 @@ void Yeti::UpdateThink(void)
 	// 思考
 	// ランダムに次の行動を決定	
 	// 10%で待機、90%で徘徊
-	int randomVal = GetRand(MAX_PERCENTAGE);
+	int randomVal = GetRand(MAX_PERCENTAGE - 1);
 
 	if (randomVal < IDLE_PROBABILITY)
 	{
