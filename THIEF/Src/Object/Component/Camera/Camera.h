@@ -81,18 +81,6 @@ public:
 
 private:
 
-	// デッドゾーン
-	static constexpr float DEAD_ZONE = 0.2f; 
-
-	// 回転速度
-	static constexpr float START_DEG = 5.0f;	// 最小
-	static constexpr float END_DEG = 100.0f;	// 最大
-
-	// スティック正規化用
-	static constexpr float STICK_AXIS_MAX = 1000.0f;
-
-private:
-
 	// Transform
 	Transform* transform_ = nullptr;
 

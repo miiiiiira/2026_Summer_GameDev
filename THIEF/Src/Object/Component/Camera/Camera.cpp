@@ -10,6 +10,19 @@
 
 #include "Camera.h"
 
+namespace
+{
+	// デッドゾーン
+	constexpr float DEAD_ZONE = 0.2f;
+
+	// 回転速度
+	constexpr float START_DEG = 5.0f;	// 最小
+	constexpr float END_DEG = 100.0f;	// 最大
+
+	// スティック正規化用
+	constexpr float STICK_AXIS_MAX = 1000.0f;
+}
+
 void Camera::Init(void)
 {
 	transform_ = owner_->GetComponent<Transform>();
@@ -66,12 +79,15 @@ void Camera::SetBeforeDraw(void)
 	case Camera::MODE::FIXED:
 		SetBeforeDrawFixedPoint();
 		break;
+
 	case Camera::MODE::FREE:
 		SetBeforeDrawFree();
 		break;
+
 	case Camera::MODE::FOLLOW:
 		SetBeforeDrawFollow();
 		break;
+
 	case Camera::MODE::NONE:
 	default:
 		SetBeforeDrawFree();
