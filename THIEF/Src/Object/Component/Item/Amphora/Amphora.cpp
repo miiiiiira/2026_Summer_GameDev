@@ -4,6 +4,17 @@
 
 #include "Amphora.h"
 
+namespace
+{
+	// 大きさ
+	static constexpr VECTOR SCALE = { 1.0f,1.0f,1.0f };
+
+	// パラメータ
+	static constexpr int PRICE = 2200;		// 金額
+	static constexpr int HARDNESS = 500;	// 頑丈さ
+	static constexpr float WEIGHT = -25.0f;	// 重さ
+}
+
 Amphora::Amphora(void)
 {
 }
@@ -39,7 +50,7 @@ void Amphora::Break(void)
 	// 破壊エフェクトを再生
 	EffectResManager::GetInstance()->PlayEffect(
 		1.0f, 
-		{ 0.0f,0.0f, 0.0f }, 
+		{}, 
 		trans_->pos_,
 		EffectResManager::TYPE::ITEM_BREAK_AMPHORA);
 	
