@@ -4,6 +4,17 @@
 
 #include "Skull.h"
 
+namespace
+{
+	// 大きさ
+	constexpr VECTOR SCALE = { 1.0f,1.0f,1.0f };
+
+	// パラメータ
+	constexpr int PRICE = 3000;			// 金額
+	constexpr int HARDNESS = 700;		// 頑丈さ
+	constexpr float WEIGHT = -10.0f;	// 重さ
+}
+
 Skull::Skull(void)
 {
 }
@@ -39,7 +50,7 @@ void Skull::Break(void)
 	// 破壊エフェクトを再生
 	EffectResManager::GetInstance()->PlayEffect(
 		1.0f, 
-		{ 0.0f,0.0f, 0.0f },
+		{},
 		trans_->pos_,
 		EffectResManager::TYPE::ITEM_BREAK_SKULL);
 

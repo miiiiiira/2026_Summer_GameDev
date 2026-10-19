@@ -4,6 +4,17 @@
 
 #include "Mug.h"
 
+namespace
+{
+	// 大きさ
+	constexpr VECTOR SCALE = { 1.0f,1.0f,1.0f };
+
+	// パラメータ
+	constexpr int PRICE = 1800;		// 金額
+	constexpr int HARDNESS = 600;	// 頑丈さ
+	constexpr float WEIGHT = -5.0f;	// 重さ
+}
+
 Mug::Mug()
 {
 }
@@ -39,7 +50,7 @@ void Mug::Break(void)
 	// 破壊エフェクトを再生
 	EffectResManager::GetInstance()->PlayEffect(
 		1.0f, 
-		{ 0.0f,0.0f, 0.0f }, 
+		{}, 
 		trans_->pos_, 
 		EffectResManager::TYPE::ITEM_BREAK_MUG);
 

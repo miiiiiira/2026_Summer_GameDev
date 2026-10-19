@@ -11,6 +11,36 @@
 
 #include "Item.h"
 
+namespace
+{
+	// リミット設定
+	constexpr int DAMAGE_DRAW_COUNT = 90;			// ダメージ表記用のカウント
+	constexpr int INVINCIBILITY_FRAMES = 20;			// 初期無敵時間
+	constexpr int INVINCIBILITY_FRAMES_ISGRABB = 30;	// ダメージ時の無敵時間
+	constexpr float DEAD_POS_Y = -1000.0f;			// アイテムが壊れる座標
+
+	// 重力
+	constexpr float GRAVITY = -0.25f;	// アイテムにかける重力
+	constexpr float MAX_FALL = -15.0f;	// 最大落下速度
+
+	// 線形補間の係数
+	constexpr float COEFFICIENT = 0.3f;
+
+	// 発見時のハイライトの大きさ
+	constexpr Vector2 HIGHLIGHT_SIZE_BIG = { 100,160 };	// 大きい
+	constexpr Vector2 HIGHLIGHT_SIZE_MEDIUM = { 60,70 };	// 中くらい
+	constexpr Vector2 HIGHLIGHT_SIZE_SMALL = { 50,60 };	// 小さい
+
+	// 発見時のハイライトカウンタ時間
+	constexpr int FOUND_COUNTER_MAX = 60;
+
+	// ダメージの補正値
+	constexpr int DAMAGE_MULT = 15;
+
+	// アルファ値
+	constexpr int ALPHA_MAX = 255;
+}
+
 Item::~Item(void)
 {
 	// ダメージ表記用vector型初期化
@@ -259,7 +289,7 @@ void Item::EndGrabbed(void)
 void Item::TrueIsFound(void)
 {
 	// 発見フラグを立てる
-	info_.isFound_ = true; 
+	info_.isFound_ = true;
 
 	// アイテムを見つけた時の音
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ITEM_FOUND);
@@ -479,7 +509,7 @@ void Item::DamageDraw(void)
 		VECTOR pos = ConvWorldPosToScreenPos(damage.pos);
 
 		// カウントによってだんだん表記を薄くしていく
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, (255 * damage.count) / DAMAGE_DRAW_COUNT);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, (ALPHA_MAX * damage.count) / DAMAGE_DRAW_COUNT);
 
 		// ダメージ数を描画
 		DrawFormatStringFToHandle(
@@ -514,18 +544,21 @@ void Item::HighLightDraw(void)
 		case ITEM_SIZE::BIG:
 			boxSize = HIGHLIGHT_SIZE_BIG;
 			break;
+
 		case ITEM_SIZE::MEDIUM:
 			boxSize = HIGHLIGHT_SIZE_MEDIUM;
 			break;
+
 		case ITEM_SIZE::SMALL:
 			boxSize = HIGHLIGHT_SIZE_SMALL;
 			break;
+
 		default:
 			break;
 		}
 
 		// 透明度設定したボックスを表示
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, ALPHA_MAX / 2);
 
 		// ハイライトを指定の大きさで描画
 		DrawBox(
@@ -540,6 +573,7 @@ void Item::HighLightDraw(void)
 	}
 }
 
+#ifdef _DEBUG
 void Item::DrawDebug(void)
 {
 	VECTOR start = trans_->pos_;
@@ -550,3 +584,4 @@ void Item::DrawDebug(void)
 	// 当たり判定用のカプセル大きさ確認
 	DrawCapsule3D(start, end, info_.collisionRadiusX_, 8, 0xff0000, 0xff0000, false);
 }
+#endif // _DEBUG

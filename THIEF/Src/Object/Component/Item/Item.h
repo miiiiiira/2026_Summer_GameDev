@@ -12,21 +12,6 @@ class Transform;
 
 class Item :public Component
 {
-protected:
-
-	// リミット設定
-	static constexpr int DAMAGE_DRAW_COUNT = 90;			// ダメージ表記用のカウント
-	static constexpr int INVINCIBILITY_FRAMES = 20;			// 初期無敵時間
-	static constexpr int INVINCIBILITY_FRAMES_ISGRABB = 30;	// ダメージ時の無敵時間
-	static constexpr float DEAD_POS_Y = -1000.0f;			// アイテムが壊れる座標
-
-	// 重力
-	static constexpr float GRAVITY = -0.25f;	// アイテムにかける重力
-	static constexpr float MAX_FALL = -15.0f;	// 最大落下速度
-	
-	// 線形補間の係数
-	static constexpr float COEFFICIENT = 0.3f;	
-
 public:
 	
 	virtual ~Item(void)override;	// デストラクタ
@@ -88,19 +73,6 @@ public:
 	void OnFloor(void);	
 
 protected:
-
-	// 発見時のハイライトの大きさ
-	static constexpr Vector2 HIGHLIGHT_SIZE_BIG = { 100,160 };	// 大きい
-	static constexpr Vector2 HIGHLIGHT_SIZE_MEDIUM = { 60,70 };	// 中くらい
-	static constexpr Vector2 HIGHLIGHT_SIZE_SMALL = { 50,60 };	// 小さい
-
-	// 発見時のハイライトカウンタ時間
-	static constexpr int FOUND_COUNTER_MAX = 60;	
-
-	// ダメージの補正値
-	static constexpr int DAMAGE_MULT = 15;	
-
-protected:
 	
 	// Transform
 	Transform* trans_ = nullptr;	
@@ -152,6 +124,9 @@ protected:
 	void PriceDraw(void);		// 金額表示
 	void DamageDraw(void);		// ダメージ表示
 	void HighLightDraw(void);	// ハイライト表示
+
+#ifdef _DEBUG
 	void DrawDebug(void);		// デバッグ用
+#endif // _DEBUG
 };
 
