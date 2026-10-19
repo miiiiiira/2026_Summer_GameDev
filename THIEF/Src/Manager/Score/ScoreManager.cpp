@@ -8,8 +8,40 @@
 
 ScoreManager* ScoreManager::instance_ = nullptr;
 
+namespace
+{
+	// 納品金額設定
+	constexpr int DELIVERY_TARGET_PRICE_STRING_NUM = 14;
+	constexpr int DELIVERY_TARGET_PRICE_POS_Y = 30;
+	constexpr int DELIVERY_PRICE_POS_Y = 70;
+
+	// カート金額設定
+	constexpr int CART_TOTAL_STRING_NUM = 9;
+	constexpr int CART_TOTAL_PRICE_POS_Y = 130;
+	constexpr int CART_PRICE_POS_Y = 170;
+
+	// 警告文設定
+	constexpr int WARNING_STRING_NUM = 22;
+	constexpr int WARNING_POS_Y = 210;
+
+	// 目標金額をアイテム全体の金額の50%とする
+	constexpr float TARGET_PRICE_RATIO = 0.5f;
+
+	// 切り捨て金額
+	constexpr int ROUND_DOWN_PRICE = 100;
+
+	// 警告文を出すときは全体の金額の70%とする
+	constexpr float SHOW_WARNING_PRICE_RATIO = 0.7f;
+
+	// ボタンのアルファ値
+	constexpr float ALPHA_SPEED = 3.0f;	// 変化速度
+	constexpr float ALPHA_MAX = 255.0f;	// 最大値
+	constexpr float ALPHA_MIN = 0.0f;	// 最小値
+}
+
 ScoreManager::ScoreManager(void)
 {
+	alpha_ = ALPHA_MAX;
 }
 
 void ScoreManager::Update(void)
@@ -107,7 +139,7 @@ void ScoreManager::SetItems(std::vector<Item*> items)
 		//	目標金額を全金額の50%に設定
 		targetPrice_ = static_cast<int>(allPrice * TARGET_PRICE_RATIO);
 		// 100円以下は切り捨て
-		int price = targetPrice_ % 100;
+		int price = targetPrice_ % ROUND_DOWN_PRICE;
 		// 目標金額を設定
 		targetPrice_ -= price;
 
@@ -172,13 +204,13 @@ void ScoreManager::DrawDeliveryAndTargetPrice(void)
 	int strWidth = 
 		GetDrawStringWidthToHandle(
 			"Score / Target",
-			14,
+			DELIVERY_TARGET_PRICE_STRING_NUM,
 			font);
 
 	// 納品金額
 	DrawStringToHandle(
 		Application::SCREEN_SIZE_X - strWidth,
-		30,
+		DELIVERY_TARGET_PRICE_POS_Y,
 		"Score / Target",
 		priceCol,
 		font);
@@ -193,7 +225,7 @@ void ScoreManager::DrawDeliveryAndTargetPrice(void)
 	// 納品金額(実際の数値)
 	DrawFormatStringToHandle(
 		Application::SCREEN_SIZE_X - strWidth,
-		70,
+		DELIVERY_PRICE_POS_Y,
 		priceCol,
 		font,
 		"%d　/　%d",
@@ -219,13 +251,13 @@ void ScoreManager::DrawCaryPrice(void)
 	int strWidth = 
 		GetDrawStringWidthToHandle(
 			"CartTotal",
-			9,
+			CART_TOTAL_STRING_NUM,
 			font);
 
 	// カートトータル
 	DrawStringToHandle(
 		Application::SCREEN_SIZE_X - strWidth,
-		130,
+		CART_TOTAL_PRICE_POS_Y,
 		"CartTotal",
 		cartPriceCol,
 		font);
@@ -240,7 +272,7 @@ void ScoreManager::DrawCaryPrice(void)
 	// カート内の金額(実際の数値)
 	DrawFormatStringToHandle(
 		Application::SCREEN_SIZE_X - strWidth,
-		170, 
+		CART_PRICE_POS_Y,
 		cartPriceCol, 
 		font,
 		"%d",
@@ -259,13 +291,13 @@ void ScoreManager::DrawWarning(void)
 		int strWidth =
 			GetDrawStringWidthToHandle(
 				"Target Score at Risk!",
-				22,
+				WARNING_STRING_NUM,
 				font);
 
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(alpha_));
 
 		// 警告文を付ける
-		DrawStringToHandle(Application::SCREEN_SIZE_X - strWidth, 210, "Target Score at Risk!", 0xff0000, font);
+		DrawStringToHandle(Application::SCREEN_SIZE_X - strWidth, WARNING_POS_Y, "Target Score at Risk!", 0xff0000, font);
 
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}

@@ -18,6 +18,9 @@ private:
 	// 静的インスタンス
 	static ScoreManager* instance_;
 
+	ScoreManager(void);		// コンストラクタ
+	~ScoreManager(void) {};	// デストラクタ
+
 	// コピー・ムーブ操作を禁止
 	ScoreManager(const ScoreManager&) = delete;
 	ScoreManager& operator=(const ScoreManager&) = delete;
@@ -25,8 +28,6 @@ private:
 	ScoreManager& operator=(ScoreManager&&) = delete;
 
 public:
-
-	ScoreManager(void);	// コンストラクタ
 
 	void Update(void);	// 更新
 	void Draw(void);	// 描画
@@ -67,19 +68,6 @@ public:
 
 private:
 
-	// 目標金額をアイテム全体の金額の50%とする
-	static constexpr float TARGET_PRICE_RATIO = 0.5f;
-
-	// 警告文を出すときは全体の金額の70%とする
-	static constexpr float SHOW_WARNING_PRICE_RATIO = 0.7f;
-
-	// ボタンのアルファ値
-	static constexpr float ALPHA_SPEED = 3.0f;	// 変化速度
-	static constexpr float ALPHA_MAX = 255.0f;	// 最大値
-	static constexpr float ALPHA_MIN = 0.0f;	// 最小値
-
-private:
-
 	std::vector<Item*> items_;	// アイテム
 
 private:
@@ -95,7 +83,7 @@ private:
 	bool showWarning_ = false;	// 警告文出すか　true / 警告文を出す , false / 警告文を出さない
 
 	// アルファ値
-	float alpha_ = ALPHA_MAX;
+	float alpha_ = 0.0f;
 	// ボタンのアルファ値が増加しているかどうか
 	bool isIncreasing_ = false;	
 
