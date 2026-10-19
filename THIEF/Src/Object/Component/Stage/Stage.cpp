@@ -9,6 +9,17 @@
 
 #include "Stage.h"
 
+namespace
+{
+	// 位置系
+	constexpr int CLEAR_COUNT_POS_Y = 60;	// クリアカウント
+	constexpr float PUSH_IMAGE_POS_Y = 60.0f;	// プッシュ画像
+
+	// インターバル系
+	constexpr int COLL_INTERVAL = 120;			// 一定の速度でカウント音を出す
+	constexpr int CLEAR_COUNT_INTERVAL = 60;	// クリアカウント
+}
+
 Stage::Stage(void)
 {
 	// プッシュ画像を読み込み
@@ -122,7 +133,7 @@ void Stage::Draw2D(void)
 	if (clearCount_ <= 0)return;
 
 	// カウントを調べる
-	int count = (CLEAR_COUNT_MAX / 60) - (clearCount_ / 60);
+	int count = (CLEAR_COUNT_MAX / CLEAR_COUNT_INTERVAL) - (clearCount_ / CLEAR_COUNT_INTERVAL);
 
 	// フォントハンドルを取得
 	int font = Application::GetInstance()->GetFont(FONT_SIZE_60);
@@ -133,7 +144,7 @@ void Stage::Draw2D(void)
 	// カウントを出す
 	DrawFormatStringToHandle(
 		Application::SCREEN_SIZE_X / 2 - strWidth / 2,
-		60,
+		CLEAR_COUNT_POS_Y,
 		0xffffff,
 		font,
 		"%d",
@@ -149,7 +160,7 @@ void Stage::Draw3D(void)
 		VECTOR pushPos = VAdd(doneSwitchPos_, { 0.0f,PUSH_IMG_OFFSET_Y + pushUpDownOffsetPos_,0.0f });
 
 		// ビルボードで画像反映
-		DrawBillboard3D(pushPos, 0.5f, 0.0f, 60.0f, 0.0f, pushImg_, true);
+		DrawBillboard3D(pushPos, 0.5f, 0.0f, PUSH_IMAGE_POS_Y, 0.0f, pushImg_, true);
 	}
 
 #ifdef _DEBUG
@@ -192,6 +203,7 @@ VECTOR Stage::ToLocalPos(VECTOR world)
 	return VSub(world, trans->pos_);
 }
 
+#ifdef _DEBUG
 void Stage::DrawDebug(void)
 {
 	// 納品完了スイッチの当たり判定視覚化
@@ -206,6 +218,7 @@ void Stage::DrawDebug(void)
 	// 枠組みで描画
 	DrawCube3D(startPos, endPos, 0x0000ff, 0x0000ff, false);
 }
+#endif // _DEBUG
 
 void Stage::ClearCountUpdate(void)
 {
@@ -235,7 +248,7 @@ void Stage::ClearCountUpdate(void)
 	}
 
 	// 一秒ごとにカウント音を出す
-	if (clearCount_ % 60 == 0)
+	if (clearCount_ % CLEAR_COUNT_INTERVAL == 0)
 	{
 		// 納品完了待ち時間のカウント音
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_COUNT_UP);
@@ -262,8 +275,8 @@ void Stage::CallCountUpdate(void)
 	// カウントを勧める
 	callCount_++;
 
-	// 一秒ごとにカウント音を出す
-	if (callCount_ % 120 == 0)
+	// 一定の速度でカウント音を出す
+	if (callCount_ % COLL_INTERVAL == 0)
 	{
 		// 納品場所が呼ぶ音を出す
 		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_CALL, &deliveryPos_,3000.0f);

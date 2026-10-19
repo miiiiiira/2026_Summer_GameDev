@@ -107,11 +107,11 @@ private:
 	int collModelId_ = -1;	// 当たり判定モデル
 
 	// 納品場所
-	VECTOR deliverySize_ = { 0.0f,0.0f,0.0f };	// 大きさ
-	VECTOR deliveryPos_ = { 0.0f,0.0f,0.0f };	// 座標
+	VECTOR deliverySize_ = {};	// 大きさ
+	VECTOR deliveryPos_ = {};	// 座標
 
 	// 納品完了スイッチ
-	VECTOR doneSwitchPos_ = { 0.0f,0.0f,0.0f };	// 座標
+	VECTOR doneSwitchPos_ = {};	// 座標
 	bool isDoneSwitch_ = false;					// 押されたか　true / 押された , false / 押されていない
 
 	// クリアカウント
@@ -128,9 +128,6 @@ private:
 
 private:
 
-	// デバック用描画
-	void DrawDebug(void);
-
 	// クリアカウントの更新処理
 	void ClearCountUpdate(void);
 
@@ -139,4 +136,9 @@ private:
 
 	// プッシュ画像の上下させる更新処理
 	void PushUpDownUpdate(void);
+
+#ifdef _DEBUG
+	// デバック用描画
+	void DrawDebug(void);
+#endif // _DEBUG
 };

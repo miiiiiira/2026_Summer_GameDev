@@ -122,10 +122,12 @@ void GameScene::LoadEnd(void)
 	// エフェクシアが非同期ロードに対応していないためここでロード
 	EffectResManager::GetInstance()->Load();
 
+	// ステージクラスのポインタを取得
 	auto stage = objectManger_->FindComponentWithTag<Stage>(Tag::Stage);
 	// スコアマネージャーにアイテムたちを渡す
 	ScoreManager::GetInstance()->SetItems(stage->GetItems());
 
+	// マップクラスのポインタを取得
 	auto map = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player)->GetOwner()->GetComponent<Map>();
 	// マップにアイテムたちを渡す
 	map->SetItems(stage->GetItems());
@@ -294,7 +296,7 @@ void GameScene::CameraCreate(void)
 
 	// 座標の設定
 	auto cameraTrans = cameraObj->AddComponent<Transform>();
-	cameraTrans->pos_ = { 0.0f,0.0f,0.0f };
+	cameraTrans->pos_ = {};
 
 	// ステージ情報を取ってきて初期化処理を行う
 	auto stageNum = SceneManager::GetInstance()->GetCurrentStage();
@@ -330,14 +332,11 @@ void GameScene::StageCreate(std::string path, std::string collPath)
 
 	// 座標の設定
 	auto trans = stage->AddComponent<Transform>();
-	trans->pos_ = { 0.0f,0.0f,0.0f };
+	trans->pos_ = {};
 
 	// 描画
 	auto render = stage->AddComponent<Render3D>();
 	render->SetModel(path);
-
-	// 描画
-	stage->AddComponent<Animation>();
 
 	// ステージ機能
 	auto stageCom = stage->AddComponent<Stage>();
@@ -361,8 +360,8 @@ void GameScene::WispCreate(void)
 
 	// 座標の設定
 	auto trans = wisp->AddComponent<Transform>();
-	trans->pos_ = { 0.0f,0.0f,0.0f };
-	trans->angle_ = { 0.0f,0.0f,0.0f };
+	trans->pos_ = {};
+	trans->angle_ = {};
 
 	// 描画
 	auto render = wisp->AddComponent<Render3D>();
