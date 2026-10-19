@@ -1,3 +1,5 @@
+#include "Upgrade.h"
+
 #include "UpgradeManager.h"
 
 UpgradeManager* UpgradeManager::instance_ = nullptr;

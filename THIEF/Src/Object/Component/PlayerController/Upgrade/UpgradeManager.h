@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Upgrade.h"
+class Upgrade;
 
 class UpgradeManager
 {
@@ -32,11 +32,14 @@ public:
 	void Draw(void);		// 描画
 	void Release(void);		// 解放
 
-	Upgrade* GetUpgrade(void) { return upgrade_; }	// アップデートを渡す
+	// アップデートを渡す
+	Upgrade* GetUpgrade(void) { return upgrade_; }	
 	
-	void TrueIsUpgradeEnd(void) { isUpgradeEnd_ = true; }	// アップグレードを終わらせる
+	// アップグレードを終わらせる
+	void TrueIsUpgradeEnd(void) { isUpgradeEnd_ = true; }	
 
-	bool GetIsUpgradeEnd(void)const { return isUpgradeEnd_; }	// アップグレードが終了したかどうかを渡す
+	// アップグレードが終了したかどうかを渡す
+	bool GetIsUpgradeEnd(void)const { return isUpgradeEnd_; }	
 
 private:
 	

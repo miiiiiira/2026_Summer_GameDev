@@ -126,7 +126,6 @@ private:
 
 	// 状態別更新処理
 	void StateUpdate(void);
-
 	// 状態別初期化
 	static void InitIdle(PlayerController& player);			// 待機
 	static void InitMove(PlayerController& player);			// 移動
@@ -135,7 +134,6 @@ private:
 	static void InitSliding(PlayerController& player);		// スライディング
 	static void InitHitReact(PlayerController& player);		// ダメージ時のリアクション
 	static void InitDead(PlayerController& player);			// 死亡
-
 	// 状態別更新
 	static void UpdateIdle(PlayerController& player);		// 待機
 	static void UpdateMove(PlayerController& player);		// 移動
@@ -144,18 +142,15 @@ private:
 	static void UpdateSliding(PlayerController& player);	// スライディング
 	static void UpdateHitReact(PlayerController& player);	// ダメージ時のリアクション
 	static void UpdateDead(PlayerController& player);		// 死亡
-
 	// 状態を変更させる
 	void ChangeState(PLAYER_STATE state);
 
 	// 掴み状態別更新処理
 	void UpdateGrabState(void);
-
 	// 状態別更新
 	static void UpdateNotGrabbing(PlayerController& player);	// 掴もうとしてない
 	static void UpdateTryGrabbing(PlayerController& player);	// 掴もうとしている
 	static void UpdateIsGrabbing(PlayerController& player);		// 掴んでいる
-
 	// 掴み状態を変更させる
 	void ChangeGrabState(GRABBING_STATE state) { grabStateCtrl_.state_ = state; };
 
@@ -208,5 +203,8 @@ private:
 	// 描画関係
 	void DrawHP(void);		// HP
 	void DrawStamina(void);	// スタミナ
+
+#ifdef _DEBUG
 	void DebugDraw(void);	// デバッグ用
+#endif // _DEBUG
 };

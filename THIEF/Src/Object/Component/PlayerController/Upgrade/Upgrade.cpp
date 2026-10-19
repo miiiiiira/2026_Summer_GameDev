@@ -321,6 +321,7 @@ void Upgrade::SelectMouse(void)
 	// 終了ボタンに当たっていたら
 	if (Collision::HitMouseImg2Box({ END_BUTTON_POS_X ,END_BUTTON_POS_Y }, END_BUTOON_COL_SIZE_X, END_BUTOON_COL_SIZE_Y))
 	{
+		// 選択中の物を終了ボタンへ
 		ChangeShopSlot(SHOP_SLOT::END);
 	}
 }
@@ -625,10 +626,8 @@ void Upgrade::ChangeState(UPGRADE_STATE state)
 	switch (state_)
 	{
 	case Upgrade::UPGRADE_STATE::SELECT:
-
 		// 初期化処理をする
 		SelectInit();
-
 		break;
 
 	case Upgrade::UPGRADE_STATE::APPLY:

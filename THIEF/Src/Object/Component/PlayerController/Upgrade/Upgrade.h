@@ -43,7 +43,6 @@ public:
 		NONE,
 	};
 
-
 	// アップグレードクラスの情報
 	struct UpgradeData
 	{
@@ -92,7 +91,9 @@ private:
 	// 選択する前のアップグレードの全種類
 	std::vector<PLAYER_UPGRADE_TYPE>allUpgrades_;
 
-	// 選択した後のアップグレード種類、決定した金額、買われたかどうか(true / 買われてない、false / 買われた)を入れる
+	// 選択した後のアップグレード種類
+	// 決定した金額
+	// 買われたかどうか(true / 買われてない、false / 買われた)を入れる
 	std::vector<std::pair<UpgradeData, bool>> selectUpgrades_;
 	
 	// 最終的に選ばれた強化種類

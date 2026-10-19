@@ -942,7 +942,7 @@ bool PlayerController::InputMove(void)
 	// 移動量
 	VECTOR dir = Math::VECTOR_ZERO;
 
-	// WASDで移動する
+	// 移動入力があるか確認
 	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::MOVE_FORWARD)) { dir = VAdd(dir, { 0.0f, 0.0f, 1.0f }); }
 	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::MOVE_LEFT)) { dir = VAdd(dir, { -1.0f, 0.0f, 0.0f }); }
 	if (InputManager::GetInstance()->IsAction(INPUT_INFO::ACTION::MOVE_BACK)) { dir = VAdd(dir, { 0.0f, 0.0f, -1.0f }); }
@@ -1128,6 +1128,7 @@ void PlayerController::DrawStamina(void)
 		PlayerStatusManager::GetInstance()->GetPlayerStatus().staminaMax_);
 }
 
+#ifdef _DEBUG
 void PlayerController::DebugDraw(void)
 {
 	// プレイヤー座標表示
@@ -1140,3 +1141,4 @@ void PlayerController::DebugDraw(void)
 		transform_->pos_.y,
 		transform_->pos_.z);
 }
+#endif // _DEBUG
