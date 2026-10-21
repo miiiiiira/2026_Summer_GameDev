@@ -1,11 +1,6 @@
 #include "LightManager.h"
 LightManager* LightManager::instance_ = nullptr;
 
-void LightManager::Destroy(void)
-{
-	DeleteInstance();
-}
-
 void LightManager::ResetLight(void)
 {
 	// デフォルトカラーにする

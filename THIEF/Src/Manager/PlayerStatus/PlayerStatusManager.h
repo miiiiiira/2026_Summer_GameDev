@@ -14,6 +14,9 @@ private:
 	// 静的インスタンス
 	static PlayerStatusManager* instance_;	
 
+	PlayerStatusManager(void);		// コンストラクタ
+	~PlayerStatusManager(void) {};	// デストラクタ
+
 	// コピー・ムーブ操作を禁止
 	PlayerStatusManager(const PlayerStatusManager&) = delete;
 	PlayerStatusManager& operator=(const PlayerStatusManager&) = delete;
@@ -52,12 +55,6 @@ public:
 	static constexpr float DEFAULT_RENGE = 400.0f;	// プレイヤーの掴み距離
 	static constexpr float DEFAULT_STAMINA = 40.0f;	// スタミナ
 	static constexpr int DEFAULT_JUMP_NUM = 1;		// ジャンプ可能数
-
-public:
-
-	PlayerStatusManager(void);	// コンストラクタ
-	
-	void Destroy(void);			// 解放
 
 public:
 

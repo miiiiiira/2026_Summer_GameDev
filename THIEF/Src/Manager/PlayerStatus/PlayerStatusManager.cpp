@@ -2,12 +2,6 @@
 
 PlayerStatusManager* PlayerStatusManager::instance_ = nullptr;
 
-void PlayerStatusManager::Destroy()
-{
-	// インスタンス削除
-	DeleteInstance();
-}
-
 void PlayerStatusManager::ResetStatus()
 {
 	// HPの初期化

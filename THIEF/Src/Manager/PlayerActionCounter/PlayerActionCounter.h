@@ -16,6 +16,9 @@ private:
 	// 静的インスタンス
 	static PlayerActionCounter* instance_;
 
+	PlayerActionCounter(void);		// コンストラクタ
+	~PlayerActionCounter(void) {};	// デストラクタ
+
 	// コピー・ムーブ操作を禁止
 	PlayerActionCounter(const PlayerActionCounter&) = delete;
 	PlayerActionCounter& operator=(const PlayerActionCounter&) = delete;
@@ -23,8 +26,6 @@ private:
 	PlayerActionCounter& operator=(PlayerActionCounter&&) = delete;
 
 public:
-
-	PlayerActionCounter(void);	// コンストラクタ
 
 	void Init(void);			// 初期化
 

@@ -256,13 +256,13 @@ void SceneManager::Delete(void)
 	FrameRenderer::Release();
 
 	// ライトマネージャー管理解放
-	LightManager::GetInstance()->Destroy();
+	LightManager::GetInstance()->DeleteInstance();
 
 	// 金額管理解放
-	ScoreManager::GetInstance()->Destroy();
+	ScoreManager::GetInstance()->DeleteInstance();
 
 	// プレイヤーのステータス管理解放
-	PlayerStatusManager::GetInstance()->Destroy();
+	PlayerStatusManager::GetInstance()->DeleteInstance();
 
 	// アップグレード管理解放
 	UpgradeManager::GetInstance()->DeleteInstance();

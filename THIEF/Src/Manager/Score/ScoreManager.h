@@ -31,7 +31,6 @@ public:
 
 	void Update(void);	// XV
 	void Draw(void);	// •`‰æ
-	void Destroy(void);	// ‰ğ•ú
 
 public:
 

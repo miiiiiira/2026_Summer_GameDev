@@ -16,18 +16,15 @@ private:
 	// 静的インスタンス
 	static LightManager* instance_;	
 
+	LightManager(void);		// コンストラクタ
+	~LightManager(void) {};	// デストラクタ
+
 	// コピー・ムーブ操作を禁止
 	LightManager(const LightManager&) = delete;
 	LightManager& operator=(const LightManager&) = delete;
 	LightManager(LightManager&&) = delete;
 	LightManager& operator=(LightManager&&) = delete;
 
-public:
-
-	LightManager(void);	// コンストラクタ
-
-	void Destroy(void);	// 解放
-	
 public:
 
 	// デフォルトカラーにする

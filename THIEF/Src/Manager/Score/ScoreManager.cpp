@@ -94,11 +94,6 @@ void ScoreManager::Draw(void)
 	DrawWarning();
 }
 
-void ScoreManager::Destroy(void)
-{
-	DeleteInstance();
-}
-
 void ScoreManager::ResetGame(void)
 {
 	deliveryPrice_ = 0;
