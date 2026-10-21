@@ -12,7 +12,6 @@ public:
 
 	void Init(void) override;		// 初期化
 	void Update(void) override;		// 更新
-	void Draw2D(void) override;		// 更新
 
 public:
 
@@ -43,8 +42,5 @@ private:
 
 	// 納品完了スイッチとプレイヤー ステージと当たっていたら処理をしない
 	void DoneSwitchToPlayerCollision(void);
-
-	// デバック用描画
-	void DebugDraw(void);
 };
 

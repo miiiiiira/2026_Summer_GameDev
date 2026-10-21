@@ -14,6 +14,12 @@
 
 #include "DeliveryLocationCollider.h"
 
+namespace
+{
+	// スイッチY座標のオフセット
+	constexpr float SWITCH_POS_Y_OFFSET = 30.0f;
+}
+
 void DeliveryLocationCollider::Init(void)
 {
 	// ステージの確保
@@ -37,15 +43,6 @@ void DeliveryLocationCollider::Update(void)
 	DoneSwitchToPlayerCollision();
 }
 
-void DeliveryLocationCollider::Draw2D(void)
-{
-	if (!stage_)return;
-	if (!player_)return;
-#ifdef _DEBUG
-	DebugDraw();
-#endif // _DEBUG
-}
-
 void DeliveryLocationCollider::ItemToDeliveryLocationCollision(void)
 {
 	// 納品場所の座標
@@ -60,12 +57,11 @@ void DeliveryLocationCollider::ItemToDeliveryLocationCollision(void)
 	// アイテムの数分減らす
 	for (Item* item : items)
 	{
-
 		// アイテムの座標
 		VECTOR itemPos = item->GetTransform()->pos_;
 
 		// アイテムのサイズ(中心から端までの半径)
-		VECTOR itemSize = { 
+		VECTOR itemSize = {
 			item->GetInfo().collisionRadiusX_,
 			item->GetInfo().collisionRadiusY_,
 			item->GetInfo().collisionRadiusX_ };
@@ -145,7 +141,7 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 		Vector2 screenPos = { pos.x,pos.y };
 
 		// スクリーン上で掴み可能な範囲
-		Vector2 checkBoxPos = { 
+		Vector2 checkBoxPos = {
 			Application::SCREEN_SIZE_X / 2 - Crosshair::CONTROLLER_GRAB_SCREEN_RANGE_RAD ,
 			Application::SCREEN_SIZE_Y / 2 - Crosshair::CONTROLLER_GRAB_SCREEN_RANGE_RAD };
 
@@ -171,53 +167,51 @@ void DeliveryLocationCollider::DoneSwitchToPlayerGrabbingCollision(void)
 	// クロスヘアの種類を掴めるに変更
 	crosshair_->ChangeCrosshair(CROSSHAIR_CAN_GRAB);
 
-	// 掴もうとしていたら
-	if (player_->GetGrabbingState() == GRABBING_STATE::TRY_GRABBING)
+	// 掴もうとしていなかったら処理を行わない
+	if (player_->GetGrabbingState() != GRABBING_STATE::TRY_GRABBING)return;
+
+	// ボタンを押したことを伝える
+	stage_->TrueIsDoneSwitch();
+
+	// 納品済みの金額を確認
+	int deliveryPrice = ScoreManager::GetInstance()->GetDeliveryPrice();
+	// 目標金額を確認
+	int targetPrice = ScoreManager::GetInstance()->GetTargetPrice();
+
+	// 目標金額を達成していたら
+	if (deliveryPrice >= targetPrice)
 	{
-		// ボタンを押したことを伝える
-		stage_->TrueIsDoneSwitch();
-
-		// 納品済みの金額を確認
-		int deliveryPrice = ScoreManager::GetInstance()->GetDeliveryPrice();
-		// 目標金額を確認
-		int targetPrice = ScoreManager::GetInstance()->GetTargetPrice();
-
-		// 目標金額を達成していたら
-		if (deliveryPrice >= targetPrice)
+		// チュートリアルだった場合
+		if (SceneManager::GetInstance()->GetNowSceneTag() == TUTORIAL)
 		{
-			// チュートリアルだった場合
-			if (SceneManager::GetInstance()->GetNowSceneTag() == TUTORIAL)
-			{
-				// 確認項目が納品だったら
-				if (SceneManager::GetInstance()->GetTutorialState() == Tutorial::DELIVER)
-				{
-					// 納品完了音
-					AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_SUC);
-
-					// クリアカウントを開始
-					stage_->StartClearCount();
-					return;
-				}
-
-				// 確認項目が納品出なければ納品失敗音
-				AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_FAI);
-			}
-			// チュートリアル以外のシーンだった場合
-			else
+			// 確認項目が納品だったら
+			if (SceneManager::GetInstance()->GetTutorialState() == Tutorial::DELIVER)
 			{
 				// 納品完了音
 				AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_SUC);
 
 				// クリアカウントを開始
 				stage_->StartClearCount();
+				return;
 			}
-			return;
-		}
-		else
-		{
-			// 納品失敗音
+
+			// 確認項目が納品出なければ納品失敗音
 			AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_FAI);
 		}
+		// チュートリアル以外のシーンだった場合
+		else
+		{
+			// 納品完了音
+			AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_SUC);
+
+			// クリアカウントを開始
+			stage_->StartClearCount();
+		}
+	}
+	else
+	{
+		// 納品失敗音
+		AudioManager::GetInstance()->PlaySE(SoundID::SE_DELIVERY_BUTTON_FAI);
 	}
 }
 
@@ -241,7 +235,7 @@ void DeliveryLocationCollider::DoneSwitchToPlayerCollision(void)
 
 	// 納品完了スイッチの座標
 	VECTOR lineEndPos = stage_->GetDoneSwitchPos();
-	lineEndPos.y += 30.0f;
+	lineEndPos.y += SWITCH_POS_Y_OFFSET;
 
 	// カメラとスイッチを線分をつなげてステージに当たっているか
 	MV1_COLL_RESULT_POLY stageHitResult =
@@ -270,42 +264,5 @@ void DeliveryLocationCollider::DoneSwitchToPlayerCollision(void)
 	{
 		// プッシュ画像を表示
 		stage_->SetIsPushDrawFlg(true);
-	}
-}
-
-void DeliveryLocationCollider::DebugDraw(void)
-{
-	// 判定をするアイテムのポインタ
-	std::vector<Item*> items = stage_->GetItems();
-
-	// アイテムの数分減らす
-	for (Item* item : items)
-	{
-#pragma region 納品場所
-
-		// 納品場所の座標
-		VECTOR deliveryPos = stage_->GetDeliveryPos();
-
-		// 納品場所のサイズ
-		VECTOR deliverySize = stage_->GetDeliverySize();
-
-		// アイテムの座標
-		VECTOR itemPos = item->GetTransform()->pos_;
-
-		// アイテムのサイズ(中心から端までの半径)
-		VECTOR itemSize = { item->GetInfo().collisionRadiusX_
-			, item->GetInfo().collisionRadiusY_
-			,item->GetInfo().collisionRadiusX_ };
-
-		if (Collision::HitAABBs(deliveryPos, deliverySize, itemPos, itemSize))
-		{
-			DrawString(20, 400, "納品場所に入った！", 0xffffff);
-		}
-		else
-		{
-			DrawString(20, 400, "納品場所に入ってない…", 0xffffff);
-		}
-
-#pragma endregion
 	}
 }
