@@ -79,12 +79,6 @@ public:
 	// 強制的に特定のシーンに飛ぶ。リセットをかけ特定のシーンのみにする。
 	void JumpScene(std::shared_ptr<SceneBase> scene);
 
-	// ゲーム終了
-	void GameEnd(void) { isGameEnd_ = true; }
-
-	// ゲーム終了取得
-	bool GetGameEnd(void) { return isGameEnd_; }
-
 	const float& GetTotalTime(void);
 	const float& GetDeltaTime(void);
 
@@ -169,9 +163,6 @@ private:
 
 	// ジャンプシーンか否か
 	bool isJumpScene_;
-
-	// ゲーム終了
-	bool isGameEnd_ = false;
 
 	// デルタタイム
 	std::chrono::system_clock::time_point mPreTime;
