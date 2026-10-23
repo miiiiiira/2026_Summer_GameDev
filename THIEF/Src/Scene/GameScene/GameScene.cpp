@@ -55,6 +55,26 @@
 
 #include "GameScene.h"
 
+namespace ModelPath
+{
+	// ステージモデルパス
+	// ステージ1
+	constexpr const char* STAGE = "Data/Model/Stage/Stage.mv1";
+	constexpr const char* STAGE_COLL = "Data/Model/Stage/StageColl.mv1";
+	// ステージ2
+	constexpr const char* STAGE_2 = "Data/Model/Stage/Stage2.mv1";
+	constexpr const char* STAGE_2_COLL = "Data/Model/Stage/Stage2Coll.mv1";
+	// ステージ3
+	constexpr const char* STAGE_3 = "Data/Model/Stage/Stage3.mv1";
+	constexpr const char* STAGE_3_COLL = "Data/Model/Stage/Stage3Coll.mv1";
+
+	// ライトモデルパス
+	constexpr const char* WISP = "Data/Model/Player/Light/Wisp.mv1";
+
+	// カートモデルパス
+	constexpr const char* CART = "Data/Model/Cart/Cart.mv1";
+}
+
 GameScene::GameScene(void)
 {
 	// マウスの表示を消す
@@ -214,7 +234,7 @@ void GameScene::Stage1Init(void)
 	CameraUtility::SetCameraPoint(objectManger_->FindComponentWithTag<Camera>(Tag::Camera));
 
 	// ステージの作成
-	StageCreate("Data/Model/Stage/Stage.mv1", "Data/Model/Stage/StageColl.mv1");
+	StageCreate(ModelPath::STAGE, ModelPath::STAGE_COLL);
 
 	// ライトの作成
 	WispCreate();
@@ -241,7 +261,7 @@ void GameScene::Stage2Init(void)
 	CameraUtility::SetCameraPoint(objectManger_->FindComponentWithTag<Camera>(Tag::Camera));
 
 	// ステージの作成
-	StageCreate("Data/Model/Stage/Stage2.mv1", "Data/Model/Stage/Stage2Coll.mv1");
+	StageCreate(ModelPath::STAGE_2, ModelPath::STAGE_2_COLL);
 
 	// ライトの作成
 	WispCreate();
@@ -268,7 +288,7 @@ void GameScene::Stage3Init(void)
 	CameraUtility::SetCameraPoint(objectManger_->FindComponentWithTag<Camera>(Tag::Camera));
 
 	// ステージの作成
-	StageCreate("Data/Model/Stage/Stage3.mv1", "Data/Model/Stage/Stage3Coll.mv1");
+	StageCreate(ModelPath::STAGE_3, ModelPath::STAGE_3_COLL);
 
 	// ライトの作成
 	WispCreate();
@@ -365,7 +385,7 @@ void GameScene::WispCreate(void)
 
 	// 描画
 	auto render = wisp->AddComponent<Render3D>();
-	render->SetModel("Data/Model/Player/Light/Wisp.mv1");
+	render->SetModel(ModelPath::WISP);
 
 	// 火機能
 	auto cont = wisp->AddComponent<Wisp>();
@@ -472,7 +492,7 @@ void GameScene::CartCreate(void)
 
 	// 描画
 	auto render = cart->AddComponent<Render3D>();
-	render->SetModel("Data/Model/Cart/Cart.mv1");
+	render->SetModel(ModelPath::CART);
 
 	// カプセルコライダー
 	auto capsule = cart->AddComponent<CapsuleCollider>();

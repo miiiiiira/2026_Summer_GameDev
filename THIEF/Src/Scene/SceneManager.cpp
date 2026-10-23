@@ -47,7 +47,7 @@ void SceneManager::Init(void)
 	UpgradeManager::CreateInstance();
 
 	// フェーダークラスを生成
-	Fader::GetInstance()->CreateInstance();
+	Fader::CreateInstance();
 	Fader::GetInstance()->Init();
 
 	// マウスカーソルクラスを生成
@@ -256,19 +256,19 @@ void SceneManager::Delete(void)
 	FrameRenderer::Release();
 
 	// ライトマネージャー管理解放
-	LightManager::GetInstance()->DeleteInstance();
+	LightManager::DeleteInstance();
 
 	// 金額管理解放
-	ScoreManager::GetInstance()->DeleteInstance();
+	ScoreManager::DeleteInstance();
 
 	// プレイヤーのステータス管理解放
-	PlayerStatusManager::GetInstance()->DeleteInstance();
+	PlayerStatusManager::DeleteInstance();
 
 	// アップグレード管理解放
-	UpgradeManager::GetInstance()->DeleteInstance();
+	UpgradeManager::DeleteInstance();
 
 	// フェーダー解放
-	Fader::GetInstance()->DeleteInstance();
+	Fader::DeleteInstance();
 
 	// マウスカーソル解放
 	MouseCursor::GetInstance()->Destroy();

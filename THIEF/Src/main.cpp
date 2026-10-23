@@ -42,7 +42,7 @@ int WINAPI WinMain(
 		return -1;
 	}
 
-	Application::GetInstance()->DeleteInstance();
+	Application::DeleteInstance();
 
 	// Windowsに一時的に保持していたフォントデータを削除
 	RemoveFontResourceExA("Data/Font/Shikakufuto_Free.ttf", FR_PRIVATE, NULL);

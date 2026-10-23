@@ -37,10 +37,9 @@ private:
 
 	// デフォルトコンストラクタをprivateにして、
 	// 外部から生成できない様にする
-	Application(void);
-
+	Application(void) {};
 	// デストラクタも同様
-	~Application(void);
+	~Application(void) {};
 
 	// コピー・ムーブ操作を禁止
 	Application(const Application&) = delete;
@@ -62,29 +61,33 @@ public:
 	bool IsInitFail(void) const;	// 初期化成功／失敗の判定
 	bool IsReleaseFail(void) const;	// 解放成功／失敗の判定
 
+public:
+
 	// 終了フラグの設定
 	void SetEnd(bool isEnd);
 
 	// ゲッター
 	int GetFont(FONT_SIZE size);
-	int GetDefaultFont(void);
+
+private:
+
+	// FPS
+	FpsControl* fps_ = nullptr;
 
 private:
 
 	// 初期化失敗
-	bool isInitFail_;
+	bool isInitFail_ = false;
 
 	// 解放失敗
-	bool isReleaseFail_;
-
-	// FPS
-	FpsControl* fps_;
+	bool isReleaseFail_ = false;
 
 	// 終了フラグ
-	bool isEnd_;
+	bool isEnd_ = false;
 
+	// フォントハンドル
 	int font_[FONT_SIZE::FONT_MAX];
-	int defaultFont_;
 
+private:
 	int InitEffekseer(void);
 };

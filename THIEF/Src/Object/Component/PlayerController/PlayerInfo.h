@@ -34,7 +34,7 @@ enum GRABBING_STATE
 struct playerStateCtrl
 {
 	// ステート
-	PLAYER_STATE state_;
+	PLAYER_STATE state_ = PLAYER_STATE_IDLE;
 
 	// ステートテーブル
 	playerStateFunction initTable_[PLAYER_STATE_MAX];
@@ -45,7 +45,7 @@ struct playerStateCtrl
 struct playerGrabStateCtrl
 {
 	// ステート
-	GRABBING_STATE state_;
+	GRABBING_STATE state_ = NOT_GRABBING;
 
 	// ステートテーブル
 	playerStateFunction updateTable_[GRABBING_MAX];

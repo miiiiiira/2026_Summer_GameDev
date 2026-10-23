@@ -15,17 +15,6 @@ Application* Application::instance_ = nullptr;
 const std::string Application::PATH_MODEL = "Data/Model/";
 const std::string Application::PATH_IMAGE= "Data/Image/";
 
-Application::Application(void)
-{
-	isInitFail_ = false;
-	isReleaseFail_ = false;
-	fps_ = nullptr;
-}
-
-Application::~Application(void)
-{
-}
-
 void Application::Init(void)
 {
 
@@ -99,8 +88,6 @@ void Application::Init(void)
 	{
 		font_[table.first] = CreateFontToHandle("Shikakufuto_Free", table.second, 1, DX_FONTTYPE_ANTIALIASING);
 	}
-
-	defaultFont_ = CreateFontToHandle("HG創英角ﾎﾟｯﾌﾟ体", DEFAULTFONT_SIZE, 9, DX_FONTTYPE_ANTIALIASING);
 }
 
 // ゲームループ
@@ -148,12 +135,10 @@ void Application::Delete(void)
 	delete fps_;
 
 	// フォントの削除
-	for (auto table : FontTable::Table)
+	for (const auto& table : FontTable::Table)
 	{
 		DeleteFontToHandle(font_[table.first]);
 	}
-
-	DeleteFontToHandle(defaultFont_);
 
 	// DxLib終了
 	if (DxLib_End() == -1)
@@ -180,11 +165,6 @@ void Application::SetEnd(bool isEnd)
 int Application::GetFont(FONT_SIZE size)
 {
 	return font_[size];
-}
-
-int Application::GetDefaultFont(void)
-{
-	return defaultFont_;
 }
 
 int Application::InitEffekseer(void)

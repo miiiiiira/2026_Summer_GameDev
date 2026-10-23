@@ -80,9 +80,6 @@ void DebugScene::Load(void)
 
 	// プレイヤーの作成
 	PlayerCreate();
-
-	// 敵の作成
-	EnemyCreate();
 }
 
 void DebugScene::LoadEnd(void)
@@ -254,27 +251,6 @@ void DebugScene::PlayerCreate(void)
 
 	// ライトのポインタを渡す
 	playerController->SetWisp(wisp);
-}
-
-void DebugScene::EnemyCreate(void)
-{
-	//// 敵の生成
-	//auto enemy = objectManger_->CreateObject();
-
-	//// タグの付与
-	//enemy->SetTag(Tag::Enemy);
-
-	//// 座標の設定
-	//auto trans = enemy->AddComponent<Transform>();
-	//trans->pos_ = { 0,0,0 };
-
-	//// 描画の設定
-	//auto render = enemy->AddComponent<Render3D>();
-	//render->SetModel("Data/Model/Player/Player.mv1");
-
-	//// 当たり判定の設定
-	//auto col = enemy->AddComponent<CapsuleCollider>();
-	//col->radius_ = 20.0f;
 }
 
 void DebugScene::StageCreate(void)
