@@ -109,11 +109,11 @@ void EnemyBase::SetPathData(PlayerController* player, int stageId, std::shared_p
 void EnemyBase::SetEnemyData(const EnemyData& data)
 {
 	// 敵のデータを保持
-	info_.startOffset_ = data.capStartOffset;	// カプセルコライダーの開始位置オフセット
+	info_.startOffset_ = data.capStartOffset_;	// カプセルコライダーの開始位置オフセット
 
-	info_.endOffset_ = data.capEndOffset;		// カプセルコライダーの終了位置オフセット
+	info_.endOffset_ = data.capEndOffset_;		// カプセルコライダーの終了位置オフセット
 
-	info_.radius_ = data.capRadius;				// カプセルコライダーの半径
+	info_.radius_ = data.capRadius_;			// カプセルコライダーの半径
 }
 
 void EnemyBase::SetPos(VECTOR pos)
@@ -330,15 +330,11 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 		// 障害物に当たらなかったら、目線が通っているとみなす
 		if (!hit)
 		{
-			info_.isNotice_ = true;
-
 			return true;
 		}
 	}
 
 	// 視野外、または障害物に遮られている場合
-	info_.isNotice_ = false;
-
 	return false;
 }
 

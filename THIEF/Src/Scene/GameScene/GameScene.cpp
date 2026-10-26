@@ -820,14 +820,14 @@ void GameScene::EnemyCreate(ENEMY_TAG tag, VECTOR pos, const EnemySpawnParam& pa
 	trans->angle_ = param.angle_;
 
 	auto render = enemyObj->AddComponent<Render3D>();
-	render->SetModel(enemyData->second.path);
+	render->SetModel(enemyData->second.path_);
 
 	// コライダーの追加とテーブルデータからの設定
 	auto capsule = enemyObj->AddComponent<CapsuleCollider>();
 	capsule->AddCapsule(
-		enemyData->second.capStartOffset,
-		enemyData->second.capEndOffset,
-		enemyData->second.capRadius
+		enemyData->second.capStartOffset_,
+		enemyData->second.capEndOffset_,
+		enemyData->second.capRadius_
 	);
 
 	// ステージコライダー追加

@@ -9,12 +9,12 @@
 // 敵の種類を表すタグ
 enum class ENEMY_TAG
 {
-    YETI,
-    MUSHNUB,
-    SKELETON,
-    STATUE,
-    GIGGLE,
-    MAX,
+	YETI,
+	MUSHNUB,
+	SKELETON,
+	STATUE,
+	GIGGLE,
+	MAX,
 };
 
 // 敵の左右の位置を表すタグ
@@ -42,37 +42,35 @@ struct EnemyInfo
 	VECTOR scale_ = { 1.0f, 1.0f, 1.0f };	// 拡大率
 	VECTOR localAngle_ = {};				// モデルごとのローカル回転補正値
 
-	ENEMY_TAG tag_ = ENEMY_TAG::MAX;        // 敵のタグ
+	ENEMY_TAG tag_ = ENEMY_TAG::MAX;		// 敵のタグ
 
 	// ステータス
-	int hp_ = 0;                     // 現在のHP
-	float moveSpeed_ = 0.0f;         // 現在の移動速度
-	bool isAlive_ = true;            // 生存フラグ
-	int invincibleTime_ = 0;         // 無敵時間
+	float moveSpeed_ = 0.0f;		// 現在の移動速度
+	bool isAlive_ = true;			// 生存フラグ
 
 	// 攻撃用パラメータ
-	float attackMoveSpeed_ = 0.0f;   // 攻撃時の移動速度
-	float attackJumpPow_ = 0.0f;     // 攻撃時のジャンプ力
-	float attackDamagePow_ = 0.0f;   // 攻撃力
+	float attackMoveSpeed_ = 0.0f;	// 攻撃時の移動速度
+	float attackJumpPow_ = 0.0f;	// 攻撃時のジャンプ力
+	float attackDamagePow_ = 0.0f;	// 攻撃力
 
 	// 索敵パラメータ
-	float viewRadius_ = 0.0f;        // 視野半径
-	float patrolRadius_ = 0.0f;      // 巡回半径
-	float targetLostTimer_ = 0.0f;   // プレイヤー見失いタイマー
-	float step_ = 0.0f;              // ステート遷移用タイマー
+	float viewRadius_ = 0.0f;		// 視野半径
+	float patrolRadius_ = 0.0f;		// 巡回半径
+	float targetLostTimer_ = 0.0f;	// プレイヤー見失いタイマー
+	float stateTimer_ = 0.0f;		// ステート遷移用タイマー
 
 	// 判定・状態フラグ
-	bool isNotice_ = false;          // プレイヤー発見フラグ
-	bool isHit_ = false;             // 視線遮断・ヒット判定用フラグ
+	bool isHit_ = false;			// 視線遮断・ヒット判定用フラグ
 
 	// 移動
-	VECTOR moveDir_ = {};            // 移動方向ベクトル
-	VECTOR movePow_ = {};            // 移動力ベクトル
+	VECTOR moveDir_ = {};			// 移動方向ベクトル
+	VECTOR movePow_ = {};			// 移動力ベクトル
+	float velocityY_ = 0.0f;		// Y軸方向の速度
 
-	// 視線判定
-	VECTOR startOffset_ = {};        // 敵キャラクターのカプセル開始位置
-	VECTOR endOffset_ = {};          // 敵キャラクターのカプセル終了位置
-	float radius_ = 0.0f;            // 敵キャラクターのカプセル判定用半径
+	// 当たり判定
+	VECTOR startOffset_ = {};		// 敵キャラクターのカプセル開始位置
+	VECTOR endOffset_ = {};			// 敵キャラクターのカプセル終了位置
+	float radius_ = 0.0f;			// 敵キャラクターのカプセル判定用半径
 
 	// 経路探索
 	std::vector<float> minCosts_;			// 最小コスト
@@ -84,22 +82,20 @@ struct EnemyInfo
 	int prevNodeId_ = -1;					// 前回のノードID
 	int prevPrevNodeId_ = -1;				// 前々回のノードID
 	int nextNodeId_ = -1;					// 次のノードID
-
-	float velocityY_ = 0.0f;				 // Y軸方向の速度
 };
 
 // 敵生成用データ
 struct EnemyData
 {
-	std::string path;              // モデルのファイルパス
+	std::string path_;				// モデルのファイルパス
 
-	VECTOR capStartOffset = {};    // カプセル開始オフセット
-	VECTOR capEndOffset = {};      // カプセル終了オフセット
-	float capRadius = 0.0f;        // カプセル半径
+	VECTOR capStartOffset_ = {};	// カプセル開始オフセット
+	VECTOR capEndOffset_ = {};		// カプセル終了オフセット
+	float capRadius_ = 0.0f;		// カプセル半径
 };
 
 namespace EnemyTable
 {
-    // テーブルの外部宣言
-    extern const std::unordered_map<ENEMY_TAG, EnemyData> Table;
+	// テーブルの外部宣言
+	extern const std::unordered_map<ENEMY_TAG, EnemyData> Table;
 }

@@ -315,7 +315,7 @@ void Statue::ChangeIdle(void)
 void Statue::ChangeSurprise(void)
 {
 	// 驚いている時間（猶予時間）を設定
-	info_.step_ = STEP_TIME_SURPRISE;
+	info_.stateTimer_ = STEP_TIME_SURPRISE;
 }
 
 void Statue::ChangeChase(void)
@@ -327,7 +327,7 @@ void Statue::ChangeChase(void)
 void Statue::ChangeAttack(void)
 {
 	// 攻撃を続ける時間を設定
-	info_.step_ = STEP_TIME_ATTACK;
+	info_.stateTimer_ = STEP_TIME_ATTACK;
 
 	// プレイヤーの方を向く
 	LookPlayer();
@@ -355,9 +355,9 @@ void Statue::UpdateIdle(void)
 void Statue::UpdateSurprise(void)
 {
 	// 驚き時間を経過時間分減らす
-	info_.step_ -= SceneManager::GetInstance()->GetDeltaTime();
+	info_.stateTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
 
-	if (info_.step_ < 0.0f)
+	if (info_.stateTimer_ < 0.0f)
 	{
 		// 待機終了
 		ChangeState(STATE::CHASE);
@@ -629,13 +629,13 @@ void Statue::UpdateChase(void)
 void Statue::UpdateAttack(void)
 {
 	// 攻撃時間を経過時間分減らす
-	info_.step_ -= SceneManager::GetInstance()->GetDeltaTime();
+	info_.stateTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
 
 	// 攻撃処理の更新
 	useWeapon_->Update();
 
 	// 攻撃時間が終わったら
-	if (info_.step_ < 0.0f)
+	if (info_.stateTimer_ < 0.0f)
 	{
 		// 武器の判定を無効化して、追跡状態に戻る
 		useWeapon_->SetAlive(false);

@@ -92,7 +92,7 @@ void Giggle::ChangeState(STATE state)
 void Giggle::ChangeIdle(void)
 {
 	// 待機状態に遷移
-	info_.step_ = STEP_IDLE;
+	info_.stateTimer_ = STEP_IDLE;
 }
 
 void Giggle::ChangeThink(void)
@@ -102,7 +102,7 @@ void Giggle::ChangeThink(void)
 void Giggle::ChangeGiggling(void)
 {
 	// 笑う状態に遷移
-	info_.step_ = STEP_GIGGLING;
+	info_.stateTimer_ = STEP_GIGGLING;
 
 	// SE再生
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_GIGGLE);
@@ -111,10 +111,10 @@ void Giggle::ChangeGiggling(void)
 void Giggle::UpdateIdle(void)
 {
 	// 待機状態の更新
-	info_.step_ -= SceneManager::GetInstance()->GetDeltaTime();
+	info_.stateTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
 
 	// ステップタイマーが0以下になったら、考える状態に遷移
-	if (info_.step_ < 0.0f)
+	if (info_.stateTimer_ < 0.0f)
 	{
 		// 待機終了
 		ChangeState(STATE::THINK);
@@ -144,10 +144,10 @@ void Giggle::UpdateThink(void)
 void Giggle::UpdateGiggling(void)
 {
 	// 笑う状態の更新
-	info_.step_ -= SceneManager::GetInstance()->GetDeltaTime();
+	info_.stateTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
 
 	// ステップタイマーが0以下になったら、待機状態に遷移
-	if (info_.step_ < 0.0f)
+	if (info_.stateTimer_ < 0.0f)
 	{
 		// 待機終了
 		ChangeState(STATE::IDLE);

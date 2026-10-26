@@ -408,7 +408,7 @@ void Yeti::ChangeThink(void)
 void Yeti::ChangeIdle(void)
 {
 	// 待機する時間を設定
-	info_.step_ = STEP_TIME_IDLE;
+	info_.stateTimer_ = STEP_TIME_IDLE;
 
 	// 待機アニメーションをループ再生
 	animation_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
@@ -445,7 +445,7 @@ void Yeti::ChangePatrol(void)
 void Yeti::ChangeSurprise(void)
 {
 	// 驚いている時間（猶予時間）を設定
-	info_.step_ = STEP_TIME_SURPRISE;
+	info_.stateTimer_ = STEP_TIME_SURPRISE;
 
 	// プレイヤーの方を向く
 	LookPlayer();
@@ -470,9 +470,6 @@ void Yeti::ChangeChase(void)
 
 	// プレイヤーを見失っている時間をリセット
 	info_.targetLostTimer_ = 0.0f;
-
-	// 気づき状態を解除
-	info_.isNotice_ = false;
 
 	// 走りアニメーションをループ再生
 	animation_->Play(static_cast<int>(ANIM_TYPE::RUN), true);
@@ -517,9 +514,9 @@ void Yeti::UpdateIdle(void)
 	}
 
 	// 待機時間を経過時間分減らす
-	info_.step_ -= SceneManager::GetInstance()->GetDeltaTime();
+	info_.stateTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
 
-	if (info_.step_ < 0.0f)
+	if (info_.stateTimer_ < 0.0f)
 	{
 		// 待機終了
 		ChangeState(STATE::THINK);
@@ -584,9 +581,9 @@ void Yeti::UpdatePatrol(void)
 void Yeti::UpdateSurprise(void)
 {
 	// 驚き時間を経過時間分減らす
-	info_.step_ -= SceneManager::GetInstance()->GetDeltaTime();
+	info_.stateTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
 
-	if (info_.step_ < 0.0f)
+	if (info_.stateTimer_ < 0.0f)
 	{
 		// 猶予時間が終わったら追跡状態へ
 		ChangeState(STATE::CHASE);
