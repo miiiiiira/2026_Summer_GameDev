@@ -17,7 +17,7 @@ enum class ENEMY_TAG
     MAX,
 };
 
-// 敵の左右の位置を表わすタグ
+// 敵の左右の位置を表すタグ
 enum class ENEMY_SIDE
 {
 	RIGHT,
@@ -27,8 +27,8 @@ enum class ENEMY_SIDE
 // 敵生成時のオプションパラメータ
 struct EnemySpawnParam
 {
-	VECTOR minAreaPos_ = { 0.0f, 0.0f, 0.0f };		// エリア最小座標（Mushnub, Statue等）
-	VECTOR maxAreaPos_ = { 0.0f, 0.0f, 0.0f };		// エリア最大座標（Mushnub, Statue等）
+	VECTOR minAreaPos_ = { 0.0f, 0.0f, 0.0f };		// エリア最小座標（Mushnub, Statue用）
+	VECTOR maxAreaPos_ = { 0.0f, 0.0f, 0.0f };		// エリア最大座標（Mushnub, Statue用）
 	VECTOR chasePos_ = { 0.0f, 0.0f, 0.0f };		// 初期追跡・巡回座標
 	VECTOR angle_ = { 0.0f, 0.0f, 0.0f };			// 初期角度
 	ENEMY_SIDE side_ = ENEMY_SIDE::RIGHT;			// 左右の指定（Skeleton用）

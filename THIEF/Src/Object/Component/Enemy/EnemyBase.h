@@ -84,8 +84,6 @@ protected:
 	EnemyInfo info_ = {};	// 敵の情報
 	int stageId_ = -1;		// ステージのモデルID
 
-protected:
-
 	// 経路探索
 	void FindPath(int startNodeId, int goalNodeId);
 

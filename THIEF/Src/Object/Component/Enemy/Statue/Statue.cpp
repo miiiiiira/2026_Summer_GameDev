@@ -22,12 +22,6 @@ namespace
 	// 座標
 	constexpr VECTOR DEFAULT_POS = { -7444.0f,10.0f,3570.0f };
 
-	// 特定エリアの最小値
-	constexpr VECTOR MIN_AREA_POS = { -7690.0f, 1.0f, 3450.0f };
-
-	// 特定エリアの最大値
-	constexpr VECTOR MAX_AREA_POS = { -5870.0f, 1110, 5920.0f };
-
 	// 攻撃時移動速度
 	constexpr float ATTACK_SPEED_MOVE = 20.0f;
 

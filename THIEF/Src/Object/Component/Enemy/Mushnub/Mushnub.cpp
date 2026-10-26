@@ -25,12 +25,6 @@ namespace
 	// 追跡用の座標
 	constexpr VECTOR CHASE_POS = { -1506.83f,10.0f,6513.62f };
 
-	// 特定エリアの最小値
-	constexpr VECTOR MIN_AREA_POS = { -2150.0f, 1.0f, 5400.0f };
-
-	// 特定エリアの最大値
-	constexpr VECTOR MAX_AREA_POS = { -560.0f, 700.0f, 7800.0f };
-
 	// 視界（発見・追跡）の半径
 	constexpr float VIEW_RADIUS_DEFAULT = 1000.0f;
 
@@ -171,15 +165,6 @@ void Mushnub::Draw3D(void)
 	EnemyBase::Draw3D();
 
 #ifdef _DEBUG
-
-	if (transform_)
-	{
-		// 敵の当たり判定カプセルを赤いワイヤーフレームで描画
-		VECTOR start = VAdd(transform_->pos_, info_.startOffset_);
-		VECTOR end = VAdd(transform_->pos_, info_.endOffset_);
-		DrawCapsule3D(start, end, info_.radius_, 8, 0xff0000, 0xff0000, false);
-	}
-
 	// プレイヤーを検知する行動エリアをマゼンタのワイヤーフレームで描画
 	DrawCube3D(minAreaPos_, maxAreaPos_, 0xff00ff, 0xff00ff, false);
 #endif

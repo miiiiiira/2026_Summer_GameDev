@@ -36,19 +36,7 @@ namespace
 }
 
 EnemyBase::EnemyBase(void)
-	:
-	transform_(nullptr),
-	capColl_(nullptr),
-	stageColl_(nullptr),
-	animation_(nullptr)
 {
-	info_.moveSpeed_ = 0.0f;
-
-	info_.moveDir_ = Math::VECTOR_ZERO;
-
-	info_.movePow_ = Math::VECTOR_ZERO;
-
-	info_.isAlive_ = true;
 }
 
 EnemyBase::~EnemyBase(void)
