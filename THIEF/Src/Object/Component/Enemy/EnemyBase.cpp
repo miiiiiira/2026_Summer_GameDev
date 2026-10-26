@@ -92,10 +92,6 @@ void EnemyBase::Draw3D(void)
 #endif // _DEBUG
 }
 
-void EnemyBase::Draw2D(void)
-{
-}
-
 void EnemyBase::SetPathData(PlayerController* player, int stageId, std::shared_ptr<StagePathData> pathData)
 {
 	player_ = player;		// プレイヤーのポインタを保持
