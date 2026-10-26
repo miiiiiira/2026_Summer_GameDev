@@ -154,4 +154,3 @@ void Giggle::UpdateGiggling(void)
 		return;
 	}
 }
-
