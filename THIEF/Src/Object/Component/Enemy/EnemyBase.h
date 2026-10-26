@@ -26,7 +26,6 @@ public:
 	void Init(void) override;			// 初期化
 	void Update(void) override = 0;		// 更新
 	void Draw3D(void) override;			// 3D描画
-	void Draw2D(void) override;			// 2D描画
 
 	// パスデータをセット
 	void SetPathData(PlayerController* player, int stageId,

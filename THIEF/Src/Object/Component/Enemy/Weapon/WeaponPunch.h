@@ -10,7 +10,7 @@ public:
 	WeaponPunch(void);
 
 	// デストラクタ
-	~WeaponPunch(void);
+	~WeaponPunch(void) override;
 
 	void Update(void) override;		// 更新
 	void Draw(void) override;		// 描画
