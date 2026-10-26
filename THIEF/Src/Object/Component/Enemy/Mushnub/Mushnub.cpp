@@ -1,9 +1,7 @@
 #include "../../../../Scene/SceneManager.h"
 #include "../../../../Manager/Audio/AudioManager.h"
 #include "../../../../Common/Math/Math.h"
-#include "../../../../Common/Transform/MatrixUtility.h"
 #include "../../PlayerController/PlayerController.h"
-#include "../../Collider/3DCollider/CapsuleCollider.h"
 #include "../../Collider/StageCollider/StageCollider.h"
 #include "../../Animation/Animation.h"
 #include "../../Transform/Transform.h"
@@ -15,15 +13,6 @@ namespace
 {
 	// 大きさ
 	constexpr VECTOR SCALE = { 0.3f, 0.3f, 0.3f };
-
-	// 向き
-	constexpr VECTOR DEFAULT_ANGLE = { 0.0f, 0.0f, 0.0f };
-
-	// 座標
-	constexpr VECTOR DEFAULT_POS = { -1526.83f, 10.0f, 5500.0f };
-
-	// 追跡用の座標
-	constexpr VECTOR CHASE_POS = { -1506.83f, 10.0f, 6513.62f };
 
 	// 視界（発見・追跡）の半径
 	constexpr float VIEW_RADIUS_DEFAULT = 1000.0f;
@@ -168,10 +157,6 @@ void Mushnub::Draw3D(void)
 	// プレイヤーを検知する行動エリアをマゼンタのワイヤーフレームで描画
 	DrawCube3D(minAreaPos_, maxAreaPos_, 0xff00ff, 0xff00ff, false);
 #endif
-}
-
-void Mushnub::Draw2D(void)
-{
 }
 
 void Mushnub::SetAreaPos(VECTOR minPos, VECTOR maxPos)

@@ -1,10 +1,7 @@
 #include "../../../../Scene/SceneManager.h"
 #include "../../../../Manager/Audio/AudioManager.h"
 #include "../../../../Common/Math/Math.h"
-#include "../../../../Common/Transform/MatrixUtility.h"
 #include "../../PlayerController/PlayerController.h"
-#include "../../Collider/3DCollider/CapsuleCollider.h"
-#include "../../Collider/StageCollider/StageCollider.h"
 #include "../../Transform/Transform.h"
 #include "../../Animation/Animation.h"
 #include "../EnemyCommon.h"
@@ -15,9 +12,6 @@ namespace
 {
 	// 大きさ
 	constexpr VECTOR SCALE = { 0.8f, 0.8f, 0.8f };
-
-	// 向き
-	constexpr VECTOR DEFAULT_ANGLE = { 0.0f, 0.0f, 0.0f };
 
 	// 敵が反応する座標
 	constexpr VECTOR LOOK_POS = { -3700.0f, 10.0f, 1393.0f };
@@ -142,11 +136,6 @@ void Skeleton::Update(void)
 
 	// モデルの更新
 	MV1RefreshCollInfo(info_.modelId_, -1);
-}
-
-void Skeleton::Draw3D(void)
-{
-	EnemyBase::Draw3D();
 }
 
 void Skeleton::SetSide(ENEMY_SIDE side)

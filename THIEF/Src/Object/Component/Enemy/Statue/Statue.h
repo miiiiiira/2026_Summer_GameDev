@@ -1,5 +1,4 @@
 #pragma once
-#include <vector>
 #include "../EnemyBase.h"
 
 class Statue : public EnemyBase

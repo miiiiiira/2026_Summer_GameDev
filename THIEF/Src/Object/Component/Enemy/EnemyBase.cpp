@@ -1,7 +1,6 @@
 #include <queue>
 #include <functional>
 
-#include "../../../Application.h"
 #include "../../Object.h"
 #include "../../../Common/Math/Math.h"
 #include "../PlayerController/PlayerController.h"
@@ -360,18 +359,6 @@ bool EnemyBase::IsPlayerInArea(VECTOR minPos, VECTOR maxPos)
 	}
 
 	return ret;
-}
-
-void EnemyBase::Jump(void)
-{
-	// ステージコライダが無ければ処理を行わない
-	if (!stageColl_) return;
-
-	// ジャンプ力を設定
-	info_.velocityY_ = JUMP_POW;
-
-	// 接地フラグを折る
-	stageColl_->IsGroundFold();
 }
 
 void EnemyBase::ApplyGravity(void)

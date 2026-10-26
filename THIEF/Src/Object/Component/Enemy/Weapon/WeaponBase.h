@@ -29,9 +29,6 @@ public:
 	// 衝突判定用半径
 	float GetCollisionRadius(void) const { return collisionRadius_; }
 
-	// 移動スピードの取得
-	float GetSpeed(void) const { return speed_; }
-
 	// 武器を使用する
 	virtual void UseWeapon(const VECTOR& pos, const VECTOR& dir) = 0;
 
@@ -40,9 +37,6 @@ public:
 
 	// 生存判定の設定
 	void SetAlive(bool isAlive);
-
-	// 武器種別の取得
-	TYPE GetType(void) const { return type_; }
 
 protected:
 

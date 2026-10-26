@@ -1,5 +1,4 @@
 #pragma once
-#include <vector>
 #include "../EnemyBase.h"
 
 class Mushnub : public EnemyBase
@@ -39,7 +38,6 @@ public:
 	void Init(void) override;		// 初期化
 	void Update(void) override;		// 更新
 	void Draw3D(void) override;		// 3D描画
-	void Draw2D(void) override;		// 2D描画
 
 	// 特定のエリアの最大、最小値を設定
 	void SetAreaPos(VECTOR minPos, VECTOR maxPos);

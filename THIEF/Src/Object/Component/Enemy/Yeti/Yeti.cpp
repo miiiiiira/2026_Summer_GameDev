@@ -1,8 +1,6 @@
-#include "../../../../Application.h"
 #include "../../../../Scene/SceneManager.h"
 #include "../../../../Manager/Audio/AudioManager.h"
 #include "../../../../Common/Math/Math.h"
-#include "../../../../Common/Transform/MatrixUtility.h"
 #include "../../PlayerController/PlayerController.h"
 #include "../../Collider/3DCollider/CapsuleCollider.h"
 #include "../../Collider/StageCollider/StageCollider.h"
@@ -17,9 +15,6 @@ namespace
 {
 	// ‘å‚«‚³
 	constexpr VECTOR SCALE = { 1.0f, 1.0f, 1.0f };
-
-	// Œü‚«
-	constexpr VECTOR DEFAULT_ANGLE = { 0.0f, 0.0f, 0.0f };
 
 	// ’ÇÕˆ—‚ðŽÀs‚·‚éŠÔŠu
 	constexpr float CHASE_INTERVAL = 0.5f;
@@ -359,10 +354,6 @@ void Yeti::Draw3D(void)
 		useWeapon_->Draw();
 	}
 #endif
-}
-
-void Yeti::Draw2D(void)
-{
 }
 
 void Yeti::ChangeState(STATE state)

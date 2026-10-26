@@ -1,6 +1,4 @@
 #pragma once
-#include <vector>
-#include <string>
 #include <memory>
 #include <DxLib.h>
 
@@ -103,9 +101,6 @@ protected:
 
 	// プレイヤーが特定のエリアにいるかどうか
 	bool IsPlayerInArea(VECTOR minPos, VECTOR maxPos);
-
-	// ジャンプ処理
-	void Jump(void);
 
 	// 重力処理
 	void ApplyGravity(void);

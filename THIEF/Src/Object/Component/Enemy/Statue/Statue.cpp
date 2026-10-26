@@ -1,7 +1,6 @@
 #include "../../../../Scene/SceneManager.h"
 #include "../../../../Manager/Audio/AudioManager.h"
 #include "../../../../Common/Math/Math.h"
-#include "../../../../Common/Transform/MatrixUtility.h"
 #include "../../PlayerController/PlayerController.h"
 #include "../../Collider/3DCollider/CapsuleCollider.h"
 #include "../../Collider/StageCollider/StageCollider.h"
@@ -15,12 +14,6 @@ namespace
 {
 	// ‘å‚«‚³
 	constexpr VECTOR SCALE = { 2.5f, 2.5f, 2.5f };
-
-	// Œü‚«
-	constexpr VECTOR DEFAULT_ANGLE = { 0.0f, 50.0f, 0.0f };
-
-	// À•W
-	constexpr VECTOR DEFAULT_POS = { -7444.0f, 10.0f, 3570.0f };
 
 	// UŒ‚ˆÚ“®‘¬“x
 	constexpr float ATTACK_SPEED_MOVE = 20.0f;

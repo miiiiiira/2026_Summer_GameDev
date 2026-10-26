@@ -12,45 +12,13 @@ StagePathData::StagePathData(int stageId)
 
 StagePathData::~StagePathData(void)
 {
-	// メモリ解放
-	for (auto& edges : edgeList_)
-	{
-		// vectorをクリア
-		edges.clear();
-
-		// 容量を縮小してメモリを解放
-		edges.shrink_to_fit();
-	}
-
-	// vectorをクリア
-	edgeList_.clear();
-
-	// 容量を縮小してメモリを解放
-	edgeList_.shrink_to_fit();
-
-	// vectorをクリア
-	waypoints_.clear();
-
-	// 容量を縮小してメモリを解放
-	waypoints_.shrink_to_fit();
 }
 
 void StagePathData::Load(const std::string& csvPath)
 {
-	// 既存のメモリバッファを完全に破棄してリセットする
+	// 前回読み込んだノードとエッジを空にする
 	waypoints_.clear();
-	waypoints_.shrink_to_fit();
-
-	// エッジリストの各要素をクリアしてメモリを解放
-	for (auto& edges : edgeList_)
-	{
-		edges.clear();
-		edges.shrink_to_fit();
-	}
-
-	// エッジリスト自体をクリアしてメモリを解放
 	edgeList_.clear();
-	edgeList_.shrink_to_fit();
 
 	// CSVファイルを開く
 	std::ifstream ifs(csvPath);

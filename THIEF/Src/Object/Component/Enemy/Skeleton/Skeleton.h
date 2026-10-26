@@ -1,5 +1,4 @@
 #pragma once
-#include <vector>
 #include "../EnemyBase.h"
 
 class Skeleton : public EnemyBase
@@ -35,7 +34,6 @@ public:
 
 	void Init(void) override;		// ‰Šú‰»
 	void Update(void) override;		// XV
-	void Draw3D(void) override;		// •`‰æ
 
 	// “G‚ÌŒü‚«İ’è
 	void SetSide(ENEMY_SIDE side);
