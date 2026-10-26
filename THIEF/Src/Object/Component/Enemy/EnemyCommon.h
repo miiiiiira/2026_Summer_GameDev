@@ -59,9 +59,6 @@ struct EnemyInfo
 	float targetLostTimer_ = 0.0f;	// プレイヤー見失いタイマー
 	float stateTimer_ = 0.0f;		// ステート遷移用タイマー
 
-	// 判定・状態フラグ
-	bool isHit_ = false;			// 視線遮断・ヒット判定用フラグ
-
 	// 移動
 	VECTOR moveDir_ = {};			// 移動方向ベクトル
 	VECTOR movePow_ = {};			// 移動力ベクトル

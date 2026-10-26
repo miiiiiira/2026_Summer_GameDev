@@ -606,7 +606,6 @@ void Yeti::UpdateChase(void)
 	if (heightDiff > HEIGHT_DIFF_LIMIT || distance > info_.viewRadius_)
 	{
 		isPlayerVisible = false;
-		info_.isHit_ = true;
 	}
 	else
 	{
@@ -615,9 +614,6 @@ void Yeti::UpdateChase(void)
 								enemyHead,
 								playerHead,
 								RAY_RADIUS_CHASE);
-
-		// 敵の頭とプレイヤーの頭の間に障害物がなければ見えている
-		info_.isHit_ = !isPlayerVisible;
 	}
 
 	// プレイヤーを見つけたなら
@@ -672,7 +668,7 @@ void Yeti::UpdateChase(void)
 	if (chaseTimer_ >= CHASE_INTERVAL)
 	{
 		// 視線が通っておらず、まだ経路がない場合のみ探索する
-		if (info_.isHit_ && info_.path_.empty())
+		if (!isPlayerVisible && info_.path_.empty())
 		{
 			// プレイヤーから一番近いノードを探す
 			int playerNearNodeId = FindNearestNode(playerPos);
