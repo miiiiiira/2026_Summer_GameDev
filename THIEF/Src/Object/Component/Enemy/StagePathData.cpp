@@ -5,8 +5,9 @@
 #include "StagePathData.h"
 
 StagePathData::StagePathData(int stageId)
+	:
+	stageId_(stageId)
 {
-	stageId_ = stageId;
 }
 
 StagePathData::~StagePathData(void)

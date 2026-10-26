@@ -279,7 +279,7 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 	if (pos > MAX_DETECTION_HEIGHT_DIFFERENCE) return false;
 
 	// 敵の正面方向ベクトルを計算
-	VECTOR dirEnemy = VECTOR();
+	VECTOR dirEnemy = Math::VECTOR_ZERO;
 
 	// 移動方向がほぼゼロの場合は、現在の角度から正面を計算する
 	if (VSize(info_.moveDir_) < MIN_MOVE_SPEED_THRESHOLD)

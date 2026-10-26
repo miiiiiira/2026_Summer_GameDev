@@ -10,15 +10,15 @@ public:
 	// ノード構造体
 	struct Waypoint
 	{
-		int id_;
-		VECTOR pos_;
+		int id_ = -1;
+		VECTOR pos_ = {};
 	};
 
 	// エッジ構造体
 	struct Edge
 	{
-		Waypoint way_;
-		float cost_;
+		Waypoint way_ = {};
+		float cost_ = 0.0f;
 	};
 
 	// コンストラクタ
@@ -46,7 +46,7 @@ private:
 	std::vector<std::vector<Edge>> edgeList_;
 
 	// ステージID
-	int stageId_;
+	int stageId_ = -1;
 
 	// エッジの追加
 	void AddEdge(int fromId, int toId);

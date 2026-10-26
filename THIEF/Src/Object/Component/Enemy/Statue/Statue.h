@@ -35,13 +35,13 @@ public:
 private:
 
 	// エリアの最小値
-	VECTOR minAreaPos_ = { -1.0f, -1.0f, -1.0f };
+	VECTOR minAreaPos_ = {};
 
 	// エリアの最大値
-	VECTOR maxAreaPos_ = { -1.0f, -1.0f, -1.0f };
+	VECTOR maxAreaPos_ = {};
 
 	// 追跡用の初期値座標
-	VECTOR chasePos_ = { 0.0f, 0.0f, 0.0f };
+	VECTOR chasePos_ = {};
 
 	// 敵の状態
 	STATE state_ = STATE::NONE;

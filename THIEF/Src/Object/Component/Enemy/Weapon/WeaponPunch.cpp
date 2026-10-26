@@ -88,5 +88,5 @@ void WeaponPunch::SetParam(void)
 	localPos_ = PUNCH_LOCAL_POS;
 
 	// ¶‘¶ŠÔ‚ÌƒJƒEƒ“ƒg‚ğ‰Šú‰»
-	cntAlive_ = 0;
+	cntAlive_ = 0.0f;
 }

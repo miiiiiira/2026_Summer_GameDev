@@ -529,7 +529,7 @@ void Statue::UpdateChase(void)
 			if (isPlayerVisible)
 			{
 				// プレイヤーから直接見えているなら、その場で止まる
-				info_.moveDir_ = { 0.0f, 0.0f, 0.0f };
+				info_.moveDir_ = Math::VECTOR_ZERO;
 			}
 			// 帰還先との間に障害物があるかチェック
 			else if (CheckChaseLineCollision(returnCheckPos, chasePos_, RAY_RADIUS))
