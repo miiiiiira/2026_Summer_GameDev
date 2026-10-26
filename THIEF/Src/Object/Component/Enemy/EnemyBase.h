@@ -109,7 +109,7 @@ protected:
 	void Jump(void);
 
 	// d—Íˆ—
-	void ApplyGravity();
+	void ApplyGravity(void);
 
 	// ˆÚ“®•ûŒü‚ğİ’è‚·‚é
 	void SetMoveDirPatrol(void);

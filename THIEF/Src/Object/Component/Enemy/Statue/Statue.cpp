@@ -49,8 +49,11 @@ namespace
 	// 画面内判定の高さ間隔
 	constexpr float VIEW_CHECK_STEP_Y = 100.0f;
 
-	// 画面内判定後に高さを戻す量
-	constexpr float VIEW_CHECK_RETURN_Y = 350.0f;
+	// 画面内判定を行う点の数
+	constexpr int VIEW_CHECK_POINT_NUM = 5;
+
+	// 期間先への障害物判定で持ち上げる高さ
+	constexpr float RETURN_CHECK_OFFSET_Y = 50.0f;
 
 	// レイの半径
 	constexpr float RAY_RADIUS = 30.0f;
@@ -376,22 +379,12 @@ void Statue::UpdateChase(void)
 	// プレイヤーとの距離
 	float distance = VSize(VSub(playerPos, transform_->pos_));
 
-	// 画面内に入っているかをチェックする
-	bool isLookedByPlayer1 = !CheckCameraViewClip(enemyPos);
-	enemyPos.y += VIEW_CHECK_STEP_Y;
-	bool isLookedByPlayer2 = !CheckCameraViewClip(enemyPos);
-	enemyPos.y += VIEW_CHECK_STEP_Y;
-	bool isLookedByPlayer3 = !CheckCameraViewClip(enemyPos);
-	enemyPos.y += VIEW_CHECK_STEP_Y;
-	bool isLookedByPlayer4 = !CheckCameraViewClip(enemyPos);
-	enemyPos.y += VIEW_CHECK_STEP_Y;
-	bool isLookedByPlayer5 = !CheckCameraViewClip(enemyPos);
+	// プレイヤーの視野内に入っているか判定
+	bool isLooked = IsLookedByPlayer();
 
-	// 判定用に上げた高さを戻す
-	enemyPos.y -= VIEW_CHECK_RETURN_Y;
-
-	// 5点のうち1点でも見られていれば true
-	bool isLooked = (isLookedByPlayer1 || isLookedByPlayer2 || isLookedByPlayer3 || isLookedByPlayer4 || isLookedByPlayer5);
+	// 帰還先への障害物判定用の座標
+	VECTOR returnCheckPos = enemyPos;
+	returnCheckPos.y += RETURN_CHECK_OFFSET_Y;
 
 	// 視線チェック
 	// 敵の頭からプレイヤーの頭までの間に障害物がなければ見えている
@@ -461,15 +454,14 @@ void Statue::UpdateChase(void)
 			info_.path_.clear();
 			ChaseDirect();
 		}
-
 	}
 	else
 	{
 		// 見られていないなら帰還開始
-		if (CheckCameraViewClip(enemyPos))
+		if (!isLooked)
 		{
 			// 帰還先との間に障害物があるかチェック
-			if (CheckChaseLineCollision(enemyPos, chasePos_, RAY_RADIUS))
+			if (CheckChaseLineCollision(returnCheckPos, chasePos_, RAY_RADIUS))
 			{
 				// 障害物あり
 				if (info_.path_.empty())
@@ -540,7 +532,7 @@ void Statue::UpdateChase(void)
 				info_.moveDir_ = { 0.0f, 0.0f, 0.0f };
 			}
 			// 帰還先との間に障害物があるかチェック
-			else if (CheckChaseLineCollision(enemyPos, chasePos_, RAY_RADIUS))
+			else if (CheckChaseLineCollision(returnCheckPos, chasePos_, RAY_RADIUS))
 			{
 				// 障害物あり
 				if (info_.path_.empty())
@@ -650,4 +642,21 @@ void Statue::UpdateAttack(void)
 		ChangeState(STATE::CHASE);
 		return;
 	}
+}
+
+bool Statue::IsLookedByPlayer(void) const
+{
+	// 足元から一定間隔で高さを上げながら、
+	// 画面内に入っているか調べる
+	VECTOR checkPos = transform_->pos_;
+
+	for (int i = 0; i < VIEW_CHECK_POINT_NUM; i++)
+	{
+		// 1点でも見られている
+		if (!CheckCameraViewClip(checkPos)) return true;
+
+		checkPos.y += VIEW_CHECK_STEP_Y;
+	}
+
+	return false;
 }

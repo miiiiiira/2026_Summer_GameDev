@@ -378,7 +378,7 @@ void EnemyBase::Jump(void)
 	stageColl_->IsGroundFold();
 }
 
-void EnemyBase::ApplyGravity()
+void EnemyBase::ApplyGravity(void)
 {
 	// ステージコライダが無ければ処理を行わない
 	if (!stageColl_) return;

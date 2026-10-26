@@ -63,5 +63,8 @@ private:
 	void UpdateSurprise(void);		// Œ©‚Â‚¯‚é
 	void UpdateChase(void);			// ’Ç‚¢‚©‚¯‚é
 	void UpdateAttack(void);		// UŒ‚
+
+	// ƒvƒŒƒCƒ„[‚Ì‰æ–Ê“à‚É‰f‚Á‚Ä‚¢‚é‚©
+	bool IsLookedByPlayer(void) const;
 };
 
