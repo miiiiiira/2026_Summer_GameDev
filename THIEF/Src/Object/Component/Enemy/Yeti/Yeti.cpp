@@ -711,11 +711,11 @@ void Yeti::UpdateChase(void)
 
 				// 自分が今いる位置が、そのノードの近くであるか判定
 				const auto* wayList = pathData->GetWayList();
-				float distance = VSize(VSub(transform_->pos_, (*wayList)[playerNearNodeId].pos_));
+				float distToPlayerNode = VSize(VSub(transform_->pos_, (*wayList)[playerNearNodeId].pos_));
 
 				// プレイヤーを見失っているかつ、
 				// プレイヤーに一番近いノードまで近づいているなら
-				if (distance < PLAYER_NODE_ARRIVE_DIST)
+				if (distToPlayerNode < PLAYER_NODE_ARRIVE_DIST)
 				{
 					// 現在位置に一番近いノードから巡回を再開する準備をする
 					info_.currentNodeId_ = FindNearestNode(transform_->pos_);

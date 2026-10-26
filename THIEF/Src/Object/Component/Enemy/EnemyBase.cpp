@@ -1,5 +1,7 @@
 #include <queue>
 #include <functional>
+#include <algorithm>
+#include <cfloat>
 
 #include "../../Object.h"
 #include "../../../Common/Math/Math.h"
