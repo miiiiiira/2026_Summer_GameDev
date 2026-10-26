@@ -14,16 +14,16 @@
 namespace
 {
 	// 大きさ
-	constexpr VECTOR SCALE = { 0.3f,0.3f,0.3f };
+	constexpr VECTOR SCALE = { 0.3f, 0.3f, 0.3f };
 
 	// 向き
-	constexpr VECTOR DEFAULT_ANGLE = { 0.0f, 0.0f,0.0f };
+	constexpr VECTOR DEFAULT_ANGLE = { 0.0f, 0.0f, 0.0f };
 
 	// 座標
-	constexpr VECTOR DEFAULT_POS = { -1526.83f,10.0f,5500.0f };
+	constexpr VECTOR DEFAULT_POS = { -1526.83f, 10.0f, 5500.0f };
 
 	// 追跡用の座標
-	constexpr VECTOR CHASE_POS = { -1506.83f,10.0f,6513.62f };
+	constexpr VECTOR CHASE_POS = { -1506.83f, 10.0f, 6513.62f };
 
 	// 視界（発見・追跡）の半径
 	constexpr float VIEW_RADIUS_DEFAULT = 1000.0f;
@@ -69,7 +69,7 @@ void Mushnub::Init(void)
 	for (int i = 0; i < static_cast<int>(ANIM_TYPE::MAX); i++)
 	{
 		animation_->AddInFbx(
-					static_cast<int>(i), 
+					static_cast<int>(i),
 					ANIM_SPEED,
 					static_cast<int>(i));
 	}
@@ -125,16 +125,16 @@ void Mushnub::Update(void)
 	// 現在のステートに応じた更新処理を呼び分ける
 	switch (state_)
 	{
-	case Mushnub::STATE::IDLE:      
-		UpdateIdle();     
+	case Mushnub::STATE::IDLE:
+		UpdateIdle();
 		break;
 
-	case Mushnub::STATE::SURPRISE:   
-		UpdateSurprise(); 
+	case Mushnub::STATE::SURPRISE:
+		UpdateSurprise();
 		break;
 
-	case Mushnub::STATE::CHASE:     
-		UpdateChase();    
+	case Mushnub::STATE::CHASE:
+		UpdateChase();
 		break;
 
 	default:
@@ -176,13 +176,13 @@ void Mushnub::Draw2D(void)
 
 void Mushnub::SetAreaPos(VECTOR minPos, VECTOR maxPos)
 {
-	minAreaPos_ = minPos; 
+	minAreaPos_ = minPos;
 	maxAreaPos_ = maxPos;
 }
 
 void Mushnub::SetChasePos(VECTOR pos)
-{ 
-	chasePos_ = pos; 
+{
+	chasePos_ = pos;
 }
 
 void Mushnub::ChangeState(STATE state)
@@ -192,16 +192,16 @@ void Mushnub::ChangeState(STATE state)
 	// 遷移時に一度だけ行う初期化処理を呼び出す
 	switch (state_)
 	{
-	case Mushnub::STATE::IDLE: 
-		ChangeIdle(); 
+	case Mushnub::STATE::IDLE:
+		ChangeIdle();
 		break;
 
 	case Mushnub::STATE::SURPRISE:
-		ChangeSurprise(); 
+		ChangeSurprise();
 		break;
 
-	case Mushnub::STATE::CHASE: 
-		ChangeChase(); 
+	case Mushnub::STATE::CHASE:
+		ChangeChase();
 		break;
 
 	default:
@@ -228,7 +228,7 @@ void Mushnub::ChangeSurprise(void)
 
 	// 発見時の鳴き声SEを再生
 	AudioManager::GetInstance()->PlaySE(
-					SoundID::SE_ENEMY_MUSHNUB, 
+					SoundID::SE_ENEMY_MUSHNUB,
 					&transform_->pos_);
 
 	// 驚きのアニメーションを1回だけ再生

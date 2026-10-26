@@ -16,10 +16,10 @@
 namespace
 {
 	// 大きさ
-	constexpr VECTOR SCALE = { 1.0f,1.0f,1.0f };
+	constexpr VECTOR SCALE = { 1.0f, 1.0f, 1.0f };
 
 	// 向き
-	constexpr VECTOR DEFAULT_ANGLE = { 0.0f,0.0f,0.0f };
+	constexpr VECTOR DEFAULT_ANGLE = { 0.0f, 0.0f, 0.0f };
 
 	// 追跡処理を実行する間隔
 	constexpr float CHASE_INTERVAL = 0.5f;
@@ -117,10 +117,10 @@ void Yeti::Init(void)
 	animation_->Init();
 
 	// アニメーションの追加
-	for(int i = 0; i < static_cast<int>(ANIM_TYPE::MAX); i++)
+	for (int i = 0; i < static_cast<int>(ANIM_TYPE::MAX); i++)
 	{
 		animation_->AddInFbx(
-					static_cast<int>(i), 
+					static_cast<int>(i),
 					ANIM_SPEED,
 					static_cast<int>(i));
 	}
@@ -218,28 +218,28 @@ void Yeti::Update(void)
 	// 現在のステートに応じた更新処理を呼び分ける
 	switch (state_)
 	{
-	case Yeti::STATE::THINK: 
+	case Yeti::STATE::THINK:
 		UpdateThink();
 		break;
 
-	case Yeti::STATE::IDLE: 
-		UpdateIdle(); 
+	case Yeti::STATE::IDLE:
+		UpdateIdle();
 		break;
 
-	case Yeti::STATE::PATROL: 
-		UpdatePatrol(); 
+	case Yeti::STATE::PATROL:
+		UpdatePatrol();
 		break;
 
-	case Yeti::STATE::SURPRISE: 
-		UpdateSurprise(); 
+	case Yeti::STATE::SURPRISE:
+		UpdateSurprise();
 		break;
 
-	case Yeti::STATE::CHASE: 
-		UpdateChase(); 
+	case Yeti::STATE::CHASE:
+		UpdateChase();
 		break;
 
-	case Yeti::STATE::ATTACK: 
-		UpdateAttack(); 
+	case Yeti::STATE::ATTACK:
+		UpdateAttack();
 		break;
 
 	default:
@@ -268,7 +268,7 @@ void Yeti::Update(void)
 void Yeti::Draw3D(void)
 {
 	EnemyBase::Draw3D();
-	
+
 #ifdef _DEBUG
 
 	// lock() して shared_ptr を一時的に取得
@@ -288,8 +288,8 @@ void Yeti::Draw3D(void)
 			{
 				for (const auto& edge : (*edgeList)[i])
 				{
-					DrawLine3D((*wayList)[i].pos, 
-								edge.way.pos, 
+					DrawLine3D((*wayList)[i].pos_,
+								edge.way_.pos_,
 								GetColor(255, 255, 0));
 				}
 			}
@@ -297,45 +297,45 @@ void Yeti::Draw3D(void)
 			// 現在ノードと自分の位置をマゼンタの線で結ぶ
 			if (info_.currentNodeId_ >= 0 && info_.currentNodeId_ < (int)wayList->size())
 			{
-				DrawLine3D(transform_->pos_, 
-							(*wayList)[info_.currentNodeId_].pos,
+				DrawLine3D(transform_->pos_,
+							(*wayList)[info_.currentNodeId_].pos_,
 							GetColor(255, 0, 255));
 			}
 
 			// 巡回範囲を緑のワイヤーフレーム球で描画
-			DrawSphere3D(transform_->pos_, 
-						info_.patrolRadius_, 
-						8, 
-						GetColor(0, 255, 0), 
-						GetColor(0, 0, 0), 
+			DrawSphere3D(transform_->pos_,
+						info_.patrolRadius_,
+						8,
+						GetColor(0, 255, 0),
+						GetColor(0, 0, 0),
 						FALSE);
 
 			// 次の目的地を緑の塗りつぶし球と線で描画
-			DrawSphere3D(info_.nextWayPoint_, 
-						40.0f, 
-						10, 
-						GetColor(0, 255, 0), 
-						GetColor(0, 255, 0), 
+			DrawSphere3D(info_.nextWayPoint_,
+						40.0f,
+						10,
+						GetColor(0, 255, 0),
+						GetColor(0, 255, 0),
 						TRUE);
 
-			DrawLine3D(transform_->pos_, 
-						info_.nextWayPoint_, 
+			DrawLine3D(transform_->pos_,
+						info_.nextWayPoint_,
 						GetColor(0, 255, 0));
 
 			// 各ノードを状態に応じた色で描画
 			for (const auto& point : (*wayList))
 			{
 				// 自分とノードの距離
-				float distance = VSize(VSub(point.pos, transform_->pos_));
+				float distance = VSize(VSub(point.pos_, transform_->pos_));
 
 				// 基本色は青
 				unsigned int color = 0x0000ff;
-				if (point.id == info_.prevNodeId_)
+				if (point.id_ == info_.prevNodeId_)
 				{
 					// 直前に訪れたノード：オレンジ
 					color = 0xff8c00;
 				}
-				else if (point.id == info_.prevPrevNodeId_)
+				else if (point.id_ == info_.prevPrevNodeId_)
 				{
 					// 2つ前に訪れたノード：白系
 					color = 0xfff5ee;
@@ -347,7 +347,7 @@ void Yeti::Draw3D(void)
 				}
 
 				DrawSphere3D(
-					point.pos, 50.0f, 10,
+					point.pos_, 50.0f, 10,
 					color, color, false);
 			}
 		}
@@ -372,28 +372,28 @@ void Yeti::ChangeState(STATE state)
 	// 遷移時に一度だけ行う初期化処理を呼び出す
 	switch (state_)
 	{
-	case Yeti::STATE::THINK: 
-		ChangeThink(); 
+	case Yeti::STATE::THINK:
+		ChangeThink();
 		break;
 
 	case Yeti::STATE::IDLE:
-		ChangeIdle(); 
+		ChangeIdle();
 		break;
 
-	case Yeti::STATE::PATROL: 
-		ChangePatrol(); 
+	case Yeti::STATE::PATROL:
+		ChangePatrol();
 		break;
 
 	case Yeti::STATE::SURPRISE:
-		ChangeSurprise(); 
+		ChangeSurprise();
 		break;
 
-	case Yeti::STATE::CHASE: 
-		ChangeChase(); 
+	case Yeti::STATE::CHASE:
+		ChangeChase();
 		break;
 
 	case Yeti::STATE::ATTACK:
-		ChangeAttack(); 
+		ChangeAttack();
 		break;
 
 	default:
@@ -421,7 +421,7 @@ void Yeti::ChangePatrol(void)
 
 	// 遷移前のノードIDを記録しておく
 	int lastNodeId = info_.currentNodeId_;
-	
+
 	// 次に向かうノードを決定して現在ノードを更新する
 	ArriveNode();
 
@@ -452,8 +452,8 @@ void Yeti::ChangeSurprise(void)
 
 	// 発見時の鳴き声SEを再生
 	AudioManager::GetInstance()->PlaySE(
-					SoundID::SE_ENEMY_YETI, 
-					&transform_->pos_, 
+					SoundID::SE_ENEMY_YETI,
+					&transform_->pos_,
 					SE_RADIUS_YETI);
 
 	// 驚きのアニメーションを1回だけ再生
@@ -490,7 +490,7 @@ void Yeti::ChangeAttack(void)
 void Yeti::UpdateThink(void)
 {
 	// 思考
-	// ランダムに次の行動を決定	
+	// ランダムに次の行動を決定
 	// 10%で待機、90%で徘徊
 	int randomVal = GetRand(MAX_PERCENTAGE - 1);
 
@@ -621,7 +621,7 @@ void Yeti::UpdateChase(void)
 	{
 		// 高低差が範囲内なら、視線チェックする
 		isPlayerVisible = !CheckChaseLineCollision(
-								enemyHead, 
+								enemyHead,
 								playerHead,
 								RAY_RADIUS_CHASE);
 
@@ -635,7 +635,7 @@ void Yeti::UpdateChase(void)
 		// 見失いタイマーをリセット
 		info_.targetLostTimer_ = 0.0f;
 
-		//　攻撃範囲内にいたら、攻撃状態にする
+		// 攻撃範囲内にいたら、攻撃状態にする
 		if (distance <= ATTACK_RANGE)
 		{
 			ChangeState(STATE::ATTACK);
@@ -670,7 +670,7 @@ void Yeti::UpdateChase(void)
 
 		// 次の目的地を現在ノードの座標に設定
 		const auto* wayList = pathData->GetWayList();
-		info_.nextWayPoint_ = (*wayList)[info_.currentNodeId_].pos;
+		info_.nextWayPoint_ = (*wayList)[info_.currentNodeId_].pos_;
 		return;
 	}
 
@@ -694,16 +694,15 @@ void Yeti::UpdateChase(void)
 
 			// 経路の0番目は自分に最も近いノードなので、
 			// 2つ以上あれば1番目（次のノード）から向かう
-			if (info_.path_.size() > 1) 
-			{ 
-				info_.nextNodeId_ = 1; 
+			if (info_.path_.size() > 1)
+			{
+				info_.nextNodeId_ = 1;
 			}
-			else 
-			{ 
-				info_.nextNodeId_ = 0; 
+			else
+			{
+				info_.nextNodeId_ = 0;
 			}
 		}
-
 		// 判定が終わったらタイマーをリセットする
 		chaseTimer_ = 0.0f;
 	}
@@ -728,14 +727,13 @@ void Yeti::UpdateChase(void)
 				// プレイヤーの現在の位置に一番近いノードを取得
 				int playerNearNodeId = FindNearestNode(playerPos);
 
-
 				// lock() して shared_ptr を一時的に取得
 				auto pathData = pathData_.lock();
 				if (!pathData) return;
 
 				// 自分が今いる位置が、そのノードの近くであるか判定
 				const auto* wayList = pathData->GetWayList();
-				float distance = VSize(VSub(transform_->pos_, (*wayList)[playerNearNodeId].pos));
+				float distance = VSize(VSub(transform_->pos_, (*wayList)[playerNearNodeId].pos_));
 
 				// プレイヤーを見失っているかつ、
 				// プレイヤーに一番近いノードまで近づいているなら
@@ -750,7 +748,7 @@ void Yeti::UpdateChase(void)
 					// 2つ前の履歴ノードをリセット
 					info_.prevPrevNodeId_ = -1;
 
-					info_.nextWayPoint_ = (*wayList)[info_.currentNodeId_].pos;
+					info_.nextWayPoint_ = (*wayList)[info_.currentNodeId_].pos_;
 
 					// 最後にプレイヤーのいた方向を向いてから待機する
 					LookPlayer();
@@ -781,8 +779,8 @@ void Yeti::UpdateChase(void)
 		if (seTimer_ <= 0.0f)
 		{
 			AudioManager::GetInstance()->PlaySE(
-							SoundID::SE_ENEMY_YETI_MOVE, 
-							&transform_->pos_, 
+							SoundID::SE_ENEMY_YETI_MOVE,
+							&transform_->pos_,
 							SE_RADIUS_MOVE);
 
 			seTimer_ = SE_INTERVAL_CHASE;

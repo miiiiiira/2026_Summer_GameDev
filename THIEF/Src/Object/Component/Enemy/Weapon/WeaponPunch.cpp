@@ -6,7 +6,7 @@ namespace
 {
 	// 最大生存時間
 	constexpr float MAX_ALIVE_COUNT = 0.5f;
-	
+
 	// 移動スピード
 	constexpr float PUNCH_SPEED = 8.0f;
 

@@ -14,13 +14,13 @@
 namespace
 {
 	// 大きさ
-	constexpr VECTOR SCALE = { 2.5f,2.5f,2.5f };
+	constexpr VECTOR SCALE = { 2.5f, 2.5f, 2.5f };
 
 	// 向き
-	constexpr VECTOR DEFAULT_ANGLE = { 0.0f, 50.0f,0.0f };
+	constexpr VECTOR DEFAULT_ANGLE = { 0.0f, 50.0f, 0.0f };
 
 	// 座標
-	constexpr VECTOR DEFAULT_POS = { -7444.0f,10.0f,3570.0f };
+	constexpr VECTOR DEFAULT_POS = { -7444.0f, 10.0f, 3570.0f };
 
 	// 攻撃時移動速度
 	constexpr float ATTACK_SPEED_MOVE = 20.0f;
@@ -175,20 +175,20 @@ void Statue::Update(void)
 	// 現在のステートに応じた更新処理を呼び分ける
 	switch (state_)
 	{
-	case Statue::STATE::IDLE: 
-		UpdateIdle(); 
+	case Statue::STATE::IDLE:
+		UpdateIdle();
 		break;
 
 	case Statue::STATE::SURPRISE:
 		UpdateSurprise();
 		break;
 
-	case Statue::STATE::CHASE: 
-		UpdateChase(); 
+	case Statue::STATE::CHASE:
+		UpdateChase();
 		break;
 
-	case Statue::STATE::ATTACK: 
-		UpdateAttack(); 
+	case Statue::STATE::ATTACK:
+		UpdateAttack();
 		break;
 
 	default:
@@ -212,7 +212,7 @@ void Statue::Draw3D(void)
 #ifdef _DEBUG
 	// プレイヤーを検知する行動エリアをマゼンタのワイヤーフレームで描画
 	DrawCube3D(minAreaPos_, maxAreaPos_, 0xff00ff, 0xff00ff, false);
-	
+
 	// lock() して shared_ptr を一時的に取得
 	auto pathData = pathData_.lock();
 	if (!pathData) return;
@@ -227,8 +227,8 @@ void Statue::Draw3D(void)
 		{
 			for (const auto& edge : (*edgeList)[i])
 			{
-				DrawLine3D((*wayList)[i].pos, 
-							edge.way.pos, 
+				DrawLine3D((*wayList)[i].pos_,
+							edge.way_.pos_,
 							GetColor(255, 255, 0));
 			}
 		}
@@ -236,28 +236,28 @@ void Statue::Draw3D(void)
 		// 現在ノードと自分の位置をマゼンタの線で結ぶ
 		if (info_.currentNodeId_ >= 0 && info_.currentNodeId_ < (int)wayList->size())
 		{
-			DrawLine3D(transform_->pos_, 
-						(*wayList)[info_.currentNodeId_].pos, 
+			DrawLine3D(transform_->pos_,
+						(*wayList)[info_.currentNodeId_].pos_,
 						GetColor(255, 0, 255));
 		}
 
 		// 巡回範囲を緑のワイヤーフレーム球で描画
-		DrawSphere3D(transform_->pos_, 
-					info_.patrolRadius_, 
+		DrawSphere3D(transform_->pos_,
+					info_.patrolRadius_,
 					8, GetColor(0, 255, 0),
-					GetColor(0, 0, 0), 
+					GetColor(0, 0, 0),
 					FALSE);
 
 		// 次の目的地を緑の塗りつぶし球と線で描画
-		DrawSphere3D(info_.nextWayPoint_, 
-					40.0f, 
-					10, 
-					GetColor(0, 255, 0), 
-					GetColor(0, 255, 0), 
+		DrawSphere3D(info_.nextWayPoint_,
+					40.0f,
+					10,
+					GetColor(0, 255, 0),
+					GetColor(0, 255, 0),
 					TRUE);
 
-		DrawLine3D(transform_->pos_, 
-					info_.nextWayPoint_, 
+		DrawLine3D(transform_->pos_,
+					info_.nextWayPoint_,
 					GetColor(0, 255, 0));
 	}
 
@@ -269,15 +269,15 @@ void Statue::Draw3D(void)
 #endif
 }
 
-void Statue::SetAreaPos(VECTOR minPos, VECTOR maxPos) 
-{ 
-	minAreaPos_ = minPos; 
-	maxAreaPos_ = maxPos; 
+void Statue::SetAreaPos(VECTOR minPos, VECTOR maxPos)
+{
+	minAreaPos_ = minPos;
+	maxAreaPos_ = maxPos;
 }
 
-void Statue::SetChasePos(VECTOR pos) 
-{ 
-	chasePos_ = pos; 
+void Statue::SetChasePos(VECTOR pos)
+{
+	chasePos_ = pos;
 }
 
 void Statue::ChangeState(STATE state)
@@ -287,20 +287,20 @@ void Statue::ChangeState(STATE state)
 	// 遷移時に一度だけ行う初期化処理を呼び出す
 	switch (state_)
 	{
-	case Statue::STATE::IDLE: 
-		ChangeIdle(); 
+	case Statue::STATE::IDLE:
+		ChangeIdle();
 		break;
 
-	case Statue::STATE::SURPRISE: 
-		ChangeSurprise(); 
+	case Statue::STATE::SURPRISE:
+		ChangeSurprise();
 		break;
 
-	case Statue::STATE::CHASE: 
-		ChangeChase(); 
+	case Statue::STATE::CHASE:
+		ChangeChase();
 		break;
 
-	case Statue::STATE::ATTACK: 
-		ChangeAttack(); 
+	case Statue::STATE::ATTACK:
+		ChangeAttack();
 		break;
 
 	default:
@@ -393,7 +393,7 @@ void Statue::UpdateChase(void)
 	// プレイヤーがエリア内にいるなら
 	if (IsPlayerInArea(minAreaPos_, maxAreaPos_))
 	{
-		//　攻撃範囲内にいたら、攻撃状態にする
+		// 攻撃範囲内にいたら、攻撃状態にする
 		if (distance <= ATTACK_RANGE)
 		{
 			ChangeState(STATE::ATTACK);
@@ -487,7 +487,7 @@ void Statue::UpdateChase(void)
 				}
 
 				// 経路を最後までたどり終えたらクリアする
-				if (info_.nextNodeId_ >= static_cast<int>(info_.path_.size())) 
+				if (info_.nextNodeId_ >= static_cast<int>(info_.path_.size()))
 				{
 					info_.path_.clear();
 					info_.nextNodeId_ = 0;
@@ -612,7 +612,7 @@ void Statue::UpdateChase(void)
 		if (seTimer_ <= 0.0f)
 		{
 			AudioManager::GetInstance()->PlaySE(
-							SoundID::SE_ENEMY_STATUE, 
+							SoundID::SE_ENEMY_STATUE,
 							&transform_->pos_,
 							SE_RADIUS_STATUE);
 

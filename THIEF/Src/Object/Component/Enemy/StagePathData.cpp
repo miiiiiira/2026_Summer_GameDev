@@ -83,8 +83,8 @@ void StagePathData::Load(const std::string& csvPath)
 
 		// ノード情報をwaypoints_に追加
 		Waypoint way = {};
-		way.id = pointId;
-		way.pos = VGet(posX, posY, posZ);
+		way.id_ = pointId;
+		way.pos_ = VGet(posX, posY, posZ);
 
 		waypoints_.push_back(way);
 	}
@@ -99,9 +99,9 @@ void StagePathData::Load(const std::string& csvPath)
 		{
 			// 自分自身のノードはスキップ
 			if (i == j) continue;
-			
+
 			// ノード間の距離を計算（2乗距離で比較）
-			float nodeDistance = VSquareSize(VSub(waypoints_[j].pos, waypoints_[i].pos));
+			float nodeDistance = VSquareSize(VSub(waypoints_[j].pos_, waypoints_[i].pos_));
 
 			// 一定距離以上のノードは接続しない
 			if (nodeDistance > NODE_CONNECT_MAX_DISTANCE_SQ) continue;
@@ -115,8 +115,8 @@ void StagePathData::Load(const std::string& csvPath)
 void StagePathData::AddEdge(int fromId, int toId)
 {
 	// ノードの座標を取得
-	VECTOR posA = waypoints_[fromId].pos;
-	VECTOR posB = waypoints_[toId].pos;
+	VECTOR posA = waypoints_[fromId].pos_;
+	VECTOR posB = waypoints_[toId].pos_;
 
 	float checkRadius = 50.0f; // 敵の大きさに応じて調整
 
@@ -135,9 +135,9 @@ void StagePathData::AddEdge(int fromId, int toId)
 
 	// 障害物がない場合のみエッジを追加
 	Edge edge = {};
-	edge.way.id = waypoints_[toId].id;
-	edge.way.pos = waypoints_[toId].pos;
-	edge.cost = VSize(VSub(posB, posA));
+	edge.way_.id_ = waypoints_[toId].id_;
+	edge.way_.pos_ = waypoints_[toId].pos_;
+	edge.cost_ = VSize(VSub(posB, posA));
 
 	edgeList_[fromId].push_back(edge);
 }

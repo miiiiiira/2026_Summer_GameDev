@@ -10,15 +10,15 @@ public:
 	// ノード構造体
 	struct Waypoint
 	{
-		int id;	
-		VECTOR pos;
+		int id_;
+		VECTOR pos_;
 	};
 
 	// エッジ構造体
 	struct Edge
 	{
-		Waypoint way;
-		float cost;
+		Waypoint way_;
+		float cost_;
 	};
 
 	// コンストラクタ
@@ -30,7 +30,7 @@ public:
 	// CSVの読み込みとエッジ構築を一括で行う
 	void Load(const std::string& csvPath);
 
-	// 敵（EnemyBase）から参照するためのゲッター
+	// 敵から参照するためのゲッター
 	const std::vector<Waypoint>* GetWayList(void) const { return &waypoints_; }
 	const std::vector<std::vector<Edge>>* GetEdgeList(void) const { return &edgeList_; }
 
@@ -51,4 +51,3 @@ private:
 	// エッジの追加
 	void AddEdge(int fromId, int toId);
 };
-

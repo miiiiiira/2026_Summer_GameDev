@@ -82,12 +82,12 @@ void EnemyBase::Draw3D(void)
 
 	// 当たり判定用のカプセル大きさ確認
 	DrawCapsule3D(
-			start, 
-			end, 
-			info_.radius_, 
-			8, 
-			0xff0000, 
-			0xff0000, 
+			start,
+			end,
+			info_.radius_,
+			8,
+			0xff0000,
+			0xff0000,
 			false);
 
 #endif // _DEBUG
@@ -147,7 +147,7 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 	info_.minCosts_[startNodeId] = 0.0f;
 
 	// 優先度付きキューを使用して、コストの小さい順に探索する
-	std::priority_queue <std::pair<float, int>, 
+	std::priority_queue <std::pair<float, int>,
 						std::vector<std::pair<float, int>>,
 						std::greater<std::pair<float, int>>> que;
 
@@ -174,12 +174,12 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 		for (const auto& edge : (*edgeList)[currentNodeId])
 		{
 			// 隣接しているノードIDを取得
-			int nextNodeId = edge.way.id;
+			int nextNodeId = edge.way_.id_;
 
 			// 現在のコスト+エッジのコストから新しいコストを計算する
-			float newCost = currentCost + edge.cost;
+			float newCost = currentCost + edge.cost_;
 
-			//　新しいコストが最小コストよりも小さかったら
+			// 新しいコストが最小コストよりも小さかったら
 			if (newCost < info_.minCosts_[nextNodeId])
 			{
 				// minCosts_とparentNodes_を更新
@@ -200,9 +200,9 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 	{
 		// 逆順にたどった経路をinfo_.path_に追加する
 		StagePathData::Edge path;
-		path.way.id = (*wayList)[i].id;
-		path.way.pos = (*wayList)[i].pos;
-		path.cost = info_.minCosts_[i];
+		path.way_.id_ = (*wayList)[i].id_;
+		path.way_.pos_ = (*wayList)[i].pos_;
+		path.cost_ = info_.minCosts_[i];
 
 		info_.path_.push_back(path);
 
@@ -280,7 +280,7 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 
 	// 敵の正面方向ベクトルを計算
 	VECTOR dirEnemy = VECTOR();
-	
+
 	// 移動方向がほぼゼロの場合は、現在の角度から正面を計算する
 	if (VSize(info_.moveDir_) < MIN_MOVE_SPEED_THRESHOLD)
 	{
@@ -433,11 +433,11 @@ void EnemyBase::ArriveNode(void)
 
 	// 次の目的地の座標を設定する
 	const auto* wayList = pathData->GetWayList();
-	info_.nextWayPoint_ = (*wayList)[info_.currentNodeId_].pos;
+	info_.nextWayPoint_ = (*wayList)[info_.currentNodeId_].pos_;
 }
 
 int EnemyBase::SelectNextNode(void)
-{	
+{
 	// lock() して shared_ptr を一時的に取得
 	auto pathData = pathData_.lock();
 
@@ -448,7 +448,7 @@ int EnemyBase::SelectNextNode(void)
 	const auto* edgeList = pathData->GetEdgeList();
 
 	// edgeListが存在しない、または現在のノードIDが範囲外の場合は現在のノードIDを返す
-	if (!edgeList || info_.currentNodeId_ < 0 || 
+	if (!edgeList || info_.currentNodeId_ < 0 ||
 		info_.currentNodeId_ >= static_cast<int>(edgeList->size()))
 	{
 		return info_.currentNodeId_;
@@ -461,10 +461,10 @@ int EnemyBase::SelectNextNode(void)
 	for (const auto& edge : (*edgeList)[info_.currentNodeId_])
 	{
 		// 接続されているノードIDを取得
-		int nextId = edge.way.id;
+		int nextId = edge.way_.id_;
 
 		// 接続されているノードの座標を取得
-		float distance = GetDistanceSQ(edge.way.pos, transform_->pos_);
+		float distance = GetDistanceSQ(edge.way_.pos_, transform_->pos_);
 
 		// 敵の座標から半径以内に無いポイントは除外
 		if (distance > info_.patrolRadius_ * info_.patrolRadius_) continue;
@@ -516,13 +516,13 @@ int EnemyBase::FindNearestNode(VECTOR pos)
 	for (const auto& way : (*wayList))
 	{
 		// 一番近いノードを探す
-		float distance = VSize(VSub(pos, way.pos));
+		float distance = VSize(VSub(pos, way.pos_));
 
 		// 最小距離を更新
 		if (distance < minCost)
 		{
 			minCost = distance;		// 最小距離を更新
-			nearNodeId = way.id;	// 最も近いノードのIDを更新
+			nearNodeId = way.id_;	// 最も近いノードのIDを更新
 		}
 	}
 
@@ -538,7 +538,7 @@ int EnemyBase::FindNearestNode(VECTOR pos)
 void EnemyBase::ChaseNode(void)
 {
 	// 次の目的地の座標を設定する
-	info_.nextWayPoint_ = info_.path_[info_.nextNodeId_].way.pos;
+	info_.nextWayPoint_ = info_.path_[info_.nextNodeId_].way_.pos_;
 
 	// 移動方向を設定
 	SetMoveDirPatrol();
@@ -546,7 +546,7 @@ void EnemyBase::ChaseNode(void)
 	VECTOR enemyPos = transform_->pos_;
 	enemyPos.y = 0.0f;
 
-	VECTOR targetNode = info_.path_[info_.nextNodeId_].way.pos;
+	VECTOR targetNode = info_.path_[info_.nextNodeId_].way_.pos_;
 	targetNode.y = 0.0f;
 
 	// 水平方向の純粋な距離を測る
@@ -568,7 +568,7 @@ void EnemyBase::ChaseDirect(void)
 bool EnemyBase::CheckChaseLineCollision(VECTOR pPos, VECTOR ePos, float radius)
 {
 	// 線分とモデルの衝突判定
-	MV1_COLL_RESULT_POLY_DIM res = 
+	MV1_COLL_RESULT_POLY_DIM res =
 		MV1CollCheck_Capsule(stageId_, -1, pPos, ePos, radius);
 
 	// 当たったかどうかを判定

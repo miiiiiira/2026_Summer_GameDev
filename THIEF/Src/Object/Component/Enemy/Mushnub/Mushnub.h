@@ -1,5 +1,5 @@
 #pragma once
-#include<vector>
+#include <vector>
 #include "../EnemyBase.h"
 
 class Mushnub : public EnemyBase
@@ -34,7 +34,7 @@ public:
 	Mushnub(void);
 
 	// デストラクタ
-	~Mushnub(void)override;
+	~Mushnub(void) override;
 
 	void Init(void) override;		// 初期化
 	void Update(void) override;		// 更新

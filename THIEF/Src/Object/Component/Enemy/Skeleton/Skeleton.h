@@ -1,5 +1,5 @@
 #pragma once
-#include<vector>
+#include <vector>
 #include "../EnemyBase.h"
 
 class Skeleton : public EnemyBase
@@ -31,7 +31,7 @@ public:
 	Skeleton(void);
 
 	// デストラクタ
-	~Skeleton(void)override;
+	~Skeleton(void) override;
 
 	void Init(void) override;		// 初期化
 	void Update(void) override;		// 更新
@@ -63,4 +63,3 @@ private:
 	void UpdateScare(void);		// 怖がらせる
 	void UpdateEnd(void);		// 終了
 };
-

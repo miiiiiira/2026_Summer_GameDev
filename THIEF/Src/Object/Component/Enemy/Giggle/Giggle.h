@@ -18,10 +18,10 @@ public:
 	Giggle(void);
 
 	// デストラクタ
-	~Giggle(void)override;
+	~Giggle(void) override;
 
 	void Init(void) override;	// 初期化
-	void Update(void)override;	// 更新
+	void Update(void) override;	// 更新
 
 private:
 
@@ -41,4 +41,3 @@ private:
 	void UpdateThink(void);		// 考える状態の更新
 	void UpdateGiggling(void);	// 笑う状態の更新
 };
-

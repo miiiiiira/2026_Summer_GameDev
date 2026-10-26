@@ -20,7 +20,7 @@ public:
 	Statue(void);
 
 	// デストラクタ
-	~Statue(void)override;
+	~Statue(void) override;
 
 	void Init(void) override;		// 初期化
 	void Update(void) override;		// 更新
@@ -67,4 +67,3 @@ private:
 	// プレイヤーの画面内に映っているか
 	bool IsLookedByPlayer(void) const;
 };
-

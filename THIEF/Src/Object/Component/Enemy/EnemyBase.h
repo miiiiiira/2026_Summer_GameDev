@@ -19,7 +19,6 @@ class StagePathData;
 class EnemyBase : public Component
 {
 public:
-	
 	// コンストラクタ
 	EnemyBase(void);
 
@@ -32,14 +31,14 @@ public:
 	void Draw2D(void) override;			// 2D描画
 
 	// パスデータをセット
-	void SetPathData(PlayerController* player, int stageId, 
-							std::shared_ptr<StagePathData> pathData);
+	void SetPathData(PlayerController* player, int stageId,
+						std::shared_ptr<StagePathData> pathData);
 
 	// 敵のデータをセット
 	void SetEnemyData(const EnemyData& data);
 
 	// 生存しているかどうか
-	bool IsAlive(void) const{ return info_.isAlive_; }
+	bool IsAlive(void) const { return info_.isAlive_; }
 
 	// Transformを返す
 	Transform* GetTransform(void) { return transform_; }

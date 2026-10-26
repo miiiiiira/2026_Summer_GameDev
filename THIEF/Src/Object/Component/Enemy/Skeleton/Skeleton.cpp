@@ -14,10 +14,10 @@
 namespace
 {
 	// 大きさ
-	constexpr VECTOR SCALE = { 0.8f,0.8f,0.8f };
+	constexpr VECTOR SCALE = { 0.8f, 0.8f, 0.8f };
 
 	// 向き
-	constexpr VECTOR DEFAULT_ANGLE = { 0.0f, 0.0f,0.0f };
+	constexpr VECTOR DEFAULT_ANGLE = { 0.0f, 0.0f, 0.0f };
 
 	// 敵が反応する座標
 	constexpr VECTOR LOOK_POS = { -3700.0f, 10.0f, 1393.0f };
@@ -57,7 +57,7 @@ void Skeleton::Init(void)
 	for (int i = 0; i < static_cast<int>(ANIM_TYPE::MAX); i++)
 	{
 		animation_->AddInFbx(
-					static_cast<int>(i), 
+					static_cast<int>(i),
 					ANIM_SPEED,
 					static_cast<int>(i));
 	}
@@ -114,20 +114,20 @@ void Skeleton::Update(void)
 	// 現在のステートに応じた更新処理を呼び分ける
 	switch (state_)
 	{
-	case Skeleton::STATE::IDLE: 
-		UpdateIdle(); 
+	case Skeleton::STATE::IDLE:
+		UpdateIdle();
 		break;
 
-	case Skeleton::STATE::LOOK: 
-		UpdateLook(); 
+	case Skeleton::STATE::LOOK:
+		UpdateLook();
 		break;
 
-	case Skeleton::STATE::SCARE: 
-		UpdateScare(); 
+	case Skeleton::STATE::SCARE:
+		UpdateScare();
 		break;
 
-	case Skeleton::STATE::END: 
-		UpdateEnd(); 
+	case Skeleton::STATE::END:
+		UpdateEnd();
 		break;
 
 	default:
@@ -162,24 +162,24 @@ void Skeleton::ChangeState(STATE state)
 
 	switch (state_)
 	{
-	case Skeleton::STATE::IDLE: 
+	case Skeleton::STATE::IDLE:
 		// 待機状態に変更
-		ChangeIdle(); 
+		ChangeIdle();
 		break;
 
-	case Skeleton::STATE::LOOK: 
+	case Skeleton::STATE::LOOK:
 		// 見つめる状態に変更
-		ChangeLook(); 
+		ChangeLook();
 		break;
 
-	case Skeleton::STATE::SCARE: 
+	case Skeleton::STATE::SCARE:
 		// 怖がらせる状態に変更
-		ChangeScare(); 
+		ChangeScare();
 		break;
 
-	case Skeleton::STATE::END: 
+	case Skeleton::STATE::END:
 		// 終了状態に変更
-		ChangeEnd(); 
+		ChangeEnd();
 		break;
 
 	default:
@@ -269,10 +269,9 @@ void Skeleton::UpdateScare(void)
 	{
 		// 進行方向に少し進んだ位置を計算
 		VECTOR checkPos = VAdd(
-					transform_->pos_, 
-					VScale(info_.moveDir_, 
+					transform_->pos_,
+					VScale(info_.moveDir_,
 					FORWARD_COLLISION_CHECK_DISTANCE));
-
 
 		VECTOR start = VAdd(checkPos, info_.startOffset_);
 
@@ -281,7 +280,7 @@ void Skeleton::UpdateScare(void)
 		// 壁との衝突チェック
 		MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(
 							stageId_,
-							-1, 
+							-1,
 							start,
 							end,
 							info_.radius_);

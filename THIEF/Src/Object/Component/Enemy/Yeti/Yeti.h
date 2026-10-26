@@ -42,7 +42,7 @@ public:
 	Yeti(void);
 
 	// デストラクタ
-	~Yeti(void)override;
+	~Yeti(void) override;
 
 	void Init(void) override;		// 初期化
 	void Update(void) override;		// 更新

@@ -48,16 +48,16 @@ void Giggle::Update(void)
 	// 現在のステートに応じた更新処理を呼び分ける
 	switch (state_)
 	{
-	case STATE::IDLE: 
-		UpdateIdle(); 
+	case STATE::IDLE:
+		UpdateIdle();
 		break;
 
-	case STATE::THINK: 
-		UpdateThink(); 
+	case STATE::THINK:
+		UpdateThink();
 		break;
 
-	case STATE::GIGGLING: 
-		UpdateGiggling(); 
+	case STATE::GIGGLING:
+		UpdateGiggling();
 		break;
 
 	default:
@@ -72,16 +72,16 @@ void Giggle::ChangeState(STATE state)
 	// 遷移時に一度だけ行う初期化処理を呼び出す
 	switch (state_)
 	{
-	case STATE::IDLE: 
-		ChangeIdle(); 
+	case STATE::IDLE:
+		ChangeIdle();
 		break;
 
-	case STATE::THINK: 
-		ChangeThink(); 
+	case STATE::THINK:
+		ChangeThink();
 		break;
 
-	case STATE::GIGGLING: 
-		ChangeGiggling(); 
+	case STATE::GIGGLING:
+		ChangeGiggling();
 		break;
 
 	default:
@@ -125,7 +125,7 @@ void Giggle::UpdateIdle(void)
 void Giggle::UpdateThink(void)
 {
 	// 思考
-	// ランダムに次の行動を決定	
+	// ランダムに次の行動を決定
 	// 90%で待機、10%で笑う
 	int randomVal = GetRand(MAX_PERCENTAGE - 1);
 
