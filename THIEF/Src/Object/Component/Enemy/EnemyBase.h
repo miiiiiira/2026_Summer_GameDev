@@ -125,4 +125,7 @@ protected:
 
 	// 追従用の線分かステージと当たっているかどうか
 	bool CheckChaseLineCollision(VECTOR pPos, VECTOR ePos, float radius);
+
+	// 現在の向きにローカル回転補正を足して、モデルに反映
+	void ApplyModelRotation(void);
 };

@@ -566,3 +566,16 @@ bool EnemyBase::CheckChaseLineCollision(VECTOR pPos, VECTOR ePos, float radius)
 
 	return isHit;
 }
+
+void EnemyBase::ApplyModelRotation(void)
+{
+	// ƒ‚ƒfƒ‹‚Ü‚½‚ÍTransform‚ª‘¶Ý‚µ‚È‚¢‚È‚ç’†’f
+	if (info_.modelId_ == 1) return;
+	if (!transform_) return;
+
+	// “G‚ÌŒ»Ý‚ÌŒü‚«{ƒ[ƒJƒ‹‰ñ“]•â³
+	VECTOR finalAngle = VAdd(transform_->angle_, info_.localAngle_);
+
+	// ƒ‚ƒfƒ‹‚É‰ñ“]‚ðƒZƒbƒg
+	MV1SetRotationXYZ(info_.modelId_, finalAngle);
+}

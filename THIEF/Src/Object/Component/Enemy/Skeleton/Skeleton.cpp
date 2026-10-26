@@ -92,18 +92,8 @@ void Skeleton::Update(void)
 		DelayRotate();
 	}
 
-	// モデルが存在する場合、回転を設定
-	if (info_.modelId_ != -1)
-	{
-		// 敵の現在の向き（遅延回転などで計算した角度）＋ ローカル回転補正
-		VECTOR finalAngle;
-		finalAngle.x = transform_->angle_.x + info_.localAngle_.x;
-		finalAngle.y = transform_->angle_.y + info_.localAngle_.y;
-		finalAngle.z = transform_->angle_.z + info_.localAngle_.z;
-
-		// モデルに回転をセット
-		MV1SetRotationXYZ(info_.modelId_, finalAngle);
-	}
+	// モデルに回転を反映
+	ApplyModelRotation();
 
 	// 現在のステートに応じた更新処理を呼び分ける
 	switch (state_)
