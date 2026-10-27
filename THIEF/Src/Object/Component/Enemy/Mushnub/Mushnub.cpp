@@ -39,7 +39,7 @@ namespace
 	constexpr float ANIM_SPEED = 0.2f;
 
 	// ƒ‚ƒfƒ‹‚Ìƒ[ƒJƒ‹‰ñ“]
-	static constexpr float MODEL_FORWARD_OFFSET_DEG = 180.0f;
+	constexpr float MODEL_FORWARD_OFFSET_DEG = 180.0f;
 }
 
 Mushnub::Mushnub(void)

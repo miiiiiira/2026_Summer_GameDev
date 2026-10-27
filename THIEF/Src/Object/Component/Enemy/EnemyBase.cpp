@@ -42,7 +42,7 @@ namespace
 	constexpr float VIEW_ANGLE_DEG = 30.0f;
 
 	// 接地を維持するために与える下向きの速度
-	static constexpr float GROUND_STICK_VELOCITY = 0.1f;
+	constexpr float GROUND_STICK_VELOCITY = 0.1f;
 }
 
 EnemyBase::EnemyBase(void)
@@ -132,14 +132,14 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 	// lock() して shared_ptr を一時的に取得
 	auto pathData = pathData_.lock();
 
-	// パスデータが存在しない場合は処理を中断
+	// パスデータが存在しない場合、中断
 	if (!pathData) return;
 
 	// StagePathDataからリストを取得
 	const auto* wayList = pathData->GetWayList();
 	const auto* edgeList = pathData->GetEdgeList();
 
-	// wayListまたはedgeListが存在しない場合は処理を中断
+	// wayListまたはedgeListが存在しない場合、中断
 	if (!wayList || !edgeList) return;
 
 	// 経路情報をクリア
@@ -223,6 +223,9 @@ void EnemyBase::DelayRotate(void)
 {
 	// Transformが存在しない場合は処理を中断
 	if (!transform_) return;
+
+	// 移動方向がほぼゼロなら、今の向きを保つ
+	if (VSize(info_.moveDir_) < MIN_MOVE_SPEED_THRESHOLD) return;
 
 	// 移動方向から角度に変換する
 	float goal = atan2f(info_.moveDir_.x, info_.moveDir_.z);
@@ -569,7 +572,7 @@ bool EnemyBase::CheckChaseLineCollision(VECTOR pPos, VECTOR ePos, float radius)
 void EnemyBase::ApplyModelRotation(void)
 {
 	// モデルまたはTransformが存在しないなら中断
-	if (info_.modelId_ == 1) return;
+	if (info_.modelId_ == -1) return;
 	if (!transform_) return;
 
 	// 敵の現在の向き＋ローカル回転補正

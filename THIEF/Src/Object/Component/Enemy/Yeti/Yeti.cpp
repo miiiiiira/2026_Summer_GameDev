@@ -89,7 +89,7 @@ namespace
 	constexpr float MOVE_EPSILON = 0.001f;
 
 	// ƒ‚ƒfƒ‹‚Ìƒ[ƒJƒ‹‰ñ“]
-	static constexpr float MODEL_FORWARD_OFFSET_DEG = 180.0f;
+	constexpr float MODEL_FORWARD_OFFSET_DEG = 180.0f;
 }
 
 Yeti::Yeti(void)

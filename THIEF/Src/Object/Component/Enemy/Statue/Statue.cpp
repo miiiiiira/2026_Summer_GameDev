@@ -67,7 +67,7 @@ namespace
 	constexpr float SE_INTERVAL_CHASE = 1.0f;
 
 	// ƒ‚ƒfƒ‹‚Ìƒ[ƒJƒ‹‰ñ“]
-	static constexpr float MODEL_FORWARD_OFFSET_DEG = 180.0f;
+	constexpr float MODEL_FORWARD_OFFSET_DEG = 180.0f;
 }
 
 Statue::Statue(void)

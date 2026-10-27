@@ -32,7 +32,7 @@ namespace
 	constexpr float FORWARD_COLLISION_CHECK_DISTANCE = 30.0f;
 
 	// ƒ‚ƒfƒ‹‚Ìƒ[ƒJƒ‹‰ñ“]
-	static constexpr float MODEL_FORWARD_OFFSET_DEG = 180.0f;
+	constexpr float MODEL_FORWARD_OFFSET_DEG = 180.0f;
 }
 
 Skeleton::Skeleton(void)
