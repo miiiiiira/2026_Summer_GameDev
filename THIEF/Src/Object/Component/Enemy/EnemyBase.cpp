@@ -644,6 +644,32 @@ bool EnemyBase::IsPathFinished(void) const
 	return info_.nextNodeId_ >= static_cast<int>(info_.path_.size());
 }
 
+void EnemyBase::StartPath(VECTOR startPos, VECTOR goalPos)
+{
+	// 開始地点と目的地それぞれに一番近いノードを探す
+	int startNodeId = FindNearestNode(startPos);
+	int goalNodeId = FindNearestNode(goalPos);
+
+	// ノード間の経路を探す
+	FindPath(startNodeId, goalNodeId);
+
+	// 経路の0番目は自分に最も近いノードなので、
+	// 2つ以上あれば1番目から向かう
+	info_.nextNodeId_ = 0;
+
+	if (info_.path_.size() > 1)
+	{
+		info_.nextNodeId_ = 1;
+	}
+}
+
+void EnemyBase::ClearPath(void)
+{
+	// 経路と、次に向かうノードの番号をリセットする
+	info_.path_.clear();
+	info_.nextNodeId_ = 0;
+}
+
 void EnemyBase::GetComponents(void)
 {
 	// オーナーからTransform取得

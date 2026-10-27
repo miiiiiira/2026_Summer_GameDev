@@ -592,8 +592,7 @@ void Yeti::UpdateChase(void)
 	if (info_.targetLostTimer_ >= LOST_LIMIT_TIME)
 	{
 		// 追跡用の経路をクリア
-		info_.path_.clear();
-		info_.nextNodeId_ = 0;
+		ClearPath();
 
 		// 現在位置に一番近いノードから巡回をやり直す
 		ResetToNearestNode();
@@ -612,25 +611,8 @@ void Yeti::UpdateChase(void)
 		// 視線が通っておらず、まだ経路がない場合のみ探索する
 		if (!isPlayerVisible && info_.path_.empty())
 		{
-			// プレイヤーから一番近いノードを探す
-			int playerNearNodeId = FindNearestNode(playerPos);
-
-			// 敵から一番近いノードを探す
-			int enemyNearNodeId = FindNearestNode(enemyPos);
-
-			// 敵の位置とプレイヤーの位置を繋ぐルートを探す
-			FindPath(enemyNearNodeId, playerNearNodeId);
-
-			// 経路の0番目は自分に最も近いノードなので、
-			// 2つ以上あれば1番目から向かう
-			if (info_.path_.size() > 1)
-			{
-				info_.nextNodeId_ = 1;
-			}
-			else
-			{
-				info_.nextNodeId_ = 0;
-			}
+			// 敵の位置からプレイヤーの位置への経路を探す
+			StartPath(enemyPos, playerPos);
 		}
 		// 判定が終わったらタイマーをリセットする
 		chaseTimer_ = 0.0f;
@@ -648,8 +630,7 @@ void Yeti::UpdateChase(void)
 		if (IsPathFinished())
 		{
 			// 経路を使い切ったのでクリア
-			info_.path_.clear();
-			info_.nextNodeId_ = 0;
+			ClearPath();
 
 			if (!isPlayerVisible)
 			{

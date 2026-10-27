@@ -357,7 +357,7 @@ void Statue::UpdateChase(void)
 		// プレイヤーに見られているなら
 		if (isLooked)
 		{
-			info_.path_.clear();
+			ClearPath();
 			return;
 		}
 		else if (!isPlayerVisible)
@@ -366,33 +366,15 @@ void Statue::UpdateChase(void)
 			// 経路探索でノードをたどって追う
 			if (info_.path_.empty())
 			{
-				// プレイヤーから一番近いノードを探す
-				int playerNearNodeId = FindNearestNode(playerPos);
-
-				// 敵から一番近いノードを探す
-				int enemyNearNodeId = FindNearestNode(enemyPos);
-
-				// 敵の位置とプレイヤーの位置を繋ぐルートを探す
-				FindPath(enemyNearNodeId, playerNearNodeId);
-
-				// 経路の0番目は自分に最も近いノードなので、
-				// 2つ以上あれば1番目から向かう
-				if (info_.path_.size() > 1)
-				{
-					info_.nextNodeId_ = 1;
-				}
-				else
-				{
-					info_.nextNodeId_ = 0;
-				}
+				// 敵の位置からプレイヤーの位置への経路を探す
+				StartPath(enemyPos, playerPos);
 			}
 			else
 			{
-				// 経路を最後までたどり終えたらクリアして次回再探索する
 				if (IsPathFinished())
 				{
-					info_.path_.clear();
-					info_.nextNodeId_ = 0;
+					// 経路を最後までたどり終えたらクリアして次回再探索する
+					ClearPath();
 				}
 				else
 				{
@@ -405,7 +387,7 @@ void Statue::UpdateChase(void)
 		{
 			// 見られておらず、プレイヤーが直接見えているなら
 			// 経路を使わずプレイヤーへ直進する
-			info_.path_.clear();
+			ClearPath();
 			ChaseDirect();
 		}
 	}
@@ -420,31 +402,14 @@ void Statue::UpdateChase(void)
 				// 障害物あり
 				if (info_.path_.empty())
 				{
-					// 敵から一番近いノードを探す
-					int enemyNearNode = FindNearestNode(enemyPos);
-
-					// 帰還先から一番近いノードを探す
-					int defaultNearNode = FindNearestNode(chasePos_);
-
-					// 敵の位置と帰還先を繋ぐルートを探す
-					FindPath(enemyNearNode, defaultNearNode);
-
-					// 2つ以上あれば1番目から向かう
-					if (info_.path_.size() > 1)
-					{
-						info_.nextNodeId_ = 1;
-					}
-					else
-					{
-						info_.nextNodeId_ = 0;
-					}
+					// 敵の位置から帰還先への経路を探す
+					StartPath(enemyPos, chasePos_);
 				}
 
-				// 経路を最後までたどり終えたらクリアする
 				if (IsPathFinished())
 				{
-					info_.path_.clear();
-					info_.nextNodeId_ = 0;
+					// 経路を最後までたどり終えたらクリアする
+					ClearPath();
 				}
 				else
 				{
@@ -478,7 +443,7 @@ void Statue::UpdateChase(void)
 		else
 		{
 			// 経路はクリアしておく
-			info_.path_.clear();
+			ClearPath();
 
 			if (isPlayerVisible)
 			{
@@ -491,31 +456,14 @@ void Statue::UpdateChase(void)
 				// 障害物あり
 				if (info_.path_.empty())
 				{
-					// 敵から一番近いノードを探す
-					int enemyNearNode = FindNearestNode(enemyPos);
-
-					// 帰還先から一番近いノードを探す
-					int defaultNearNode = FindNearestNode(chasePos_);
-
-					// 敵の位置と帰還先を繋ぐルートを探す
-					FindPath(enemyNearNode, defaultNearNode);
-
-					// 2つ以上あれば1番目から向かう
-					if (info_.path_.size() > 1)
-					{
-						info_.nextNodeId_ = 1;
-					}
-					else
-					{
-						info_.nextNodeId_ = 0;
-					}
+					// 敵の位置から帰還先への経路を探す
+					StartPath(enemyPos, chasePos_);
 				}
 
-				// 経路を最後までたどり終えたらクリアする
 				if (IsPathFinished())
 				{
-					info_.path_.clear();
-					info_.nextNodeId_ = 0;
+					// 経路を最後までたどり終えたらクリアする
+					ClearPath();
 				}
 				else
 				{

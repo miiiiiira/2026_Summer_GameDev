@@ -155,6 +155,12 @@ protected:
 	// 経路を最後までたどり終えたかどうか
 	bool IsPathFinished(void) const;
 
+	// 2地点の最寄りノード間で経路探索を始める
+	void StartPath(VECTOR startPos, VECTOR goalPos);
+
+	// 経路尾をクリアする
+	void ClearPath(void);
+
 private:
 
 	// コンポーネントの取得・追加
