@@ -720,7 +720,7 @@ void EnemyBase::InitNearestNode(void)
 	// lock() して shared_ptr を一時的に取得
 	auto pathData = pathData_.lock();
 
-	// パスデータが無い敵（経路を使わない敵）はここで終わる
+	// パスデータが無い敵はここで終わる
 	if (!pathData) return;
 
 	// ウェイポイントのリストを取得

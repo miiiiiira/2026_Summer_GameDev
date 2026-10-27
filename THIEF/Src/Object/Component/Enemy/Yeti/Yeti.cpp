@@ -539,34 +539,11 @@ void Yeti::UpdateChase(void)
 	VECTOR enemyPos = transform_->pos_;
 	VECTOR playerPos = player_->GetTransform()->pos_;
 
-	// 視線位置
-	// 敵の頭の位置と、プレイヤーのカプセル上端を使う
-	VECTOR enemyHead = VAdd(transform_->pos_, info_.startOffset_);
-	VECTOR playerHead = player_->GetCapsule()->GetStart();
-
 	// プレイヤーとの距離
 	float distance = VSize(VSub(playerPos, enemyPos));
 
 	// 視線チェック
-	bool isPlayerVisible = false;
-
-	// 頭位置の高さの差を計算する
-	float heightDiff = fabsf(playerHead.y - enemyHead.y);
-
-	// 高低差がHEIGHT_DIFF_LIMITより大きければまたは、
-	// 距離が範囲外なら見えない判定にする
-	if (heightDiff > HEIGHT_DIFF_LIMIT || distance > info_.viewRadius_)
-	{
-		isPlayerVisible = false;
-	}
-	else
-	{
-		// 高低差が範囲内なら、視線チェックする
-		isPlayerVisible = !CheckChaseLineCollision(
-								enemyHead,
-								playerHead,
-								RAY_RADIUS_CHASE);
-	}
+	bool isPlayerVisible = CanSeePlayer();
 
 	// プレイヤーを見つけたなら
 	if (isPlayerVisible)
@@ -667,7 +644,7 @@ void Yeti::UpdateChase(void)
 		}
 	}
 
-	// 実際の移動処理
+	// 移動処理
 	Move();
 
 	if (IsMoving())
@@ -704,4 +681,22 @@ void Yeti::UpdateAttack(void)
 		ChangeState(STATE::CHASE);
 		return;
 	}
+}
+
+bool Yeti::CanSeePlayer(void)
+{
+	// 敵の頭の位置と、プレイヤーのカプセル上端を使う
+	VECTOR enemyHead = VAdd(transform_->pos_, info_.startOffset_);
+	VECTOR playerHead = player_->GetCapsule()->GetStart();
+
+	// 視認半径より遠ければ見えない
+	float distance = VSize(VSub(player_->GetTransform()->pos_, transform_->pos_));
+	if (distance > info_.viewRadius_) return false;
+
+	// 頭の高さの差が大きすぎれば見えない
+	float heightDiff = fabsf(playerHead.y - enemyHead.y);
+	if (heightDiff > HEIGHT_DIFF_LIMIT) return false;
+
+	// 頭同士の間に障害物がなければ見えている
+	return !CheckChaseLineCollision(enemyHead, playerHead, RAY_RADIUS_CHASE);
 }

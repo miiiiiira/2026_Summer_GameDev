@@ -92,4 +92,7 @@ private:
 	void UpdateSurprise(void);	// ”­Œ©
 	void UpdateChase(void);		// ’ÇÕ
 	void UpdateAttack(void);	// UŒ‚
+
+	// ƒvƒŒƒCƒ„[‚ªŒ©‚¦‚Ä‚¢‚é‚©‚Ç‚¤‚©
+	bool CanSeePlayer(void);
 };
