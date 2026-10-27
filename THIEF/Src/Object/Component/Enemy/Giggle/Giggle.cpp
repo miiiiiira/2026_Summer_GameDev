@@ -149,7 +149,7 @@ void Giggle::UpdateGiggling(void)
 	// ステップタイマーが0以下になったら、待機状態に遷移
 	if (info_.stateTimer_ < 0.0f)
 	{
-		// 待機終了
+		// 笑う状態終了
 		ChangeState(STATE::IDLE);
 		return;
 	}

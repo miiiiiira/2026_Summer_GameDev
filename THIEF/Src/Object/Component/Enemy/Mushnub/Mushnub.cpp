@@ -237,7 +237,7 @@ void Mushnub::UpdateSurprise(void)
 
 	if (info_.stateTimer_ < 0.0f)
 	{
-		// ‘Ò‹@I—¹
+		// ‹Á‚«I—¹
 		ChangeState(STATE::CHASE);
 		return;
 	}

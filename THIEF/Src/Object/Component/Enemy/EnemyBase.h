@@ -92,7 +92,7 @@ protected:
 	// 移動処理
 	void Move(void);
 
-	// 2点間の距離を返す
+	// 距離の2乗を返す
 	float GetDistanceSQ(VECTOR pos1, VECTOR pos2) { return VSquareSize(VSub(pos1, pos2)); }
 
 	// プレイヤーを見つけたかどうか

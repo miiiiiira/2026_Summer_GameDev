@@ -45,7 +45,7 @@ namespace
 	// 画面内判定を行う点の数
 	constexpr int VIEW_CHECK_POINT_NUM = 5;
 
-	// 期間先への障害物判定で持ち上げる高さ
+	// 帰還先への障害物判定で持ち上げる高さ
 	constexpr float RETURN_CHECK_OFFSET_Y = 50.0f;
 
 	// レイの半径
@@ -343,7 +343,7 @@ void Statue::UpdateSurprise(void)
 
 	if (info_.stateTimer_ < 0.0f)
 	{
-		// 待機終了
+		// 驚き終了
 		ChangeState(STATE::CHASE);
 		return;
 	}
@@ -527,7 +527,7 @@ void Statue::UpdateChase(void)
 					// 帰還先から一番近いノードを探す
 					int defaultNearNode = FindNearestNode(chasePos_);
 
-					// 敵の位置とプレイヤーの位置を繋ぐルートを探す
+					// 敵の位置と帰還先を繋ぐルートを探す
 					FindPath(enemyNearNode, defaultNearNode);
 
 					// 2つ以上あれば1番目から向かう
@@ -636,7 +636,7 @@ bool Statue::IsLookedByPlayer(void) const
 
 	for (int i = 0; i < VIEW_CHECK_POINT_NUM; i++)
 	{
-		// 1点でも見られている
+		// 1点でも画面内なら見られている
 		if (!CheckCameraViewClip(checkPos)) return true;
 
 		checkPos.y += VIEW_CHECK_STEP_Y;
