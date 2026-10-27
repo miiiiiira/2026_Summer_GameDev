@@ -268,7 +268,7 @@ void Statue::ChangeIdle(void)
 
 void Statue::ChangeSurprise(void)
 {
-	// 驚いている時間（猶予時間）を設定
+	// 驚いている時間を設定
 	info_.stateTimer_ = STEP_TIME_SURPRISE;
 }
 
@@ -321,91 +321,28 @@ void Statue::UpdateSurprise(void)
 
 void Statue::UpdateChase(void)
 {
-	// 敵とプレイヤーの現在位置
-	VECTOR enemyPos = transform_->pos_;
-	VECTOR playerPos = player_->GetTransform()->pos_;
+	// プレイヤーの画面内に映っているか
+	bool isLooked = IsLookedByPlayer();
 
 	// 視線位置
 	VECTOR eyeOffset = { 0.0f, EYE_OFFSET_Y, 0.0f };
-	VECTOR enemyHead = VAdd(enemyPos, eyeOffset);
+	VECTOR enemyHead = VAdd(transform_->pos_, eyeOffset);
 	VECTOR playerHead = player_->GetCapsule()->GetStart();
-
-	// プレイヤーとの距離
-	float distance = VSize(VSub(playerPos, enemyPos));
-
-	// プレイヤーの視野内に入っているか判定
-	bool isLooked = IsLookedByPlayer();
-
-	// 視線チェック
-	// 敵の頭からプレイヤーの頭までの間に障害物がなければ見えている
 	bool isPlayerVisible = !CheckChaseLineCollision(enemyHead, playerHead, RAY_RADIUS);
 
-	// プレイヤーがエリア内にいるなら
+	// エリア内なら追跡、エリア外なら帰還
+	bool isStop = false;
 	if (IsPlayerInArea(minAreaPos_, maxAreaPos_))
 	{
-		// 攻撃範囲内にいたら、攻撃状態にする
-		if (distance <= ATTACK_RANGE)
-		{
-			ChangeState(STATE::ATTACK);
-			return;
-		}
-
-		// プレイヤーに見られているなら
-		if (isLooked)
-		{
-			ClearPath();
-			return;
-		}
-		else if (!isPlayerVisible)
-		{
-			// プレイヤーに見られておらず、障害物がある場合は
-			// 経路探索でノードをたどって追う
-			if (info_.path_.empty())
-			{
-				// 敵の位置からプレイヤーの位置への経路を探す
-				StartPath(enemyPos, playerPos);
-			}
-			else
-			{
-				if (IsPathFinished())
-				{
-					// 経路を最後までたどり終えたらクリアして次回再探索する
-					ClearPath();
-				}
-				else
-				{
-					// 経路がまだ残っているなら次のノードへ向かって移動する
-					ChaseNode();
-				}
-			}
-		}
-		else
-		{
-			// 見られておらず、プレイヤーが直接見えているなら
-			// 経路を使わずプレイヤーへ直進する
-			ClearPath();
-			ChaseDirect();
-		}
+		isStop = UpdateChaseInArea(isLooked, isPlayerVisible);
 	}
 	else
 	{
-		// 見られている間は経路をクリアしておく
-		if (isLooked)
-		{
-			ClearPath();
-		}
-
-		if (isLooked && isPlayerVisible)
-		{
-			// 見られていて、プレイヤーからも直接見えているなら、その場で止まる
-			info_.moveDir_ = Math::VECTOR_ZERO;
-		}
-		else if (ReturnToHomePos())
-		{
-			// 帰還先に着いて待機に戻ったので、ここで終わる
-			return;
-		}
+		isStop = UpdateReturn(isLooked, isPlayerVisible);
 	}
+
+	// 状態が変わった、または見られて止まっているなら、ここで終わる
+	if (isStop) return;
 
 	// 決定した移動方向に従って移動する
 	Move();
@@ -413,27 +350,8 @@ void Statue::UpdateChase(void)
 	// 重力処理
 	ApplyGravity();
 
-	// プレイヤーに見られておらず、かつ移動している間だけ足音SEを鳴らす
-	if (!isLooked && IsMoving())
-	{
-		seTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
-
-		// 一定間隔で足音SEを鳴らす
-		if (seTimer_ <= 0.0f)
-		{
-			AudioManager::GetInstance()->PlaySE(
-							SoundID::SE_ENEMY_STATUE,
-							&transform_->pos_,
-							SE_RADIUS_STATUE);
-
-			seTimer_ = SE_INTERVAL_CHASE;
-		}
-	}
-	else
-	{
-		// 止まっているまたは、見られている間はタイマーをリセット
-		seTimer_ = 0.0f;
-	}
+	// 足音SEの更新
+	UpdateFootstep(isLooked);
 }
 
 void Statue::UpdateAttack(void)
@@ -523,4 +441,92 @@ bool Statue::MoveStraightToHomePos(void)
 	// 帰還先に十分近づいたら待機状態に戻る
 	ChangeState(STATE::IDLE);
 	return true;
+}
+
+bool Statue::UpdateChaseInArea(bool isLooked, bool isPlayerVisible)
+{
+	VECTOR enemyPos = transform_->pos_;
+	VECTOR playerPos = player_->GetTransform()->pos_;
+
+	// 攻撃範囲内にいたら、攻撃状態にする
+	float distance = VSize(VSub(playerPos, enemyPos));
+	if (distance <= ATTACK_RANGE)
+	{
+		ChangeState(STATE::ATTACK);
+		return true;
+	}
+
+	// プレイヤーに見られている間は動かない
+	if (isLooked)
+	{
+		ClearPath();
+		return true;
+	}
+
+	// プレイヤーが直接見えているなら、経路を使わず直進する
+	if (isPlayerVisible)
+	{
+		ClearPath();
+		ChaseDirect();
+		return false;
+	}
+
+	// 障害物があるなら、経路を探してたどる
+	if (info_.path_.empty())
+	{
+		// 敵の位置からプレイヤーの位置への経路を探す
+		StartPath(enemyPos, playerPos);
+		return false;
+	}
+
+	if (IsPathFinished())
+	{
+		// 経路を最後までたどり終えたらクリアして次回再探索する
+		ClearPath();
+		return false;
+	}
+
+	// 経路がまだ残っているなら次のノードへ向かって移動する
+	ChaseNode();
+	return false;
+}
+
+bool Statue::UpdateReturn(bool isLooked, bool isPlayerVisible)
+{
+	// 見られている間は経路をクリアしておく
+	if (isLooked)
+	{
+		ClearPath();
+	}
+
+	// 見られていて、プレイヤーからも直接見えているなら、その場で止まる
+	if (isLooked && isPlayerVisible)
+	{
+		info_.moveDir_ = Math::VECTOR_ZERO;
+		return false;
+	}
+
+	// それ以外は帰還先へ戻る
+	return ReturnToHomePos();
+}
+
+void Statue::UpdateFootstep(bool isLooked)
+{
+	// 見られている、または止まっている間はタイマーをリセット
+	if (isLooked || !IsMoving())
+	{
+		seTimer_ = 0.0f;
+		return;
+	}
+
+	// 一定間隔で足音SEを鳴らす
+	seTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
+	if (seTimer_ > 0.0f) return;
+
+	AudioManager::GetInstance()->PlaySE(
+		SoundID::SE_ENEMY_STATUE,
+		&transform_->pos_,
+		SE_RADIUS_STATUE);
+
+	seTimer_ = SE_INTERVAL_CHASE;
 }

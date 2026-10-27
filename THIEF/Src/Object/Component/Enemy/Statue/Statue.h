@@ -84,4 +84,13 @@ private:
 
 	// 帰還先へまっすぐ向かう（到着して待機に戻ったらtrue）
 	bool MoveStraightToHomePos(void);
+
+	// エリア内でプレイヤーを追う
+	bool UpdateChaseInArea(bool isLooked, bool isPlayerVisible);
+
+	// エリア外で帰還先へ戻る
+	bool UpdateReturn(bool isLooked, bool isPlayerVisible);
+
+	// 足音SEの更新
+	void UpdateFootstep(bool isLooked);
 };
