@@ -69,6 +69,9 @@ public:
 	// ゲッター
 	int GetFont(FONT_SIZE size);
 
+	// デフォルトフォントを返す
+	int GetDefaultFont(void);
+
 private:
 
 	// FPS
@@ -86,6 +89,7 @@ private:
 	bool isEnd_ = false;
 
 	// フォントハンドル
+	int defaultFont_ = -1;
 	int font_[FONT_SIZE::FONT_MAX];
 
 private:

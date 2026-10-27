@@ -84,6 +84,7 @@ void Application::Init(void)
 	fps_->Init();
 
 	// フォントの追加
+	defaultFont_ = CreateFontToHandle("HG創英角ﾎﾟｯﾌﾟ体", DEFAULTFONT_SIZE, 9, DX_FONTTYPE_ANTIALIASING);
 	for (const auto& table : FontTable::Table)
 	{
 		font_[table.first] = CreateFontToHandle("Shikakufuto_Free", table.second, 1, DX_FONTTYPE_ANTIALIASING);
@@ -135,6 +136,7 @@ void Application::Delete(void)
 	delete fps_;
 
 	// フォントの削除
+	DeleteFontToHandle(defaultFont_);
 	for (const auto& table : FontTable::Table)
 	{
 		DeleteFontToHandle(font_[table.first]);
@@ -165,6 +167,11 @@ void Application::SetEnd(bool isEnd)
 int Application::GetFont(FONT_SIZE size)
 {
 	return font_[size];
+}
+
+int Application::GetDefaultFont(void)
+{
+	return defaultFont_;
 }
 
 int Application::InitEffekseer(void)

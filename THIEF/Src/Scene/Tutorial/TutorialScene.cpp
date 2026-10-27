@@ -255,7 +255,7 @@ void TutorialScene::Draw(void)
 
 			// 置換後のテキストを描画
 			DrawTutorialTextWithHighlight(700, 300, steps_[index].textEN, 0xffffff, 0xffc800, Application::GetInstance()->GetFont(FONT_SIZE_16));
-			DrawTutorialTextWithHighlight(700, 370, steps_[index].textJP, 0xffffff, 0xffc800, Application::GetInstance()->GetFont(FONT_SIZE_20));
+			DrawTutorialTextWithHighlight(700, 370, steps_[index].textJP, 0xffffff, 0xffc800, Application::GetInstance()->GetDefaultFont());
 
 			SetDrawArea(0, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y);
 
