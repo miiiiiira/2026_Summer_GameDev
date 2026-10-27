@@ -389,7 +389,7 @@ void Statue::UpdateChase(void)
 			else
 			{
 				// 経路を最後までたどり終えたらクリアして次回再探索する
-				if (info_.nextNodeId_ >= static_cast<int>(info_.path_.size()))
+				if (IsPathFinished())
 				{
 					info_.path_.clear();
 					info_.nextNodeId_ = 0;
@@ -441,7 +441,7 @@ void Statue::UpdateChase(void)
 				}
 
 				// 経路を最後までたどり終えたらクリアする
-				if (info_.nextNodeId_ >= static_cast<int>(info_.path_.size()))
+				if (IsPathFinished())
 				{
 					info_.path_.clear();
 					info_.nextNodeId_ = 0;
@@ -512,7 +512,7 @@ void Statue::UpdateChase(void)
 				}
 
 				// 経路を最後までたどり終えたらクリアする
-				if (info_.nextNodeId_ >= static_cast<int>(info_.path_.size()))
+				if (IsPathFinished())
 				{
 					info_.path_.clear();
 					info_.nextNodeId_ = 0;

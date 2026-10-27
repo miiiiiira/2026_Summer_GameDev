@@ -622,7 +622,7 @@ void Yeti::UpdateChase(void)
 			FindPath(enemyNearNodeId, playerNearNodeId);
 
 			// 経路の0番目は自分に最も近いノードなので、
-			// 2つ以上あれば1番目（次のノード）から向かう
+			// 2つ以上あれば1番目から向かう
 			if (info_.path_.size() > 1)
 			{
 				info_.nextNodeId_ = 1;
@@ -645,7 +645,7 @@ void Yeti::UpdateChase(void)
 	{
 		// 範囲外チェック
 		// 最後のノードにたどり着いたかチェックする
-		if (info_.nextNodeId_ >= static_cast<int>(info_.path_.size()))
+		if (IsPathFinished())
 		{
 			// 経路を使い切ったのでクリア
 			info_.path_.clear();

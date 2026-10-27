@@ -638,6 +638,12 @@ bool EnemyBase::IsMoving(void) const
 	return VSize(info_.moveDir_) >= MIN_MOVE_SPEED_THRESHOLD;
 }
 
+bool EnemyBase::IsPathFinished(void) const
+{
+	// 次に向かうノードの番号が経路の数以上なら、たどり終えている
+	return info_.nextNodeId_ >= static_cast<int>(info_.path_.size());
+}
+
 void EnemyBase::GetComponents(void)
 {
 	// オーナーからTransform取得

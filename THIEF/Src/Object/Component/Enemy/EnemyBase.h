@@ -152,6 +152,9 @@ protected:
 	// 移動しているかどうか
 	bool IsMoving(void) const;
 
+	// 経路を最後までたどり終えたかどうか
+	bool IsPathFinished(void) const;
+
 private:
 
 	// コンポーネントの取得・追加
