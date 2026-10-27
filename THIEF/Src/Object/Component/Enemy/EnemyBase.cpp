@@ -275,7 +275,7 @@ void EnemyBase::DelayRotate(void)
 	if (!transform_) return;
 
 	// 移動方向がほぼゼロなら、今の向きを保つ
-	if (VSize(info_.moveDir_) < MIN_MOVE_SPEED_THRESHOLD) return;
+	if (!IsMoving()) return;
 
 	// 移動方向から角度に変換する
 	float goal = atan2f(info_.moveDir_.x, info_.moveDir_.z);
@@ -341,7 +341,7 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 	VECTOR dirEnemy = Math::VECTOR_ZERO;
 
 	// 移動方向がほぼゼロの場合は、現在の角度から正面を計算する
-	if (VSize(info_.moveDir_) < MIN_MOVE_SPEED_THRESHOLD)
+	if (!IsMoving())
 	{
 		// 移動していない場合は現在の向きから正面を計算
 		dirEnemy.x = sinf(transform_->angle_.y);
@@ -630,6 +630,12 @@ void EnemyBase::ApplyModelRotation(void)
 
 	// モデルに回転をセット
 	MV1SetRotationXYZ(info_.modelId_, finalAngle);
+}
+
+bool EnemyBase::IsMoving(void) const
+{
+	// 移動方向の大きさが閾値以上なら移動中とみなす
+	return VSize(info_.moveDir_) >= MIN_MOVE_SPEED_THRESHOLD;
 }
 
 void EnemyBase::GetComponents(void)

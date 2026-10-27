@@ -149,6 +149,9 @@ protected:
 	// 現在の向きにローカル回転補正を足して、モデルに反映
 	void ApplyModelRotation(void);
 
+	// 移動しているかどうか
+	bool IsMoving(void) const;
+
 private:
 
 	// コンポーネントの取得・追加

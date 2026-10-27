@@ -84,9 +84,6 @@ namespace
 	// ‘Ò‹@ó‘Ô‚É‘JˆÚ‚·‚éŠm—¦
 	constexpr int IDLE_PROBABILITY = 10;
 
-	// ˆÚ“®”»’è‚Ìè‡’l
-	constexpr float MOVE_EPSILON = 0.001f;
-
 	// ƒ‚ƒfƒ‹‚Ìƒ[ƒJƒ‹‰ñ“]
 	constexpr float MODEL_FORWARD_OFFSET_DEG = 180.0f;
 }
@@ -501,10 +498,7 @@ void Yeti::UpdatePatrol(void)
 		return;
 	}
 
-	// ˆÚ“®‚µ‚Ä‚¢‚é‚©
-	bool isMoving = (VSize(info_.moveDir_) > MOVE_EPSILON);
-
-	if (isMoving)
+	if (IsMoving())
 	{
 		// ˆê’èŠÔŠu‚Å‘«‰¹SE‚ð–Â‚ç‚·
 		seTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
@@ -695,10 +689,7 @@ void Yeti::UpdateChase(void)
 	// ŽÀÛ‚ÌˆÚ“®ˆ—
 	Move();
 
-	// ˆÚ“®‚µ‚Ä‚¢‚é‚©
-	bool isMoving = (VSize(info_.moveDir_) > MOVE_EPSILON);
-
-	if (isMoving)
+	if (IsMoving())
 	{
 		// ˆê’èŠÔŠu‚Å‘«‰¹SE‚ð–Â‚ç‚·
 		seTimer_ -= SceneManager::GetInstance()->GetDeltaTime();

@@ -56,9 +56,6 @@ namespace
 	// 帰還先に到達したとみなす距離
 	constexpr float RETURN_ARRIVE_DISTANCE_SQ = 100.0f * 100.0f;
 
-	// 移動しているかの判定閾値
-	constexpr float MOVE_EPSILON = 0.001f;
-
 	// 足音SEの届く半径
 	constexpr float SE_RADIUS_STATUE = 3500.0f;
 
@@ -557,11 +554,8 @@ void Statue::UpdateChase(void)
 	// 重力処理
 	ApplyGravity();
 
-	// 移動しているか
-	bool isMoving = (VSize(info_.moveDir_) > MOVE_EPSILON);
-
 	// プレイヤーに見られておらず、かつ移動している間だけ足音SEを鳴らす
-	if (!isLooked && isMoving)
+	if (!isLooked && IsMoving())
 	{
 		seTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
 
