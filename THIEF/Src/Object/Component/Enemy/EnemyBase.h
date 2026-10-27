@@ -23,7 +23,7 @@ public:
 	// デストラクタ
 	~EnemyBase(void) override;
 
-	void Init(void) override;			// 初期化
+	void Init(void) override final;		// 初期化
 	void Update(void) override = 0;		// 更新
 	void Draw3D(void) override;			// 3D描画
 
@@ -56,7 +56,7 @@ public:
 	float GetAttackJumpPow(void) const { return info_.attackJumpPow_; }
 
 	// タグを返す
-	ENEMY_TAG GetTag(void) const { return info_.tag_; }
+	virtual ENEMY_TAG GetTag(void) const = 0;
 
 	// モデルIDを返す
 	int GetModelId(void) const { return info_.modelId_; }
@@ -79,6 +79,27 @@ protected:
 
 	EnemyInfo info_ = {};	// 敵の情報
 	int stageId_ = -1;		// ステージのモデルID
+
+	// 敵ごとのパラメータ設定
+	virtual void InitParam(void) {}
+
+	// アニメーションの登録
+	virtual void InitAnimation(void) {}
+
+	// スケール・向きの設定
+	virtual void InitTransform(void) {}
+
+	// 初期化の最後に行う個別処理
+	virtual void InitPost(void) = 0;
+
+	// アニメーションをまとめて登録
+	void AddAnimationAll(int animNum, float animSpeed);
+
+	// モデルのスケールと正面補正を設定する
+	void ApplyModelTransform(const VECTOR& scale, float forwardOffsetDeg);
+
+	// 現在位置に一番近いノードから巡回をやり直す
+	void ResetToNearestNode(void);
 
 	// 経路探索
 	void FindPath(int startNodeId, int goalNodeId);
@@ -127,4 +148,15 @@ protected:
 
 	// 現在の向きにローカル回転補正を足して、モデルに反映
 	void ApplyModelRotation(void);
+
+private:
+
+	// コンポーネントの取得・追加
+	void GetComponents(void);
+
+	// テーブルからの共通データ設定
+	void InitTableData(void);
+
+	// 最寄りノードの初期化
+	void InitNearestNode(void);
 };

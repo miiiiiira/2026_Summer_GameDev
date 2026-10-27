@@ -35,7 +35,6 @@ public:
 	// デストラクタ
 	~Mushnub(void) override;
 
-	void Init(void) override;		// 初期化
 	void Update(void) override;		// 更新
 	void Draw3D(void) override;		// 3D描画
 
@@ -44,6 +43,23 @@ public:
 
 	// 追跡用の座標を設定
 	void SetChasePos(VECTOR pos);
+
+	// タグを返す
+	ENEMY_TAG GetTag(void) const override { return ENEMY_TAG::MUSHNUB; }
+
+protected:
+
+	// 敵ごとのパラメータ設定
+	void InitParam(void) override;
+
+	// アニメーションの登録
+	void InitAnimation(void) override;
+
+	// スケール・向きの設定
+	void InitTransform(void) override;
+
+	// 初期化の最後に行う個別処理
+	void InitPost(void) override;
 
 private:
 

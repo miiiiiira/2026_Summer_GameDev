@@ -7,7 +7,6 @@
 #include "../../Transform/Transform.h"
 #include "../../Animation/Animation.h"
 #include "../Weapon/WeaponPunch.h"
-#include "../EnemyCommon.h"
 
 #include "Yeti.h"
 
@@ -107,29 +106,9 @@ Yeti::~Yeti(void)
 	}
 }
 
-void Yeti::Init(void)
+void Yeti::InitParam(void)
 {
-	EnemyBase::Init();
-
-	// アニメーションの初期化
-	animation_->Init();
-
-	// アニメーションの追加
-	for (int i = 0; i < static_cast<int>(ANIM_TYPE::MAX); i++)
-	{
-		animation_->AddInFbx(
-					static_cast<int>(i),
-					ANIM_SPEED,
-					static_cast<int>(i));
-	}
-
-	// 敵のデータを取得して設定
-	const auto& data = EnemyTable::Table.at(ENEMY_TAG::YETI);
-	SetEnemyData(data);
-
-	// パラメータ初期化
-	// 移動方向・移動速度を 0 にしておく
-	info_.moveDir_ = Math::VECTOR_ZERO;
+	// 移動速度を0にしておく
 	info_.moveSpeed_ = 0.0f;
 
 	// 巡回半径と視認半径の初期値
@@ -145,25 +124,24 @@ void Yeti::Init(void)
 	// 攻撃時ダメージ力
 	info_.attackDamagePow_ = ATTACK_DAMAGE_POWER;
 
-	// 敵のタグを設定
-	info_.tag_ = ENEMY_TAG::YETI;
-
 	// 足音SEのタイマーを初期化
 	seTimer_ = 0.0f;
+}
 
-	if (transform_)
-	{
-		// モデルの大きさを設定
-		info_.scale_ = SCALE;
-		MV1SetScale(info_.modelId_, info_.scale_);
+void Yeti::InitAnimation(void)
+{
+	// FBX内のアニメーションをまとめて登録
+	AddAnimationAll(static_cast<int>(ANIM_TYPE::MAX), ANIM_SPEED);
+}
 
-		// 敵の向きを設定
-		info_.localAngle_ = { 0.0f, Math::Deg2Rad(MODEL_FORWARD_OFFSET_DEG), 0.0f };
+void Yeti::InitTransform(void)
+{
+	// モデルの大きさと正面補正を設定
+	ApplyModelTransform(SCALE, MODEL_FORWARD_OFFSET_DEG);
+}
 
-		// 前回の座標を現在の座標に設定
-		transform_->prevPos_ = transform_->pos_;
-	}
-
+void Yeti::InitPost(void)
+{
 	// 武器が未生成なら生成して初期化する
 	if (useWeapon_ == nullptr)
 	{
@@ -171,26 +149,8 @@ void Yeti::Init(void)
 		useWeapon_->Init(WeaponBase::TYPE::PUNCH);
 	}
 
-	// 初期アニメーション再生
-	animation_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
-
 	// 初期ステートの設定
 	ChangeState(STATE::IDLE);
-
-	// lock() して shared_ptr を一時的に取得
-	auto pathData = pathData_.lock();
-	if (!pathData) return;
-
-	// ウェイポイント（巡回ノード）のリストを取得
-	const auto* wayList = pathData->GetWayList();
-	if (wayList && !wayList->empty() && transform_)
-	{
-		// 候補ノード用の領域を事前確保して再確保を防ぐ
-		info_.candidates_.reserve(wayList->size());
-
-		// 現在位置から一番近いノードを現在ノードとして登録
-		info_.currentNodeId_ = FindNearestNode(transform_->pos_);
-	}
 }
 
 void Yeti::Update(void)
@@ -352,6 +312,9 @@ void Yeti::Draw3D(void)
 
 void Yeti::ChangeState(STATE state)
 {
+	// 同じ状態への遷移は無視
+	if (state_ == state) return;
+
 	state_ = state;
 
 	// 遷移時に一度だけ行う初期化処理を呼び出す
@@ -638,21 +601,11 @@ void Yeti::UpdateChase(void)
 		info_.path_.clear();
 		info_.nextNodeId_ = 0;
 
-		// 現在位置に一番近いノードを現在ノードにし、履歴をリセット
-		info_.currentNodeId_ = FindNearestNode(transform_->pos_);
-		info_.prevNodeId_ = -1;
-		info_.prevPrevNodeId_ = -1;
+		// 現在位置に一番近いノードから巡回をやり直す
+		ResetToNearestNode();
 
 		// 待機状態に戻る
 		ChangeState(STATE::IDLE);
-
-		// lock() して shared_ptr を一時的に取得
-		auto pathData = pathData_.lock();
-		if (!pathData) return;
-
-		// 次の目的地を現在ノードの座標に設定
-		const auto* wayList = pathData->GetWayList();
-		info_.nextWayPoint_ = (*wayList)[info_.currentNodeId_].pos_;
 		return;
 	}
 
@@ -721,16 +674,8 @@ void Yeti::UpdateChase(void)
 				// プレイヤーに一番近いノードまで近づいているなら
 				if (distToPlayerNode < PLAYER_NODE_ARRIVE_DIST)
 				{
-					// 現在位置に一番近いノードから巡回を再開する準備をする
-					info_.currentNodeId_ = FindNearestNode(transform_->pos_);
-
-					// 履歴ノードをリセット
-					info_.prevNodeId_ = -1;
-
-					// 2つ前の履歴ノードをリセット
-					info_.prevPrevNodeId_ = -1;
-
-					info_.nextWayPoint_ = (*wayList)[info_.currentNodeId_].pos_;
+					// 現在位置に一番近いノードから巡回をやり直す
+					ResetToNearestNode();
 
 					// 最後にプレイヤーのいた方向を向いてから待機する
 					LookPlayer();

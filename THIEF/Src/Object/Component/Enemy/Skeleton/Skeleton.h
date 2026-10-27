@@ -32,11 +32,24 @@ public:
 	// デストラクタ
 	~Skeleton(void) override;
 
-	void Init(void) override;		// 初期化
 	void Update(void) override;		// 更新
 
 	// 敵の向き設定
 	void SetSide(ENEMY_SIDE side);
+
+	// タグを返す
+	ENEMY_TAG GetTag(void) const override { return ENEMY_TAG::SKELETON; }
+
+protected:
+
+	// アニメーションの登録
+	void InitAnimation(void) override;
+
+	// スケール・向きの設定
+	void InitTransform(void) override;
+
+	// 初期化の最後に行う個別処理
+	void InitPost(void) override;
 
 private:
 

@@ -6,7 +6,6 @@
 #include "../../Collider/StageCollider/StageCollider.h"
 #include "../../Transform/Transform.h"
 #include "../Weapon/WeaponPunch.h"
-#include "../EnemyCommon.h"
 
 #include "Statue.h"
 
@@ -85,18 +84,8 @@ Statue::~Statue(void)
 	}
 }
 
-void Statue::Init(void)
+void Statue::InitParam(void)
 {
-	EnemyBase::Init();
-
-	// 敵のデータを取得して設定
-	const auto& data = EnemyTable::Table.at(ENEMY_TAG::STATUE);
-	SetEnemyData(data);
-
-	// パラメータ初期化
-	// 移動方向を0にしておく
-	info_.moveDir_ = Math::VECTOR_ZERO;
-
 	// 攻撃時移動速度
 	info_.attackMoveSpeed_ = ATTACK_SPEED_MOVE;
 
@@ -106,25 +95,18 @@ void Statue::Init(void)
 	// 攻撃時ダメージ力
 	info_.attackDamagePow_ = ATTACK_DAMAGE_POWER;
 
-	// 敵のタグを設定
-	info_.tag_ = ENEMY_TAG::STATUE;
-
-	if (transform_)
-	{
-		// モデルの大きさを設定
-		info_.scale_ = SCALE;
-		MV1SetScale(info_.modelId_, info_.scale_);
-
-		// 敵の向きを設定
-		info_.localAngle_ = { 0.0f, Math::Deg2Rad(MODEL_FORWARD_OFFSET_DEG), 0.0f };
-
-		// 前回の座標を現在の座標に設定
-		transform_->prevPos_ = transform_->pos_;
-	}
-
 	// 足音SEのタイマーを初期化
 	seTimer_ = 0.0f;
+}
 
+void Statue::InitTransform(void)
+{
+	// モデルの大きさと正面補正を設定
+	ApplyModelTransform(SCALE, MODEL_FORWARD_OFFSET_DEG);
+}
+
+void Statue::InitPost(void)
+{
 	// 武器が未生成なら生成して初期化する
 	if (useWeapon_ == nullptr)
 	{
@@ -134,21 +116,6 @@ void Statue::Init(void)
 
 	// 初期ステートの設定
 	ChangeState(STATE::IDLE);
-
-	// lock() して shared_ptr を一時的に取得
-	auto pathData = pathData_.lock();
-	if (!pathData) return;
-
-	// ウェイポイント（巡回ノード）のリストを取得
-	const auto* wayList = pathData->GetWayList();
-	if (wayList && !wayList->empty() && transform_)
-	{
-		// 候補ノード用の領域を事前確保して再確保を防ぐ
-		info_.candidates_.reserve(wayList->size());
-
-		// 現在位置から一番近いノードを現在ノードとして登録
-		info_.currentNodeId_ = FindNearestNode(transform_->pos_);
-	}
 }
 
 void Statue::Update(void)
@@ -269,6 +236,9 @@ void Statue::SetChasePos(VECTOR pos)
 
 void Statue::ChangeState(STATE state)
 {
+	// 同じ状態への遷移は無視
+	if (state_ == state) return;
+
 	state_ = state;
 
 	// 遷移時に一度だけ行う初期化処理を呼び出す

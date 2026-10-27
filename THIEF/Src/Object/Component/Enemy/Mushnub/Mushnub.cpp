@@ -5,7 +5,6 @@
 #include "../../Collider/StageCollider/StageCollider.h"
 #include "../../Animation/Animation.h"
 #include "../../Transform/Transform.h"
-#include "../EnemyCommon.h"
 
 #include "Mushnub.h"
 
@@ -50,49 +49,29 @@ Mushnub::~Mushnub(void)
 {
 }
 
-void Mushnub::Init(void)
+void Mushnub::InitParam(void)
 {
-	EnemyBase::Init();
-
-	// アニメーションの初期化
-	animation_->Init();
-
-	// アニメーションの追加
-	for (int i = 0; i < static_cast<int>(ANIM_TYPE::MAX); i++)
-	{
-		animation_->AddInFbx(
-					static_cast<int>(i),
-					ANIM_SPEED,
-					static_cast<int>(i));
-	}
-
-	// 敵のデータを取得して設定
-	const auto& data = EnemyTable::Table.at(ENEMY_TAG::MUSHNUB);
-	SetEnemyData(data);
-
-	// パラメータ初期化
-	info_.moveDir_ = Math::VECTOR_ZERO;
-
-	// 巡回半径と視認半径の初期値
+	// 視認半径の初期値
 	info_.viewRadius_ = VIEW_RADIUS_DEFAULT;
+
+	// 攻撃時ダメージ力
 	info_.attackDamagePow_ = ATTACK_DAMAGE_POWER;
+}
 
-	// 敵のタグを設定
-	info_.tag_ = ENEMY_TAG::MUSHNUB;
+void Mushnub::InitAnimation(void)
+{
+	// FBX内のアニメーションをまとめて登録
+	AddAnimationAll(static_cast<int>(ANIM_TYPE::MAX), ANIM_SPEED);
+}
 
-	if (transform_)
-	{
-		// モデルの大きさを設定
-		info_.scale_ = SCALE;
-		MV1SetScale(info_.modelId_, info_.scale_);
+void Mushnub::InitTransform(void)
+{
+	// モデルの大きさと正面補正を設定
+	ApplyModelTransform(SCALE, MODEL_FORWARD_OFFSET_DEG);
+}
 
-		// 敵の向きを設定
-		info_.localAngle_ = { 0.0f, Math::Deg2Rad(MODEL_FORWARD_OFFSET_DEG), 0.0f };
-
-		// 前回の座標を現在の座標に設定
-		transform_->prevPos_ = transform_->pos_;
-	}
-
+void Mushnub::InitPost(void)
+{
 	// 初期ステート設定
 	ChangeState(STATE::IDLE);
 }
@@ -166,6 +145,9 @@ void Mushnub::SetChasePos(VECTOR pos)
 
 void Mushnub::ChangeState(STATE state)
 {
+	// 同じ状態への遷移は無視
+	if (state_ == state) return;
+
 	state_ = state;
 
 	// 遷移時に一度だけ行う初期化処理を呼び出す

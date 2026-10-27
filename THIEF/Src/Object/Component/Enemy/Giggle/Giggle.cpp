@@ -1,16 +1,15 @@
 #include "../../../../Manager/Audio/AudioManager.h"
 #include "../../../../Scene/SceneManager.h"
-#include "../EnemyCommon.h"
 
 #include "Giggle.h"
 
 namespace
 {
 	// 待機状態のステップタイマー
-	constexpr float STEP_IDLE = 10.0f;
+	constexpr float STEP_TIME_IDLE = 10.0f;
 
 	// 笑う状態のステップタイマー
-	constexpr float STEP_GIGGLING = 20.0f;
+	constexpr float STEP_TIME_GIGGLING = 20.0f;
 
 	// 確率計算の全体値
 	constexpr int MAX_PERCENTAGE = 100;
@@ -27,18 +26,8 @@ Giggle::~Giggle(void)
 {
 }
 
-void Giggle::Init(void)
+void Giggle::InitPost(void)
 {
-	// EnemyBaseの初期化
-	EnemyBase::Init();
-
-	// テーブルからデータを取得してセット
-	const auto& data = EnemyTable::Table.at(ENEMY_TAG::GIGGLE);
-	SetEnemyData(data);
-
-	// タグを設定
-	info_.tag_ = ENEMY_TAG::GIGGLE;
-
 	// 初期ステートへ遷移
 	ChangeState(STATE::IDLE);
 }
@@ -67,6 +56,9 @@ void Giggle::Update(void)
 
 void Giggle::ChangeState(STATE state)
 {
+	// 同じ状態への遷移は無視
+	if (state_ == state) return;
+
 	state_ = state;
 
 	// 遷移時に一度だけ行う初期化処理を呼び出す
@@ -92,7 +84,7 @@ void Giggle::ChangeState(STATE state)
 void Giggle::ChangeIdle(void)
 {
 	// 待機状態に遷移
-	info_.stateTimer_ = STEP_IDLE;
+	info_.stateTimer_ = STEP_TIME_IDLE;
 }
 
 void Giggle::ChangeThink(void)
@@ -102,7 +94,7 @@ void Giggle::ChangeThink(void)
 void Giggle::ChangeGiggling(void)
 {
 	// 笑う状態に遷移
-	info_.stateTimer_ = STEP_GIGGLING;
+	info_.stateTimer_ = STEP_TIME_GIGGLING;
 
 	// SE再生
 	AudioManager::GetInstance()->PlaySE(SoundID::SE_ENEMY_GIGGLE);

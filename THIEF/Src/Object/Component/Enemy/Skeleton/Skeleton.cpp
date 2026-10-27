@@ -4,7 +4,6 @@
 #include "../../PlayerController/PlayerController.h"
 #include "../../Transform/Transform.h"
 #include "../../Animation/Animation.h"
-#include "../EnemyCommon.h"
 
 #include "Skeleton.h"
 
@@ -43,45 +42,20 @@ Skeleton::~Skeleton(void)
 {
 }
 
-void Skeleton::Init(void)
+void Skeleton::InitAnimation(void)
 {
-	EnemyBase::Init();
+	// FBX内のアニメーションをまとめて登録
+	AddAnimationAll(static_cast<int>(ANIM_TYPE::MAX), ANIM_SPEED);
+}
 
-	// アニメーションの初期化
-	animation_->Init();
+void Skeleton::InitTransform(void)
+{
+	// モデルの大きさと正面補正を設定
+	ApplyModelTransform(SCALE, MODEL_FORWARD_OFFSET_DEG);
+}
 
-	// アニメーションの追加
-	for (int i = 0; i < static_cast<int>(ANIM_TYPE::MAX); i++)
-	{
-		animation_->AddInFbx(
-					static_cast<int>(i),
-					ANIM_SPEED,
-					static_cast<int>(i));
-	}
-
-	// 敵のデータを取得して設定
-	const auto& data = EnemyTable::Table.at(ENEMY_TAG::SKELETON);
-	SetEnemyData(data);
-
-	// パラメータ初期化
-	info_.moveDir_ = Math::VECTOR_ZERO;
-
-	// 敵のタグを設定
-	info_.tag_ = ENEMY_TAG::SKELETON;
-
-	if (transform_)
-	{
-		// モデルの大きさを設定
-		info_.scale_ = SCALE;
-		MV1SetScale(info_.modelId_, info_.scale_);
-
-		// 敵の向きを設定
-		info_.localAngle_ = { 0.0f, Math::Deg2Rad(MODEL_FORWARD_OFFSET_DEG), 0.0f };
-
-		// 前回の座標を現在の座標に設定
-		transform_->prevPos_ = transform_->pos_;
-	}
-
+void Skeleton::InitPost(void)
+{
 	// 初期ステート設定
 	ChangeState(STATE::IDLE);
 }
@@ -138,6 +112,7 @@ void Skeleton::SetSide(ENEMY_SIDE side)
 
 void Skeleton::ChangeState(STATE state)
 {
+	// 同じ状態への遷移は無視
 	if (state_ == state) return;
 
 	state_ = state;
@@ -210,10 +185,10 @@ void Skeleton::UpdateIdle(void)
 	VECTOR playerPos = player_->GetTransform()->pos_;
 
 	// プレイヤーとの距離を計算
-	float distance = GetDistanceSQ(LOOK_POS, playerPos);
+	float distanceSq = GetDistanceSQ(LOOK_POS, playerPos);
 
 	// プレイヤーが一定距離以内にいる場合
-	if (distance <= TRIGGER_RANGE_SQ)
+	if (distanceSq <= TRIGGER_RANGE_SQ)
 	{
 		// 見つめる状態に変更
 		ChangeState(STATE::LOOK);
@@ -227,10 +202,10 @@ void Skeleton::UpdateLook(void)
 	VECTOR playerPos = player_->GetTransform()->pos_;
 
 	// プレイヤーとの距離を計算
-	float distance = GetDistanceSQ(SCARE_POS, playerPos);
+	float distanceSq = GetDistanceSQ(SCARE_POS, playerPos);
 
 	// プレイヤーが一定距離以内にいる場合
-	if (distance <= TRIGGER_RANGE_SQ)
+	if (distanceSq <= TRIGGER_RANGE_SQ)
 	{
 		// 怖がらせる状態に変更
 		ChangeState(STATE::SCARE);

@@ -20,8 +20,15 @@ public:
 	// デストラクタ
 	~Giggle(void) override;
 
-	void Init(void) override;	// 初期化
 	void Update(void) override;	// 更新
+
+	// タグを返す
+	ENEMY_TAG GetTag(void) const override { return ENEMY_TAG::GIGGLE; }
+
+protected:
+
+	// 初期化の最後に行う個別処理
+	void InitPost(void) override;
 
 private:
 

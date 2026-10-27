@@ -55,32 +55,32 @@ EnemyBase::~EnemyBase(void)
 
 void EnemyBase::Init(void)
 {
-	// オーナーからTransform取得
-	transform_ = owner_->GetComponent<Transform>();
+	// コンポーネントの取得
+	GetComponents();
 
-	// オーナーからCapsuleCollider取得
-	capColl_ = owner_->GetComponent<CapsuleCollider>();
+	// テーブルから共通設定
+	InitTableData();
 
-	// オーナーからStageCollider取得
-	stageColl_ = owner_->GetComponent<StageCollider>();
+	// 敵ごとのパラメータ設定
+	InitParam();
 
-	// オーナーから3D描画コンポーネントを取得
-	auto render = owner_->GetComponent<Render3D>();
+	// アニメーションの登録
+	InitAnimation();
 
-	// オーナーからAnimationコンポーネントを取得
-	animation_ = owner_->GetComponent<Animation>();
+	// スケール・向きの設定
+	InitTransform();
 
-	if (!animation_)
+	// 最寄りノードの初期化
+	InitNearestNode();
+
+	// 前回の座標を現在の座標に設定
+	if (transform_)
 	{
-		// 存在しない場合のみ追加する安全対策
-		animation_ = owner_->AddComponent<Animation>();
+		transform_->prevPos_ = transform_->pos_;
 	}
 
-	if (render)
-	{
-		// モデルIDが存在する場合のみ取得
-		info_.modelId_ = render->GetHandle();
-	}
+	// 個別の後処理
+	InitPost();
 }
 
 void EnemyBase::Draw3D(void)
@@ -125,6 +125,56 @@ void EnemyBase::SetEnemyData(const EnemyData& data)
 void EnemyBase::SetPos(VECTOR pos)
 {
 	transform_->pos_ = pos;
+}
+
+void EnemyBase::AddAnimationAll(int animNum, float animSpeed)
+{
+	// Animationが存在しない場合は処理を中断
+	if (!animation_) return;
+
+	// アニメーションの初期化
+	animation_->Init();
+
+	// FBX内のアニメーションを番号順に登録
+	for (int i = 0; i < animNum; i++)
+	{
+		animation_->AddInFbx(i, animSpeed, i);
+	}
+}
+
+void EnemyBase::ApplyModelTransform(const VECTOR& scale, float forwardOffsetDeg)
+{
+	// モデルが存在しない場合は処理を中断
+	if (info_.modelId_ == -1) return;
+
+	// モデルの大きさを設定
+	info_.scale_ = scale;
+	MV1SetScale(info_.modelId_, info_.scale_);
+
+	// モデルの正面補正を設定
+	info_.localAngle_ = { 0.0f, Math::Deg2Rad(forwardOffsetDeg), 0.0f };
+}
+
+void EnemyBase::ResetToNearestNode(void)
+{
+	// Transformが存在しない場合は処理を中断
+	if (!transform_) return;
+
+	// lock() して shared_ptr を一時的に取得
+	auto pathData = pathData_.lock();
+	if (!pathData) return;
+
+	// ウェイポイントのリストを取得
+	const auto* wayList = pathData->GetWayList();
+	if (!wayList || wayList->empty()) return;
+
+	// 一番近いノードを現在ノードにし、履歴をリセット
+	info_.currentNodeId_ = FindNearestNode(transform_->pos_);
+	info_.prevNodeId_ = -1;
+	info_.prevPrevNodeId_ = -1;
+
+	// 次の目的地を現在ノードの座標に設定
+	info_.nextWayPoint_ = (*wayList)[info_.currentNodeId_].pos_;
 }
 
 void EnemyBase::FindPath(int startNodeId, int goalNodeId)
@@ -239,7 +289,7 @@ void EnemyBase::LookPlayer(void)
 	// TransformまたはPlayerが存在しない場合は処理を中断
 	if (!transform_ || !player_) return;
 
-	// プレイヤー（相手）の座標を取得
+	// プレイヤーの座標を取得
 	VECTOR playerPos = player_->GetTransform()->pos_;
 
 	// 相手へのベクトルを計算
@@ -248,7 +298,7 @@ void EnemyBase::LookPlayer(void)
 	// Y軸方向の回転のみを考慮するため、Y成分を0にする
 	diff.y = 0.0f;
 
-	// ベクトルの正規化で単位ベクトル（方向）を取得
+	// ベクトルの正規化で単位ベクトルを取得
 	info_.moveDir_ = VNorm(diff);
 
 	// 回転はY軸のみ
@@ -276,10 +326,10 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 	VECTOR playerPos = player_->GetTransform()->pos_;
 
 	// 敵とプレイヤーの直線距離をチェック
-	float distance = GetDistanceSQ(playerPos, transform_->pos_);
+	float distanceSq = GetDistanceSQ(playerPos, transform_->pos_);
 
 	// 半径の二乗と比較して、範囲外ならfalseを返す
-	if (distance > radius * radius) return false;
+	if (distanceSq > radius * radius) return false;
 
 	// 高低差チェック
 	float heightDiff = fabsf(playerPos.y - transform_->pos_.y);
@@ -453,10 +503,10 @@ int EnemyBase::SelectNextNode(void)
 		int nextId = edge.way_.id_;
 
 		// 接続されているノードの座標を取得
-		float distance = GetDistanceSQ(edge.way_.pos_, transform_->pos_);
+		float distanceSq = GetDistanceSQ(edge.way_.pos_, transform_->pos_);
 
 		// 敵の座標から半径以内に無いポイントは除外
-		if (distance > info_.patrolRadius_ * info_.patrolRadius_) continue;
+		if (distanceSq > info_.patrolRadius_ * info_.patrolRadius_) continue;
 
 		// 前回、前々回のノードは除外する
 		if (nextId == info_.prevNodeId_) continue;
@@ -580,4 +630,68 @@ void EnemyBase::ApplyModelRotation(void)
 
 	// モデルに回転をセット
 	MV1SetRotationXYZ(info_.modelId_, finalAngle);
+}
+
+void EnemyBase::GetComponents(void)
+{
+	// オーナーからTransform取得
+	transform_ = owner_->GetComponent<Transform>();
+
+	// オーナーからCapsuleCollider取得
+	capColl_ = owner_->GetComponent<CapsuleCollider>();
+
+	// オーナーからStageCollider取得
+	stageColl_ = owner_->GetComponent<StageCollider>();
+
+	// オーナーから3D描画コンポーネントを取得
+	auto render = owner_->GetComponent<Render3D>();
+
+	// オーナーからAnimationコンポーネントを取得
+	animation_ = owner_->GetComponent<Animation>();
+
+	if (!animation_)
+	{
+		// 存在しない場合のみ追加する安全対策
+		animation_ = owner_->AddComponent<Animation>();
+	}
+
+	if (render)
+	{
+		// モデルIDが存在する場合のみ取得
+		info_.modelId_ = render->GetHandle();
+	}
+}
+
+void EnemyBase::InitTableData(void)
+{
+	// 派生クラスから自分の種類を取得
+	ENEMY_TAG tag = GetTag();
+
+	// テーブルからデータを取得して設定
+	SetEnemyData(EnemyTable::Table.at(tag));
+
+	// タグを設定
+	info_.tag_ = tag;
+
+	// 移動方向を0にしておく
+	info_.moveDir_ = Math::VECTOR_ZERO;
+}
+
+void EnemyBase::InitNearestNode(void)
+{
+	// lock() して shared_ptr を一時的に取得
+	auto pathData = pathData_.lock();
+
+	// パスデータが無い敵（経路を使わない敵）はここで終わる
+	if (!pathData) return;
+
+	// ウェイポイントのリストを取得
+	const auto* wayList = pathData->GetWayList();
+	if (!wayList) return;
+
+	// 候補ノード用の領域を事前確保して再確保を防ぐ
+	info_.candidates_.reserve(wayList->size());
+
+	// 現在位置から一番近いノードを現在ノードとして登録
+	ResetToNearestNode();
 }
