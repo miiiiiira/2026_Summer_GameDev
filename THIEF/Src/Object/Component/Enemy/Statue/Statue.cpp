@@ -226,9 +226,9 @@ void Statue::SetAreaPos(VECTOR minPos, VECTOR maxPos)
 	maxAreaPos_ = maxPos;
 }
 
-void Statue::SetChasePos(VECTOR pos)
+void Statue::SetHomePos(VECTOR pos)
 {
-	chasePos_ = pos;
+	homePos_ = pos;
 }
 
 void Statue::ChangeState(STATE state)
@@ -336,10 +336,6 @@ void Statue::UpdateChase(void)
 	// プレイヤーの視野内に入っているか判定
 	bool isLooked = IsLookedByPlayer();
 
-	// 帰還先への障害物判定用の座標
-	VECTOR returnCheckPos = enemyPos;
-	returnCheckPos.y += RETURN_CHECK_OFFSET_Y;
-
 	// 視線チェック
 	// 敵の頭からプレイヤーの頭までの間に障害物がなければ見えている
 	bool isPlayerVisible = !CheckChaseLineCollision(enemyHead, playerHead, RAY_RADIUS);
@@ -393,106 +389,21 @@ void Statue::UpdateChase(void)
 	}
 	else
 	{
-		// 見られていないなら帰還開始
-		if (!isLooked)
+		// 見られている間は経路をクリアしておく
+		if (isLooked)
 		{
-			// 帰還先との間に障害物があるかチェック
-			if (CheckChaseLineCollision(returnCheckPos, chasePos_, RAY_RADIUS))
-			{
-				// 障害物あり
-				if (info_.path_.empty())
-				{
-					// 敵の位置から帰還先への経路を探す
-					StartPath(enemyPos, chasePos_);
-				}
-
-				if (IsPathFinished())
-				{
-					// 経路を最後までたどり終えたらクリアする
-					ClearPath();
-				}
-				else
-				{
-					// 次のノードへ向かって移動する
-					ChaseNode();
-				}
-			}
-			else
-			{
-				// 相手へのベクトルを計算
-				VECTOR diff = VSub(chasePos_, enemyPos);
-				diff.y = 0.0f;
-
-				// ベクトルの正規化で単位ベクトル（方向）を取得
-				info_.moveDir_ = VNorm(diff);
-
-				// 回転はY軸のみ
-				transform_->angle_.x = transform_->angle_.z = 0.0f;
-
-				// 帰還先までの距離を計算
-				float distToChasePos = GetDistanceSQ(enemyPos, chasePos_);
-
-				// 帰還先に十分近づいたら待機状態に戻る
-				if (distToChasePos <= RETURN_ARRIVE_DISTANCE_SQ)
-				{
-					ChangeState(STATE::IDLE);
-					return;
-				}
-			}
-		}
-		else
-		{
-			// 経路はクリアしておく
 			ClearPath();
+		}
 
-			if (isPlayerVisible)
-			{
-				// プレイヤーから直接見えているなら、その場で止まる
-				info_.moveDir_ = Math::VECTOR_ZERO;
-			}
-			// 帰還先との間に障害物があるかチェック
-			else if (CheckChaseLineCollision(returnCheckPos, chasePos_, RAY_RADIUS))
-			{
-				// 障害物あり
-				if (info_.path_.empty())
-				{
-					// 敵の位置から帰還先への経路を探す
-					StartPath(enemyPos, chasePos_);
-				}
-
-				if (IsPathFinished())
-				{
-					// 経路を最後までたどり終えたらクリアする
-					ClearPath();
-				}
-				else
-				{
-					// 次のノードへ向かって移動する
-					ChaseNode();
-				}
-			}
-			else
-			{
-				// 相手へのベクトルを計算
-				VECTOR diff = VSub(chasePos_, enemyPos);
-				diff.y = 0.0f;
-
-				// ベクトルの正規化で単位ベクトル（方向）を取得
-				info_.moveDir_ = VNorm(diff);
-
-				// 回転はY軸のみ
-				transform_->angle_.x = transform_->angle_.z = 0.0f;
-
-				// 帰還先までの距離を計算
-				float distToChasePos = GetDistanceSQ(enemyPos, chasePos_);
-
-				// 帰還先に十分近づいたら待機状態に戻る
-				if (distToChasePos <= RETURN_ARRIVE_DISTANCE_SQ)
-				{
-					ChangeState(STATE::IDLE);
-					return;
-				}
-			}
+		if (isLooked && isPlayerVisible)
+		{
+			// 見られていて、プレイヤーからも直接見えているなら、その場で止まる
+			info_.moveDir_ = Math::VECTOR_ZERO;
+		}
+		else if (ReturnToHomePos())
+		{
+			// 帰還先に着いて待機に戻ったので、ここで終わる
+			return;
 		}
 	}
 
@@ -558,4 +469,58 @@ bool Statue::IsLookedByPlayer(void) const
 	}
 
 	return false;
+}
+
+bool Statue::ReturnToHomePos(void)
+{
+	// 帰還先への障害物判定用の座標
+	VECTOR returnCheckPos = transform_->pos_;
+	returnCheckPos.y += RETURN_CHECK_OFFSET_Y;
+
+	// 帰還先との間に障害物がなければ、まっすぐ戻る
+	if (!CheckChaseLineCollision(returnCheckPos, homePos_, RAY_RADIUS))
+	{
+		return MoveStraightToHomePos();
+	}
+
+	// 障害物があるなら、経路をたどって戻る
+	if (info_.path_.empty())
+	{
+		// 敵の位置から帰還先への経路を探す
+		StartPath(transform_->pos_, homePos_);
+	}
+
+	if (IsPathFinished())
+	{
+		// 経路を最後までたどり終えたらクリアする
+		ClearPath();
+		return false;
+	}
+
+	// 次のノードへ向かって移動する
+	ChaseNode();
+	return false;
+}
+
+bool Statue::MoveStraightToHomePos(void)
+{
+	// 帰還先へのベクトルを計算
+	VECTOR diff = VSub(homePos_, transform_->pos_);
+	diff.y = 0.0f;
+
+	// ベクトルの正規化で単位ベクトルを取得
+	info_.moveDir_ = VNorm(diff);
+
+	// 回転はY軸のみ
+	transform_->angle_.x = transform_->angle_.z = 0.0f;
+
+	// 帰還先までの距離を計算
+	float distanceToHomePosSQ = GetDistanceSQ(transform_->pos_, homePos_);
+
+	// まだ遠ければ移動を続ける
+	if (distanceToHomePosSQ > RETURN_ARRIVE_DISTANCE_SQ) return false;
+
+	// 帰還先に十分近づいたら待機状態に戻る
+	ChangeState(STATE::IDLE);
+	return true;
 }

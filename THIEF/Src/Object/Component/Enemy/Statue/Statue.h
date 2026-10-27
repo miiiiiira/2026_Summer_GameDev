@@ -27,8 +27,8 @@ public:
 	// 特定のエリアの最大、最小値を設定
 	void SetAreaPos(VECTOR minPos, VECTOR maxPos);
 
-	// 追跡用の座標を設定
-	void SetChasePos(VECTOR pos);
+	// 帰還先の座標を設定
+	void SetHomePos(VECTOR pos);
 
 	// タグを返す
 	ENEMY_TAG GetTag(void) const override { return ENEMY_TAG::STATUE; }
@@ -52,8 +52,8 @@ private:
 	// エリアの最大値
 	VECTOR maxAreaPos_ = {};
 
-	// 追跡用の初期値座標
-	VECTOR chasePos_ = {};
+	// 帰還先の初期値座標
+	VECTOR homePos_ = {};
 
 	// 敵の状態
 	STATE state_ = STATE::NONE;
@@ -78,4 +78,10 @@ private:
 
 	// プレイヤーの画面内に映っているか
 	bool IsLookedByPlayer(void) const;
+
+	// 帰還先へ戻る（到着して待機に戻ったらtrue）
+	bool ReturnToHomePos(void);
+
+	// 帰還先へまっすぐ向かう（到着して待機に戻ったらtrue）
+	bool MoveStraightToHomePos(void);
 };

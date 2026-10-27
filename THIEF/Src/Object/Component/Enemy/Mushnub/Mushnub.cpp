@@ -138,9 +138,9 @@ void Mushnub::SetAreaPos(VECTOR minPos, VECTOR maxPos)
 	maxAreaPos_ = maxPos;
 }
 
-void Mushnub::SetChasePos(VECTOR pos)
+void Mushnub::SetHomePos(VECTOR pos)
 {
-	chasePos_ = pos;
+	homePos_ = pos;
 }
 
 void Mushnub::ChangeState(STATE state)
@@ -239,7 +239,7 @@ void Mushnub::UpdateChase(void)
 	{
 		// プレイヤーがエリア外に出たら、帰還先へ向かう
 		// 相手へのベクトルを計算
-		VECTOR diff = VSub(chasePos_, transform_->pos_);
+		VECTOR diff = VSub(homePos_, transform_->pos_);
 
 		// 高さは無視して水平方向のみで移動させる
 		diff.y = 0.0f;
@@ -251,10 +251,10 @@ void Mushnub::UpdateChase(void)
 		transform_->angle_.x = transform_->angle_.z = 0.0f;
 
 		// 帰還先までの距離を計算
-		float distToChasePos = GetDistanceSQ(transform_->pos_, chasePos_);
+		float distanceToHomePosSQ = GetDistanceSQ(transform_->pos_, homePos_);
 
 		// 帰還先に十分近づいたら待機状態に戻る
-		if (distToChasePos <= RETURN_THRESHOLD_DISTANCE_SQ)
+		if (distanceToHomePosSQ <= RETURN_THRESHOLD_DISTANCE_SQ)
 		{
 			ChangeState(STATE::IDLE);
 			return;

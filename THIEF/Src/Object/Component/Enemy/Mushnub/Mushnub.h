@@ -41,8 +41,8 @@ public:
 	// 特定のエリアの最大、最小値を設定
 	void SetAreaPos(VECTOR minPos, VECTOR maxPos);
 
-	// 追跡用の座標を設定
-	void SetChasePos(VECTOR pos);
+	// 帰還先の座標を設定
+	void SetHomePos(VECTOR pos);
 
 	// タグを返す
 	ENEMY_TAG GetTag(void) const override { return ENEMY_TAG::MUSHNUB; }
@@ -72,8 +72,8 @@ private:
 	// エリアの最大値
 	VECTOR maxAreaPos_ = {};
 
-	// 追跡用の初期値座標
-	VECTOR chasePos_ = {};
+	// 帰還先の初期値座標
+	VECTOR homePos_ = {};
 
 	// 状態遷移
 	void ChangeState(STATE state);

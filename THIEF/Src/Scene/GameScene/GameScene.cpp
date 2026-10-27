@@ -865,7 +865,7 @@ void GameScene::EnemyCreate(ENEMY_TAG tag, VECTOR pos, const EnemySpawnParam& pa
 	{
 		auto mushnub = enemyObj->AddComponent<Mushnub>();
 		mushnub->SetAreaPos(param.minAreaPos_, param.maxAreaPos_);
-		mushnub->SetChasePos(param.chasePos_);
+		mushnub->SetHomePos(param.chasePos_);
 		enemyComp = mushnub;
 		break;
 	}
@@ -886,7 +886,7 @@ void GameScene::EnemyCreate(ENEMY_TAG tag, VECTOR pos, const EnemySpawnParam& pa
 	{
 		auto statue = enemyObj->AddComponent<Statue>();
 		statue->SetAreaPos(param.minAreaPos_, param.maxAreaPos_);
-		statue->SetChasePos(param.chasePos_);
+		statue->SetHomePos(param.chasePos_);
 		enemyComp = statue;
 		break;
 	}
