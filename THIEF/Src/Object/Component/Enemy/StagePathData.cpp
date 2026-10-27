@@ -4,6 +4,12 @@
 #include "../../../Common/Math/Math.h"
 #include "StagePathData.h"
 
+namespace
+{
+	// ƒGƒbƒW‚Ì”»’è‚ÉŽg‚¤”¼Œa
+	constexpr float EDGE_CHECK_RADIUS = 50.0f;
+}
+
 StagePathData::StagePathData(int stageId)
 	:
 	stageId_(stageId)
@@ -87,10 +93,8 @@ void StagePathData::AddEdge(int fromId, int toId)
 	VECTOR posA = waypoints_[fromId].pos_;
 	VECTOR posB = waypoints_[toId].pos_;
 
-	float checkRadius = 50.0f; // “G‚Ì‘å‚«‚³‚É‰ž‚¶‚Ä’²®
-
 	// posA ‚©‚ç posB ‚Ö‚ÌŠÔ‚ÉáŠQ•¨‚ª‚ ‚é‚©”»’è
-	MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, posA, posB, checkRadius);
+	MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, posA, posB, EDGE_CHECK_RADIUS);
 
 	if (res.HitNum > 0)
 	{

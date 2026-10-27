@@ -37,6 +37,9 @@ namespace
 
 	// アニメーションの再生速度
 	constexpr float ANIM_SPEED = 0.2f;
+
+	// モデルのローカル回転
+	static constexpr float MODEL_FORWARD_OFFSET_DEG = 180.0f;
 }
 
 Mushnub::Mushnub(void)
@@ -84,7 +87,7 @@ void Mushnub::Init(void)
 		MV1SetScale(info_.modelId_, info_.scale_);
 
 		// 敵の向きを設定
-		info_.localAngle_ = { 0.0f, Math::Deg2Rad(180.0f), 0.0f };
+		info_.localAngle_ = { 0.0f, Math::Deg2Rad(MODEL_FORWARD_OFFSET_DEG), 0.0f };
 
 		// 前回の座標を現在の座標に設定
 		transform_->prevPos_ = transform_->pos_;

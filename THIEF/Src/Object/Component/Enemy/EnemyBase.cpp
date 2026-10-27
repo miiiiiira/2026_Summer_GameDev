@@ -34,6 +34,15 @@ namespace
 
 	// 最小移動速度の閾値
 	constexpr float MIN_MOVE_SPEED_THRESHOLD = 0.001f;
+
+	// 回転のLerpに使う割合
+	constexpr float ROTATE_LERP_RATE = 0.2f;
+
+	// 視野角
+	constexpr float VIEW_ANGLE_DEG = 30.0f;
+
+	// 接地を維持するために与える下向きの速度
+	static constexpr float GROUND_STICK_VELOCITY = 0.1f;
 }
 
 EnemyBase::EnemyBase(void)
@@ -219,7 +228,7 @@ void EnemyBase::DelayRotate(void)
 	float goal = atan2f(info_.moveDir_.x, info_.moveDir_.z);
 
 	// 常に最短経路で補間
-	transform_->angle_.y = Math::LerpAngle(transform_->angle_.y, goal, 0.2f);
+	transform_->angle_.y = Math::LerpAngle(transform_->angle_.y, goal, ROTATE_LERP_RATE);
 }
 
 void EnemyBase::LookPlayer(void)
@@ -304,10 +313,10 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 	float angle = acosf(dot);
 
 	// 敵の視野角
-	const float viewRad = Math::Deg2Rad(30.0f);
+	const float viewAngleRad = Math::Deg2Rad(VIEW_ANGLE_DEG);
 
 	// 視野内にいるか確認
-	if (angle <= viewRad)
+	if (angle <= viewAngleRad)
 	{
 		// プレイヤーの頭上位置
 		VECTOR playerOffsetStart = player_->GetCapsule()->GetStart();
@@ -325,10 +334,7 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 		MV1CollResultPolyDimTerminate(res);
 
 		// 障害物に当たらなかったら、目線が通っているとみなす
-		if (!hit)
-		{
-			return true;
-		}
+		if (!hit) return true;
 	}
 
 	// 視野外、または障害物に遮られている場合
@@ -340,8 +346,6 @@ bool EnemyBase::IsPlayerInArea(VECTOR minPos, VECTOR maxPos)
 	// Playerが存在しない場合は処理を中断
 	if (!player_) return false;
 
-	bool ret = false;
-
 	// プレイヤーの座標を取得
 	VECTOR playerPos = player_->GetTransform()->pos_;
 
@@ -351,12 +355,9 @@ bool EnemyBase::IsPlayerInArea(VECTOR minPos, VECTOR maxPos)
 	bool isInsideZ = (playerPos.z >= minPos.z && playerPos.z <= maxPos.z);
 
 	// プレイヤーがエリア内なら
-	if (isInsideX && isInsideY && isInsideZ)
-	{
-		ret = true;
-	}
+	if (isInsideX && isInsideY && isInsideZ) return true;
 
-	return ret;
+	return false;
 }
 
 void EnemyBase::ApplyGravity(void)
@@ -364,7 +365,6 @@ void EnemyBase::ApplyGravity(void)
 	// ステージコライダが無ければ処理を行わない
 	if (!stageColl_) return;
 
-	// Y座標へ反映
 	transform_->pos_.y += info_.velocityY_;
 
 	// 接地していなければ重力を加算する
@@ -379,8 +379,9 @@ void EnemyBase::ApplyGravity(void)
 	}
 	else
 	{
-		// 接地している場合は、少しだけ浮かせる
-		info_.velocityY_ = -0.1f;
+		// 接地中は、坂や段差で設置判定が途切れないよう
+		// わずかに下向きの速度を与える
+		info_.velocityY_ = -GROUND_STICK_VELOCITY;
 	}
 }
 

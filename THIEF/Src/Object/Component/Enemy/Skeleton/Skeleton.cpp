@@ -30,6 +30,9 @@ namespace
 
 	// 予測判定距離
 	constexpr float FORWARD_COLLISION_CHECK_DISTANCE = 30.0f;
+
+	// モデルのローカル回転
+	static constexpr float MODEL_FORWARD_OFFSET_DEG = 180.0f;
 }
 
 Skeleton::Skeleton(void)
@@ -73,7 +76,7 @@ void Skeleton::Init(void)
 		MV1SetScale(info_.modelId_, info_.scale_);
 
 		// 敵の向きを設定
-		info_.localAngle_ = { 0.0f, Math::Deg2Rad(180.0f), 0.0f };
+		info_.localAngle_ = { 0.0f, Math::Deg2Rad(MODEL_FORWARD_OFFSET_DEG), 0.0f };
 
 		// 前回の座標を現在の座標に設定
 		transform_->prevPos_ = transform_->pos_;
@@ -182,13 +185,12 @@ void Skeleton::ChangeScare(void)
 	switch (side_)
 	{
 	case ENEMY_SIDE::RIGHT:
-		info_.moveDir_ = { 0.0f, 0.0f, 1.0f };
+		info_.moveDir_ = Math::DIR_F;
 		break;
 
 	case ENEMY_SIDE::LEFT:
-		info_.moveDir_ = { 0.0f, 0.0f, -1.0f };
+		info_.moveDir_ = Math::DIR_B;
 		break;
-
 	}
 
 	// 移動スピードを設定

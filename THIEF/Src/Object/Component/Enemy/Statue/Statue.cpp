@@ -65,6 +65,9 @@ namespace
 
 	// ‘«‰¹SE‚ÌÄ¶ŠÔŠu
 	constexpr float SE_INTERVAL_CHASE = 1.0f;
+
+	// ƒ‚ƒfƒ‹‚Ìƒ[ƒJƒ‹‰ñ“]
+	static constexpr float MODEL_FORWARD_OFFSET_DEG = 180.0f;
 }
 
 Statue::Statue(void)
@@ -113,7 +116,7 @@ void Statue::Init(void)
 		MV1SetScale(info_.modelId_, info_.scale_);
 
 		// “G‚ÌŒü‚«‚ðÝ’è
-		info_.localAngle_ = { 0.0f, Math::Deg2Rad(180.0f), 0.0f };
+		info_.localAngle_ = { 0.0f, Math::Deg2Rad(MODEL_FORWARD_OFFSET_DEG), 0.0f };
 
 		// ‘O‰ñ‚ÌÀ•W‚ðŒ»Ý‚ÌÀ•W‚ÉÝ’è
 		transform_->prevPos_ = transform_->pos_;

@@ -87,6 +87,9 @@ namespace
 
 	// 移動判定の閾値
 	constexpr float MOVE_EPSILON = 0.001f;
+
+	// モデルのローカル回転
+	static constexpr float MODEL_FORWARD_OFFSET_DEG = 180.0f;
 }
 
 Yeti::Yeti(void)
@@ -155,7 +158,7 @@ void Yeti::Init(void)
 		MV1SetScale(info_.modelId_, info_.scale_);
 
 		// 敵の向きを設定
-		info_.localAngle_ = { 0.0f, Math::Deg2Rad(180.0f), 0.0f };
+		info_.localAngle_ = { 0.0f, Math::Deg2Rad(MODEL_FORWARD_OFFSET_DEG), 0.0f };
 
 		// 前回の座標を現在の座標に設定
 		transform_->prevPos_ = transform_->pos_;
@@ -536,7 +539,7 @@ void Yeti::UpdatePatrol(void)
 	}
 
 	// 移動しているか
-	bool isMoving = (VSize(info_.moveDir_) > 0.001f);
+	bool isMoving = (VSize(info_.moveDir_) > MOVE_EPSILON);
 
 	if (isMoving)
 	{
