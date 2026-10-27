@@ -55,7 +55,7 @@ namespace
 	constexpr float ATTACK_RANGE = 200.0f;
 
 	// 帰還先に到達したとみなす距離
-	constexpr float RETURN_ARRIVE_DISTANCE = 100.0f * 100.0f;
+	constexpr float RETURN_ARRIVE_DISTANCE_SQ = 100.0f * 100.0f;
 
 	// 移動しているかの判定閾値
 	constexpr float MOVE_EPSILON = 0.001f;
@@ -356,12 +356,12 @@ void Statue::UpdateChase(void)
 	VECTOR playerPos = player_->GetTransform()->pos_;
 
 	// 視線位置
-	VECTOR start = { 0.0f, EYE_OFFSET_Y, 0.0f };
-	VECTOR enemyHead = VAdd(transform_->pos_, start);
+	VECTOR eyeOffset = { 0.0f, EYE_OFFSET_Y, 0.0f };
+	VECTOR enemyHead = VAdd(enemyPos, eyeOffset);
 	VECTOR playerHead = player_->GetCapsule()->GetStart();
 
 	// プレイヤーとの距離
-	float distance = VSize(VSub(playerPos, transform_->pos_));
+	float distance = VSize(VSub(playerPos, enemyPos));
 
 	// プレイヤーの視野内に入っているか判定
 	bool isLooked = IsLookedByPlayer();
@@ -498,7 +498,7 @@ void Statue::UpdateChase(void)
 				float distToChasePos = GetDistanceSQ(enemyPos, chasePos_);
 
 				// 帰還先に十分近づいたら待機状態に戻る
-				if (distToChasePos <= RETURN_ARRIVE_DISTANCE)
+				if (distToChasePos <= RETURN_ARRIVE_DISTANCE_SQ)
 				{
 					ChangeState(STATE::IDLE);
 					return;
@@ -569,7 +569,7 @@ void Statue::UpdateChase(void)
 				float distToChasePos = GetDistanceSQ(enemyPos, chasePos_);
 
 				// 帰還先に十分近づいたら待機状態に戻る
-				if (distToChasePos <= RETURN_ARRIVE_DISTANCE)
+				if (distToChasePos <= RETURN_ARRIVE_DISTANCE_SQ)
 				{
 					ChangeState(STATE::IDLE);
 					return;

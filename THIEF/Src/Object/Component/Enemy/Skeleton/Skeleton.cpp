@@ -20,7 +20,7 @@ namespace
 	constexpr VECTOR SCARE_POS = { -4000.0f, 10.0f, 1393.0f };
 
 	// 特定のポイントからの反応距離
-	constexpr float TRIGGER_RANGE = 100.0f * 100.0f;
+	constexpr float TRIGGER_RANGE_SQ = 100.0f * 100.0f;
 
 	// アニメーションの再生速度
 	constexpr float ANIM_SPEED = 0.3f;
@@ -211,7 +211,7 @@ void Skeleton::UpdateIdle(void)
 	float distance = GetDistanceSQ(LOOK_POS, playerPos);
 
 	// プレイヤーが一定距離以内にいる場合
-	if (distance <= TRIGGER_RANGE)
+	if (distance <= TRIGGER_RANGE_SQ)
 	{
 		// 見つめる状態に変更
 		ChangeState(STATE::LOOK);
@@ -228,7 +228,7 @@ void Skeleton::UpdateLook(void)
 	float distance = GetDistanceSQ(SCARE_POS, playerPos);
 
 	// プレイヤーが一定距離以内にいる場合
-	if (distance <= TRIGGER_RANGE)
+	if (distance <= TRIGGER_RANGE_SQ)
 	{
 		// 怖がらせる状態に変更
 		ChangeState(STATE::SCARE);

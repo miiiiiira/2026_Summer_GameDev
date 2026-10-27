@@ -270,10 +270,10 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 	if (distance > radius * radius) return false;
 
 	// 高低差チェック
-	float pos = fabsf(playerPos.y - transform_->pos_.y);
+	float heightDiff = fabsf(playerPos.y - transform_->pos_.y);
 
 	// 高低差が閾値より大きければ、発見できないとする
-	if (pos > MAX_DETECTION_HEIGHT_DIFFERENCE) return false;
+	if (heightDiff > MAX_DETECTION_HEIGHT_DIFFERENCE) return false;
 
 	// 敵の正面方向ベクトルを計算
 	VECTOR dirEnemy = Math::VECTOR_ZERO;
@@ -304,10 +304,10 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 	float angle = acosf(dot);
 
 	// 敵の視野角
-	const float viweRad = Math::Deg2Rad(30.0f);
+	const float viewRad = Math::Deg2Rad(30.0f);
 
 	// 視野内にいるか確認
-	if (angle <= viweRad)
+	if (angle <= viewRad)
 	{
 		// プレイヤーの頭上位置
 		VECTOR playerOffsetStart = player_->GetCapsule()->GetStart();
@@ -387,17 +387,17 @@ void EnemyBase::ApplyGravity(void)
 void EnemyBase::SetMoveDirPatrol(void)
 {
 	// 次の目的地の座標を取得
-	VECTOR tmpPos = info_.nextWayPoint_;
+	VECTOR targetPos = info_.nextWayPoint_;
 
 	// Y座標を0にすることで、水平距離のみで移動方向を計算する
-	tmpPos.y = 0.0f;
+	targetPos.y = 0.0f;
 
 	// 敵の座標を取得
 	VECTOR pos = transform_->pos_;
 	pos.y = 0.0f;
 
 	// 移動方向を計算する
-	info_.moveDir_ = VNorm(VSub(tmpPos, pos));
+	info_.moveDir_ = VNorm(VSub(targetPos, pos));
 }
 
 void EnemyBase::ArriveNode(void)
