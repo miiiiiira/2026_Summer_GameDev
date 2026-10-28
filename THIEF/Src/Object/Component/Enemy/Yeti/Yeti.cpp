@@ -535,137 +535,29 @@ void Yeti::UpdateSurprise(void)
 
 void Yeti::UpdateChase(void)
 {
-	// 敵とプレイヤーの現在位置
-	VECTOR enemyPos = transform_->pos_;
-	VECTOR playerPos = player_->GetTransform()->pos_;
-
-	// プレイヤーとの距離
-	float distance = VSize(VSub(playerPos, enemyPos));
-
-	// 視線チェック
+	// プレイヤーが見えているか
 	bool isPlayerVisible = CanSeePlayer();
 
-	// プレイヤーを見つけたなら
-	if (isPlayerVisible)
+	// 見えていて攻撃範囲内なら、攻撃状態にする
+	float distance = VSize(VSub(player_->GetTransform()->pos_, transform_->pos_));
+
+	if (isPlayerVisible && distance <= ATTACK_RANGE)
 	{
-		// 見失いタイマーをリセット
-		info_.targetLostTimer_ = 0.0f;
-
-		// 攻撃範囲内にいたら、攻撃状態にする
-		if (distance <= ATTACK_RANGE)
-		{
-			ChangeState(STATE::ATTACK);
-			return;
-		}
-	}
-	else
-	{
-		// 見失いタイマーをカウントさせる
-		info_.targetLostTimer_ += SceneManager::GetInstance()->GetDeltaTime();
-	}
-
-	// タイマーがリミットより多くなったら、近くのノードを探して
-	// そこから巡回をさせる
-	if (info_.targetLostTimer_ >= LOST_LIMIT_TIME)
-	{
-		// 追跡用の経路をクリア
-		ClearPath();
-
-		// 現在位置に一番近いノードから巡回をやり直す
-		ResetToNearestNode();
-
-		// 待機状態に戻る
-		ChangeState(STATE::IDLE);
+		ChangeState(STATE::ATTACK);
 		return;
 	}
 
-	// タイマーを進める
-	chaseTimer_ += SceneManager::GetInstance()->GetDeltaTime();
+	// 長く見失ったら、巡回に戻る
+	if (UpdateTargetLost(isPlayerVisible)) return;
 
-	// 一定間隔ごとに経路の再探索を行う
-	if (chaseTimer_ >= CHASE_INTERVAL)
-	{
-		// 視線が通っておらず、まだ経路がない場合のみ探索する
-		if (!isPlayerVisible && info_.path_.empty())
-		{
-			// 敵の位置からプレイヤーの位置への経路を探す
-			StartPath(enemyPos, playerPos);
-		}
-		// 判定が終わったらタイマーをリセットする
-		chaseTimer_ = 0.0f;
-	}
+	// 経路をたどって追う。見失ったまま終点に着いたら待機に戻る
+	if (UpdateChaseRoute(isPlayerVisible)) return;
 
-	if (info_.path_.empty())
-	{
-		// ルートがないなら、直接追従
-		ChaseDirect();
-	}
-	else
-	{
-		// 範囲外チェック
-		// 最後のノードにたどり着いたかチェックする
-		if (IsPathFinished())
-		{
-			// 経路を使い切ったのでクリア
-			ClearPath();
-
-			if (!isPlayerVisible)
-			{
-				// プレイヤーの現在の位置に一番近いノードを取得
-				int playerNearNodeId = FindNearestNode(playerPos);
-
-				// lock() して shared_ptr を一時的に取得
-				auto pathData = pathData_.lock();
-				if (!pathData) return;
-
-				// 自分が今いる位置が、そのノードの近くであるか判定
-				const auto* wayList = pathData->GetWayList();
-				float distToPlayerNode = VSize(VSub(transform_->pos_, (*wayList)[playerNearNodeId].pos_));
-
-				// プレイヤーを見失っているかつ、
-				// プレイヤーに一番近いノードまで近づいているなら
-				if (distToPlayerNode < PLAYER_NODE_ARRIVE_DIST)
-				{
-					// 現在位置に一番近いノードから巡回をやり直す
-					ResetToNearestNode();
-
-					// 最後にプレイヤーのいた方向を向いてから待機する
-					LookPlayer();
-
-					ChangeState(STATE::IDLE);
-					return;
-				}
-			}
-		}
-		else
-		{
-			// ルートがあるなら、次のノードがあるか確認してからルート追従
-			ChaseNode();
-		}
-	}
-
-	// 移動処理
+	// 移動
 	Move();
 
-	if (IsMoving())
-	{
-		// 一定間隔で足音SEを鳴らす
-		seTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
-
-		if (seTimer_ <= 0.0f)
-		{
-			AudioManager::GetInstance()->PlaySE(
-							SoundID::SE_ENEMY_YETI_MOVE,
-							&transform_->pos_,
-							SE_RADIUS_MOVE);
-
-			seTimer_ = SE_INTERVAL_CHASE;
-		}
-	}
-	else
-	{
-		seTimer_ = 0.0f;
-	}
+	// 足音SEの更新
+	UpdateFootstep(SE_INTERVAL_CHASE);
 }
 
 void Yeti::UpdateAttack(void)
@@ -699,4 +591,122 @@ bool Yeti::CanSeePlayer(void)
 
 	// 頭同士の間に障害物がなければ見えている
 	return !CheckChaseLineCollision(enemyHead, playerHead, RAY_RADIUS_CHASE);
+}
+
+bool Yeti::UpdateTargetLost(bool isPlayerVisible)
+{
+	// 見えている間は見失いタイマーをリセット
+	if (isPlayerVisible)
+	{
+		info_.targetLostTimer_ = 0.0f;
+
+		return false;
+	}
+
+	// 見失っている時間をカウントする
+	info_.targetLostTimer_ += SceneManager::GetInstance()->GetDeltaTime();
+
+	if (info_.targetLostTimer_ < LOST_LIMIT_TIME) return false;
+
+	// 長く見失ったら、近くのノードから巡回をやり直す
+	ClearPath();
+	ResetToNearestNode();
+
+	ChangeState(STATE::IDLE);
+
+	return true;
+}
+
+void Yeti::UpdateRepathTimer(bool isPlayerVisible)
+{
+	// 一定間隔ごとに経路の再探索を行う
+	chaseTimer_ += SceneManager::GetInstance()->GetDeltaTime();
+
+	if (chaseTimer_ < CHASE_INTERVAL) return;
+
+	chaseTimer_ = 0.0f;
+
+	// 視線が通っておらず、まだ経路がない場合のみ探索する
+	if (isPlayerVisible || !info_.path_.empty()) return;
+
+	// 敵の位置からプレイヤーの位置への経路を探す
+	StartPath(transform_->pos_, player_->GetTransform()->pos_);
+}
+
+bool Yeti::UpdateChaseRoute(bool isPlayerVisible)
+{
+	// 必要なら経路を探し直す
+	UpdateRepathTimer(isPlayerVisible);
+
+	// ルートがないなら、直接追従
+	if (info_.path_.empty())
+	{
+		ChaseDirect();
+		return false;
+	}
+
+	// ルートが残っているなら、次のノードへ向かう
+	if (!IsPathFinished())
+	{
+		ChaseNode();
+		return false;
+	}
+
+	// 経路を使い切ったのでクリア
+	ClearPath();
+
+	// プレイヤーが見えているなら、追跡を続ける
+	if (isPlayerVisible) return false;
+
+	// プレイヤーに一番近いノードまで来ていなければ、追跡を続ける
+	if (!IsNearPlayerNode()) return false;
+
+	// 見失ったままプレイヤーのいた場所まで来たので、
+	// 最後にプレイヤーのいた方向を向いてから待機に戻る
+	ResetToNearestNode();
+	LookPlayer();
+
+	ChangeState(STATE::IDLE);
+
+	return true;
+}
+
+bool Yeti::IsNearPlayerNode(void)
+{
+	// lock() して shared_ptr を一時的に取得
+	auto pathData = pathData_.lock();
+
+	if (!pathData) return false;
+
+	// プレイヤーの現在の位置に一番近いノードを取得
+	const auto* wayList = pathData->GetWayList();
+
+	int playerNearNodeId = FindNearestNode(player_->GetTransform()->pos_);
+
+	// 自分がそのノードの近くにいるか判定
+	float distToPlayerNode = VSize(VSub(transform_->pos_, (*wayList)[playerNearNodeId].pos_));
+
+	return distToPlayerNode < PLAYER_NODE_ARRIVE_DIST;
+}
+
+void Yeti::UpdateFootstep(float interval)
+{
+	// 止まっている間はタイマーをリセット
+	if (!IsMoving())
+	{
+		seTimer_ = 0.0f;
+		return;
+	}
+
+	// 一定間隔で足音SEを鳴らす
+	seTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
+
+	if (seTimer_ > 0.0f) return;
+
+	AudioManager::GetInstance()->PlaySE(
+		SoundID::SE_ENEMY_YETI_MOVE,
+		&transform_->pos_,
+		SE_RADIUS_MOVE);
+
+	seTimer_ = interval;
 }

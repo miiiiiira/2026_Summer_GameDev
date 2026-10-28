@@ -95,4 +95,19 @@ private:
 
 	// プレイヤーが見えているかどうか
 	bool CanSeePlayer(void);
+
+	// 見失い時間の更新
+	bool UpdateTargetLost(bool isPlayerVisible);
+
+	// 一定間隔で経路を再探索
+	void UpdateRepathTimer(bool isPlayerVisible);
+
+	// 経路をたどって追う
+	bool UpdateChaseRoute(bool isPlayerVisible);
+
+	// プレイヤーに一番近いノードの近くまで来ているか
+	bool IsNearPlayerNode(void);
+
+	// 足音SEの更新
+	void UpdateFootstep(float interval);
 };
