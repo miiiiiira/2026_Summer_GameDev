@@ -146,6 +146,9 @@ void Statue::Update(void)
 		break;
 	}
 
+	// 重力処理
+	ApplyGravity();
+
 	// ステージとの衝突判定・押し出し計算
 	if (stageColl_)
 	{
@@ -346,9 +349,6 @@ void Statue::UpdateChase(void)
 
 	// 決定した移動方向に従って移動する
 	Move();
-
-	// 重力処理
-	ApplyGravity();
 
 	// 足音SEの更新
 	UpdateFootstep(isLooked);
