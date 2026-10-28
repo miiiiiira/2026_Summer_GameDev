@@ -95,19 +95,6 @@ void Shader::SetCurvatureAmount(float val, bool isLerpActive)
 	}
 }
 
-void Shader::SetGlitchProbability(float val, bool isLerpActive)
-{
-	// 目標値をセット
-	targetCtrParam_.glitchProbability = val;
-
-	// 補間しないなら
-	if (!isLerpActive)
-	{
-		// 強制的に値を同期させる
-		currentCtrParam_.glitchProbability = val;
-	}
-}
-
 bool Shader::IsDefault(void) const
 {
 	// 現在値とデフォルト値の差が0.0001未満ならデフォルト値とみなす
@@ -116,8 +103,7 @@ bool Shader::IsDefault(void) const
 		fabsf(currentCtrParam_.glitchAmount - DEFAULT_CTR.glitchAmount) < 0.0001f &&
 		fabsf(currentCtrParam_.curvatureAmount - DEFAULT_CTR.curvatureAmount) < 0.0001f &&
 		fabsf(currentCtrParam_.noisePower - DEFAULT_CTR.noisePower) < 0.0001f &&
-		fabsf(currentCtrParam_.rgbShift - DEFAULT_CTR.rgbShift) < 0.0001f &&
-		fabsf(currentCtrParam_.glitchProbability - DEFAULT_CTR.glitchProbability) < 0.0001f;
+		fabsf(currentCtrParam_.rgbShift - DEFAULT_CTR.rgbShift) < 0.0001f;
 }
 
 void Shader::MakeSquereVertex(void)

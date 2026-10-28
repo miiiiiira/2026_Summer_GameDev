@@ -16,7 +16,7 @@ public:
 		float curvatureAmount;		// 歪み度
 		float noisePower;			// ノイズの強度
 		float rgbShift;				// 色のずれ
-		float glitchProbability;	// この値を超えたらグリッチ発生（大きいほど発生しにくい）
+		float padding;
 	};
 
 	// デフォルト値の初期化
@@ -27,7 +27,6 @@ public:
 	static constexpr float DEFAULT_CURVATURE_AMOUNT = 0.01f;	// 歪み度
 	static constexpr float DEFAULT_NOISE_POWER = 0.1f;			// ノイズの強度
 	static constexpr float DEFAULT_RGB_SHIFT = 0.002f;			// 色のずれ
-	static constexpr float DEFAULT_GLITCH_PROBABILITY = 0.8f;	// この値を超えたらグリッチ発生（大きいほど発生しにくい）
 
 	static constexpr Ctr DEFAULT_CTR = { 
 					DEFAULT_SCANLINE_INTENSITY, 
@@ -37,7 +36,7 @@ public:
 					DEFAULT_CURVATURE_AMOUNT, 
 					DEFAULT_NOISE_POWER, 
 					DEFAULT_RGB_SHIFT, 
-					DEFAULT_GLITCH_PROBABILITY 
+					0.0f
 	};
 
 	// ダメージ時のビネットの鋭さ
@@ -79,9 +78,6 @@ public:
 	// 色のずれの変更
 	void SetRgbShift(float val) { targetCtrParam_.rgbShift = val; }
 
-	// グリッチの発生率の変更（補間なしで即座に切り替えたい場面があるため isLerpActive を用意）
-	void SetGlitchProbability(float val, bool isLerpActive = true);
-
 	// 全ての目標値をデフォルトに戻す
 	void ResetParameters(void) { targetCtrParam_ = DEFAULT_CTR; }
 
@@ -102,9 +98,8 @@ private:
 	// 補間の速さ(値が大きいほど素早く目標値に到達)
 	static constexpr float LERP_SPEED = 0.05f;
 
-	// シェーダの目標値と現在地を保持する構造体
+	// シェーダの目標値と現在値を保持する構造体
 	Ctr targetCtrParam_;	// 目標値
-
 	Ctr currentCtrParam_;	// 現在値
 
 	// 頂点情報

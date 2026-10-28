@@ -26,6 +26,8 @@ static const float GLITCH_WAVE_FREQ = 40.0f;        // グリッチ線の細かさ
 static const float GLITCH_WAVE_SPEED = 0.5f;        // グリッチの波が上下に流れる速度 
 static const float GLITCH_THRESHOLD = 0.95f;        // どの程度の波の強さでグリッチを有効にするか
 
+static const float UV_CENTER = 0.5f;
+
 // 走査線の密度
 static const float SCANLINE_DENSITY = 500.0f;
 
@@ -38,7 +40,7 @@ cbuffer cbParam : register(b1)
     float g_curvatureAmount;        // 曲面の歪み度
     float g_noisePower;             // ノイズの強度
     float g_rgbShift;               // 色のずれ
-    float g_glitchProbability;      // この値を超えたらグリッチ発生（大きいほど発生しにくい）
+    float g_padding;
 }
 
 // 描画するテクスチャ
@@ -53,7 +55,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     float2 uv = input.TexCoords0;
    
     // 中心を0.0にする
-    float2 center = (uv - 0.5f);
+    float2 center = (uv - UV_CENTER);
    
     // 中心からの距離を計算
     // * 2.0で0.0～1.0にする
@@ -67,7 +69,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     float distortion = (x * x + y * y) * g_curvatureAmount;
     
     // 曲面の歪み
-    uv = 0.5f + center * (1.0f + distortion);
+    uv = UV_CENTER + center * (1.0f + distortion);
     
     // グリッチ処理
     // --------------------------------------------
@@ -76,7 +78,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     float randomInterval = frac(sin(timeStep * TIME_RANDOM_SEED_A) * TIME_RANDOM_SEED_B);
     
     // グリッチが発生するかどうかを判定
-    if (randomInterval > g_glitchProbability)
+    if (randomInterval > GLITCH_PROBABILITY)
     {
         // グリッチ
         float glitch = sin(uv.y * GLITCH_WAVE_FREQ + g_timer * GLITCH_WAVE_SPEED);
@@ -95,23 +97,17 @@ float4 main(PS_INPUT input) : SV_TARGET
     // RGBずらし処理
     // --------------------------------------------
     // RGBずらし用の座標
-    // レッドチャンネルを右方向にずらすための座標
     float2 uvRed = uv + float2(g_rgbShift, 0.0f);
-    
-    // ブルーチャンネルを左方向にずらすための座標
     float2 uvBlue = uv - float2(g_rgbShift, 0.0f);
         
     // 左方向にずらす
     float r = g_SrcTexture.Sample(g_SrcSampler, uvRed).r;
     
-    // そのまま
-    float g = g_SrcTexture.Sample(g_SrcSampler, uv).g;
-    
     // 右方向にずらす
     float b = g_SrcTexture.Sample(g_SrcSampler, uvBlue).b;
         
     // RGBずらし後の色を設定
-    color = float4(r, g, b, 1.0f);
+    color = float4(r, color.g, b, 1.0f);
         
     // ビネット
     // --------------------------------------------
