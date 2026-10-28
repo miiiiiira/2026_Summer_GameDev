@@ -374,14 +374,17 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 	// 視野内にいるか確認
 	if (angle <= viewAngleRad)
 	{
-		// プレイヤーの頭上位置
+		// 各キャラの頭上位置
 		VECTOR playerOffsetStart = player_->GetCapsule()->GetStart();
-
-		// 敵の頭上位置
 		VECTOR enemyOffsetStart = capColl_->GetStart();
 
 		// 頭上同士を結ぶ直線上にステージがあるか
-		MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(stageId_, -1, enemyOffsetStart, playerOffsetStart, info_.radius_);
+		MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(
+										stageId_,
+										-1,
+										enemyOffsetStart,
+										playerOffsetStart, 
+										info_.radius_);
 
 		// 当たったかどうかを判定
 		bool hit = (res.HitNum > 0);
