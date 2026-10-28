@@ -143,7 +143,7 @@ void Yeti::InitPost(void)
 	if (useWeapon_ == nullptr)
 	{
 		useWeapon_ = new WeaponPunch();
-		useWeapon_->Init(WeaponBase::TYPE::PUNCH);
+		useWeapon_->Init();
 	}
 
 	// 初期ステートの設定

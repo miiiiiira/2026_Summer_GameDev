@@ -102,10 +102,10 @@ void Giggle::ChangeGiggling(void)
 
 void Giggle::UpdateIdle(void)
 {
-	// 待機状態の更新
+	// 待機時間を経過時間分減らす
 	info_.stateTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
 
-	// ステップタイマーが0以下になったら、考える状態に遷移
+	// ステップタイマーが0未満になったら、考える状態に遷移
 	if (info_.stateTimer_ < 0.0f)
 	{
 		// 待機終了
@@ -135,10 +135,10 @@ void Giggle::UpdateThink(void)
 
 void Giggle::UpdateGiggling(void)
 {
-	// 笑う状態の更新
+	// 笑う時間を経過時間分減らす
 	info_.stateTimer_ -= SceneManager::GetInstance()->GetDeltaTime();
 
-	// ステップタイマーが0以下になったら、待機状態に遷移
+	// ステップタイマーが0未満になったら、待機状態に遷移
 	if (info_.stateTimer_ < 0.0f)
 	{
 		// 笑う状態終了

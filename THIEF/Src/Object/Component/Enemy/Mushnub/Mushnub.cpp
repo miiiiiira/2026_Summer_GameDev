@@ -13,9 +13,6 @@ namespace
 	// 大きさ
 	constexpr VECTOR SCALE = { 0.3f, 0.3f, 0.3f };
 
-	// 視界（発見・追跡）の半径
-	constexpr float VIEW_RADIUS_DEFAULT = 1000.0f;
-
 	// 攻撃時ダメージ力
 	constexpr float ATTACK_DAMAGE_POWER = 10.0f;
 
@@ -51,9 +48,6 @@ Mushnub::~Mushnub(void)
 
 void Mushnub::InitParam(void)
 {
-	// 視認半径の初期値
-	info_.viewRadius_ = VIEW_RADIUS_DEFAULT;
-
 	// 攻撃時ダメージ力
 	info_.attackDamagePow_ = ATTACK_DAMAGE_POWER;
 }
@@ -87,15 +81,15 @@ void Mushnub::Update(void)
 	// 現在のステートに応じた更新処理を呼び分ける
 	switch (state_)
 	{
-	case Mushnub::STATE::IDLE:
+	case STATE::IDLE:
 		UpdateIdle();
 		break;
 
-	case Mushnub::STATE::SURPRISE:
+	case STATE::SURPRISE:
 		UpdateSurprise();
 		break;
 
-	case Mushnub::STATE::CHASE:
+	case STATE::CHASE:
 		UpdateChase();
 		break;
 
@@ -153,15 +147,15 @@ void Mushnub::ChangeState(STATE state)
 	// 遷移時に一度だけ行う初期化処理を呼び出す
 	switch (state_)
 	{
-	case Mushnub::STATE::IDLE:
+	case STATE::IDLE:
 		ChangeIdle();
 		break;
 
-	case Mushnub::STATE::SURPRISE:
+	case STATE::SURPRISE:
 		ChangeSurprise();
 		break;
 
-	case Mushnub::STATE::CHASE:
+	case STATE::CHASE:
 		ChangeChase();
 		break;
 
@@ -238,7 +232,7 @@ void Mushnub::UpdateChase(void)
 	else
 	{
 		// プレイヤーがエリア外に出たら、帰還先へ向かう
-		// 相手へのベクトルを計算
+		// 帰還先へのベクトルを計算
 		VECTOR diff = VSub(homePos_, transform_->pos_);
 
 		// 高さは無視して水平方向のみで移動させる
@@ -262,10 +256,10 @@ void Mushnub::UpdateChase(void)
 	}
 
 	// プレイヤーとの距離を計算
-	float distToPlayer = GetDistanceSQ(transform_->pos_, player_->GetTransform()->pos_);
+	float distToPlayerSQ = GetDistanceSQ(transform_->pos_, player_->GetTransform()->pos_);
 
 	// プレイヤーとの距離が保つべき距離以上なら、歩いて近づく
-	if (distToPlayer >= PLAYER_KEEP_DISTANCE_SQ)
+	if (distToPlayerSQ >= PLAYER_KEEP_DISTANCE_SQ)
 	{
 		animation_->Play(static_cast<int>(ANIM_TYPE::WALK), true);
 

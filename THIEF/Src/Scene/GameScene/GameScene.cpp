@@ -625,7 +625,7 @@ void GameScene::EnemyCreateStage1(void)
 	EnemySpawnParam mushParam;
 	mushParam.minAreaPos_ = { -2150.0f, 1.0f, 5400.0f };
 	mushParam.maxAreaPos_ = { -560.0f, 700.0f, 7800.0f };
-	mushParam.chasePos_ = { -1506.83f, 10.0f, 6513.62f };
+	mushParam.homePos_ = { -1506.83f, 10.0f, 6513.62f };
 	EnemyCreate(ENEMY_TAG::MUSHNUB, { -1526.83f, 10.0f, 5500.0f }, mushParam);
 }
 
@@ -640,7 +640,7 @@ void GameScene::EnemyCreateStage2(void)
 	EnemySpawnParam statueParam;
 	statueParam.minAreaPos_ = { -7690.0f, 1.0f, 3450.0f };
 	statueParam.maxAreaPos_ = { -5870.0f, 1110.0f, 5920.0f };
-	statueParam.chasePos_ = { -7444.0f, 40.0f, 3570.0f };
+	statueParam.homePos_ = { -7444.0f, 40.0f, 3570.0f };
 	EnemyCreate(ENEMY_TAG::STATUE, { -7444.0f, 10.0f, 3570.0f }, statueParam);
 
 	float startX = -4000.0f;
@@ -688,19 +688,19 @@ void GameScene::EnemyCreateStage3(void)
 	EnemySpawnParam mush1Param;
 	mush1Param.minAreaPos_ = { 6547.0f, 1.0f, -609.0f };
 	mush1Param.maxAreaPos_ = { 7688.0f, 700.0f, 882.0f };
-	mush1Param.chasePos_ = { 6996.0f, 10.0f, 623.0f };
+	mush1Param.homePos_ = { 6996.0f, 10.0f, 623.0f };
 	EnemyCreate(ENEMY_TAG::MUSHNUB, { 6996.0f, 10.0f, 623.0f }, mush1Param);
 
 	EnemySpawnParam mush2Param;
 	mush2Param.minAreaPos_ = { 3458.0f, 1.0f, 2207.0f };
 	mush2Param.maxAreaPos_ = { 5081.0f, 700.0f, 3695.0f };
-	mush2Param.chasePos_ = { 3606.0f, 10.0f, 2610.0f };
+	mush2Param.homePos_ = { 3606.0f, 10.0f, 2610.0f };
 	EnemyCreate(ENEMY_TAG::MUSHNUB, { 3606.0f, 10.0f, 2610.0f }, mush2Param);
 
 	EnemySpawnParam statueParam;
 	statueParam.minAreaPos_ = { -1200.0f, 1.0f, 4450.0f };
 	statueParam.maxAreaPos_ = { 250.0f, 700.0f, 5810.0f };
-	statueParam.chasePos_ = { 45.0f, 40.0f, 4680.0f };
+	statueParam.homePos_ = { 45.0f, 40.0f, 4680.0f };
 	EnemyCreate(ENEMY_TAG::STATUE, { 45.0f, 10.0f, 4680.0f }, statueParam);
 }
 
@@ -865,7 +865,7 @@ void GameScene::EnemyCreate(ENEMY_TAG tag, VECTOR pos, const EnemySpawnParam& pa
 	{
 		auto mushnub = enemyObj->AddComponent<Mushnub>();
 		mushnub->SetAreaPos(param.minAreaPos_, param.maxAreaPos_);
-		mushnub->SetHomePos(param.chasePos_);
+		mushnub->SetHomePos(param.homePos_);
 		enemyComp = mushnub;
 		break;
 	}
@@ -886,7 +886,7 @@ void GameScene::EnemyCreate(ENEMY_TAG tag, VECTOR pos, const EnemySpawnParam& pa
 	{
 		auto statue = enemyObj->AddComponent<Statue>();
 		statue->SetAreaPos(param.minAreaPos_, param.maxAreaPos_);
-		statue->SetHomePos(param.chasePos_);
+		statue->SetHomePos(param.homePos_);
 		enemyComp = statue;
 		break;
 	}
@@ -897,9 +897,6 @@ void GameScene::EnemyCreate(ENEMY_TAG tag, VECTOR pos, const EnemySpawnParam& pa
 
 	// 敵の種類に応じたコンポーネントがなければ終わる
 	if (enemyComp == nullptr) return;
-
-	// テーブルのデータをEnemyBaseに渡す
-	enemyComp->SetEnemyData(enemyData->second);
 
 	// 当たり判定用のモデルがあれば使い、
 	// 無ければ表示用のモデルを使う

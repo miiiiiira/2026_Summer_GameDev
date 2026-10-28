@@ -1,7 +1,6 @@
 #include <fstream>
 #include <sstream>
 
-#include "../../../Common/Math/Math.h"
 #include "StagePathData.h"
 
 namespace

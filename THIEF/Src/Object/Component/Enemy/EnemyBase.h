@@ -17,6 +17,7 @@ class StagePathData;
 class EnemyBase : public Component
 {
 public:
+
 	// コンストラクタ
 	EnemyBase(void);
 
@@ -32,9 +33,6 @@ public:
 
 	// パスデータをセット
 	void SetPathData(int stageId, std::shared_ptr<StagePathData> pathData);
-
-	// 敵のデータをセット
-	void SetEnemyData(const EnemyData& data);
 
 	// 生存しているかどうか
 	bool IsAlive(void) const { return info_.isAlive_; }
@@ -62,9 +60,6 @@ public:
 
 	// モデルIDを返す
 	int GetModelId(void) const { return info_.modelId_; }
-
-	// 座標をセットする
-	void SetPos(VECTOR pos);
 
 protected:
 
@@ -109,7 +104,7 @@ protected:
 	// 移動方向に応じた遅延回転
 	void DelayRotate(void);
 
-	// プレイヤー追従処理
+	// プレイヤーの方向を見る
 	void LookPlayer(void);
 
 	// 移動処理
@@ -133,7 +128,7 @@ protected:
 	// 次のノードを選ぶ
 	int SelectNextNode(void);
 
-	// ノード到着時
+	// 到着したノードから次の目的地を決める
 	void ArriveNode(void);
 
 	// 一番近いノードを探す
@@ -145,7 +140,7 @@ protected:
 	// 直接追従
 	void ChaseDirect(void);
 
-	// 追従用の線分かステージと当たっているかどうか
+	// 追従用の線分がステージと当たっているかどうか
 	bool CheckChaseLineCollision(VECTOR startPos, VECTOR endPos, float radius);
 
 	// 現在の向きにローカル回転補正を足して、モデルに反映
@@ -160,7 +155,7 @@ protected:
 	// 2地点の最寄りノード間で経路探索を始める
 	void StartPath(VECTOR startPos, VECTOR goalPos);
 
-	// 経路尾をクリアする
+	// 経路をクリアする
 	void ClearPath(void);
 
 private:
@@ -170,4 +165,7 @@ private:
 
 	// テーブルからの共通データ設定
 	void InitTableData(void);
+
+	// 敵のデータをセット
+	void SetEnemyData(const EnemyData& data);
 };

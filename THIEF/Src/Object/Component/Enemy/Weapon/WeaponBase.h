@@ -5,20 +5,13 @@ class WeaponBase
 {
 public:
 
-	// 武器種別
-	enum class TYPE
-	{
-		PUNCH,
-		MAX,
-	};
-
 	// コンストラクタ
 	WeaponBase(void);
 
 	// デストラクタ
 	virtual ~WeaponBase(void);
 
-	void Init(TYPE type);			// 初期化
+	void Init(void);				// 初期化
 	virtual void Update(void);		// 更新
 	virtual void Draw(void) = 0;	// 描画
 	virtual void Release(void) = 0;	// 解放
@@ -39,9 +32,6 @@ public:
 	void SetAlive(bool isAlive);
 
 protected:
-
-	// 武器種別
-	TYPE type_ = TYPE::MAX;
 
 	// 座標
 	VECTOR pos_ = {};

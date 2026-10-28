@@ -8,7 +8,7 @@ public:
 	// “G‚Ìó‘Ô
 	enum class STATE
 	{
-		NONE,		// –³‚µ
+		NONE,		// ‚È‚µ
 		IDLE,		// ‘Ò‹@
 		SURPRISE,	// Œ©‚Â‚¯‚é
 		CHASE,		// ’Ç‚¢‚©‚¯‚é

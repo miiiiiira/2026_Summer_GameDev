@@ -27,11 +27,11 @@ enum class ENEMY_SIDE
 // 敵生成時のオプションパラメータ
 struct EnemySpawnParam
 {
-	VECTOR minAreaPos_ = {};	// エリア最小座標（Mushnub, Statue用）
-	VECTOR maxAreaPos_ = {};	// エリア最大座標（Mushnub, Statue用）
-	VECTOR chasePos_ = {};		// 初期追跡・巡回座標
+	VECTOR minAreaPos_ = {};	// エリア最小座標
+	VECTOR maxAreaPos_ = {};	// エリア最大座標
+	VECTOR homePos_ = {};		// 帰還先
 	VECTOR angle_ = {};			// 初期角度
-	ENEMY_SIDE side_ = ENEMY_SIDE::RIGHT;	// 左右の指定（Skeleton用）
+	ENEMY_SIDE side_ = ENEMY_SIDE::RIGHT;	// 左右の指定
 };
 
 // 敵のデータ
@@ -41,8 +41,6 @@ struct EnemyInfo
 	int modelId_ = -1;						// モデルのハンドル
 	VECTOR scale_ = { 1.0f, 1.0f, 1.0f };	// 拡大率
 	VECTOR localAngle_ = {};				// モデルごとのローカル回転補正値
-
-	ENEMY_TAG tag_ = ENEMY_TAG::MAX;		// 敵のタグ
 
 	// ステータス
 	float moveSpeed_ = 0.0f;		// 現在の移動速度

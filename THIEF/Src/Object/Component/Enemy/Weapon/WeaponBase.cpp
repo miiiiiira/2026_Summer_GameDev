@@ -8,11 +8,8 @@ WeaponBase::~WeaponBase(void)
 {
 }
 
-void WeaponBase::Init(TYPE type)
+void WeaponBase::Init(void)
 {
-	// •Šíí•Ê‚ğİ’è
-	type_ = type;
-
 	// ‰Šú‚Í¶‘¶‚µ‚Ä‚¢‚È‚¢
 	isAlive_ = false;
 
@@ -36,6 +33,6 @@ void WeaponBase::SetAlive(bool isAlive)
 
 void WeaponBase::Move(void)
 {
-	// ˆÚ“®ˆ—iˆê•û•ûŒüj
+	// ˆÚ“®ˆ—
 	pos_ = VAdd(pos_, VScale(moveDir_, speed_));
 }

@@ -17,9 +17,6 @@
 
 namespace
 {
-	// ジャンプ力
-	constexpr float JUMP_POW = 25.0f;
-
 	// 重力加速度
 	constexpr float GRAVITY = -1.98f;
 
@@ -92,13 +89,13 @@ void EnemyBase::Draw3D(void)
 
 	// 当たり判定用のカプセル大きさ確認
 	DrawCapsule3D(
-			start,
-			end,
-			info_.radius_,
-			8,
-			0xff0000,
-			0xff0000,
-			false);
+		start,
+		end,
+		info_.radius_,
+		8,
+		0xff0000,
+		0xff0000,
+		false);
 
 #endif // _DEBUG
 }
@@ -120,11 +117,6 @@ void EnemyBase::SetEnemyData(const EnemyData& data)
 	info_.startOffset_ = data.capStartOffset_;	// カプセルコライダーの開始位置オフセット
 	info_.endOffset_ = data.capEndOffset_;		// カプセルコライダーの終了位置オフセット
 	info_.radius_ = data.capRadius_;			// カプセルコライダーの半径
-}
-
-void EnemyBase::SetPos(VECTOR pos)
-{
-	transform_->pos_ = pos;
 }
 
 void EnemyBase::AddAnimationAll(int animNum, float animSpeed)
@@ -195,7 +187,7 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 	// 経路情報をクリア
 	info_.path_.clear();
 
-	// 全て同じ値で埋め尽くす
+	// 全ノードのコストを最大値、親を -1で初期化
 	std::vector<float> minCosts(wayList->size(), FLT_MAX);
 	std::vector<int> parentNodes(wayList->size(), -1);
 
@@ -203,7 +195,7 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 	minCosts[startNodeId] = 0.0f;
 
 	// 優先度付きキューを使用して、コストの小さい順に探索する
-	std::priority_queue <std::pair<float, int>,
+	std::priority_queue<std::pair<float, int>,
 						std::vector<std::pair<float, int>>,
 						std::greater<std::pair<float, int>>> que;
 
@@ -223,10 +215,10 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 		// もし取り出したIDがゴールと一緒なら抜ける
 		if (currentNodeId == goalNodeId) break;
 
-		// 取り出したコストが、すでに minCosts_ にある最小コストより大きければスキップ
+		// 取り出したコストが、すでに minCosts にある最小コストより大きければスキップ
 		if (currentCost > minCosts[currentNodeId]) continue;
 
-		// 繋がっているエッジ
+		// 現在のノードからつながっているエッジを調べる
 		for (const auto& edge : (*edgeList)[currentNodeId])
 		{
 			// 隣接しているノードIDを取得
@@ -254,17 +246,18 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 	while (i != -1)
 	{
 		// 逆順にたどった経路をinfo_.path_に追加する
-		StagePathData::Edge path;
+		StagePathData::Edge path = {};
 		path.way_.id_ = (*wayList)[i].id_;
 		path.way_.pos_ = (*wayList)[i].pos_;
 		path.cost_ = minCosts[i];
 
 		info_.path_.push_back(path);
 
-		i = parentNodes[i]; // 次の親ノードへ進む
+		// 次の親ノードへ進む
+		i = parentNodes[i];
 	}
 
-	// 逆にする
+	// ゴールからたどったので、スタートからの順番に並べ替える
 	std::reverse(info_.path_.begin(), info_.path_.end());
 }
 
@@ -301,7 +294,8 @@ void EnemyBase::LookPlayer(void)
 	info_.moveDir_ = VNorm(diff);
 
 	// 回転はY軸のみ
-	transform_->angle_.x = transform_->angle_.z = 0.0f;
+	transform_->angle_.x = 0.0f;
+	transform_->angle_.z = 0.0f;
 }
 
 void EnemyBase::Move(void)
@@ -325,10 +319,10 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 	VECTOR playerPos = player_->GetTransform()->pos_;
 
 	// 敵とプレイヤーの直線距離をチェック
-	float distanceSq = GetDistanceSQ(playerPos, transform_->pos_);
+	float distanceSQ = GetDistanceSQ(playerPos, transform_->pos_);
 
 	// 半径の二乗と比較して、範囲外ならfalseを返す
-	if (distanceSq > radius * radius) return false;
+	if (distanceSQ > radius * radius) return false;
 
 	// 高低差チェック
 	float heightDiff = fabsf(playerPos.y - transform_->pos_.y);
@@ -367,29 +361,14 @@ bool EnemyBase::CheckPlayerDiscovery(float radius)
 	// 敵の視野角
 	const float viewAngleRad = Math::Deg2Rad(VIEW_ANGLE_DEG);
 
-	// 視野内にいるか確認
+	// 視野内にいて、頭上同士の間に障害物がなければ発見
 	if (angle <= viewAngleRad)
 	{
 		// 各キャラの頭上位置
-		VECTOR playerOffsetStart = player_->GetCapsule()->GetStart();
-		VECTOR enemyOffsetStart = capColl_->GetStart();
+		VECTOR playerHead = player_->GetCapsule()->GetStart();
+		VECTOR enemyHead = capColl_->GetStart();
 
-		// 頭上同士を結ぶ直線上にステージがあるか
-		MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(
-										stageId_,
-										-1,
-										enemyOffsetStart,
-										playerOffsetStart, 
-										info_.radius_);
-
-		// 当たったかどうかを判定
-		bool hit = (res.HitNum > 0);
-
-		// 結果を解放
-		MV1CollResultPolyDimTerminate(res);
-
-		// 障害物に当たらなかったら、目線が通っているとみなす
-		if (!hit) return true;
+		if (!CheckChaseLineCollision(enemyHead, playerHead, info_.radius_)) return true;
 	}
 
 	// 視野外、または障害物に遮られている場合
@@ -430,11 +409,13 @@ void EnemyBase::ApplyGravity(void)
 
 		// 最大落下速度
 		if (info_.velocityY_ < MAX_FALL)
+		{
 			info_.velocityY_ = MAX_FALL;
+		}
 	}
 	else
 	{
-		// 接地中は、坂や段差で設置判定が途切れないよう
+		// 接地中は、坂や段差で接地判定が途切れないよう
 		// わずかに下向きの速度を与える
 		info_.velocityY_ = -GROUND_STICK_VELOCITY;
 	}
@@ -495,7 +476,7 @@ int EnemyBase::SelectNextNode(void)
 		return info_.currentNodeId_;
 	}
 
-	 // 次に向かうノードの候補
+	// 次に向かうノードの候補
 	std::vector<int> candidates;
 
 	// 現在のノードに接続されているエッジをループする
@@ -504,11 +485,11 @@ int EnemyBase::SelectNextNode(void)
 		// 接続されているノードIDを取得
 		int nextId = edge.way_.id_;
 
-		// 接続されているノードの座標を取得
-		float distanceSq = GetDistanceSQ(edge.way_.pos_, transform_->pos_);
+		// 接続されているノードとの距離を計算
+		float distanceSQ = GetDistanceSQ(edge.way_.pos_, transform_->pos_);
 
 		// 敵の座標から半径以内に無いポイントは除外
-		if (distanceSq > info_.patrolRadius_ * info_.patrolRadius_) continue;
+		if (distanceSQ > info_.patrolRadius_ * info_.patrolRadius_) continue;
 
 		// 前回、前々回のノードは除外する
 		if (nextId == info_.prevNodeId_) continue;
@@ -606,11 +587,15 @@ void EnemyBase::ChaseDirect(void)
 	LookPlayer();
 }
 
-bool EnemyBase::CheckChaseLineCollision(VECTOR pPos, VECTOR ePos, float radius)
+bool EnemyBase::CheckChaseLineCollision(VECTOR startPos, VECTOR endPos, float radius)
 {
 	// 線分とモデルの衝突判定
-	MV1_COLL_RESULT_POLY_DIM res =
-		MV1CollCheck_Capsule(stageId_, -1, pPos, ePos, radius);
+	MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(
+		stageId_,
+		-1,
+		startPos,
+		endPos,
+		radius);
 
 	// 当たったかどうかを判定
 	bool isHit = (res.HitNum > 0);
@@ -709,9 +694,6 @@ void EnemyBase::InitTableData(void)
 
 	// テーブルからデータを取得して設定
 	SetEnemyData(EnemyTable::Table.at(tag));
-
-	// タグを設定
-	info_.tag_ = tag;
 
 	// 移動方向を0にしておく
 	info_.moveDir_ = Math::VECTOR_ZERO;
