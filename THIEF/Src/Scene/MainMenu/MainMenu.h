@@ -1,8 +1,7 @@
 #pragma once
-
+#include <memory>
+#include <vector>
 #include "../SceneBase.h"
-#include <DxLib.h>
-
 
 class Confirm;
 
@@ -20,10 +19,12 @@ public:
 
 	struct Item
 	{
-		MENU type;
-		int graphHandle;
-		int x, y;
-		int sizeX, sizeY;
+		MENU type = MENU::NONE;
+		int graphHandle = -1;
+		int x = 0;
+		int y = 0;
+		int sizeX = 0;
+		int sizeY = 0;
 	};
 
 	MainMenu(void);				// コンストラクタ
@@ -38,47 +39,32 @@ public:
 
 private:
 
-	static constexpr int TITLE_POS_X = 50;
-	static constexpr int TITLE_POS_Y = 50;
+	// 確認画面
+	std::shared_ptr<Confirm> confirm_ = nullptr;
 
-	// 画像サイズ
-	static constexpr int IMAGE_SIZE_X = 200;
-	static constexpr int IMAGE_SIZE_Y = 50;
+	// メインメニューのタイトルロゴ
+	int handle_ = -1;
 
-	// PLAY
-	static constexpr int PLAY_POS_X = 80;
-	static constexpr int PLAY_POS_Y = 250;
+	// メニューボタンの情報を格納する配列
+	std::vector<Item> menuButtons_ = {};
 
-	// OPTION
-	static constexpr int OPTION_POS_X = 80;
-	static constexpr int OPTION_POS_Y = 330;
-
-	// QUIT
-	static constexpr int QUIT_POS_X = 80;
-	static constexpr int QUIT_POS_Y = 550;
-
-	void ChangeSelect(MENU menu);
-
-	// メニュー選択時の処理
-	void UpdatePlay(void);
-	void UpdateOption(void);
-	void UpdateQuit(void);
-
-private:
-
-	std::shared_ptr<Confirm> confirm_;
-
-	int handle_;
-	std::vector<Item> menuButtons_;		// メニューボタンの情報を格納する配列
-
-	MENU currentMenu_;					// 現在選択しているメニュー
+	// 現在選択しているメニュー
+	MENU currentMenu_ = MENU::NONE;
 
 	// 選択処理
-	void SelectUpgrade(void);
+	void UpdateSelect(void);
 
 	// マウス選択
 	void MouseSelect(void);
 
 	// パッド選択
 	void PadSelect(void);
+
+	// メニューの選択を変更する
+	void ChangeSelect(MENU menu);
+
+	// メニュー選択時の処理
+	void UpdatePlay(void);
+	void UpdateOption(void);
+	void UpdateQuit(void);
 };

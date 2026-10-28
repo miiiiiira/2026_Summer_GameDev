@@ -1,8 +1,5 @@
 #include <memory>
 #include <vector>
-
-#include "MainMenu.h"
-
 #include "../../Manager/Input/InputManager.h"
 #include "../../Manager/Audio/AudioManager.h"
 #include "../../Common/FrameRenderer/FrameRenderer.h"
@@ -10,17 +7,42 @@
 #include "../../Common/Collision/Collision.h"
 #include "../../Application.h"
 #include "../Confirm/Confirm.h"
-#include "../GameScene/GameScene.h"
 #include "../DebugScene.h"
 #include "../Tutorial/TutorialScene.h"
 #include "../Option/OptionScene.h"
 #include "../TitleScene/TitleScene.h"
 #include "../LightSelectScene/LightSelectScene.h"
 
+#include "MainMenu.h"
+
+namespace
+{
+	// メインメニューのタイトル画像の位置
+	constexpr int TITLE_POS_X = 50;
+	constexpr int TITLE_POS_Y = 50;
+
+	// 画像サイズ
+	constexpr int IMAGE_SIZE_X = 200;
+	constexpr int IMAGE_SIZE_Y = 50;
+
+	// PLAY
+	constexpr int PLAY_POS_X = 80;
+	constexpr int PLAY_POS_Y = 250;
+
+	// OPTION
+	constexpr int OPTION_POS_X = 80;
+	constexpr int OPTION_POS_Y = 330;
+
+	// QUIT
+	constexpr int QUIT_POS_X = 80;
+	constexpr int QUIT_POS_Y = 550;
+
+	// 背景色
+	constexpr unsigned int BACKGROUND_COLOR = 0x000000;
+}
+
 MainMenu::MainMenu(void)
 {
-	handle_ = -1;
-	confirm_ = nullptr;
 }
 
 MainMenu::~MainMenu(void)
@@ -47,14 +69,13 @@ void MainMenu::Load(void)
 
 	// PLAY画像
 	menuButtons_.push_back({ MENU::PLAY, LoadGraph((Application::PATH_IMAGE + "MainMenu/play.png").c_str()),
-								PLAY_POS_X, PLAY_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
+						PLAY_POS_X, PLAY_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
 	// OPTION画像
 	menuButtons_.push_back({ MENU::OPTION, LoadGraph((Application::PATH_IMAGE + "Common/option.png").c_str()),
-							OPTION_POS_X, OPTION_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
+						OPTION_POS_X, OPTION_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
 	// QUIT画像
 	menuButtons_.push_back({ MENU::QUIT, LoadGraph((Application::PATH_IMAGE + "Common/quit.png").c_str()),
 						QUIT_POS_X, QUIT_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
-
 }
 
 void MainMenu::LoadEnd(void)
@@ -65,24 +86,24 @@ void MainMenu::LoadEnd(void)
 void MainMenu::Update(void)
 {
 #ifdef _DEBUG
-	// Lキーを押したらデバッグシーン
+	// デバッグシーン
 	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DEBUG))
 	{
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<DebugScene>(),DEBUG, true);
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<DebugScene>(), DEBUG, true);
 		return;
 	}
 
-	// Lキーを押したらデバッグシーン
+	// チュートリアルシーン
 	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::TUTORIAL))
 	{
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TutorialScene>(),TUTORIAL, true);
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TutorialScene>(), TUTORIAL, true);
 		return;
 	}
 
-	// Lキーを押したらデバッグシーン
+	// 色選択シーン
 	if (InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::COLOR_CHANGE))
 	{
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<LightSelectScene>(),LIGHT_SELECT, true);
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<LightSelectScene>(), LIGHT_SELECT, true);
 		return;
 	}
 #endif //_DEBUG
@@ -90,14 +111,14 @@ void MainMenu::Update(void)
 	// メニューからタイトルに戻すボタン
 	if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::CANCEL) || InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::CANCEL))
 	{
-		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(),TITLE, true);
+		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(), TITLE, true);
 		return;
 	}
 
 	// 選択処理
-	SelectUpgrade();
+	UpdateSelect();
 
-	// マウスを左クリックしなかったら、処理を行わない
+	// 決定ボタンが押されなかったら、処理を行わない
 	if (!InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::DECIDE) && !InputManager::GetInstance()->IsDebugActionDown(INPUT_INFO::DEBUG_ACTION::DECIDE)) return;
 
 	// メニューが選択されていない場合、処理を行わない
@@ -120,12 +141,11 @@ void MainMenu::Update(void)
 
 	// ボタン押下のSEを流す
 	AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_1);
-
 }
 
 void MainMenu::Draw(void)
 {
-	DrawBox(0, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, 0x000000, true);
+	DrawBox(0, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, BACKGROUND_COLOR, true);
 	DrawGraph(TITLE_POS_X, TITLE_POS_Y, handle_, true);
 
 	for (const auto& button : menuButtons_)
@@ -157,7 +177,6 @@ void MainMenu::ChangeSelect(MENU menu)
 	currentMenu_ = menu;
 }
 
-
 void MainMenu::UpdatePlay(void)
 {
 	confirm_->ChangeType(Confirm::TYPE::TUTORIAL);
@@ -176,7 +195,7 @@ void MainMenu::UpdateQuit(void)
 	SceneManager::GetInstance()->PushScene(confirm_);
 }
 
-void MainMenu::SelectUpgrade(void)
+void MainMenu::UpdateSelect(void)
 {
 	// 前回の選択物を入れておく
 	MENU prevMenu = currentMenu_;
@@ -192,7 +211,7 @@ void MainMenu::SelectUpgrade(void)
 		PadSelect();
 	}
 
-	// 中身がNONじゃないかつ、選択物が変わっていたら
+	// 中身がNONEじゃないかつ、選択物が変わっていたら
 	if (currentMenu_ != MENU::NONE
 		&& currentMenu_ != prevMenu)
 	{
@@ -221,44 +240,37 @@ void MainMenu::MouseSelect(void)
 
 void MainMenu::PadSelect(void)
 {
-	auto prevMenu = currentMenu_;
-
 	switch (currentMenu_)
 	{
 	case MainMenu::MENU::NONE:
-
 		ChangeSelect(MENU::PLAY);
-
 		break;
-	case MainMenu::MENU::PLAY:
 
+	case MainMenu::MENU::PLAY:
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
 			ChangeSelect(MENU::OPTION);
 		}
-
 		break;
-	case MainMenu::MENU::OPTION:
 
+	case MainMenu::MENU::OPTION:
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
 		{
 			ChangeSelect(MENU::PLAY);
 		}
-
-		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
+		else if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_DOWN))
 		{
 			ChangeSelect(MENU::QUIT);
 		}
-
 		break;
-	case MainMenu::MENU::QUIT:
 
+	case MainMenu::MENU::QUIT:
 		if (InputManager::GetInstance()->IsActionDown(INPUT_INFO::ACTION::UI_MOVE_UP))
 		{
 			ChangeSelect(MENU::OPTION);
 		}
-
 		break;
+
 	default:
 		break;
 	}

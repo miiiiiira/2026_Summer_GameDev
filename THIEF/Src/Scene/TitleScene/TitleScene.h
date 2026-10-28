@@ -6,7 +6,6 @@ class Confirm;
 
 class TitleScene : public SceneBase
 {
-
 public:
 	
 	TitleScene(void);				// コンストラクタ
@@ -21,28 +20,23 @@ public:
 
 private:
 
-	// ボタンの位置
-	static constexpr int BUTTON_POS_X = 512;
-	static constexpr int BUTTON_POS_Y = 520;
+	// 確認画面
+	std::shared_ptr<Confirm> confirm_ = nullptr;
 
-	// ボタンのアルファ値の変化速度
-	static constexpr float ALPHA_SPEED = 5.0f;
+	// タイトルロゴ
+	int handle_ = -1;
 
-	// ボタンのアルファ値の最大値と最小値
-	static constexpr float ALPHA_MAX = 255.0f;
-	static constexpr float ALPHA_MIN = 0.0f;
+	// PushAnyButton画像のハンドル
+	int buttonHandle_ = -1;
 
-private:
+	// アルファ値
+	float alpha_ = 0.0f;
 
-	std::shared_ptr<Confirm> confirm_;
+	// ボタンのアルファ値が増加しているかどうか
+	bool isIncreasing_ = false;
 
-	int handle_;
-	int buttonHandle_;				// PushAnyButton画像のハンドル
-
-	float alpha_;
-	bool isIncreasing_;				// ボタンのアルファ値が増加しているかどうか
-
-	bool isPlaySoundSE_;			// サウンドを鳴らしたか
+	// サウンドを鳴らしたか
+	bool isPlaySoundSE_ = false;
 
 	// シェーダー初期化処理
 	void ShaderInit(void);

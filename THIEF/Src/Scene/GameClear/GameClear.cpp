@@ -1,7 +1,4 @@
-#include "GameClear.h"
-
 #include <DxLib.h>
-
 #include "../../Manager/Input/InputManager.h"
 #include "../../Manager/Audio/AudioManager.h"
 #include "../SceneManager.h"
@@ -9,16 +6,52 @@
 #include "../../Common/Shader/Shader.h"
 #include "../../Common/MouseCursor/MouseCursor.h"
 
+#include "GameClear.h"
+
+namespace
+{
+	// 画像のYサイズ
+	constexpr int IMAGE_SIZE_Y = 3840;
+
+	// エンドロールのY軸リミット値
+	constexpr int LIMIT_Y = Application::SCREEN_SIZE_Y - IMAGE_SIZE_Y;
+
+	// スキップ画像のサイズ
+	constexpr int SKIP_IMAGE_SIZE = 120;
+
+	// スキップ時間の最大値
+	constexpr float MAX_SKIP_TIME = 120.0f;
+
+	// 最大アルファ値
+	constexpr int ALPHA_MAX = 255;
+
+	// 最小アルファ値
+	constexpr int ALPHA_MIN = 0;
+
+	// アルファ値
+	constexpr int ALPHA_STEP = 10;
+
+	// シェーダーを変えるまでの待ち時間
+	constexpr int WAIT_SHADER_TIME = 120;
+
+	// スクロールを始めるまでの待ち時間
+	constexpr int SCROLL_START_TIME = 60;
+
+	// スクロール量
+	constexpr int SCROLL_SPEED = 1;
+
+	// スクロール後、タイトルへ行くまでの待ち時間
+	constexpr int WAIT_END_TIME = 120;
+
+	// ゲージの最大値
+	constexpr float GAUGE_MAX_PERCENT = 100.0f;
+
+	// ゲージの開始位置
+	constexpr double GAUGE_START_PERCENT = 0.0;
+}
+
 GameClear::GameClear(void)
 {
-	handle_ = -1;
-	skipHandle_ = -1;
-	skipGauge_ = -1;
-	// マウスの表示する
-	MouseCursor::GetInstance()->SetMouseDraw(true);
-	waitTimer_ = 0;
-	scrollY_ = 0;
-	skipTimer_ = 0;
 }
 
 GameClear::~GameClear(void)
@@ -27,9 +60,13 @@ GameClear::~GameClear(void)
 
 void GameClear::Init(void)
 {
+	// マウスの表示する
+	MouseCursor::GetInstance()->SetMouseDraw(true);
+
 	waitTimer_ = 0;
 	scrollY_ = 0;
 	skipTimer_ = 0;
+	alpha_ = ALPHA_MIN;
 
 	state_ = STATE::WAIT_SHADER;
 }
@@ -54,7 +91,7 @@ void GameClear::Update(void)
 	// スキップ処理を1秒以上押されたら、タイトルに遷移
 	if (skipTimer_ >= MAX_SKIP_TIME)
 	{
-		// ゲームシーンへ
+		// タイトルシーンへ
 		SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(), TITLE);
 		return;
 	}
@@ -63,7 +100,7 @@ void GameClear::Update(void)
 	{
 		skipTimer_++;	// ボタンが押されるとスキップカウンターをカウントさせる
 
-		alpha_ += SUB_ALPHA;
+		alpha_ += ALPHA_STEP;
 
 		if (alpha_ >= ALPHA_MAX)
 		{
@@ -74,19 +111,18 @@ void GameClear::Update(void)
 	{
 		skipTimer_ = 0.0f;	// ボタンが離されたら、カウンターを0にする
 
-		alpha_ -= SUB_ALPHA;
+		alpha_ -= ALPHA_STEP;
 
-		if (alpha_ <= 0)
+		if (alpha_ <= ALPHA_MIN)
 		{
-			alpha_ = 0;
+			alpha_ = ALPHA_MIN;
 		}
 	}
 
 	switch (state_)
 	{
 	case STATE::WAIT_SHADER:
-
-		if (waitTimer_ >= 120)
+		if (waitTimer_ >= WAIT_SHADER_TIME)
 		{
 			ShaderInit();
 			waitTimer_ = 0; // タイマーをリセット
@@ -103,10 +139,9 @@ void GameClear::Update(void)
 		break;
 
 	case STATE::SCROLL:
-
-		if (waitTimer_ >= 60)
+		if (waitTimer_ >= SCROLL_START_TIME)
 		{
-			scrollY_ -= 1;
+			scrollY_ -= SCROLL_SPEED;
 
 			if (scrollY_ <= LIMIT_Y)
 			{
@@ -123,8 +158,7 @@ void GameClear::Update(void)
 		break;
 
 	case STATE::WAIT_END:
-
-		if (waitTimer_ >= 120)
+		if (waitTimer_ >= WAIT_END_TIME)
 		{
 			// タイトルシーンへ
 			SceneManager::GetInstance()->NextChangeScene(std::make_shared<TitleScene>(), TITLE);
@@ -146,8 +180,8 @@ void GameClear::Draw(void)
 
 	int gaugePosX = Application::SCREEN_SIZE_X - SKIP_IMAGE_SIZE / 2;
 	int gaugePosY = Application::SCREEN_SIZE_Y - SKIP_IMAGE_SIZE / 2;
-	float rate = (static_cast<float>(skipTimer_) / MAX_SKIP_TIME) * 100.0f;
-	DrawCircleGauge(gaugePosX, gaugePosY, rate, skipGauge_, 0.0);
+	float rate = (static_cast<float>(skipTimer_) / MAX_SKIP_TIME) * GAUGE_MAX_PERCENT;
+	DrawCircleGauge(gaugePosX, gaugePosY, rate, skipGauge_, GAUGE_START_PERCENT);
 
 	int posX = Application::SCREEN_SIZE_X - SKIP_IMAGE_SIZE;
 	int posY = Application::SCREEN_SIZE_Y - SKIP_IMAGE_SIZE;

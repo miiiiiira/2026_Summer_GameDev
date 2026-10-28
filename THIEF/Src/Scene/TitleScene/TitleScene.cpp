@@ -1,7 +1,4 @@
-#include "TitleScene.h"
-
 #include <DxLib.h>
-
 #include "../../Manager/Input/InputManager.h"
 #include "../../Manager/Audio/AudioManager.h"
 #include "../SceneManager.h"
@@ -12,16 +9,27 @@
 #include "../../Common/Shader/Shader.h"
 #include "../../Common/MouseCursor/MouseCursor.h"
 
+#include "TitleScene.h"
+
+namespace
+{
+	// ボタンの位置
+	constexpr int BUTTON_POS_X = 512;
+	constexpr int BUTTON_POS_Y = 520;
+
+	// ボタンのアルファ値の変化速度
+	constexpr float ALPHA_SPEED = 5.0f;
+
+	// ボタンのアルファ値の最大値と最小値
+	constexpr float ALPHA_MAX = 255.0f;
+	constexpr float ALPHA_MIN = 0.0f;
+
+	// タイトルロゴのオフセット位置
+	constexpr int TITLE_LOGO_OFFSET_Y = 100;
+}
+
 TitleScene::TitleScene(void)
 {
-	handle_ = -1;
-	buttonHandle_ = -1;
-	alpha_ = 0.0f;
-	isIncreasing_ = false;
-	isPlaySoundSE_ = false;
-	confirm_ = nullptr;
-	// マウスの表示する
-	MouseCursor::GetInstance()->SetMouseDraw(true);
 }
 
 TitleScene::~TitleScene(void)
@@ -30,7 +38,10 @@ TitleScene::~TitleScene(void)
 
 void TitleScene::Init(void)
 {
-	alpha_ = 255.0f;
+	// マウスの表示する
+	MouseCursor::GetInstance()->SetMouseDraw(true);
+
+	alpha_ = ALPHA_MAX;
 	isIncreasing_ = false;
 
 	// シェーダーの初期化処理
@@ -68,7 +79,7 @@ void TitleScene::Update(void)
 		{
 			// ボタン音
 			AudioManager::GetInstance()->PlaySE(SoundID::SYS_BUTTON_2);
-			alpha_ = 0.0f;
+			alpha_ = ALPHA_MIN;
 			isPlaySoundSE_ = true;
 		}
 
@@ -83,15 +94,16 @@ void TitleScene::Update(void)
 	}
 
 	// ボタンを押されたら動きを止める
-	if (isPlaySoundSE_)return;
+	if (isPlaySoundSE_) return;
 
 	// ボタンのアルファ値を変化させる
 	if (isIncreasing_)
 	{
-		alpha_ += ALPHA_SPEED; // 増加速度
+		// 増加速度
+		alpha_ += ALPHA_SPEED;
 
 		// 増加が最大になったら減少に切り替える
-		if(alpha_ >= ALPHA_MAX)
+		if (alpha_ >= ALPHA_MAX)
 		{
 			alpha_ = ALPHA_MAX;
 			isIncreasing_ = false; 
@@ -99,10 +111,11 @@ void TitleScene::Update(void)
 	}
 	else
 	{
-		alpha_ -= ALPHA_SPEED; // 減少速度
+		// 減少速度
+		alpha_ -= ALPHA_SPEED;
 
 		// 減少が最小になったら増加に切り替える
-		if(alpha_ <= ALPHA_MIN)
+		if (alpha_ <= ALPHA_MIN)
 		{
 			alpha_ = ALPHA_MIN;
 			isIncreasing_ = true;
@@ -112,7 +125,7 @@ void TitleScene::Update(void)
 
 void TitleScene::Draw(void)
 {
-	DrawRotaGraph(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2 - 100, 1.0, 0.0, handle_, true);
+	DrawRotaGraph(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2 - TITLE_LOGO_OFFSET_Y, 1.0, 0.0, handle_, true);
 
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(alpha_));
 	DrawRotaGraph(BUTTON_POS_X, BUTTON_POS_Y, 1.0, 0.0, buttonHandle_, true);

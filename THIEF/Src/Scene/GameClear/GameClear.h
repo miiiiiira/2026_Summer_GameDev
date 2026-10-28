@@ -21,46 +21,35 @@ private:
 
 	enum class STATE
 	{
+		NONE,
 		WAIT_SHADER,
 		SCROLL,
 		WAIT_END,
-		MAX,
 	};
 
-	STATE state_;	// 現在のステート
+	// 現在のステート
+	STATE state_ = STATE::NONE;
 
-	// 画像のYサイズ
-	static constexpr int IMAGE_SIZE_Y = 3840;
-	
-	// エンドロールのY軸リミット値
-	static constexpr int LIMIT_Y = Application::SCREEN_SIZE_Y - IMAGE_SIZE_Y;
+	// 画像ハンドル
+	int handle_ = -1;
 
-	// スキップ画像のサイズ
-	static constexpr int SKIP_IMAGE_SIZE = 120;
+	// スキップ画像
+	int skipHandle_ = -1;
 
-	// スキップ時間の最大値
-	static constexpr float MAX_SKIP_TIME = 120.0f;
+	// スキップゲージ
+	int skipGauge_ = -1;
 
-	// 最大アルファ値
-	static constexpr int ALPHA_MAX = 255;
+	// 待ち時間のカウンター
+	int waitTimer_ = 0;
 
-	// アルファ値下げる量
-	static constexpr int SUB_ALPHA = 10;
+	// スキップ用のカウンター
+	float skipTimer_ = 0.0f;
 
+	// Y座標のスクロール値
+	int scrollY_ = 0;
 
-	int handle_;	// 画像ハンドル
-
-	int skipHandle_;	// スキップ画像
-
-	int skipGauge_;		// スキップゲージ
-
-	int waitTimer_;	// 待ち時間のカウンター
-
-	float skipTimer_;	// スキップ用のカウンター
-
-	int scrollY_;	// Y座標のスクロール値
-
-	int alpha_;	// アルファ値
+	// アルファ値
+	int alpha_ = 0;
 
 	void ShaderInit(void);
 };
