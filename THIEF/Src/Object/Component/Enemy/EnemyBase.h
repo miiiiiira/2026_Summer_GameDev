@@ -170,7 +170,4 @@ private:
 
 	// テーブルからの共通データ設定
 	void InitTableData(void);
-
-	// 最寄りノードの初期化
-	void InitNearestNode(void);
 };

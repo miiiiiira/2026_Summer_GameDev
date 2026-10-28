@@ -70,11 +70,8 @@ struct EnemyInfo
 	float radius_ = 0.0f;			// 敵キャラクターのカプセル判定用半径
 
 	// 経路探索
-	std::vector<float> minCosts_;			// 最小コスト
-	std::vector<int> parentNodes_;			// 親ノード
 	std::vector<StagePathData::Edge> path_;	// 経路探索結果
 	VECTOR nextWayPoint_ = {};				// 次のノードの座標
-	std::vector<int> candidates_;			// ノード候補
 	int currentNodeId_ = -1;				// 現在のノードID
 	int prevNodeId_ = -1;					// 前回のノードID
 	int prevPrevNodeId_ = -1;				// 前々回のノードID

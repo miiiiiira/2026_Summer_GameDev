@@ -70,8 +70,8 @@ void EnemyBase::Init(void)
 	// スケール・向きの設定
 	InitTransform();
 
-	// 最寄りノードの初期化
-	InitNearestNode();
+	// 現在位置に一番近いノードから巡回を始める
+	ResetToNearestNode();
 
 	// 前回の座標を現在の座標に設定
 	if (transform_)
@@ -111,7 +111,6 @@ void EnemyBase::SetPlayer(PlayerController* player)
 void EnemyBase::SetPathData(int stageId, std::shared_ptr<StagePathData> pathData)
 {
 	stageId_ = stageId;		// ステージIDを保持
-
 	pathData_ = pathData;	// パスデータを弱参照で保持
 }
 
@@ -119,9 +118,7 @@ void EnemyBase::SetEnemyData(const EnemyData& data)
 {
 	// 敵のデータを保持
 	info_.startOffset_ = data.capStartOffset_;	// カプセルコライダーの開始位置オフセット
-
 	info_.endOffset_ = data.capEndOffset_;		// カプセルコライダーの終了位置オフセット
-
 	info_.radius_ = data.capRadius_;			// カプセルコライダーの半径
 }
 
@@ -199,11 +196,11 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 	info_.path_.clear();
 
 	// 全て同じ値で埋め尽くす
-	info_.minCosts_.assign(wayList->size(), FLT_MAX);
-	info_.parentNodes_.assign(wayList->size(), -1);
+	std::vector<float> minCosts(wayList->size(), FLT_MAX);
+	std::vector<int> parentNodes(wayList->size(), -1);
 
 	// スタート地点のコストは0にする
-	info_.minCosts_[startNodeId] = 0.0f;
+	minCosts[startNodeId] = 0.0f;
 
 	// 優先度付きキューを使用して、コストの小さい順に探索する
 	std::priority_queue <std::pair<float, int>,
@@ -227,7 +224,7 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 		if (currentNodeId == goalNodeId) break;
 
 		// 取り出したコストが、すでに minCosts_ にある最小コストより大きければスキップ
-		if (currentCost > info_.minCosts_[currentNodeId]) continue;
+		if (currentCost > minCosts[currentNodeId]) continue;
 
 		// 繋がっているエッジ
 		for (const auto& edge : (*edgeList)[currentNodeId])
@@ -239,11 +236,10 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 			float newCost = currentCost + edge.cost_;
 
 			// 新しいコストが最小コストよりも小さかったら
-			if (newCost < info_.minCosts_[nextNodeId])
+			if (newCost < minCosts[nextNodeId])
 			{
-				// minCosts_とparentNodes_を更新
-				info_.minCosts_[nextNodeId] = newCost;
-				info_.parentNodes_[nextNodeId] = currentNodeId;
+				minCosts[nextNodeId] = newCost;
+				parentNodes[nextNodeId] = currentNodeId;
 
 				// 新しいコストと隣のノードIDをペアにしてqueにプッシュする
 				que.push({ newCost, nextNodeId });
@@ -261,11 +257,11 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 		StagePathData::Edge path;
 		path.way_.id_ = (*wayList)[i].id_;
 		path.way_.pos_ = (*wayList)[i].pos_;
-		path.cost_ = info_.minCosts_[i];
+		path.cost_ = minCosts[i];
 
 		info_.path_.push_back(path);
 
-		i = info_.parentNodes_[i]; // 次の親ノードへ進む
+		i = parentNodes[i]; // 次の親ノードへ進む
 	}
 
 	// 逆にする
@@ -499,8 +495,8 @@ int EnemyBase::SelectNextNode(void)
 		return info_.currentNodeId_;
 	}
 
-	// 有効ノードを探す前に空にする
-	info_.candidates_.clear();
+	 // 次に向かうノードの候補
+	std::vector<int> candidates;
 
 	// 現在のノードに接続されているエッジをループする
 	for (const auto& edge : (*edgeList)[info_.currentNodeId_])
@@ -519,15 +515,15 @@ int EnemyBase::SelectNextNode(void)
 		if (nextId == info_.prevPrevNodeId_) continue;
 
 		// 候補に追加する
-		info_.candidates_.push_back(nextId);
+		candidates.push_back(nextId);
 	}
 
 	// 候補があった場合ランダムに選ぶ
-	if (!info_.candidates_.empty())
+	if (!candidates.empty())
 	{
-		int index = GetRand(static_cast<int>(info_.candidates_.size() - 1));
+		int index = GetRand(static_cast<int>(candidates.size() - 1));
 
-		return info_.candidates_[index];
+		return candidates[index];
 	}
 
 	// 候補が無い場合は、前回のノードに戻る
@@ -555,19 +551,19 @@ int EnemyBase::FindNearestNode(VECTOR pos)
 
 	// 最も近いノードのIDと距離を初期化
 	int nearNodeId = -1;
-	float minCost = FLT_MAX;
+	float minDistanceSQ = FLT_MAX;
 
-	// 視線が通っているノードの中で
+	// 全ノードの中から、指定位置に一番近いノードを探す
 	for (const auto& way : (*wayList))
 	{
-		// 一番近いノードを探す
-		float distance = VSize(VSub(pos, way.pos_));
+		// 指定位置とノードの距離
+		float distanceSQ = GetDistanceSQ(pos, way.pos_);
 
 		// 最小距離を更新
-		if (distance < minCost)
+		if (distanceSQ < minDistanceSQ)
 		{
-			minCost = distance;		// 最小距離を更新
-			nearNodeId = way.id_;	// 最も近いノードのIDを更新
+			minDistanceSQ = distanceSQ;	// 最小距離を更新
+			nearNodeId = way.id_;		// 最も近いノードのIDを更新
 		}
 	}
 
@@ -719,23 +715,4 @@ void EnemyBase::InitTableData(void)
 
 	// 移動方向を0にしておく
 	info_.moveDir_ = Math::VECTOR_ZERO;
-}
-
-void EnemyBase::InitNearestNode(void)
-{
-	// lock() して shared_ptr を一時的に取得
-	auto pathData = pathData_.lock();
-
-	// パスデータが無い敵はここで終わる
-	if (!pathData) return;
-
-	// ウェイポイントのリストを取得
-	const auto* wayList = pathData->GetWayList();
-	if (!wayList) return;
-
-	// 候補ノード用の領域を事前確保して再確保を防ぐ
-	info_.candidates_.reserve(wayList->size());
-
-	// 現在位置から一番近いノードを現在ノードとして登録
-	ResetToNearestNode();
 }
