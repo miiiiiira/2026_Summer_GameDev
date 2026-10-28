@@ -895,16 +895,23 @@ void GameScene::EnemyCreate(ENEMY_TAG tag, VECTOR pos, const EnemySpawnParam& pa
 		break;
 	}
 
-	if (enemyComp != nullptr)
+	// 敵の種類に応じたコンポーネントがなければ終わる
+	if (enemyComp == nullptr) return;
+
+	// テーブルのデータをEnemyBaseに渡す
+	enemyComp->SetEnemyData(enemyData->second);
+
+	// 当たり判定用のモデルがあれば使い、
+	// 無ければ表示用のモデルを使う
+	int stageModelId = stage->GetCollModelId();
+	if (stageModelId == -1)
 	{
-		// テーブルのデータをEnemyBaseに渡す
-		enemyComp->SetEnemyData(enemyData->second);
-
-		auto player = objectManger_->FindComponentWithTag<PlayerController>(Tag::Player);
-		int stageModelId = (stage->GetCollModelId() == -1) ? stage->GetModelId() : stage->GetCollModelId();
-
-		enemyComp->SetPathData(player, stageModelId, stagePathData_);
+		stageModelId = stage->GetModelId();
 	}
+
+	// プレイヤーとパスデータを渡す
+	enemyComp->SetPlayer(playerController);
+	enemyComp->SetPathData(stageModelId, stagePathData_);
 }
 
 void GameScene::InitPathData(void)

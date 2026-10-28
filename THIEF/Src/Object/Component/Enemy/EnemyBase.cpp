@@ -103,10 +103,13 @@ void EnemyBase::Draw3D(void)
 #endif // _DEBUG
 }
 
-void EnemyBase::SetPathData(PlayerController* player, int stageId, std::shared_ptr<StagePathData> pathData)
+void EnemyBase::SetPlayer(PlayerController* player)
 {
 	player_ = player;		// プレイヤーのポインタを保持
+}
 
+void EnemyBase::SetPathData(int stageId, std::shared_ptr<StagePathData> pathData)
+{
 	stageId_ = stageId;		// ステージIDを保持
 
 	pathData_ = pathData;	// パスデータを弱参照で保持

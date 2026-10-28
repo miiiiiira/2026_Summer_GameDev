@@ -27,9 +27,11 @@ public:
 	void Update(void) override = 0;		// 更新
 	void Draw3D(void) override;			// 3D描画
 
+	// プレイヤーをセット
+	void SetPlayer(PlayerController* player);
+
 	// パスデータをセット
-	void SetPathData(PlayerController* player, int stageId,
-						std::shared_ptr<StagePathData> pathData);
+	void SetPathData(int stageId, std::shared_ptr<StagePathData> pathData);
 
 	// 敵のデータをセット
 	void SetEnemyData(const EnemyData& data);
