@@ -185,10 +185,10 @@ void Skeleton::UpdateIdle(void)
 	VECTOR playerPos = player_->GetTransform()->pos_;
 
 	// プレイヤーとの距離を計算
-	float distanceSq = GetDistanceSQ(LOOK_POS, playerPos);
+	float distanceSQ = GetDistanceSQ(LOOK_POS, playerPos);
 
 	// プレイヤーが一定距離以内にいる場合
-	if (distanceSq <= TRIGGER_RANGE_SQ)
+	if (distanceSQ <= TRIGGER_RANGE_SQ)
 	{
 		// 見つめる状態に変更
 		ChangeState(STATE::LOOK);
@@ -202,10 +202,10 @@ void Skeleton::UpdateLook(void)
 	VECTOR playerPos = player_->GetTransform()->pos_;
 
 	// プレイヤーとの距離を計算
-	float distanceSq = GetDistanceSQ(SCARE_POS, playerPos);
+	float distanceSQ = GetDistanceSQ(SCARE_POS, playerPos);
 
 	// プレイヤーが一定距離以内にいる場合
-	if (distanceSq <= TRIGGER_RANGE_SQ)
+	if (distanceSQ <= TRIGGER_RANGE_SQ)
 	{
 		// 怖がらせる状態に変更
 		ChangeState(STATE::SCARE);
@@ -225,9 +225,9 @@ void Skeleton::UpdateScare(void)
 	{
 		// 進行方向に少し進んだ位置を計算
 		VECTOR checkPos = VAdd(
-					transform_->pos_,
-					VScale(info_.moveDir_,
-					FORWARD_COLLISION_CHECK_DISTANCE));
+			transform_->pos_,
+			VScale(info_.moveDir_,
+				FORWARD_COLLISION_CHECK_DISTANCE));
 
 		VECTOR start = VAdd(checkPos, info_.startOffset_);
 
@@ -235,11 +235,11 @@ void Skeleton::UpdateScare(void)
 
 		// 壁との衝突チェック
 		MV1_COLL_RESULT_POLY_DIM res = MV1CollCheck_Capsule(
-							stageId_,
-							-1,
-							start,
-							end,
-							info_.radius_);
+			stageId_,
+			-1,
+			start,
+			end,
+			info_.radius_);
 
 		if (res.HitNum > 0)
 		{

@@ -489,10 +489,10 @@ void Yeti::UpdatePatrol(void)
 	// 高さは無視して水平距離のみで判定する
 	VECTOR target = VSub(info_.nextWayPoint_, transform_->pos_);
 	target.y = 0.0f;
-	float dist = VSquareSize(target);
+	float distanceSQ = VSquareSize(target);
 
 	// ある程度近づいたら考えるステートに移る
-	if (dist < WAYPOINT_ARRIVE_DIST * WAYPOINT_ARRIVE_DIST)
+	if (distanceSQ < WAYPOINT_ARRIVE_DIST * WAYPOINT_ARRIVE_DIST)
 	{
 		ChangeState(STATE::THINK);
 		return;
@@ -608,7 +608,7 @@ bool Yeti::UpdateTargetLost(bool isPlayerVisible)
 
 	if (info_.targetLostTimer_ < LOST_LIMIT_TIME) return false;
 
-	// 長く見失ったら、近くのノードから巡回をやり直す
+	// 見失ったら、近くのノードから巡回をやり直す
 	ClearPath();
 	ResetToNearestNode();
 
@@ -619,15 +619,19 @@ bool Yeti::UpdateTargetLost(bool isPlayerVisible)
 
 void Yeti::UpdateRepathTimer(bool isPlayerVisible)
 {
+	// 視線が通っているなら、経路探索しない
+	if (isPlayerVisible)
+	{
+		chaseTimer_ = CHASE_INTERVAL;
+		return;
+	}
+
 	// 一定間隔ごとに経路の再探索を行う
 	chaseTimer_ += SceneManager::GetInstance()->GetDeltaTime();
 
 	if (chaseTimer_ < CHASE_INTERVAL) return;
 
 	chaseTimer_ = 0.0f;
-
-	// 視線が通っておらず、まだ経路がない場合のみ探索する
-	if (isPlayerVisible || !info_.path_.empty()) return;
 
 	// 敵の位置からプレイヤーの位置への経路を探す
 	StartPath(transform_->pos_, player_->GetTransform()->pos_);
@@ -683,9 +687,8 @@ bool Yeti::IsNearPlayerNode(void)
 
 	int playerNearNodeId = FindNearestNode(player_->GetTransform()->pos_);
 
-	// 自分がそのノードの近くにいるか判定
+	// 自分がそのノードの近くにいるか
 	float distToPlayerNode = VSize(VSub(transform_->pos_, (*wayList)[playerNearNodeId].pos_));
-
 	return distToPlayerNode < PLAYER_NODE_ARRIVE_DIST;
 }
 
