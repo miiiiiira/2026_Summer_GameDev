@@ -40,6 +40,12 @@ namespace
 
 	// 接地を維持するために与える下向きの速度
 	constexpr float GROUND_STICK_VELOCITY = 0.1f;
+
+	// カプセルの分割数
+	constexpr int CAPSULE_DIV_NUM = 8;
+
+	// カプセルの色
+	constexpr unsigned int CAPSULE_COLOR = 0xff0000;
 }
 
 EnemyBase::EnemyBase(void)
@@ -92,9 +98,9 @@ void EnemyBase::Draw3D(void)
 		start,
 		end,
 		info_.radius_,
-		8,
-		0xff0000,
-		0xff0000,
+		CAPSULE_DIV_NUM,
+		CAPSULE_COLOR,
+		CAPSULE_COLOR,
 		false);
 
 #endif // _DEBUG

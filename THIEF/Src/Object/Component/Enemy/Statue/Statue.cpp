@@ -64,6 +64,30 @@ namespace
 
 	// モデルのローカル回転
 	constexpr float MODEL_FORWARD_OFFSET_DEG = 180.0f;
+
+	// フレームの色
+	constexpr unsigned int FRAME_COLOR = 0xff00ff;
+
+	// 全てのノードの色
+	constexpr unsigned int ALL_NODE_COLOR = 0xffff00;
+
+	// エッジの色
+	constexpr unsigned int EDGE_LINE_COLOR = 0xff00ff;
+
+	// 巡回範囲の色
+	constexpr unsigned int PATROL_RANGE_COLOR = 0x00ff00;
+
+	// 巡回範囲用の球体の分割数
+	constexpr int PATROL_RANGE_DIV_NUM = 8;
+
+	// 目的地を示す球の半径
+	constexpr float NEXT_WAYPOINT_RADIUS = 40.0f;
+
+	// 球の分割数
+	constexpr int NEXT_WAYPOINT_DIV_NUM = 10;
+
+	// 目的地の色
+	constexpr unsigned int NEXT_WAYPOINT_COLOR = 0x00ff00;
 }
 
 Statue::Statue(void)
@@ -164,8 +188,8 @@ void Statue::Draw3D(void)
 	EnemyBase::Draw3D();
 
 #ifdef _DEBUG
-	// プレイヤーを検知する行動エリアをマゼンタのワイヤーフレームで描画
-	DrawCube3D(minAreaPos_, maxAreaPos_, 0xff00ff, 0xff00ff, false);
+	// プレイヤーを検知する行動エリアをワイヤーフレームで描画
+	DrawCube3D(minAreaPos_, maxAreaPos_, FRAME_COLOR, FRAME_COLOR, false);
 
 	// lock() して shared_ptr を一時的に取得
 	auto pathData = pathData_.lock();
@@ -183,36 +207,37 @@ void Statue::Draw3D(void)
 			{
 				DrawLine3D((*wayList)[i].pos_,
 					edge.way_.pos_,
-					GetColor(255, 255, 0));
+					ALL_NODE_COLOR);
 			}
 		}
 
-		// 現在ノードと自分の位置をマゼンタの線で結ぶ
+		// 現在ノードと自分の位置を線で結ぶ
 		if (info_.currentNodeId_ >= 0 && info_.currentNodeId_ < (int)wayList->size())
 		{
 			DrawLine3D(transform_->pos_,
 				(*wayList)[info_.currentNodeId_].pos_,
-				GetColor(255, 0, 255));
+				EDGE_LINE_COLOR);
 		}
 
-		// 巡回範囲を緑のワイヤーフレーム球で描画
+		// 巡回範囲をワイヤーフレーム球で描画
 		DrawSphere3D(transform_->pos_,
 			info_.patrolRadius_,
-			8, GetColor(0, 255, 0),
-			GetColor(0, 0, 0),
-			FALSE);
+			PATROL_RANGE_DIV_NUM,
+			PATROL_RANGE_COLOR,
+			PATROL_RANGE_COLOR,
+			false);
 
-		// 次の目的地を緑の塗りつぶし球と線で描画
+		// 次の目的地を塗りつぶし球と線で描画
 		DrawSphere3D(info_.nextWayPoint_,
-			40.0f,
-			10,
-			GetColor(0, 255, 0),
-			GetColor(0, 255, 0),
-			TRUE);
+			NEXT_WAYPOINT_RADIUS,
+			NEXT_WAYPOINT_DIV_NUM,
+			NEXT_WAYPOINT_COLOR,
+			NEXT_WAYPOINT_COLOR,
+			true);
 
 		DrawLine3D(transform_->pos_,
 			info_.nextWayPoint_,
-			GetColor(0, 255, 0));
+			NEXT_WAYPOINT_COLOR);
 	}
 
 	// 武器の当たり判定などをデバッグ描画
@@ -430,7 +455,8 @@ bool Statue::MoveStraightToHomePos(void)
 	info_.moveDir_ = VNorm(diff);
 
 	// 回転はY軸のみ
-	transform_->angle_.x = transform_->angle_.z = 0.0f;
+	transform_->angle_.x = 0.0f;
+	transform_->angle_.z = 0.0f;
 
 	// 帰還先までの距離を計算
 	float distanceToHomePosSQ = GetDistanceSQ(transform_->pos_, homePos_);

@@ -36,6 +36,9 @@ namespace
 
 	// モデルのローカル回転
 	constexpr float MODEL_FORWARD_OFFSET_DEG = 180.0f;
+
+	// ワイヤーフレームの色
+	constexpr unsigned int FRAME_COLOR = 0xff00ff;
 }
 
 Mushnub::Mushnub(void)
@@ -121,8 +124,8 @@ void Mushnub::Draw3D(void)
 	EnemyBase::Draw3D();
 
 #ifdef _DEBUG
-	// プレイヤーを検知する行動エリアをマゼンタのワイヤーフレームで描画
-	DrawCube3D(minAreaPos_, maxAreaPos_, 0xff00ff, 0xff00ff, false);
+	// プレイヤーを検知する行動エリアをワイヤーフレームで描画
+	DrawCube3D(minAreaPos_, maxAreaPos_, FRAME_COLOR, FRAME_COLOR, false);
 #endif
 }
 
@@ -242,7 +245,8 @@ void Mushnub::UpdateChase(void)
 		info_.moveDir_ = VNorm(diff);
 
 		// 回転はY軸のみ
-		transform_->angle_.x = transform_->angle_.z = 0.0f;
+		transform_->angle_.x = 0.0f;
+		transform_->angle_.z = 0.0f;
 
 		// 帰還先までの距離を計算
 		float distanceToHomePosSQ = GetDistanceSQ(transform_->pos_, homePos_);

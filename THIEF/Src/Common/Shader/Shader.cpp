@@ -3,6 +3,21 @@
 
 #include "Shader.h"
 
+namespace
+{
+	// パラメータが目標値に到達したとみなす誤差
+	constexpr float PARAM_EPSILON = 0.0001f;
+
+	// 描画元テクスチャのスロット番号
+	constexpr int SRC_TEXTURE_SLOT = 0;
+
+	// 定数バッファのスロット番号
+	constexpr int CRT_CBUFFER_SLOT = 1;
+
+	// 四角形を構成する三角形ポリゴンの数
+	constexpr int SQUARE_POLYGON_NUM = 2;
+}
+
 Shader::Shader(void)
 {
 }
@@ -14,99 +29,99 @@ Shader::~Shader(void)
 void Shader::Init(void)
 {
 	// ピクセルシェーダーの読み込み
-	psCtr_ = LoadPixelShader("Data/CtrShader.pso");
+	psCrt_ = LoadPixelShader("Data/CRTShader.pso");
 
 	// ピクセルシェーダー用の定数バッファ
-	psCtrConstBuf_ = CreateShaderConstantBuffer(sizeof(Ctr));
+	psCrtConstBuf_ = CreateShaderConstantBuffer(sizeof(CrtParam));
 
 	// 初期値のセット
-	targetCtrParam_ = DEFAULT_CTR;	// 目標値
-	currentCtrParam_ = DEFAULT_CTR;	// 現在地
+	targetCrtParam_ = DEFAULT_CRT;	// 目標値
+	currentCrtParam_ = DEFAULT_CRT;	// 現在値
 
 	// ポリゴン生成
-	MakeSquereVertex();
+	MakeSquareVertex();
 }
 
 void Shader::Draw(int texture)
 {
 	// スキャンライン
-	UpdateParam(currentCtrParam_.scanlineIntensity, targetCtrParam_.scanlineIntensity);
+	UpdateParam(currentCrtParam_.scanlineIntensity, targetCrtParam_.scanlineIntensity);
 
 	// ビネット
-	UpdateParam(currentCtrParam_.vignettePower, targetCtrParam_.vignettePower);
+	UpdateParam(currentCrtParam_.vignettePower, targetCrtParam_.vignettePower);
 
 	// グリッチ
-	UpdateParam(currentCtrParam_.glitchAmount, targetCtrParam_.glitchAmount);
+	UpdateParam(currentCrtParam_.glitchAmount, targetCrtParam_.glitchAmount);
 
 	// 魚眼
-	UpdateParam(currentCtrParam_.curvatureAmount, targetCtrParam_.curvatureAmount);
+	UpdateParam(currentCrtParam_.curvatureAmount, targetCrtParam_.curvatureAmount);
 
 	// ノイズ
-	UpdateParam(currentCtrParam_.noisePower, targetCtrParam_.noisePower);
+	UpdateParam(currentCrtParam_.noisePower, targetCrtParam_.noisePower);
 
 	// RGBずらし
-	UpdateParam(currentCtrParam_.rgbShift, targetCtrParam_.rgbShift);
+	UpdateParam(currentCrtParam_.rgbShift, targetCrtParam_.rgbShift);
 
 	// タイマーは毎フレーム更新
-	currentCtrParam_.timer = SceneManager::GetInstance()->GetTotalTime();
+	currentCrtParam_.timer = SceneManager::GetInstance()->GetTotalTime();
 
 	// ピクセルシェーダーをセット
-	SetUsePixelShader(psCtr_);
+	SetUsePixelShader(psCrt_);
 
 	// テクスチャをセット
-	SetUseTextureToShader(0, texture);
+	SetUseTextureToShader(SRC_TEXTURE_SLOT, texture);
 
 	// ピクセルシェーダー用の定数バッファのアドレスを取得
-	Ctr* cbBuf = (Ctr*)GetBufferShaderConstantBuffer(psCtrConstBuf_);
-	*cbBuf = currentCtrParam_;
+	CrtParam* cbBuf = (CrtParam*)GetBufferShaderConstantBuffer(psCrtConstBuf_);
+	*cbBuf = currentCrtParam_;
 
 	// ピクセルシェーダー用の定数バッファを更新して書き込んだ内容を反映
-	UpdateShaderConstantBuffer(psCtrConstBuf_);
+	UpdateShaderConstantBuffer(psCrtConstBuf_);
 
 	// ピクセルシェーダー用の定数バッファを定数バッファレジスタにセット
-	SetShaderConstantBuffer(psCtrConstBuf_, DX_SHADERTYPE_PIXEL, 1);
+	SetShaderConstantBuffer(psCrtConstBuf_, DX_SHADERTYPE_PIXEL, CRT_CBUFFER_SLOT);
 
 	// 画面外を黒枠にする
 	SetTextureAddressModeUV(DX_TEXADDRESS_BORDER, DX_TEXADDRESS_BORDER);
 
 	// 描画
-	DrawPolygonIndexed2DToShader(vertex_, SQUARE_VERTEX_NUM, index_, 2);
+	DrawPolygonIndexed2DToShader(vertex_, SQUARE_VERTEX_NUM, index_, SQUARE_POLYGON_NUM);
 }
 
 void Shader::Release(void)
 {
 	// ピクセルシェーダーの解放
-	DeleteShader(psCtr_);
+	DeleteShader(psCrt_);
 
 	// ピクセルシェーダー用の定数バッファの解放
-	DeleteShaderConstantBuffer(psCtrConstBuf_);
+	DeleteShaderConstantBuffer(psCrtConstBuf_);
 }
 
 void Shader::SetCurvatureAmount(float val, bool isLerpActive)
 {
 	// 目標値をセット
-	targetCtrParam_.curvatureAmount = val;
+	targetCrtParam_.curvatureAmount = val;
 
 	// 補間しないなら
 	if (!isLerpActive)
 	{
 		// 強制的に値を同期させる
-		currentCtrParam_.curvatureAmount = val;
+		currentCrtParam_.curvatureAmount = val;
 	}
 }
 
 bool Shader::IsDefault(void) const
 {
 	// 現在値とデフォルト値の差が0.0001未満ならデフォルト値とみなす
-	return fabsf(currentCtrParam_.scanlineIntensity - DEFAULT_CTR.scanlineIntensity) < 0.0001f &&
-		fabsf(currentCtrParam_.vignettePower - DEFAULT_CTR.vignettePower) < 0.0001f &&
-		fabsf(currentCtrParam_.glitchAmount - DEFAULT_CTR.glitchAmount) < 0.0001f &&
-		fabsf(currentCtrParam_.curvatureAmount - DEFAULT_CTR.curvatureAmount) < 0.0001f &&
-		fabsf(currentCtrParam_.noisePower - DEFAULT_CTR.noisePower) < 0.0001f &&
-		fabsf(currentCtrParam_.rgbShift - DEFAULT_CTR.rgbShift) < 0.0001f;
+	return fabsf(currentCrtParam_.scanlineIntensity - DEFAULT_CRT.scanlineIntensity) < PARAM_EPSILON &&
+		fabsf(currentCrtParam_.vignettePower - DEFAULT_CRT.vignettePower) < PARAM_EPSILON &&
+		fabsf(currentCrtParam_.glitchAmount - DEFAULT_CRT.glitchAmount) < PARAM_EPSILON &&
+		fabsf(currentCrtParam_.curvatureAmount - DEFAULT_CRT.curvatureAmount) < PARAM_EPSILON &&
+		fabsf(currentCrtParam_.noisePower - DEFAULT_CRT.noisePower) < PARAM_EPSILON &&
+		fabsf(currentCrtParam_.rgbShift - DEFAULT_CRT.rgbShift) < PARAM_EPSILON;
 }
 
-void Shader::MakeSquereVertex(void)
+void Shader::MakeSquareVertex(void)
 {
 	// ４頂点の初期化
 	for (int i = 0; i < SQUARE_VERTEX_NUM; i++)
@@ -161,15 +176,15 @@ void Shader::MakeSquereVertex(void)
 
 void Shader::UpdateParam(float& current, float target)
 {
-	// 目標値と現在地の差が0.0001未満なら、現在地を目標値に合わせる
-	if (fabsf(target - current) < 0.0001f)
+	// 目標値と現在値の差が0.0001未満なら、現在値を目標値に合わせる
+	if (fabsf(target - current) < PARAM_EPSILON)
 	{
-		// 目標値と現在地を同期させる
+		// 目標値と現在値を同期させる
 		current = target;
 	}
 	else
 	{
-		// 線形補間で現在地を目標値に近づける
+		// 線形補間で現在値を目標値に近づける
 		current += (target - current) * LERP_SPEED;
 	}
 }

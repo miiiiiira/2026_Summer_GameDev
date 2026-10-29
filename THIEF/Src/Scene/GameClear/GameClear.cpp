@@ -74,7 +74,6 @@ void GameClear::Init(void)
 void GameClear::Load(void)
 {
 	handle_ = LoadGraph("Data/Image/GameClear/EndRoll.png");
-
 	skipHandle_ = LoadGraph("Data/Image/GameClear/skip.png");
 	skipGauge_ = LoadGraph("Data/Image/GameClear/skipGauge.png");
 
@@ -203,12 +202,15 @@ void GameClear::ShaderInit(void)
 	// ‘–¸ü
 	SceneManager::GetInstance()->GetShader()->
 		SetScanlineIntensity(Shader::MENU_SCANLINE_INTENSITY);
+
 	// ˜c‚Ý
 	SceneManager::GetInstance()->GetShader()->
 		SetCurvatureAmount(Shader::MENU_CURVATURE_AMOUNT);
+	
 	// ƒmƒCƒY
 	SceneManager::GetInstance()->GetShader()->
 		SetNoisePower(Shader::MENU_NOISE_POWER);
+	
 	// F‚¸‚ê
 	SceneManager::GetInstance()->GetShader()->
 		SetRgbShift(Shader::MENU_RGB_SHIFT);

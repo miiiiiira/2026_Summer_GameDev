@@ -216,7 +216,7 @@
     <ClInclude Include="Src\Scene\StageClear\StageClear.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Src\Common\Shader\CtrShader.hlsl">
+    <FxCompile Include="Src\Common\Shader\CRTShader.hlsl">
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)Data/%(Filename).pso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0_level_9_3</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>

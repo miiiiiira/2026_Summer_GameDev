@@ -1,5 +1,4 @@
 #pragma once
-
 #include <DxLib.h>
 
 class Shader
@@ -7,16 +6,16 @@ class Shader
 public:
 
 	// シェーダーのパラメータを保持する構造体
-	struct Ctr
+	struct CrtParam
 	{
-		float scanlineIntensity;	// 走査線の濃さ
-		float vignettePower;		// ビネットの鋭さ
-		float glitchAmount;			// グリッチの強度　0.0で通常、1.0で崩壊
-		float timer;				// ノイズやグリッチを動かす時間
-		float curvatureAmount;		// 歪み度
-		float noisePower;			// ノイズの強度
-		float rgbShift;				// 色のずれ
-		float padding;
+		float scanlineIntensity = 0.0f;	// 走査線の濃さ
+		float vignettePower = 0.0f;		// ビネットの鋭さ
+		float glitchAmount = 0.0f;		// グリッチの強度　0.0で通常、1.0で崩壊
+		float timer = 0.0f;				// ノイズやグリッチを動かす時間
+		float curvatureAmount = 0.0f;	// 歪み度
+		float noisePower = 0.0f;		// ノイズの強度
+		float rgbShift = 0.0f;			// 色のずれ
+		float padding = 0.0f;
 	};
 
 	// デフォルト値の初期化
@@ -28,7 +27,7 @@ public:
 	static constexpr float DEFAULT_NOISE_POWER = 0.1f;			// ノイズの強度
 	static constexpr float DEFAULT_RGB_SHIFT = 0.002f;			// 色のずれ
 
-	static constexpr Ctr DEFAULT_CTR = { 
+	static constexpr CrtParam DEFAULT_CRT = { 
 					DEFAULT_SCANLINE_INTENSITY, 
 					DEFAULT_VIGNETTE_POWER, 
 					DEFAULT_GLITCH_AMOUNT, 
@@ -36,7 +35,7 @@ public:
 					DEFAULT_CURVATURE_AMOUNT, 
 					DEFAULT_NOISE_POWER, 
 					DEFAULT_RGB_SHIFT, 
-					0.0f
+					0.0f		// padding
 	};
 
 	// ダメージ時のビネットの鋭さ
@@ -52,37 +51,40 @@ public:
 	// ゲームオーバー用の歪みの強さ
 	static constexpr float GAMEOVER_CURVATURE_AMOUNT = 0.1f;
 
+	// コンストラクタ
+	Shader(void);
 
-	Shader(void);				// コンストラクタ
-	~Shader(void);				// デストラクタ
+	// デストラクタ
+	~Shader(void);
+
 	void Init(void);			// 初期化
 	void Draw(int texture);		// 描画
 	void Release(void);			// 解放
 
 	// パラメータ変更のセッター
 	// 走査線の濃さの変更
-	void SetScanlineIntensity(float val) { targetCtrParam_.scanlineIntensity = val; }
+	void SetScanlineIntensity(float val) { targetCrtParam_.scanlineIntensity = val; }
 
 	// ビネットの鋭さの変更
-	void SetVignettePower(float val) { targetCtrParam_.vignettePower = val; }
+	void SetVignettePower(float val) { targetCrtParam_.vignettePower = val; }
 
 	// グリッチの強度の変更
-	void SetGlitchAmount(float val) { targetCtrParam_.glitchAmount = val; }
+	void SetGlitchAmount(float val) { targetCrtParam_.glitchAmount = val; }
 
 	// 歪み度の変更（補間なしで即座に切り替えたい場面があるため isLerpActive を用意）
 	void SetCurvatureAmount(float val, bool isLerpActive = true);
 
 	// ノイズの強度の変更
-	void SetNoisePower(float val) { targetCtrParam_.noisePower = val; }
+	void SetNoisePower(float val) { targetCrtParam_.noisePower = val; }
 
 	// 色のずれの変更
-	void SetRgbShift(float val) { targetCtrParam_.rgbShift = val; }
+	void SetRgbShift(float val) { targetCrtParam_.rgbShift = val; }
 
 	// 全ての目標値をデフォルトに戻す
-	void ResetParameters(void) { targetCtrParam_ = DEFAULT_CTR; }
+	void ResetParameters(void) { targetCrtParam_ = DEFAULT_CRT; }
 
 	// パラメータのゲッター
-	const Ctr& GetParameters(void) const { return currentCtrParam_;}
+	const CrtParam& GetParameters(void) const { return currentCrtParam_;}
 
 	// 現在のパラメータがデフォルト値かどうかを判定する
 	bool IsDefault(void) const;
@@ -99,24 +101,24 @@ private:
 	static constexpr float LERP_SPEED = 0.05f;
 
 	// シェーダの目標値と現在値を保持する構造体
-	Ctr targetCtrParam_;	// 目標値
-	Ctr currentCtrParam_;	// 現在値
+	CrtParam targetCrtParam_ = {};	// 目標値
+	CrtParam currentCrtParam_ = {};	// 現在値
 
 	// 頂点情報
 	// 頂点座標、色、テクスチャ座標を保持する構造体
-	VERTEX2DSHADER vertex_[SQUARE_VERTEX_NUM];
+	VERTEX2DSHADER vertex_[SQUARE_VERTEX_NUM] = {};
 
 	// 頂点インデックス
-	WORD index_[SQUARE_INDEX_NUM];
+	WORD index_[SQUARE_INDEX_NUM] = {};
 
 	// ピクセルシェーダーのハンドル
-	int psCtr_;
+	int psCrt_ = -1;
 
 	// ピクセルシェーダー用の定数バッファのハンドル
-	int psCtrConstBuf_;
+	int psCrtConstBuf_ = -1;
 
 	// 描画用の四角頂点を作成
-	void MakeSquereVertex(void);
+	void MakeSquareVertex(void);
 
 	// パラメータを補間する
 	void UpdateParam(float& current, float target);

@@ -596,7 +596,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Src\Common\Shader\CtrShader.hlsl" />
+    <FxCompile Include="Src\Common\Shader\CRTShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="THIEF.rc">

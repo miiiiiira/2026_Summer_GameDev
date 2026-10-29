@@ -13,20 +13,27 @@ struct PS_INPUT
 
 // ノイズ生成用
 static const float2 NOISE_SEED = float2(12.9898f, 78.233f);
-static const float NOISE_AMPLITUDE = 43758.545f;
+static const float NOISE_HASH_SCALE = 43758.545f;
 
-// グリッチの発生間隔
+// グリッチ用の乱数シード値
 static const float TIME_RANDOM_SEED_A = 123.456f;
 static const float TIME_RANDOM_SEED_B = 789.012f;
 
 // グリッチ演出用
 static const float GLITCH_CHECK_HERTZ = 2.0f;       // 1秒間に行うグリッチ判定
-static const float GLITCH_PROBABILITY = 0.8f;       // この値を超えたらグリッチ発生（大きいほど発生しにくい）
+static const float GLITCH_OCCUR_THRESHOLD = 0.8f;   // この値を超えたらグリッチ発生（大きいほど発生しにくい）
 static const float GLITCH_WAVE_FREQ = 40.0f;        // グリッチ線の細かさ
 static const float GLITCH_WAVE_SPEED = 0.5f;        // グリッチの波が上下に流れる速度 
 static const float GLITCH_THRESHOLD = 0.95f;        // どの程度の波の強さでグリッチを有効にするか
 
+// UVを中央にするための位置
 static const float UV_CENTER = 0.5f;
+
+// 中心からの距離を0～1にするための倍率
+static const float CENTER_DIST_SCALE = 2.0f;
+
+// ノイズを-0.5～0.5にずらす値
+static const float NOISE_OFFSET = 0.5f;
 
 // 走査線の密度
 static const float SCANLINE_DENSITY = 500.0f;
@@ -57,10 +64,9 @@ float4 main(PS_INPUT input) : SV_TARGET
     // 中心を0.0にする
     float2 center = (uv - UV_CENTER);
    
-    // 中心からの距離を計算
-    // * 2.0で0.0～1.0にする
-    float x = abs(center.x) * 2.0f;
-    float y = abs(center.y) * 2.0f;
+    // CENTER_DIST_SCALE を掛けて0.0～1.0にする
+    float x = abs(center.x) * CENTER_DIST_SCALE;
+    float y = abs(center.y) * CENTER_DIST_SCALE;
    
     // 魚眼レンズ処理
     // --------------------------------------------
@@ -73,12 +79,12 @@ float4 main(PS_INPUT input) : SV_TARGET
     
     // グリッチ処理
     // --------------------------------------------
-    // 0.5秒ごとに値を更新
+    // GLITCH_CHECK_HERTZ 回/秒で値を更新
     float timeStep = floor(g_timer * GLITCH_CHECK_HERTZ);
     float randomInterval = frac(sin(timeStep * TIME_RANDOM_SEED_A) * TIME_RANDOM_SEED_B);
     
     // グリッチが発生するかどうかを判定
-    if (randomInterval > GLITCH_PROBABILITY)
+    if (randomInterval > GLITCH_OCCUR_THRESHOLD)
     {
         // グリッチ
         float glitch = sin(uv.y * GLITCH_WAVE_FREQ + g_timer * GLITCH_WAVE_SPEED);
@@ -112,8 +118,8 @@ float4 main(PS_INPUT input) : SV_TARGET
     // ビネット
     // --------------------------------------------
     // ビネットの計算
-    float vignette = (1.0f - x * x * g_vignettePower)
-                              * (1.0f - y * y * g_vignettePower);
+    float vignette = saturate(1.0f - x * x * g_vignettePower)
+                   * saturate(1.0f - y * y * g_vignettePower);
     // ビネットを適用
     color.rgb *= vignette;
     
@@ -121,7 +127,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     // --------------------------------------------
     // ノイズ計算
     float noise = frac(sin(
-			dot(uv * frac(g_timer), NOISE_SEED)) * NOISE_AMPLITUDE) - 0.5f;
+			dot(uv * frac(g_timer), NOISE_SEED)) * NOISE_HASH_SCALE) - NOISE_OFFSET;
     
     // ノイズカラーを加算する
     color.rgb += noise * g_noisePower;

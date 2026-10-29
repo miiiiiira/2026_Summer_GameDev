@@ -86,6 +86,45 @@ namespace
 
 	// モデルのローカル回転
 	constexpr float MODEL_FORWARD_OFFSET_DEG = 180.0f;
+
+	// エッジの色
+	constexpr unsigned int EDGE_LINE_COLOR = 0xffff00;
+
+	// 現在のノードへの線
+	constexpr unsigned int CURRENT_NODE_LINE_COLOR = 0xff00ff;
+
+	// 巡回範囲の球の分割数
+	constexpr int PATROL_RANGE_DIV_NUM = 8;
+
+	// 巡回範囲の色
+	constexpr unsigned int PATROL_RANGE_COLOR = 0x00ff00;
+
+	// 目的地の球の半径
+	constexpr float NEXT_WAYPOINT_RADIUS = 40.0f;
+
+	// 目的地の球の分割数
+	constexpr int NEXT_WAYPOINT_DIV_NUM = 10;
+
+	// 目的地の球の色
+	constexpr unsigned int NEXT_WAYPOINT_COLOR = 0x00ff00;
+
+	// 全てのノードの色
+	constexpr unsigned int NODE_COLOR_DEFAULT = 0x0000ff;
+
+	// 一つ前のノードの色
+	constexpr unsigned int NODE_COLOR_PREV = 0xff8c00;
+
+	// 二つ前のノードの色
+	constexpr unsigned int NODE_COLOR_PREV_PREV = 0xfff5ee;
+
+	// 範囲外のノードの色
+	constexpr unsigned int NODE_COLOR_OUT_OF_RANGE = 0xff0000;
+
+	// ノードの半径
+	constexpr float NODE_RADIUS = 50.0f;
+
+	// ノードの球の分割数
+	constexpr int NODE_DIV_NUM = 10;
 }
 
 Yeti::Yeti(void)
@@ -223,50 +262,50 @@ void Yeti::Draw3D(void)
 
 	if (transform_)
 	{
-		// ウェイポイントと、ノード同士をつなぐ辺（エッジ）のリストを取得
+		// ウェイポイントと、ノード同士をつなぐ辺のリストを取得
 		const auto* wayList = pathData->GetWayList();
 		const auto* edgeList = pathData->GetEdgeList();
 
 		if (wayList && edgeList)
 		{
-			// すべてのノード間の接続を黄色い線で描画
+			// すべてのノード間の接続を線で描画
 			for (int i = 0; i < (int)edgeList->size(); i++)
 			{
 				for (const auto& edge : (*edgeList)[i])
 				{
 					DrawLine3D((*wayList)[i].pos_,
 						edge.way_.pos_,
-						GetColor(255, 255, 0));
+						EDGE_LINE_COLOR);
 				}
 			}
 
-			// 現在ノードと自分の位置をマゼンタの線で結ぶ
+			// 現在ノードと自分の位置を線で結ぶ
 			if (info_.currentNodeId_ >= 0 && info_.currentNodeId_ < (int)wayList->size())
 			{
 				DrawLine3D(transform_->pos_,
 					(*wayList)[info_.currentNodeId_].pos_,
-					GetColor(255, 0, 255));
+					CURRENT_NODE_LINE_COLOR);
 			}
 
-			// 巡回範囲を緑のワイヤーフレーム球で描画
+			// 巡回範囲をワイヤーフレーム球で描画
 			DrawSphere3D(transform_->pos_,
 				info_.patrolRadius_,
-				8,
-				GetColor(0, 255, 0),
-				GetColor(0, 0, 0),
+				PATROL_RANGE_DIV_NUM,
+				PATROL_RANGE_COLOR,
+				PATROL_RANGE_COLOR,
 				FALSE);
 
 			// 次の目的地を緑の塗りつぶし球と線で描画
 			DrawSphere3D(info_.nextWayPoint_,
-				40.0f,
-				10,
-				GetColor(0, 255, 0),
-				GetColor(0, 255, 0),
+				NEXT_WAYPOINT_RADIUS,
+				NEXT_WAYPOINT_DIV_NUM,
+				NEXT_WAYPOINT_COLOR,
+				NEXT_WAYPOINT_COLOR,
 				TRUE);
 
 			DrawLine3D(transform_->pos_,
 				info_.nextWayPoint_,
-				GetColor(0, 255, 0));
+				NEXT_WAYPOINT_COLOR);
 
 			// 各ノードを状態に応じた色で描画
 			for (const auto& point : (*wayList))
@@ -275,25 +314,28 @@ void Yeti::Draw3D(void)
 				float distance = VSize(VSub(point.pos_, transform_->pos_));
 
 				// 基本色は青
-				unsigned int color = 0x0000ff;
+				unsigned int color = NODE_COLOR_DEFAULT;
+
 				if (point.id_ == info_.prevNodeId_)
 				{
-					// 直前に訪れたノード：オレンジ
-					color = 0xff8c00;
+					// 直前に訪れたノード
+					color = NODE_COLOR_PREV;
 				}
 				else if (point.id_ == info_.prevPrevNodeId_)
 				{
-					// 2つ前に訪れたノード：白系
-					color = 0xfff5ee;
+					// 2つ前に訪れたノード
+					color = NODE_COLOR_PREV_PREV;
 				}
 				else if (distance > info_.patrolRadius_)
 				{
-					// 巡回範囲外のノード：赤
-					color = 0xff0000;
+					// 巡回範囲外のノード
+					color = NODE_COLOR_OUT_OF_RANGE;
 				}
 
 				DrawSphere3D(
-					point.pos_, 50.0f, 10,
+					point.pos_,
+					NODE_RADIUS,
+					NODE_DIV_NUM,
 					color, color, false);
 			}
 		}
@@ -428,7 +470,7 @@ void Yeti::ChangeAttack(void)
 	// パンチ攻撃を発動
 	useWeapon_->UseWeapon(transform_->pos_, info_.moveDir_);
 
-	// パンチアニメーションを1回だけ再生
+	// パンチアニメーションを再生
 	animation_->Play(static_cast<int>(ANIM_TYPE::PUNCH), false);
 }
 
