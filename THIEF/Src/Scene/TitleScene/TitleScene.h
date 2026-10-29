@@ -8,8 +8,11 @@ class TitleScene : public SceneBase
 {
 public:
 
-	TitleScene(void);				// コンストラクタ
-	~TitleScene(void) override;		// デストラクタ
+	// コンストラクタ
+	TitleScene(void);
+
+	// デストラクタ
+	~TitleScene(void) override;
 
 	void Init(void)		override;	// 初期化
 	void Load(void)		override;	// 読み込み

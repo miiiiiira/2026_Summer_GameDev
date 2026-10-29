@@ -101,7 +101,6 @@ void GameClear::Update(void)
 		skipTimer_++;	// ボタンが押されるとスキップカウンターをカウントさせる
 
 		alpha_ += ALPHA_STEP;
-
 		if (alpha_ >= ALPHA_MAX)
 		{
 			alpha_ = ALPHA_MAX;
@@ -112,7 +111,6 @@ void GameClear::Update(void)
 		skipTimer_ = 0.0f;	// ボタンが離されたら、カウンターを0にする
 
 		alpha_ -= ALPHA_STEP;
-
 		if (alpha_ <= ALPHA_MIN)
 		{
 			alpha_ = ALPHA_MIN;

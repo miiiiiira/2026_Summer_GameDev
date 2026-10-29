@@ -1,5 +1,3 @@
-#include <memory>
-#include <vector>
 #include "../../Manager/Input/InputManager.h"
 #include "../../Manager/Audio/AudioManager.h"
 #include "../../Common/FrameRenderer/FrameRenderer.h"
@@ -212,8 +210,7 @@ void MainMenu::UpdateSelect(void)
 	}
 
 	// 中身がNONEじゃないかつ、選択物が変わっていたら
-	if (currentMenu_ != MENU::NONE
-		&& currentMenu_ != prevMenu)
+	if (currentMenu_ != MENU::NONE && currentMenu_ != prevMenu)
 	{
 		// ボタンに乗ったサウンドを出す
 		AudioManager::GetInstance()->PlaySE(SoundID::SYS_SELECT_ON);

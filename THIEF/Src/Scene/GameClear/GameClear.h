@@ -1,5 +1,4 @@
 #pragma once
-
 #include "../SceneBase.h"
 #include "../../Application.h"
 
@@ -7,8 +6,11 @@ class GameClear : public SceneBase
 {
 public:
 
-	GameClear(void);				// コンストラクタ
-	~GameClear(void) override;		// デストラクタ
+	// コンストラクタ
+	GameClear(void);
+
+	// デストラクタ
+	~GameClear(void) override;
 
 	void Init(void)		override;	// 初期化
 	void Load(void)		override;	// 読み込み
@@ -51,5 +53,6 @@ private:
 	// アルファ値
 	int alpha_ = 0;
 
+	// シェーダー初期化処理
 	void ShaderInit(void);
 };

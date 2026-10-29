@@ -27,8 +27,11 @@ public:
 		int sizeY = 0;
 	};
 
-	MainMenu(void);				// コンストラクタ
-	~MainMenu(void) override;		// デストラクタ
+	// コンストラクタ
+	MainMenu(void);
+
+	// デストラクタ
+	~MainMenu(void) override;
 
 	void Init(void)		override;	// 初期化
 	void Load(void)		override;	// 読み込み
