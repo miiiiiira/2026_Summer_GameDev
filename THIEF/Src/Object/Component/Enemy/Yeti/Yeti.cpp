@@ -30,7 +30,7 @@ namespace
 	// 視界（発見・追跡）の半径
 	constexpr float VIEW_RADIUS_DEFAULT = 1000.0f;
 
-	// ウェイポイント到達判定距離
+	// ウェイポイント到達判定距離k
 	constexpr float WAYPOINT_ARRIVE_DIST = 50.0f;
 
 	// 巡回移動速度
@@ -235,8 +235,8 @@ void Yeti::Draw3D(void)
 				for (const auto& edge : (*edgeList)[i])
 				{
 					DrawLine3D((*wayList)[i].pos_,
-								edge.way_.pos_,
-								GetColor(255, 255, 0));
+						edge.way_.pos_,
+						GetColor(255, 255, 0));
 				}
 			}
 
@@ -244,29 +244,29 @@ void Yeti::Draw3D(void)
 			if (info_.currentNodeId_ >= 0 && info_.currentNodeId_ < (int)wayList->size())
 			{
 				DrawLine3D(transform_->pos_,
-							(*wayList)[info_.currentNodeId_].pos_,
-							GetColor(255, 0, 255));
+					(*wayList)[info_.currentNodeId_].pos_,
+					GetColor(255, 0, 255));
 			}
 
 			// 巡回範囲を緑のワイヤーフレーム球で描画
 			DrawSphere3D(transform_->pos_,
-						info_.patrolRadius_,
-						8,
-						GetColor(0, 255, 0),
-						GetColor(0, 0, 0),
-						FALSE);
+				info_.patrolRadius_,
+				8,
+				GetColor(0, 255, 0),
+				GetColor(0, 0, 0),
+				FALSE);
 
 			// 次の目的地を緑の塗りつぶし球と線で描画
 			DrawSphere3D(info_.nextWayPoint_,
-						40.0f,
-						10,
-						GetColor(0, 255, 0),
-						GetColor(0, 255, 0),
-						TRUE);
+				40.0f,
+				10,
+				GetColor(0, 255, 0),
+				GetColor(0, 255, 0),
+				TRUE);
 
 			DrawLine3D(transform_->pos_,
-						info_.nextWayPoint_,
-						GetColor(0, 255, 0));
+				info_.nextWayPoint_,
+				GetColor(0, 255, 0));
 
 			// 各ノードを状態に応じた色で描画
 			for (const auto& point : (*wayList))
@@ -397,9 +397,9 @@ void Yeti::ChangeSurprise(void)
 
 	// 発見時の鳴き声SEを再生
 	AudioManager::GetInstance()->PlaySE(
-					SoundID::SE_ENEMY_YETI,
-					&transform_->pos_,
-					SE_RADIUS_YETI);
+		SoundID::SE_ENEMY_YETI,
+		&transform_->pos_,
+		SE_RADIUS_YETI);
 
 	// 驚きのアニメーションを1回だけ再生
 	animation_->Play(static_cast<int>(ANIM_TYPE::HIT_REACT), false);

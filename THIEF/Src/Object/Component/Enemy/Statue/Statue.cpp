@@ -182,8 +182,8 @@ void Statue::Draw3D(void)
 			for (const auto& edge : (*edgeList)[i])
 			{
 				DrawLine3D((*wayList)[i].pos_,
-							edge.way_.pos_,
-							GetColor(255, 255, 0));
+					edge.way_.pos_,
+					GetColor(255, 255, 0));
 			}
 		}
 
@@ -191,28 +191,28 @@ void Statue::Draw3D(void)
 		if (info_.currentNodeId_ >= 0 && info_.currentNodeId_ < (int)wayList->size())
 		{
 			DrawLine3D(transform_->pos_,
-						(*wayList)[info_.currentNodeId_].pos_,
-						GetColor(255, 0, 255));
+				(*wayList)[info_.currentNodeId_].pos_,
+				GetColor(255, 0, 255));
 		}
 
 		// 巡回範囲を緑のワイヤーフレーム球で描画
 		DrawSphere3D(transform_->pos_,
-					info_.patrolRadius_,
-					8, GetColor(0, 255, 0),
-					GetColor(0, 0, 0),
-					FALSE);
+			info_.patrolRadius_,
+			8, GetColor(0, 255, 0),
+			GetColor(0, 0, 0),
+			FALSE);
 
 		// 次の目的地を緑の塗りつぶし球と線で描画
 		DrawSphere3D(info_.nextWayPoint_,
-					40.0f,
-					10,
-					GetColor(0, 255, 0),
-					GetColor(0, 255, 0),
-					TRUE);
+			40.0f,
+			10,
+			GetColor(0, 255, 0),
+			GetColor(0, 255, 0),
+			TRUE);
 
 		DrawLine3D(transform_->pos_,
-					info_.nextWayPoint_,
-					GetColor(0, 255, 0));
+			info_.nextWayPoint_,
+			GetColor(0, 255, 0));
 	}
 
 	// 武器の当たり判定などをデバッグ描画

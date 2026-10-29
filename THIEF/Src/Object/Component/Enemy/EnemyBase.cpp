@@ -196,8 +196,8 @@ void EnemyBase::FindPath(int startNodeId, int goalNodeId)
 
 	// 優先度付きキューを使用して、コストの小さい順に探索する
 	std::priority_queue<std::pair<float, int>,
-						std::vector<std::pair<float, int>>,
-						std::greater<std::pair<float, int>>> que;
+		std::vector<std::pair<float, int>>,
+		std::greater<std::pair<float, int>>> que;
 
 	// スタート地点をキューに追加
 	que.push({ 0.0f, startNodeId });

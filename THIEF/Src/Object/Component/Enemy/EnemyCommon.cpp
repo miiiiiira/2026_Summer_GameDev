@@ -50,6 +50,6 @@ namespace EnemyTable
 				VGet(0.0f, 0.0f, 0.0f),
 				0.0f
 			}
-		},
+		}
 	};
 }
