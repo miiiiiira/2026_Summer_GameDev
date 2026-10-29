@@ -9,7 +9,7 @@ public:
 
 	GameClear(void);				// コンストラクタ
 	~GameClear(void) override;		// デストラクタ
-	
+
 	void Init(void)		override;	// 初期化
 	void Load(void)		override;	// 読み込み
 	void LoadEnd(void)	override;	// 読み込み後の処理

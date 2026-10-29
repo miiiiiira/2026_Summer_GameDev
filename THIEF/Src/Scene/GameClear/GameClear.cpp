@@ -204,14 +204,14 @@ void GameClear::ShaderInit(void)
 {
 	// ‘–¸ü
 	SceneManager::GetInstance()->GetShader()->
-					SetScanlineIntensity(Shader::MENU_SCANLINE_INTENSITY);
+		SetScanlineIntensity(Shader::MENU_SCANLINE_INTENSITY);
 	// ˜c‚Ý
 	SceneManager::GetInstance()->GetShader()->
-					SetCurvatureAmount(Shader::MENU_CURVATURE_AMOUNT);
+		SetCurvatureAmount(Shader::MENU_CURVATURE_AMOUNT);
 	// ƒmƒCƒY
 	SceneManager::GetInstance()->GetShader()->
-					SetNoisePower(Shader::MENU_NOISE_POWER);
+		SetNoisePower(Shader::MENU_NOISE_POWER);
 	// F‚¸‚ê
 	SceneManager::GetInstance()->GetShader()->
-					SetRgbShift(Shader::MENU_RGB_SHIFT);
+		SetRgbShift(Shader::MENU_RGB_SHIFT);
 }

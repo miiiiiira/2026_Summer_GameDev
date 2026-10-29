@@ -106,7 +106,7 @@ void TitleScene::Update(void)
 		if (alpha_ >= ALPHA_MAX)
 		{
 			alpha_ = ALPHA_MAX;
-			isIncreasing_ = false; 
+			isIncreasing_ = false;
 		}
 	}
 	else
@@ -145,17 +145,17 @@ void TitleScene::ShaderInit(void)
 {
 	// 走査線
 	SceneManager::GetInstance()->GetShader()->
-					SetScanlineIntensity(Shader::MENU_SCANLINE_INTENSITY);
+		SetScanlineIntensity(Shader::MENU_SCANLINE_INTENSITY);
 	// グリッチ
 	SceneManager::GetInstance()->GetShader()->
-					SetGlitchAmount(Shader::MENU_GLITCH_AMOUNT);
+		SetGlitchAmount(Shader::MENU_GLITCH_AMOUNT);
 	// 歪み
 	SceneManager::GetInstance()->GetShader()->
-					SetCurvatureAmount(Shader::MENU_CURVATURE_AMOUNT, false);
+		SetCurvatureAmount(Shader::MENU_CURVATURE_AMOUNT, false);
 	// ノイズ
 	SceneManager::GetInstance()->GetShader()->
-					SetNoisePower(Shader::MENU_NOISE_POWER);
+		SetNoisePower(Shader::MENU_NOISE_POWER);
 	// 色ずれ
 	SceneManager::GetInstance()->GetShader()->
-					SetRgbShift(Shader::MENU_RGB_SHIFT);
+		SetRgbShift(Shader::MENU_RGB_SHIFT);
 }

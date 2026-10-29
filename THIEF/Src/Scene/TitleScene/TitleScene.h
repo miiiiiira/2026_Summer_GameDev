@@ -7,7 +7,7 @@ class Confirm;
 class TitleScene : public SceneBase
 {
 public:
-	
+
 	TitleScene(void);				// コンストラクタ
 	~TitleScene(void) override;		// デストラクタ
 
