@@ -15,7 +15,7 @@ public:
 		float curvatureAmount = 0.0f;	// 歪み度
 		float noisePower = 0.0f;		// ノイズの強度
 		float rgbShift = 0.0f;			// 色のずれ
-		float padding = 0.0f;
+		float padding = 0.0f;			// 定数バッファを16バイト境界に揃えるため
 	};
 
 	// デフォルト値の初期化
@@ -43,10 +43,15 @@ public:
 	static constexpr float DAMAGE_VIGNETTE_POWER = 0.7f;
 
 	// メニュー・UI画面共通のシェーダ設定値
+	// 走査線の濃さ
 	static constexpr float MENU_SCANLINE_INTENSITY = 0.5f;
+	// グリッチで横にずらす最大値
 	static constexpr float MENU_GLITCH_AMOUNT = 0.005f;
+	// 湾曲の強さ
 	static constexpr float MENU_CURVATURE_AMOUNT = 0.4f;
+	// ノイズの強さ
 	static constexpr float MENU_NOISE_POWER = 0.5f;
+	// RGBの色ずれ幅
 	static constexpr float MENU_RGB_SHIFT = 0.004f;
 
 	// ゲームオーバー用の歪みの強さ
@@ -89,7 +94,7 @@ public:
 	// 全ての目標値をデフォルトに戻す
 	void ResetParameters(void) { targetCrtParam_ = DEFAULT_CRT; }
 
-	// パラメータのゲッター
+	// 現在のパラメータを取得
 	const CrtParam& GetParameters(void) const { return currentCrtParam_;}
 
 	// 現在のパラメータがデフォルト値かどうかを判定する
@@ -106,9 +111,12 @@ private:
 	// 補間の速さ(値が大きいほど素早く目標値に到達)
 	static constexpr float LERP_SPEED = 0.05f;
 
-	// シェーダの目標値と現在値を保持する構造体
-	CrtParam targetCrtParam_ = {};	// 目標値
-	CrtParam currentCrtParam_ = {};	// 現在値
+	// シェーダのパラメータ
+	// 目標値、セッターで変更する
+	CrtParam targetCrtParam_ = {};
+
+	// 現在値、シェーダーへ渡す
+	CrtParam currentCrtParam_ = {};
 
 	// 頂点情報
 	// 頂点座標、色、テクスチャ座標を保持する構造体
