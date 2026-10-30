@@ -1,3 +1,4 @@
+#include <string>
 #include <DxLib.h>
 #include "../../Manager/Input/InputManager.h"
 #include "../../Manager/Audio/AudioManager.h"
@@ -26,6 +27,12 @@ namespace
 
 	// タイトルロゴのオフセット位置
 	constexpr int TITLE_LOGO_OFFSET_Y = 100;
+
+	// タイトルロゴの画像パス
+	std::string TITLE_LOGO_IMAGE = Application::PATH_IMAGE + "Common/Title.png";
+
+	// タイトル誘導の画像パス
+	std::string PUSH_ANY_BUTTON_IMAGE = Application::PATH_IMAGE + "Title/PushAnyButton.png";
 }
 
 TitleScene::TitleScene(void)
@@ -51,8 +58,8 @@ void TitleScene::Init(void)
 void TitleScene::Load(void)
 {
 	AudioManager::GetInstance()->LoadSceneSound(LoadScene::TITLE);
-	handle_ = LoadGraph("Data/Image/Common/Title.png");
-	buttonHandle_ = LoadGraph("Data/Image/Title/PushAnyButton.png");
+	handle_ = LoadGraph(TITLE_LOGO_IMAGE.c_str());
+	buttonHandle_ = LoadGraph(PUSH_ANY_BUTTON_IMAGE.c_str());
 
 	confirm_ = std::make_shared<Confirm>();
 }

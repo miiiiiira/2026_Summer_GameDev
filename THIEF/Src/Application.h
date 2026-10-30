@@ -90,7 +90,7 @@ private:
 
 	// フォントハンドル
 	int defaultFont_ = -1;
-	int font_[FONT_SIZE::FONT_MAX];
+	int font_[FONT_SIZE::FONT_MAX] = {};
 
 private:
 	int InitEffekseer(void);

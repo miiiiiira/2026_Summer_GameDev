@@ -230,7 +230,6 @@ void Skeleton::UpdateScare(void)
 				FORWARD_COLLISION_CHECK_DISTANCE));
 
 		VECTOR start = VAdd(checkPos, info_.startOffset_);
-
 		VECTOR end = VAdd(checkPos, info_.endOffset_);
 
 		// 壁との衝突チェック

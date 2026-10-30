@@ -1,3 +1,4 @@
+#include <string>
 #include <DxLib.h>
 #include "../../Manager/Input/InputManager.h"
 #include "../../Manager/Audio/AudioManager.h"
@@ -48,6 +49,15 @@ namespace
 
 	// ゲージの開始位置
 	constexpr double GAUGE_START_PERCENT = 0.0;
+
+	// エンドロールの画像パス
+	const std::string ENDROLL_IMAGE = Application::PATH_IMAGE + "GameClear/EndRoll.png";
+
+	// スキップの画像パス
+	const std::string SKIP_IMAGE = Application::PATH_IMAGE + "GameClear/skip.png";
+
+	// スキップゲージの画像パス
+	const std::string SKIP_GAUGE_IMAGE = Application::PATH_IMAGE + "GameClear/skipGauge.png";
 }
 
 GameClear::GameClear(void)
@@ -73,9 +83,9 @@ void GameClear::Init(void)
 
 void GameClear::Load(void)
 {
-	handle_ = LoadGraph("Data/Image/GameClear/EndRoll.png");
-	skipHandle_ = LoadGraph("Data/Image/GameClear/skip.png");
-	skipGauge_ = LoadGraph("Data/Image/GameClear/skipGauge.png");
+	handle_ = LoadGraph(ENDROLL_IMAGE.c_str());
+	skipHandle_ = LoadGraph(SKIP_IMAGE.c_str());
+	skipGauge_ = LoadGraph(SKIP_GAUGE_IMAGE.c_str());
 
 	AudioManager::GetInstance()->LoadSceneSound(LoadScene::GAME_CLEAR);
 }

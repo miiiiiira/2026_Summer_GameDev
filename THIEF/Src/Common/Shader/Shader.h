@@ -27,6 +27,7 @@ public:
 	static constexpr float DEFAULT_NOISE_POWER = 0.1f;			// ノイズの強度
 	static constexpr float DEFAULT_RGB_SHIFT = 0.002f;			// 色のずれ
 
+	// CRTシェーダーの初期値
 	static constexpr CrtParam DEFAULT_CRT = { 
 					DEFAULT_SCANLINE_INTENSITY, 
 					DEFAULT_VIGNETTE_POWER, 
@@ -57,9 +58,14 @@ public:
 	// デストラクタ
 	~Shader(void);
 
-	void Init(void);			// 初期化
-	void Draw(int texture);		// 描画
-	void Release(void);			// 解放
+	// 初期化
+	void Init(void);
+
+	// 描画
+	void Draw(int texture);
+
+	// 解放
+	void Release(void);
 
 	// パラメータ変更のセッター
 	// 走査線の濃さの変更

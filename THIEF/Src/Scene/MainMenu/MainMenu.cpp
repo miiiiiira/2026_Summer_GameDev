@@ -1,3 +1,4 @@
+#include <string>
 #include "../../Manager/Input/InputManager.h"
 #include "../../Manager/Audio/AudioManager.h"
 #include "../../Common/FrameRenderer/FrameRenderer.h"
@@ -37,6 +38,18 @@ namespace
 
 	// 背景色
 	constexpr unsigned int BACKGROUND_COLOR = 0x000000;
+
+	// メインメニューのタイトル画像パス
+	const std::string MAINMENU_HEADER = Application::PATH_IMAGE + "MainMenu/play.png";
+
+	// PLAYの画像パス
+	const std::string MAINMENU_PLAY = Application::PATH_IMAGE + "MainMenu/play.png";
+
+	// OPTIONの画像パス
+	const std::string MAINMENU_OPTION = Application::PATH_IMAGE + "Common/option.png";
+
+	// QUITの画像パス
+	const std::string MAINMENU_QUIT = Application::PATH_IMAGE + "Common/quit.png";
 }
 
 MainMenu::MainMenu(void)
@@ -61,18 +74,18 @@ void MainMenu::Load(void)
 	// メインメニューサウンド読みこみ
 	AudioManager::GetInstance()->LoadSceneSound(LoadScene::MAIN_MENU);
 
-	handle_ = LoadGraph((Application::PATH_IMAGE + "Common/Title.png").c_str());
+	handle_ = LoadGraph(MAINMENU_HEADER.c_str());
 
 	menuButtons_.clear();
 
 	// PLAY画像
-	menuButtons_.push_back({ MENU::PLAY, LoadGraph((Application::PATH_IMAGE + "MainMenu/play.png").c_str()),
+	menuButtons_.push_back({ MENU::PLAY, LoadGraph(MAINMENU_PLAY.c_str()),
 						PLAY_POS_X, PLAY_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
 	// OPTION画像
-	menuButtons_.push_back({ MENU::OPTION, LoadGraph((Application::PATH_IMAGE + "Common/option.png").c_str()),
+	menuButtons_.push_back({ MENU::OPTION, LoadGraph(MAINMENU_OPTION.c_str()),
 						OPTION_POS_X, OPTION_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
 	// QUIT画像
-	menuButtons_.push_back({ MENU::QUIT, LoadGraph((Application::PATH_IMAGE + "Common/quit.png").c_str()),
+	menuButtons_.push_back({ MENU::QUIT, LoadGraph(MAINMENU_QUIT.c_str()),
 						QUIT_POS_X, QUIT_POS_Y, IMAGE_SIZE_X, IMAGE_SIZE_Y });
 }
 
@@ -152,7 +165,9 @@ void MainMenu::Draw(void)
 		{
 			FrameRenderer::Draw(button.x, button.y);
 		}
-		DrawGraph(button.x, button.y, button.graphHandle, true);		// メニューボタンの画像
+
+		// メニューボタンの画像
+		DrawGraph(button.x, button.y, button.graphHandle, true);
 	}
 }
 
