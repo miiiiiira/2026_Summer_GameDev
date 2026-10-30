@@ -20,7 +20,8 @@ public:
 	// デストラクタ
 	~Giggle(void) override;
 
-	void Update(void) override;	// 更新
+	// 更新
+	void Update(void) override;
 
 	// タグを返す
 	ENEMY_TAG GetTag(void) const override { return ENEMY_TAG::GIGGLE; }

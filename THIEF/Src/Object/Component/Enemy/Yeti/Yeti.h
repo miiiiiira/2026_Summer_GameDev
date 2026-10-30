@@ -43,8 +43,11 @@ public:
 	// デストラクタ
 	~Yeti(void) override;
 
-	void Update(void) override;		// 更新
-	void Draw3D(void) override;		// 3D描画
+	// 更新
+	void Update(void) override;
+
+	// 3D描画
+	void Draw3D(void) override;
 
 	// タグを返す
 	ENEMY_TAG GetTag(void) const override { return ENEMY_TAG::YETI; }

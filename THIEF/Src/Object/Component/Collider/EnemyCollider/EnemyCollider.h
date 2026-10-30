@@ -1,5 +1,4 @@
 #pragma once
-
 #include "../../Component.h"
 #include "../../Transform/Transform.h"
 
@@ -12,13 +11,23 @@ class Crosshair;
 class EnemyCollider : public Component
 {
 public:
+
+	// 初期化 
 	void Init(void) override;
+
+	// 更新
 	void Update(void) override;
 
-	// 各種参照の設定
+	// 判定対象の敵を設定
 	void SetEnemy(EnemyBase* enemy) { enemy_ = enemy; }
+
+	// 当たり判定を取るプレイヤーを設定
 	void SetPlayer(PlayerController* player) { player_ = player; }
+
+	// 当たり判定に使うステージを設定
 	void SetStage(Stage* stage) { stage_ = stage; }
+
+	// 掴み判定に使うクロスヘアを設定
 	void SetCrosshair(Crosshair* crosshair) { crosshair_ = crosshair; }
 
 private:

@@ -12,9 +12,14 @@ public:
 	// デストラクタ
 	~WeaponPunch(void) override;
 
-	void Update(void) override;		// 更新
-	void Draw(void) override;		// 描画
-	void Release(void) override;	// 解放
+	// 更新
+	void Update(void) override;
+
+	// 描画
+	void Draw(void) override;
+
+	// 解放
+	void Release(void) override;
 
 	// 武器を使用する
 	void UseWeapon(const VECTOR& pos, const VECTOR& dir) override;

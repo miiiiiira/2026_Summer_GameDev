@@ -24,9 +24,14 @@ public:
 	// デストラクタ
 	~EnemyBase(void) override;
 
-	void Init(void) override final;		// 初期化
-	void Update(void) override = 0;		// 更新
-	void Draw3D(void) override;			// 3D描画
+	// 初期化
+	void Init(void) override final;
+
+	// 更新
+	void Update(void) override = 0;
+	
+	// 3D描画
+	void Draw3D(void) override;
 
 	// プレイヤーをセット
 	void SetPlayer(PlayerController* player);

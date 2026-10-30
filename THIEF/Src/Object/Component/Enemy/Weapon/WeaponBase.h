@@ -11,10 +11,17 @@ public:
 	// デストラクタ
 	virtual ~WeaponBase(void);
 
-	void Init(void);				// 初期化
-	virtual void Update(void);		// 更新
-	virtual void Draw(void) = 0;	// 描画
-	virtual void Release(void) = 0;	// 解放
+	// 初期化
+	void Init(void);
+
+	// 更新
+	virtual void Update(void);
+
+	// 描画
+	virtual void Draw(void) = 0;
+
+	// 解放
+	virtual void Release(void) = 0;
 
 	// 座標の取得
 	const VECTOR& GetPos(void) const { return pos_; }

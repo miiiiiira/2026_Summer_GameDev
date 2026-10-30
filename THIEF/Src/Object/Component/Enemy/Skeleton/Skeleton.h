@@ -32,7 +32,8 @@ public:
 	// デストラクタ
 	~Skeleton(void) override;
 
-	void Update(void) override;		// 更新
+	// 更新
+	void Update(void) override;
 
 	// 敵の向き設定
 	void SetSide(ENEMY_SIDE side);

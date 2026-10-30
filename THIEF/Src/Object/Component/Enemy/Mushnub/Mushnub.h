@@ -35,8 +35,11 @@ public:
 	// デストラクタ
 	~Mushnub(void) override;
 
-	void Update(void) override;		// 更新
-	void Draw3D(void) override;		// 3D描画
+	// 更新
+	void Update(void) override;
+
+	// 3D描画
+	void Draw3D(void) override;
 
 	// 特定のエリアの最大、最小値を設定
 	void SetAreaPos(VECTOR minPos, VECTOR maxPos);

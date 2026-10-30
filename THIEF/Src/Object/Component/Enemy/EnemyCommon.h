@@ -1,9 +1,8 @@
 #pragma once
-#include <DxLib.h>
 #include <unordered_map>
 #include <string>
 #include <vector>
-
+#include <DxLib.h>
 #include "StagePathData.h"
 
 // 敵の種類を表すタグ
@@ -14,7 +13,7 @@ enum class ENEMY_TAG
 	SKELETON,
 	STATUE,
 	GIGGLE,
-	MAX,
+	MAX,		// 敵の種類の数
 };
 
 // 敵の左右の位置を表すタグ
@@ -27,10 +26,10 @@ enum class ENEMY_SIDE
 // 敵生成時のオプションパラメータ
 struct EnemySpawnParam
 {
-	VECTOR minAreaPos_ = {};	// エリア最小座標
-	VECTOR maxAreaPos_ = {};	// エリア最大座標
-	VECTOR homePos_ = {};		// 帰還先
-	VECTOR angle_ = {};			// 初期角度
+	VECTOR minAreaPos_ = {};				// エリア最小座標
+	VECTOR maxAreaPos_ = {};				// エリア最大座標
+	VECTOR homePos_ = {};					// 帰還先
+	VECTOR angle_ = {};						// 初期角度
 	ENEMY_SIDE side_ = ENEMY_SIDE::RIGHT;	// 左右の指定
 };
 
