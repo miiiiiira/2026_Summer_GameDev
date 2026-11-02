@@ -191,13 +191,19 @@ void Statue::Draw3D(void)
 	// プレイヤーを検知する行動エリアをワイヤーフレームで描画
 	DrawCube3D(minAreaPos_, maxAreaPos_, FRAME_COLOR, FRAME_COLOR, false);
 
+	SetUseZBuffer3D(FALSE);
+	SetWriteZBuffer3D(FALSE);
+
 	VECTOR checkPos = transform_->pos_;
 
 	for (int i = 0; i < VIEW_CHECK_POINT_NUM; i++)
 	{
-		DrawSphere3D(checkPos, 80.0f, 10, 0xff0000, 0xff0000, false);
+		DrawSphere3D(checkPos, 20.0f, 10, 0xff0000, 0xff0000, TRUE);
 		checkPos.y += VIEW_CHECK_STEP_Y;
 	}
+
+	SetUseZBuffer3D(TRUE);
+	SetWriteZBuffer3D(TRUE);
 
 	// lock() して shared_ptr を一時的に取得
 	auto pathData = pathData_.lock();
@@ -384,7 +390,7 @@ void Statue::UpdateChase(void)
 	Move();
 
 	// 足音SEの更新
-	UpdateFootstep(isLooked);
+	UpdateFootStep(isLooked);
 }
 
 void Statue::UpdateAttack(void)
@@ -544,7 +550,7 @@ bool Statue::UpdateReturn(bool isLooked, bool isPlayerVisible)
 	return ReturnToHomePos();
 }
 
-void Statue::UpdateFootstep(bool isLooked)
+void Statue::UpdateFootStep(bool isLooked)
 {
 	// 見られている、または止まっている間はタイマーをリセット
 	if (isLooked || !IsMoving())

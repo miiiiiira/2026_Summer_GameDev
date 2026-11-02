@@ -95,5 +95,5 @@ private:
 	bool UpdateReturn(bool isLooked, bool isPlayerVisible);
 
 	// ‘«‰¹SE‚ÌXV
-	void UpdateFootstep(bool isLooked);
+	void UpdateFootStep(bool isLooked);
 };
