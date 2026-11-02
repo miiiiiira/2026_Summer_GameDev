@@ -40,7 +40,7 @@ namespace
 	constexpr unsigned int BACKGROUND_COLOR = 0x000000;
 
 	// メインメニューのタイトル画像パス
-	const std::string MAINMENU_HEADER = Application::PATH_IMAGE + "MainMenu/play.png";
+	const std::string MAINMENU_HEADER = Application::PATH_IMAGE + "Common/Title.png";
 
 	// PLAYの画像パス
 	const std::string MAINMENU_PLAY = Application::PATH_IMAGE + "MainMenu/play.png";
