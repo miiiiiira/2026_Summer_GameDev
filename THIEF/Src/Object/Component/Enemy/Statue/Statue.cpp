@@ -191,6 +191,14 @@ void Statue::Draw3D(void)
 	// プレイヤーを検知する行動エリアをワイヤーフレームで描画
 	DrawCube3D(minAreaPos_, maxAreaPos_, FRAME_COLOR, FRAME_COLOR, false);
 
+	VECTOR checkPos = transform_->pos_;
+
+	for (int i = 0; i < VIEW_CHECK_POINT_NUM; i++)
+	{
+		DrawSphere3D(checkPos, 80.0f, 10, 0xff0000, 0xff0000, false);
+		checkPos.y += VIEW_CHECK_STEP_Y;
+	}
+
 	// lock() して shared_ptr を一時的に取得
 	auto pathData = pathData_.lock();
 	if (!pathData) return;
